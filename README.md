@@ -1,2 +1,3 @@
-# annotorious
-A JavaScript library for image annotation
+# Annotorious
+
+A JavaScript library for image annotation.
