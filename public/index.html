@@ -8,11 +8,26 @@
         padding:20px;
         margin:0px;
       }
+      
+      .r6o-editor {
+        font-family:'Lato', sans-serif;
+        font-size:17px;
+        line-height:27px;
+      }
     </style>
   </head>
   <body>
     <div id="content">
       <img id="hallstatt" src="640px-Hallstatt.jpg">
     </div>
+    <script>
+      (function() {
+        var anno = Annotorious.init({
+          image: 'hallstatt'
+        });
+
+        anno.loadAnnotations('annotations.w3c.json');
+      })()
+    </script>
   </body>
 </html>

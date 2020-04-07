@@ -1,0 +1,20 @@
+.anno-annotationlayer {
+
+  rect {
+    fill:transparent;
+    stroke-width:1px;
+  }
+
+  rect.inner {
+    stroke:#fff;
+  }
+
+  rect.inner:hover {
+    stroke:#fff000;
+  }
+
+  rect.outer {
+    stroke:#000;
+  }
+
+}

@@ -36,5 +36,12 @@
     "webpack": "^4.41.0",
     "webpack-cli": "^3.3.9",
     "webpack-dev-server": "^3.8.1"
+  },
+  "dependencies": {
+    "@recogito/recogito-client-core": "^0.1.1",
+    "axios": "^0.19.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "tiny-emitter": "^2.1.0"
   }
 }
