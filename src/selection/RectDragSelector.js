@@ -29,13 +29,7 @@ export class Rectangle extends EventEmitter {
     svg.appendChild(outerRect);
     svg.appendChild(innerRect);
 
-    const bounds = {...fragment, 
-      top: y + h,
-      height: h,
-      width: w,
-      left: x,
-      y: y
-    };
+    const bounds = outerRect.getBoundingClientRect();
 
     innerRect.addEventListener('click', () => this.emit('click', { bounds }));
   }

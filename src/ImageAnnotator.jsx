@@ -9,14 +9,56 @@ export default class ImageAnnotator extends Component  {
     selectionBounds: null
   }
 
-  constructor(props) {
-    super(props);
+  /** Shorthand **/
+  clearState = () => {
+    this.setState({
+      selectionBounds: null,
+      selectedAnnotation: null
+    });
+  }
 
-    this._annotationLayer = new AnnotationLayer(props.image.parentNode);
-    this._annotationLayer.on('select', evt => this.setState({
+  componentDidMount() {
+    this.annotationLayer = new AnnotationLayer(this.props.image.parentNode);
+    this.annotationLayer.on('select', evt => this.setState({
       selectedAnnotation: evt.selection,
       selectionBounds: evt.bounds
     }));
+  }
+
+  /**************************/  
+  /* Annotation CRUD events */
+  /**************************/    
+
+  /** Selection on the text **/
+  handleSelect = evt => {
+    const { selection, bounds } = evt;
+    if (selection) {
+      this.setState({ 
+        selectionBounds: bounds,
+        selectedAnnotation: selection 
+      });
+    } else {
+      this.clearState();
+    }
+  }
+
+  /** Common handler for annotation CREATE or UPDATE **/
+  onCreateOrUpdateAnnotation = method => (annotation, previous) => {
+    this.clearState();    
+    this.annotationLayer.addOrUpdateAnnotation(annotation, previous);
+
+    // Call CREATE or UPDATE handler
+    this.props[method](annotation, previous);
+  }
+
+  onDeleteAnnotation = annotation => {
+    this.clearState();
+    this.annotationLayer.removeAnnotation(annotation);
+  }
+
+  /** Cancel button on annotation editor **/
+  onCancelAnnotation = () => {
+    this.clearState();
   }
 
   /****************/               
@@ -32,7 +74,7 @@ export default class ImageAnnotator extends Component  {
   }
 
   setAnnotations = annotations => {
-    this._annotationLayer.init(annotations);
+    this.annotationLayer.init(annotations);
   }
 
   getAnnotations = () => {
@@ -48,10 +90,10 @@ export default class ImageAnnotator extends Component  {
         bounds={this.state.selectionBounds}
         containerEl={this.props.containerEl}
         annotation={this.state.selectedAnnotation}
-        onAnnotationCreated={() => console.log('foo')}
-        onAnnotationUpdated={() => console.log('foo')}
-        onAnnotationDeleted={() => console.log('foo')}
-        onCancel={() => console.log('foo')}>
+        onAnnotationCreated={this.onCreateOrUpdateAnnotation('onAnnotationCreated')}
+        onAnnotationUpdated={this.onCreateOrUpdateAnnotation('onAnnotationUpdated')}
+        onAnnotationDeleted={this.onDeleteAnnotation}
+        onCancel={this.onCancelAnnotation}>
 
         {this.props.children}
 

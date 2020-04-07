@@ -34,11 +34,6 @@ class Annotorious {
     wrapper.appendChild(image);
     
     const container = document.createElement('DIV');
-    container.style.position = 'absolute';
-    container.style.top = 0;
-    container.style.left = 0;
-    container.style.width = '100%';
-    container.style.height = '100%';
     wrapper.appendChild(container);
 
     const { CommentWidget, TagWidget } = Editor;
@@ -48,7 +43,7 @@ class Annotorious {
       <ImageAnnotator 
         ref={this._app}
         image={image}
-        containerEl={container}>
+        containerEl={wrapper}>
         
         <CommentWidget />
         <TagWidget />

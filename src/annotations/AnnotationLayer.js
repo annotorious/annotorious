@@ -28,4 +28,12 @@ export default class AnnotationLayer extends EventEmitter {
     });
   }
 
+  addOrUpdateAnnotation = (annotation, previous) => {
+
+  }
+
+  removeAnnotation = annotation => {
+    
+  }
+
 }
