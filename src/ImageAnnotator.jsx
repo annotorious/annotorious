@@ -18,7 +18,7 @@ export default class ImageAnnotator extends Component  {
   }
 
   componentDidMount() {
-    this.annotationLayer = new AnnotationLayer(this.props.image.parentNode);
+    this.annotationLayer = new AnnotationLayer(this.props.wrapperEl);
     this.annotationLayer.on('select', evt => this.setState({
       selectedAnnotation: evt.selection,
       selectionBounds: evt.bounds
@@ -82,13 +82,11 @@ export default class ImageAnnotator extends Component  {
   }
 
   render() {
-    console.log(this.state.selectionBounds);
-    
     return (this.state.selectedAnnotation && (
       <Editor
         readOnly={this.props.readOnly}
         bounds={this.state.selectionBounds}
-        containerEl={this.props.containerEl}
+        wrapperEl={this.props.wrapperEl}
         annotation={this.state.selectedAnnotation}
         onAnnotationCreated={this.onCreateOrUpdateAnnotation('onAnnotationCreated')}
         onAnnotationUpdated={this.onCreateOrUpdateAnnotation('onAnnotationUpdated')}

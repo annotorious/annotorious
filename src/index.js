@@ -21,20 +21,21 @@ class Annotorious {
     // Event handling via tiny-emitter
     this._emitter = new Emitter();
 
-    // Image is wrapped in a container DIV, and the application 
-    // DIV (which contains the editor popup) is attached as a sibling
-    let image = (config.image.nodeType) ? 
+    // The image is wrapped in a DIV ('wrapperEl'). The application 
+    // container DIV, which holds the editor popup, will be attached 
+    // as a child to the wrapper element (=a sibling to the image
+    // element).
+    let imageEl = (config.image.nodeType) ? 
       config.image : document.getElementById(config.image);
 
-    const wrapper = document.createElement('DIV');
-    wrapper.style.position = 'relative';
-    wrapper.style.display = 'inline-block';
+    const wrapperEl = document.createElement('DIV');
+    wrapperEl.style.position = 'relative';
+    wrapperEl.style.display = 'inline-block';
+    imageEl.parentNode.insertBefore(wrapperEl, imageEl);
+    wrapperEl.appendChild(imageEl);
     
-    image.parentNode.insertBefore(wrapper, image);
-    wrapper.appendChild(image);
-    
-    const container = document.createElement('DIV');
-    wrapper.appendChild(container);
+    const appContainerEl = document.createElement('DIV');
+    wrapperEl.appendChild(appContainerEl);
 
     const { CommentWidget, TagWidget } = Editor;
    
@@ -42,15 +43,15 @@ class Annotorious {
     ReactDOM.render(
       <ImageAnnotator 
         ref={this._app}
-        image={image}
-        containerEl={wrapper}>
+        imageEl={imageEl}
+        wrapperEl={wrapperEl}>
         
         <CommentWidget />
         <TagWidget />
 
       </ImageAnnotator>,
     
-    container);
+    appContainerEl);
   }
 
   handleAnnotationCreated = annotation =>
