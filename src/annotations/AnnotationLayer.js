@@ -1,9 +1,8 @@
 import EventEmitter from 'tiny-emitter';
 import { Rectangle } from '../selection/RectDragSelector';
+import { SVG_NAMESPACE } from '../SVGConst';
 
 import './AnnotationLayer.scss';
-
-const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
 export default class AnnotationLayer extends EventEmitter {
 

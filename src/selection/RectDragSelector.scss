@@ -1,4 +1,4 @@
-.a9s-annotationlayer {
+.a9s-annotationlayer, .a9s-drawlayer {
 
   rect {
     fill:transparent;
@@ -6,16 +6,28 @@
     cursor:pointer;
   }
 
+  rect.outer {
+    stroke:#000;
+  }
+
+}
+
+.a9s-drawlayer {
+
+  rect.inner {
+    stroke:#fff000;
+  } 
+
+}
+
+.a9s-annotationlayer {
+
   rect.inner {
     stroke:#fff;
   }
 
   rect.inner:hover {
     stroke:#fff000;
-  }
-
-  rect.outer {
-    stroke:#000;
   }
 
 }

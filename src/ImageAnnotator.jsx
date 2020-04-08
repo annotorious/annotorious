@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import AnnotationLayer from './annotations/AnnotationLayer';
+import DrawLayer from './annotations/DrawLayer';
 import { Editor } from '@recogito/recogito-client-core';
 
 export default class ImageAnnotator extends Component  {
@@ -23,6 +24,8 @@ export default class ImageAnnotator extends Component  {
       selectedAnnotation: evt.selection,
       selectionBounds: evt.bounds
     }));
+
+    this.drawLayer = new DrawLayer(this.props.wrapperEl);
   }
 
   /**************************/  
