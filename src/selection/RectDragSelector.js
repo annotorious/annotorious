@@ -1,4 +1,5 @@
 import EventEmitter from 'tiny-emitter';
+import { Selection } from '@recogito/recogito-client-core';
 import { parseFragment } from '../annotations/AnnotationUtils';
 import { SVG_NAMESPACE } from '../SVGConst';
 
@@ -29,6 +30,22 @@ const drawRect = (x, y, w, h) => {
   return g;
 }
 
+/** TODO roll all this into a class (in a separate source file) **/
+const toSelection = g => {
+  const outerRect = g.querySelector('.outer');
+
+  const x = outerRect.getAttribute('x');
+  const y = outerRect.getAttribute('y');
+  const w = outerRect.getAttribute('width');
+  const h = outerRect.getAttribute('height');
+
+  return new Selection([{
+    "type": "FragmentSelector",
+    "conformsTo": "http://www.w3.org/TR/media-frags/",
+    "value": `xywh=pixel:${x},${y},${w},${h}`
+  }]);
+}
+
 export class Rectangle extends EventEmitter {
 
   constructor(annotation, svg) {
@@ -46,7 +63,12 @@ export class Rectangle extends EventEmitter {
 
     const bounds = g.getBoundingClientRect();
 
-    g.addEventListener('click', () => this.emit('click', { bounds }));
+    g.addEventListener('click', evt => { 
+      evt.stopPropagation();
+      this.emit('click', { bounds })
+    });
+
+    g.addEventListener('mouseover', evt => this.emit('mouseover', evt));
   }
 
 }
@@ -77,6 +99,13 @@ export class RectDragSelector extends EventEmitter {
     this.svg.appendChild(this.shape);
   }
 
+  clear = () => {
+    if (this.shape) {
+      this.svg.removeChild(this.shape);
+      this.shape = null;
+    }
+  }
+
   // TODO make this work in all four quadrants
   onMouseMove = evt => {
     // This could be cached (but probably doesn't make much of a difference)
@@ -96,9 +125,20 @@ export class RectDragSelector extends EventEmitter {
   // TODO handle mouseup outside of layer
   onMouseUp = evt => {
     this._detachListeners();
-    this.emit('complete'); // TODO construct selection object
-    this.svg.removeChild(this.shape);
-    this.shape = null;
+
+    // TODO will be simpler once we roll everything into a proper Rectangle class
+    const outer = this.shape.querySelector('.outer');
+    const w = outer.getAttribute('width');
+
+    if (w > 3) {
+      this.emit('complete', { 
+        selection: toSelection(this.shape),
+        bounds: this.shape.getBoundingClientRect()
+      });
+    } else {
+      this.clear();
+      this.emit('cancel', evt);
+    }
   }
 
 }

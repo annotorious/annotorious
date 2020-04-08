@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import AnnotationLayer from './annotations/AnnotationLayer';
-import DrawLayer from './annotations/DrawLayer';
 import { Editor } from '@recogito/recogito-client-core';
 
 export default class ImageAnnotator extends Component  {
@@ -24,8 +23,6 @@ export default class ImageAnnotator extends Component  {
       selectedAnnotation: evt.selection,
       selectionBounds: evt.bounds
     }));
-
-    this.drawLayer = new DrawLayer(this.props.wrapperEl);
   }
 
   /**************************/  
@@ -49,6 +46,7 @@ export default class ImageAnnotator extends Component  {
   onCreateOrUpdateAnnotation = method => (annotation, previous) => {
     this.clearState();    
     this.annotationLayer.addOrUpdateAnnotation(annotation, previous);
+    this.annotationLayer.clearSelection();
 
     // Call CREATE or UPDATE handler
     this.props[method](annotation, previous);
@@ -62,6 +60,7 @@ export default class ImageAnnotator extends Component  {
   /** Cancel button on annotation editor **/
   onCancelAnnotation = () => {
     this.clearState();
+    this.annotationLayer.clearSelection();
   }
 
   /****************/               
