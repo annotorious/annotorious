@@ -44,7 +44,10 @@ class Annotorious {
       <ImageAnnotator 
         ref={this._app}
         imageEl={imageEl}
-        wrapperEl={wrapperEl}>
+        wrapperEl={wrapperEl}
+        onAnnotationCreated={this.handleAnnotationCreated} 
+        onAnnotationUpdated={this.handleAnnotationUpdated} 
+        onAnnotationDeleted={this.handleAnnotationDeleted}>
         
         <CommentWidget />
         <TagWidget />
