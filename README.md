@@ -3,10 +3,11 @@
 A JavaScript library for image annotation. Modernized reboot of the 
 outdated original [Annotorious](http://annotorious.github.io/).
 
-__Work in progress__
+__!! Work in progress !!__
 
 ## Resources
 
+- [API Reference](https://github.com/recogito/annotorious/wiki/API-Reference)
 - [Demo](https://recogito.github.io/annotorious/)
 
 ## Installing
