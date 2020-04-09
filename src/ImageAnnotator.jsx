@@ -69,21 +69,17 @@ export default class ImageAnnotator extends Component  {
   /* External API */
   /****************/    
 
-  addAnnotation = annotation => {
-    
-  }
+  addAnnotation = annotation =>
+    this.annotationLayer.addOrUpdateAnnotation(annotation);
 
-  removeAnnotation = annotation => {
-    
-  }
+  removeAnnotation = annotation =>
+    this.annotationLayer.removeAnnotation(annotation);
 
-  setAnnotations = annotations => {
+  setAnnotations = annotations =>
     this.annotationLayer.init(annotations);
-  }
 
-  getAnnotations = () => {
-
-  }
+  getAnnotations = () =>
+    this.annotationLayer.getAnnotations();
 
   render() {
     return (this.state.selectedAnnotation && (

@@ -83,6 +83,11 @@ export default class AnnotationLayer extends EventEmitter {
       shape.parentNode.removeChild(shape);
   }
 
+  getAnnotations = () => {
+    const shapes = Array.from(this.svg.querySelectorAll('.a9s-annotation'));
+    return shapes.map(s => s.annotation);
+  }
+
   /**
    * Redraws the whole layer with annotations sorted by
    * size, so that larger ones don't occlude smaller ones.

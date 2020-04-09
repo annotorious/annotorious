@@ -26,6 +26,14 @@
           image: 'hallstatt'
         });
 
+        anno.on('createAnnotation', function(a) {
+          console.log('created', a);
+        });
+
+        anno.on('updateAnnotation', function(annotation, previous) {
+          console.log('updated', previous, 'with', annotation);
+        });
+
         anno.loadAnnotations('annotations.w3c.json');
       })()
     </script>
