@@ -1,4 +1,5 @@
 import EventEmitter from 'tiny-emitter';
+import { fragmentArea } from './AnnotationUtils';
 import { drawRect } from './RectFragment';
 import { RectDragSelector } from '../selection/RectDragSelector';
 import { SVG_NAMESPACE } from '../SVGConst';
@@ -51,22 +52,44 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   _findShape = annotation =>
-    document.querySelector(`.a9s-annotation[data-id="${annotation.id}"]`);
+    this.svg.querySelector(`.a9s-annotation[data-id="${annotation.id}"]`);
 
-  init = annotations =>
+  init = annotations => {
+    // Sort annotations by size
+    annotations.sort((a, b) => fragmentArea(b) - fragmentArea(a));
     annotations.forEach(this._addAnnotation);
+  }
 
   addOrUpdateAnnotation = (annotation, previous) => {
     if (previous)
       this.removeAnnotation(annotation);
 
     this._addAnnotation(annotation);
+
+    // Make sure rendering order is large-to-small
+    this.redraw();
   }
 
   removeAnnotation = annotation => {
     const shape = this._findShape(annotation);
     if (shape)
       shape.parentNode.removeChild(shape);
+  }
+
+  /**
+   * Redraws the whole layer with annotations sorted by
+   * size, so that larger ones don't occlude smaller ones.
+   */
+  redraw = () => {
+    const shapes = Array.from(this.svg.querySelectorAll('.a9s-annotation'));
+    const annotations = shapes.map(s => s.annotation);
+    annotations.sort((a, b) => fragmentArea(b) - fragmentArea(a));
+
+    // Clear the SVG element
+    shapes.forEach(s => this.svg.removeChild(s));
+
+    // Redraw
+    annotations.forEach(this._addAnnotation);
   }
 
   clearSelection = () =>

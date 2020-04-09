@@ -1,7 +1,7 @@
 import { SVG_NAMESPACE } from '../SVGConst';
 
 /** Naive implementation (for now) that expects well-formed xywh=pixel: fragments **/
-const parseRectFragment = annotation => {
+export const parseRectFragment = annotation => {
   const selector = annotation.selector('FragmentSelector');
   if (selector) {
     const [ x, y, w, h ] = selector.value.substring(11).split(',').map(parseFloat)
