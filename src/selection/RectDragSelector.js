@@ -13,13 +13,17 @@ export class RectDragSelector extends EventEmitter {
   }
 
   _attachListeners = () => {
+    this.svg.addEventListener('mousedown', this.onMouseDown);
     this.svg.addEventListener('mousemove', this.onMouseMove);
-    this.svg.addEventListener('mouseup', this.onMouseUp);
+    
+    // capture outside SVG, too
+    document.addEventListener('mouseup', this.onMouseUp);
   }
 
   _detachListeners = () => {
+    this.svg.removeEventListener('mousedown', this.onMouseDown);
     this.svg.removeEventListener('mousemove', this.onMouseMove);
-    this.svg.removeEventListener('mouseup', this.onMouseUp);
+    document.removeEventListener('mouseup', this.onMouseUp);
   }
 
   startDrawing = evt => {
@@ -34,11 +38,9 @@ export class RectDragSelector extends EventEmitter {
     }
   }
 
-  // TODO make this work in all four quadrants
   onMouseMove = evt =>
     this.shape.dragTo(evt.offsetX, evt.offsetY);
 
-  // TODO handle mouseup outside of layer
   onMouseUp = evt => {
     this._detachListeners();
 
