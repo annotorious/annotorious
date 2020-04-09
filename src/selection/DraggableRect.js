@@ -9,6 +9,11 @@ export default class DraggableRect {
 
     this.shape = drawRect(anchorX, anchorY, 2, 2);
 
+    // We make this shape transparent to pointer events
+    // because it would interfere with the rendered 
+    // annotations' mouseleave/enter events
+    this.shape.style.pointerEvents = 'none';
+
     svg.appendChild(this.shape);
   }
 
