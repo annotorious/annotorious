@@ -1,6 +1,5 @@
 import EventEmitter from 'tiny-emitter';
-import { fragmentArea } from './AnnotationUtils';
-import { drawRect } from './RectFragment';
+import { drawRect, rectArea } from './RectFragment';
 import { RectDragSelector } from '../selection/RectDragSelector';
 import { SVG_NAMESPACE } from '../SVGConst';
 
@@ -33,11 +32,14 @@ export default class AnnotationLayer extends EventEmitter {
   onDrawingComplete = evt =>
     this.emit('select', evt);
 
-  onDrawingCanceled = () =>
-    this.emit('select', { 
-      selection: this.currentHover.annotation,
-      bounds: this.currentHover.getBoundingClientRect()
-    });
+  onDrawingCanceled = () => {
+    if (this.currentHover) {
+      this.emit('select', { 
+        selection: this.currentHover.annotation,
+        bounds: this.currentHover.getBoundingClientRect()
+      });
+    }
+  }
 
   _addAnnotation = annotation => {
     const g = drawRect(annotation);  
@@ -47,14 +49,11 @@ export default class AnnotationLayer extends EventEmitter {
   
     this.svg.appendChild(g);
  
-    g.addEventListener('mouseenter', evt => {
-      this.currentHover = g;
-    });
+    g.addEventListener('mouseenter', () => 
+      this.currentHover = g);
 
-    g.addEventListener('mouseleave', evt => { 
-      this.currentHover = null;
-      console.log('out', evt);
-    });
+    g.addEventListener('mouseleave', () =>  
+      this.currentHover = null);
 
     return g;
   }
@@ -64,7 +63,7 @@ export default class AnnotationLayer extends EventEmitter {
 
   init = annotations => {
     // Sort annotations by size
-    annotations.sort((a, b) => fragmentArea(b) - fragmentArea(a));
+    annotations.sort((a, b) => rectArea(b) - rectArea(a));
     annotations.forEach(this._addAnnotation);
   }
 
@@ -91,7 +90,7 @@ export default class AnnotationLayer extends EventEmitter {
   redraw = () => {
     const shapes = Array.from(this.svg.querySelectorAll('.a9s-annotation'));
     const annotations = shapes.map(s => s.annotation);
-    annotations.sort((a, b) => fragmentArea(b) - fragmentArea(a));
+    annotations.sort((a, b) => rectArea(b) - rectArea(a));
 
     // Clear the SVG element
     shapes.forEach(s => this.svg.removeChild(s));

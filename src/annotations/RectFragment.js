@@ -49,3 +49,8 @@ export const setRectSize = (g, x, y, w, h) => {
   setXYWH(outerRect, x - 0.5, y - 0.5, w + 1, h + 1);
 }
 
+export const rectArea = annotation => {
+  const { w, h } = parseRectFragment(annotation);
+  return w * h;
+}
+
