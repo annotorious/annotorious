@@ -1,7 +1,8 @@
 # Annotorious 2
 
-A JavaScript library for image annotation. Modernized reboot of the 
-outdated original [Annotorious](http://annotorious.github.io/).
+A JavaScript library for image annotation. Annotorious 2 is a 
+modernized reboot of the (now outdated) original 
+[Annotorious](http://annotorious.github.io/).
 
 __!! Work in progress !!__
 
@@ -12,12 +13,16 @@ __!! Work in progress !!__
 
 ## Installing
 
-An initial release will be published here and on the npm registry soon. 
-Watch this space.
+If you use npm, `npm install @recogito/annotorious`. Otherwise download the 
+[latest release](https://github.com/recogito/annotorious/releases/latest).
+
+```html
+<script src="annotorious-2.0.0-alpha.min.js"></script>
+```
 
 ## Using
 
-Make in image annotate-able with just a few lines of JavaScript.
+Make an image annotate-able with just a few lines of JavaScript.
 
 ```html
 <body>
