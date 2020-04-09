@@ -1,8 +1,11 @@
 import EventEmitter from 'tiny-emitter';
-import { Rectangle, RectDragSelector } from '../selection/RectDragSelector';
+import { Rectangle } from '../selection/Rectangle';
+import { RectDragSelector } from '../selection/RectDragSelector';
 import { SVG_NAMESPACE } from '../SVGConst';
+import { parseFragment } from './AnnotationUtils';
 
 import './AnnotationLayer.scss';
+
 
 export default class AnnotationLayer extends EventEmitter {
 
@@ -28,10 +31,13 @@ export default class AnnotationLayer extends EventEmitter {
   onMouseDown = evt =>
     this.currentTool.startDrawing(evt);
 
-  onDrawingComplete = evt =>
+  onDrawingComplete = evt => {
+    console.log(evt);
     this.emit('select', evt);
+  }
 
   onDrawingCanceled = evt => {
+    console.log(this.currentHover);
     this.emit('select', { 
       selection: this.currentHover.annotation,
       bounds: this.currentHover.getBoundingClientRect()
@@ -40,8 +46,16 @@ export default class AnnotationLayer extends EventEmitter {
 
   _addAnnotation = annotation => {
     // TODO revise the event object in shape, and just pass the event on here
-    const shape = new Rectangle(annotation, this.svg);
-    shape.on('mouseover', evt => {
+    const { x, y, w, h } = parseFragment(annotation);
+    const shape = new Rectangle(x, y, w, h);
+
+    shape.setAttribute('class', 'a9s-annotation');
+    shape.setAttribute('data-id', annotation.id);
+    shape.svg.annotation = annotation;
+
+    this.svg.appendChild(shape.svg);
+
+    shape.addEventListener('mouseover', evt => {
       this.currentHover = evt.target.parentNode;
     });
   }

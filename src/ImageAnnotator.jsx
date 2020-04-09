@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import AnnotationLayer from './annotations/AnnotationLayer';
 import { Editor } from '@recogito/recogito-client-core';
 
+import './ImageAnnotator.scss';
+
 export default class ImageAnnotator extends Component  {
 
   state = {

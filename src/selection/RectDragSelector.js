@@ -2,6 +2,7 @@ import EventEmitter from 'tiny-emitter';
 import { Selection } from '@recogito/recogito-client-core';
 import { parseFragment } from '../annotations/AnnotationUtils';
 import { SVG_NAMESPACE } from '../SVGConst';
+import { DraggableRect } from './Rectangle';
 
 import './RectDragSelector.scss';
 
@@ -46,6 +47,7 @@ const toSelection = g => {
   }]);
 }
 
+/*
 export class Rectangle extends EventEmitter {
 
   constructor(annotation, svg) {
@@ -72,6 +74,7 @@ export class Rectangle extends EventEmitter {
   }
 
 }
+*/
 
 export class RectDragSelector extends EventEmitter {
 
@@ -94,46 +97,30 @@ export class RectDragSelector extends EventEmitter {
 
   startDrawing = evt => {
     this._attachListeners();
-
-    this.shape = drawRect(evt.offsetX, evt.offsetY, 2, 2);
-    this.svg.appendChild(this.shape);
+    this.shape = new DraggableRect([ evt.offsetX, evt.offsetY ], this.svg);
   }
 
   clear = () => {
     if (this.shape) {
-      this.svg.removeChild(this.shape);
+      this.shape.destroy();
       this.shape = null;
     }
   }
 
   // TODO make this work in all four quadrants
-  onMouseMove = evt => {
-    // This could be cached (but probably doesn't make much of a difference)
-    const outer = this.shape.querySelector('.outer');
-    const inner = this.shape.querySelector('.inner');
-
-    const width = evt.offsetX - outer.getAttribute('x');
-    const height = evt.offsetY - outer.getAttribute('y');
-
-    inner.setAttribute('width', width - 1);
-    inner.setAttribute('height', height - 1);
-
-    outer.setAttribute('width', width + 1);
-    outer.setAttribute('height', height + 1);
-  }
+  onMouseMove = evt =>
+    this.shape.dragTo(evt.offsetX, evt.offsetY);
 
   // TODO handle mouseup outside of layer
   onMouseUp = evt => {
     this._detachListeners();
 
-    // TODO will be simpler once we roll everything into a proper Rectangle class
-    const outer = this.shape.querySelector('.outer');
-    const w = outer.getAttribute('width');
+    const { w } = this.shape.bbox;
 
     if (w > 3) {
       this.emit('complete', { 
-        selection: toSelection(this.shape),
-        bounds: this.shape.getBoundingClientRect()
+        selection: this.shape.toSelection(),
+        bounds: this.shape.svg.getBoundingClientRect()
       });
     } else {
       this.clear();
