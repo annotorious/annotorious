@@ -59,13 +59,13 @@ class Annotorious {
   }
 
   handleAnnotationCreated = annotation =>
-    this._emitter.emit('createAnnotation', annotation);
+    this._emitter.emit('createAnnotation', annotation._annotation);
 
   handleAnnotationUpdated = (annotation, previous) =>
-    this._emitter.emit('updateAnnotation', annotation, previous);
+    this._emitter.emit('updateAnnotation', annotation._annotation, previous._annotation);
 
   handleAnnotationDeleted = annotation =>
-    this._emitter.emit('deleteAnnotation', annotation);
+    this._emitter.emit('deleteAnnotation', annotation._annotation);
   
   /******************/               
   /*  External API  */
