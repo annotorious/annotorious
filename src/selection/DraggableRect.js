@@ -24,8 +24,8 @@ export default class DraggableRect {
     return {
       x: w > 0 ? this.anchor[0] : this.opposite[0],
       y: h > 0 ? this.anchor[1] : this.opposite[1],
-      w: Math.abs(w),
-      h: Math.abs(h)
+      w: Math.max(1, Math.abs(w)), // Negative values
+      h: Math.max(1, Math.abs(h)) 
     };
   }
 
