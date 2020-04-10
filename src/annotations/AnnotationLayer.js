@@ -107,4 +107,10 @@ export default class AnnotationLayer extends EventEmitter {
   clearSelection = () =>
     this.currentTool.clear();
 
+  destroy = () => {
+    this.currentTool = null;
+    this.currentHover = null;
+    this.svg.parentNode.removeChild(this.svg);
+  }
+
 }

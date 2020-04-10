@@ -34,8 +34,8 @@ class Annotorious {
     imageEl.parentNode.insertBefore(wrapperEl, imageEl);
     wrapperEl.appendChild(imageEl);
     
-    const appContainerEl = document.createElement('DIV');
-    wrapperEl.appendChild(appContainerEl);
+    this._appContainerEl = document.createElement('DIV');
+    wrapperEl.appendChild(this._appContainerEl);
 
     const { CommentWidget, TagWidget } = Editor;
    
@@ -45,6 +45,7 @@ class Annotorious {
         ref={this._app}
         imageEl={imageEl}
         wrapperEl={wrapperEl}
+        readOnly={config.readOnly}
         onAnnotationCreated={this.handleAnnotationCreated} 
         onAnnotationUpdated={this.handleAnnotationUpdated} 
         onAnnotationDeleted={this.handleAnnotationDeleted}>
@@ -54,7 +55,7 @@ class Annotorious {
 
       </ImageAnnotator>,
     
-    appContainerEl);
+    this._appContainerEl);
   }
 
   handleAnnotationCreated = annotation =>
@@ -71,7 +72,7 @@ class Annotorious {
   /******************/     
   
   /**
-   * Adds a JSON-LD WebAnnotation to the annotation layer.
+   * Adds a single JSON-LD WebAnnotation to the annotation layer.
    */
   addAnnotation = annotation =>
     this._app.current.addAnnotation(new WebAnnotation(annotation));
@@ -91,11 +92,23 @@ class Annotorious {
     return annotations;
   });
 
+  /** Initializes the annotation layer with the list of WebAnnotations **/
+  setAnnotations = annotations => {
+    const webannotations = annotations.map(a => new WebAnnotation(a));
+    this._app.current.setAnnotations(webannotations);
+  }
+
   /**
    * Returns all annotations
    */
   getAnnotations = () => 
     this._app.current.getAnnotations();
+
+  /**
+   * Unmounts the annotator component
+   */
+  destroy = () =>
+    ReactDOM.unmountComponentAtNode(this._appContainerEl);
 
   /** 
    * Adds an event handler.

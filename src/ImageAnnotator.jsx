@@ -27,6 +27,10 @@ export default class ImageAnnotator extends Component  {
     }));
   }
 
+  componentWillUnmount() {
+    this.annotationLayer.destroy();
+  }
+
   /**************************/  
   /* Annotation CRUD events */
   /**************************/    
@@ -84,10 +88,10 @@ export default class ImageAnnotator extends Component  {
   render() {
     return (this.state.selectedAnnotation && (
       <Editor
-        readOnly={this.props.readOnly}
-        bounds={this.state.selectionBounds}
         wrapperEl={this.props.wrapperEl}
+        bounds={this.state.selectionBounds}
         annotation={this.state.selectedAnnotation}
+        readOnly={this.props.readOnly}
         onAnnotationCreated={this.onCreateOrUpdateAnnotation('onAnnotationCreated')}
         onAnnotationUpdated={this.onCreateOrUpdateAnnotation('onAnnotationUpdated')}
         onAnnotationDeleted={this.onDeleteAnnotation}
