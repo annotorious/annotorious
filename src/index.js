@@ -48,7 +48,9 @@ class Annotorious {
         readOnly={config.readOnly}
         onAnnotationCreated={this.handleAnnotationCreated} 
         onAnnotationUpdated={this.handleAnnotationUpdated} 
-        onAnnotationDeleted={this.handleAnnotationDeleted}>
+        onAnnotationDeleted={this.handleAnnotationDeleted}
+        onMouseEnterAnnotation={this.handleMouseEnterAnnotation}
+        onMouseLeaveAnnotation={this.handleMouseLeaveAnnotation}>
         
         <CommentWidget />
         <TagWidget />
@@ -66,6 +68,12 @@ class Annotorious {
 
   handleAnnotationDeleted = annotation =>
     this._emitter.emit('deleteAnnotation', annotation._annotation);
+
+  handleMouseEnterAnnotation = (annotation, evt) =>
+    this._emitter.emit('mouseEnterAnnotation', annotation._annotation, evt);
+
+  handleMouseLeaveAnnotation = (annotation, evt) =>
+    this._emitter.emit('mouseLeaveAnnotation', annotation._annotation, evt);
   
   /******************/               
   /*  External API  */

@@ -49,11 +49,19 @@ export default class AnnotationLayer extends EventEmitter {
   
     this.svg.appendChild(g);
  
-    g.addEventListener('mouseenter', () => 
-      this.currentHover = g);
+    g.addEventListener('mouseenter', evt => {
+      if (this.currentHover !== g)
+        this.emit('mouseEnterAnnotation', annotation, evt);
+        
+      this.currentHover = g;
+    });
 
-    g.addEventListener('mouseleave', () =>  
-      this.currentHover = null);
+    g.addEventListener('mouseleave', evt => {
+      if (this.currentHover === g) 
+        this.emit('mouseLeaveAnnotation', annotation, evt);
+
+      this.currentHover = null;
+    });
 
     return g;
   }

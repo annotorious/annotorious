@@ -21,10 +21,14 @@ export default class ImageAnnotator extends Component  {
 
   componentDidMount() {
     this.annotationLayer = new AnnotationLayer(this.props.wrapperEl);
+
     this.annotationLayer.on('select', evt => this.setState({
       selectedAnnotation: evt.selection,
       selectionBounds: evt.bounds
     }));
+
+    this.annotationLayer.on('mouseEnterAnnotation', this.props.onMouseEnterAnnotation);
+    this.annotationLayer.on('mouseLeaveAnnotation', this.props.onMouseLeaveAnnotation);
   }
 
   componentWillUnmount() {
