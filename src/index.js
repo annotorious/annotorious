@@ -106,6 +106,10 @@ class Annotorious {
     return annotations.map(a => a._annotation);
   }
 
+  /** Shows or hides the annotation layer **/
+  setAnnotationsVisible = visible =>
+    this._app.current.setAnnotationsVisible(visible);
+
   /**
    * Unmounts the annotator component
    */

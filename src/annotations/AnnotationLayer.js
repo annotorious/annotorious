@@ -107,6 +107,13 @@ export default class AnnotationLayer extends EventEmitter {
   clearSelection = () =>
     this.currentTool.clear();
 
+  setAnnotationsVisible = visible => {
+    if (visible)
+      this.svg.style.display = null;
+    else
+      this.svg.style.display = 'none';
+  }
+
   destroy = () => {
     this.currentTool = null;
     this.currentHover = null;
