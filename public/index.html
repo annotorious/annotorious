@@ -32,9 +32,6 @@
         Sample image source: <a href="http://commons.wikimedia.org/wiki/File:Hallstatt_300.jpg">Hallstatt,
         Austria</a>, by Nick Csakany/Wikimedia Commons. Public Domain.
       </p>
-      <div>
-        <button id="test">Test</button>
-      </div>
     </div>
     <script>
       (function() {
@@ -50,12 +47,15 @@
           console.log('updated', previous, 'with', annotation);
         });
 
-        anno.loadAnnotations('annotations.w3c.json');
-
-        var testBtn = document.getElementById('test');
-        testBtn.addEventListener('click', function() {
-          console.log(anno.getAnnotations());
+        anno.on('mouseEnterAnnotation', function(annotation, evt) {
+          console.log('enter', annotation);
         });
+
+        anno.on('mouseLeaveAnnotation', function(annotation, evt) {
+          console.log('leave', annotation);
+        });
+
+        anno.loadAnnotations('annotations.w3c.json');
       })()
     </script>
   </body>
