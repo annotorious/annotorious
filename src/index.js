@@ -101,8 +101,10 @@ class Annotorious {
   /**
    * Returns all annotations
    */
-  getAnnotations = () => 
-    this._app.current.getAnnotations();
+  getAnnotations = () => {
+    const annotations = this._app.current.getAnnotations();
+    return annotations.map(a => a._annotation);
+  }
 
   /**
    * Unmounts the annotator component
