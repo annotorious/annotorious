@@ -41,7 +41,7 @@ export default class AnnotationLayer extends EventEmitter {
     }
   }
 
-  _addAnnotation = annotation => {
+  addAnnotation = annotation => {
     const g = drawRect(annotation);  
     g.setAttribute('class', 'a9s-annotation');
     g.setAttribute('data-id', annotation.id);
@@ -66,37 +66,11 @@ export default class AnnotationLayer extends EventEmitter {
     return g;
   }
 
-  _findShape = annotation =>
-    this.svg.querySelector(`.a9s-annotation[data-id="${annotation.id}"]`);
-
-  init = annotations => {
-    // Sort annotations by size
-    annotations.sort((a, b) => rectArea(b) - rectArea(a));
-    annotations.forEach(this._addAnnotation);
+  findShape = annotationOrId => {
+    const id = annotationOrId.id ? annotationOrId.id : annotationOrId;
+    return this.svg.querySelector(`.a9s-annotation[data-id="${id}"]`);
   }
-
-  addOrUpdateAnnotation = (annotation, previous) => {
-    if (previous)
-      this.removeAnnotation(annotation);
-
-    this._addAnnotation(annotation);
-
-    // Make sure rendering order is large-to-small
-    this.redraw();
-  }
-
-  removeAnnotation = annotation => {
-    const shape = this._findShape(annotation);
-    if (shape)
-      shape.parentNode.removeChild(shape);
-  }
-
-  getAnnotations = () => {
-    const shapes = Array.from(this.svg.querySelectorAll('.a9s-annotation'));
-    return shapes.map(s => s.annotation);
-  }
-
-  /**
+      /**
    * Redraws the whole layer with annotations sorted by
    * size, so that larger ones don't occlude smaller ones.
    */
@@ -109,17 +83,58 @@ export default class AnnotationLayer extends EventEmitter {
     shapes.forEach(s => this.svg.removeChild(s));
 
     // Redraw
-    annotations.forEach(this._addAnnotation);
+    annotations.forEach(this.addAnnotation);
   }
 
   clearSelection = () =>
     this.currentTool.clear();
+
+  /****************/               
+  /* External API */
+  /****************/    
+
+  init = annotations => {
+    // Sort annotations by size
+    annotations.sort((a, b) => rectArea(b) - rectArea(a));
+    annotations.forEach(this.addAnnotation);
+  }
+
+  addOrUpdateAnnotation = (annotation, previous) => {
+    if (previous)
+      this.removeAnnotation(annotation);
+
+    this.addAnnotation(annotation);
+
+    // Make sure rendering order is large-to-small
+    this.redraw();
+  }
+
+  removeAnnotation = annotation => {
+    const shape = this.findShape(annotation);
+    if (shape)
+      shape.parentNode.removeChild(shape);
+  }
+
+  getAnnotations = () => {
+    const shapes = Array.from(this.svg.querySelectorAll('.a9s-annotation'));
+    return shapes.map(s => s.annotation);
+  }
 
   setAnnotationsVisible = visible => {
     if (visible)
       this.svg.style.display = null;
     else
       this.svg.style.display = 'none';
+  }
+
+  selectAnnotation = annotationOrId => {
+    const selected = this.findShape(annotationOrId);
+    if (selected) {
+      this.emit('select', { 
+        selection: selected.annotation,
+        bounds: selected.getBoundingClientRect()
+      });
+    }
   }
 
   destroy = () => {

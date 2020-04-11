@@ -118,6 +118,14 @@ class Annotorious {
   setAnnotationsVisible = visible =>
     this._app.current.setAnnotationsVisible(visible);
 
+  /** Programmatically selects the annotation, opening the editor popup **/
+  selectAnnotation = annotationOrId => {
+    const arg = (annotationOrId.type === 'Annotation') ? 
+      new WebAnnotation(annotationOrId) : annotationOrId;
+
+    this._app.current.selectAnnotation(arg);
+  }
+
   /**
    * Unmounts the annotator component
    */
