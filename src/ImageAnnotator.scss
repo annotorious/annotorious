@@ -2,3 +2,42 @@
   top:0;
   left:0;
 }
+
+.a9s-annotationlayer {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+}
+
+
+
+
+
+
+.a9s-annotationlayer {
+
+  rect {
+    fill:transparent;
+    stroke-width:1px;
+    cursor:pointer;
+  }
+
+  rect.inner {
+    stroke:#fff;
+  }
+
+  rect.inner:hover {
+    stroke:#fff000;
+  }
+
+  rect.outer {
+    stroke:#000;
+  }
+
+  g.a9s-selection rect.inner {
+    stroke:#fff000;
+  } 
+
+}

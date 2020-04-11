@@ -1,8 +1,6 @@
 import EventEmitter from 'tiny-emitter';
 import DraggableRect from './DraggableRect';
 
-import './RectDragSelector.scss';
-
 export class RectDragSelector extends EventEmitter {
 
   constructor(svg) {

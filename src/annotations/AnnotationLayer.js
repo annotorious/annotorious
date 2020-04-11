@@ -3,8 +3,6 @@ import { drawRect, rectArea } from './RectFragment';
 import { RectDragSelector } from '../selection/RectDragSelector';
 import { SVG_NAMESPACE } from '../SVGConst';
 
-import './AnnotationLayer.scss';
-
 export default class AnnotationLayer extends EventEmitter {
 
   constructor(wrapperEl) {

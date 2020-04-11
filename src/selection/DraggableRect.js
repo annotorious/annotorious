@@ -8,6 +8,7 @@ export default class DraggableRect {
     this.opposite = [ anchorX + 2, anchorY + 2];
 
     this.shape = drawRect(anchorX, anchorY, 2, 2);
+    this.shape.setAttribute('class', 'a9s-selection');
 
     // We make this shape transparent to pointer events
     // because it would interfere with the rendered 
