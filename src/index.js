@@ -61,19 +61,19 @@ class Annotorious {
   }
 
   handleAnnotationCreated = annotation =>
-    this._emitter.emit('createAnnotation', annotation._annotation);
+    this._emitter.emit('createAnnotation', annotation.underlying);
 
   handleAnnotationUpdated = (annotation, previous) =>
-    this._emitter.emit('updateAnnotation', annotation._annotation, previous._annotation);
+    this._emitter.emit('updateAnnotation', annotation.underlying, previous.underlying);
 
   handleAnnotationDeleted = annotation =>
-    this._emitter.emit('deleteAnnotation', annotation._annotation);
+    this._emitter.emit('deleteAnnotation', annotation.underlying);
 
   handleMouseEnterAnnotation = (annotation, evt) =>
-    this._emitter.emit('mouseEnterAnnotation', annotation._annotation, evt);
+    this._emitter.emit('mouseEnterAnnotation', annotation.underlying, evt);
 
   handleMouseLeaveAnnotation = (annotation, evt) =>
-    this._emitter.emit('mouseLeaveAnnotation', annotation._annotation, evt);
+    this._emitter.emit('mouseLeaveAnnotation', annotation.underlying, evt);
   
   /******************/               
   /*  External API  */
@@ -120,7 +120,7 @@ class Annotorious {
 
   /** Programmatically selects the annotation, opening the editor popup **/
   selectAnnotation = annotationOrId => {
-    const arg = (annotationOrId.type === 'Annotation') ? 
+    const arg = (annotationOrId?.type === 'Annotation') ? 
       new WebAnnotation(annotationOrId) : annotationOrId;
 
     this._app.current.selectAnnotation(arg);

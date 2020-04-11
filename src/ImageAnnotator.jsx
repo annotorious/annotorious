@@ -92,8 +92,13 @@ export default class ImageAnnotator extends Component  {
   setAnnotationsVisible = visible =>
     this.annotationLayer.setAnnotationsVisible(visible);
 
-  selectAnnotation = arg =>
-    this.annotationLayer.selectAnnotation(arg);
+  selectAnnotation = arg => {
+    if (arg)
+      this.annotationLayer.selectAnnotation(arg);
+    else
+      // Deselect
+      this.clearState();
+  }
 
   render() {
     return (this.state.selectedAnnotation && (

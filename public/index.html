@@ -8,7 +8,7 @@
         padding:20px;
         margin:0px;
       }
-
+      
       .r6o-editor {
         font-family:'Lato', sans-serif;
         font-size:17px;
@@ -26,17 +26,14 @@
     </style>
   </head>
   <body>
-    <div id="content">  
-      <div class="buttons">
-        <button id="select">Select Annotation</button>
-      </div>          
+    <div id="content">      
       <img id="hallstatt" src="640px-Hallstatt.jpg">
       <p class="caption">
         Sample image source: <a href="http://commons.wikimedia.org/wiki/File:Hallstatt_300.jpg">Hallstatt,
         Austria</a>, by Nick Csakany/Wikimedia Commons. Public Domain.
       </p>
     </div>
-  </div>>
+  </div>
     <script>
       (function() {
         var anno = Annotorious.init({
@@ -60,9 +57,6 @@
         });
 
         anno.loadAnnotations('annotations.w3c.json');
-
-        var selectBtn = document.getElementById('select');
-        selectBtn.addEventListener('click', function() { anno.selectAnnotation('#a88b22d0-6106-4872-9435-c78b5e89fede') });
       })()
     </script>
   </body>
