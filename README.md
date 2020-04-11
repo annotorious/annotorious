@@ -17,7 +17,7 @@ If you use npm, `npm install @recogito/annotorious`. Otherwise download the
 [latest release](https://github.com/recogito/annotorious/releases/latest).
 
 ```html
-<script src="annotorious-2.0.0-alpha.min.js"></script>
+<script src="annotorious-2.0.1-alpha.min.js"></script>
 ```
 
 ## Using
@@ -38,7 +38,7 @@ Make an image annotate-able with just a few lines of JavaScript.
       anno.loadAnnotations('annotations.w3c.json');
     })()
   </script>
-  <script type="text/javascript" src="annotorious-2.0.0-alpha.min.js"></script>
+  <script type="text/javascript" src="annotorious-2.0.1-alpha.min.js"></script>
 </body>
 ```
 
