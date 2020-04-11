@@ -1,12 +1,16 @@
 import EventEmitter from 'tiny-emitter';
 import RubberbandRect from './RubberbandRect';
 
+/**
+ * A rubberband selector for rectangle fragments.
+ */
 export default class RubberbandRectSelector extends EventEmitter {
 
   constructor(svg) {
     super();
 
     this.svg = svg;
+
     this.rubberband = null;
   }
 
@@ -44,10 +48,10 @@ export default class RubberbandRectSelector extends EventEmitter {
 
     const { w } = this.rubberband.bbox;
 
-    const shape = this.rubberband.shape;
-    shape.annotation = this.rubberband.toSelection();
-
     if (w > 3) {
+      // Emit the SVG shape with selection attached    
+      const shape = this.rubberband.shape;
+      shape.annotation = this.rubberband.toSelection();
       this.emit('complete', shape);
     } else {
       this.clear();

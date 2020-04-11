@@ -15,7 +15,6 @@ export default class AnnotationLayer extends EventEmitter {
     wrapperEl.appendChild(this.svg);
 
     this.enableDrawing();
-    // this.svg.addEventListener('mousedown', this.onMouseDown);
 
     // TODO make switchable in the future
     const selector = new RubberbandRectSelector(this.svg);
@@ -54,11 +53,11 @@ export default class AnnotationLayer extends EventEmitter {
     this.disableDrawing();
     shape.parentNode.removeChild(shape);
 
-    this.selectedShape.on('update', () => {
+    this.selectedShape.on('update', xywh => {
       // Need to find a lighter way (separate event?)
       // or, at least, update the annotation with the correct coords
       const bounds = this.selectedShape.getBoundingClientRect();
-      const { x, y, w, h } = this.selectedShape.xywh;
+      const { x, y, w, h } = xywh; // this.selectedShape.xywh;
       const target = toRectFragment(x, y, w, h);
       this.emit('updateBounds', bounds, target);
     });

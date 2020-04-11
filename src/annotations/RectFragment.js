@@ -1,22 +1,27 @@
 import { SVG_NAMESPACE } from '../SVGConst';
 
-/** Naive implementation (for now) that expects well-formed xywh=pixel: fragments **/
+/** 
+ * Parses a W3C Web Annotation FragmentSelector conforming
+ * to the Media Fragments spec. This (currently) naive 
+ * implementation can only deal with well-formed xywh=pixel
+ * fragments. 
+ */
 export const parseRectFragment = annotation => {
   const selector = annotation.selector('FragmentSelector');
-  if (selector) {
+  if (selector?.conformsTo.startsWith('http://www.w3.org/TR/media-frags')) {
     const [ x, y, w, h ] = selector.value.substring(11).split(',').map(parseFloat)
     return { x, y, w, h };
   }
 }
 
-export const toRectFragment = (x, y, w, h) => {
-  return {
-    "type": "FragmentSelector",
-    "conformsTo": "http://www.w3.org/TR/media-frags/",
-    "value": `xywh=pixel:${x},${y},${w},${h}`
-  };
-}
+/** Serializes a (x, y, w, h)-tuple as Media Fragment selector **/
+export const toRectFragment = (x, y, w, h) => ({
+  "type": "FragmentSelector",
+  "conformsTo": "http://www.w3.org/TR/media-frags/",
+  "value": `xywh=pixel:${x},${y},${w},${h}`
+});
 
+/** Shorthand to apply the given (x, y, w, h) to the SVG shape **/
 const setXYWH = (shape, x, y, w, h) => {
   shape.setAttribute('x', x);
   shape.setAttribute('y', y);
@@ -25,8 +30,8 @@ const setXYWH = (shape, x, y, w, h) => {
 }
 
 /** 
- * Draws a rectangle from an annotation, or a tuple of
- * numbers (x, y, w, h)
+ * Draws an SVG rectangle, either from an annotation, or an
+ * (x, y, w, h)-tuple.
  */
 export const drawRect = (arg1, arg2, arg3, arg4) => {
   const { x, y, w, h } = arg1.type === 'Annotation' ?
@@ -49,6 +54,7 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
   return g;
 }
 
+/** Gets the (x, y, w, h)-values from the attributes of the SVG group **/
 export const getRectSize = g => {
   const outerRect = g.querySelector('.outer');
   
@@ -60,6 +66,7 @@ export const getRectSize = g => {
   return { x, y, w, h };
 }
 
+/** Applies the (x, y, w, h)-values to the rects in the SVG group **/
 export const setRectSize = (g, x, y, w, h) => {
   const innerRect = g.querySelector('.inner');
   const outerRect = g.querySelector('.outer');
@@ -68,6 +75,10 @@ export const setRectSize = (g, x, y, w, h) => {
   setXYWH(outerRect, x - 0.5, y - 0.5, w + 1, h + 1);
 }
 
+/** 
+ * Shorthand to get the area (rectangle w x h) from the 
+ * annotation's fragment selector. 
+ */
 export const rectArea = annotation => {
   const { w, h } = parseRectFragment(annotation);
   return w * h;

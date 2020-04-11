@@ -1,6 +1,9 @@
 import EventEmitter from 'tiny-emitter';
 import { drawRect, getRectSize, setRectSize } from '../annotations/RectFragment';
 
+/**
+ * An editable rectangle shape.
+ */
 export default class EditableRect extends EventEmitter {
 
   constructor(annotation, svg) {
@@ -17,33 +20,32 @@ export default class EditableRect extends EventEmitter {
     this.g.addEventListener('mouseup', this.onMouseUp);
 
     this.svg.appendChild(this.g);
+
+    // Mouse xy offset inside the shape, if mouse pressed
+    this.mouseOffset = null;
   }
 
+  /** Converts mouse coordinates to SVG coordinates **/
   getMousePosition = evt => {
-    const ctm = this.svg.getScreenCTM();
-    return {
-      x: (evt.clientX - ctm.e) / ctm.a,
-      y: (evt.clientY - ctm.f) / ctm.d
-    };
+    const pt = this.svg.createSVGPoint();
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    return pt.matrixTransform(this.svg.getScreenCTM().inverse());
   }
 
   onMouseDown = evt => {
-    // xy offset of the mouse inside the shape
-    this.offset = this.getMousePosition(evt);
-
+    const pos = this.getMousePosition(evt);
     const { x, y } = getRectSize(this.g);
-    this.offset.x -= x;
-    this.offset.y -= y;
+    this.mouseOffset = { x: pos.x - x, y: pos.y - y };
   }
 
   onMouseMove = evt => {
-    // Hack
-    if (this.offset) {
-      const coord = this.getMousePosition(evt);
+    if (this.mouseOffset) {
+      const pos = this.getMousePosition(evt);
       const { w, h } = getRectSize(this.g);
 
-      const x = coord.x - this.offset.x;
-      const y = coord.y - this.offset.y;
+      const x = pos.x - this.mouseOffset.x;
+      const y = pos.y - this.mouseOffset.y;
 
       setRectSize(this.g, x, y, w, h);
 
@@ -51,20 +53,13 @@ export default class EditableRect extends EventEmitter {
     }
   }
 
-  onMouseUp = evt => {
-    // Hack
-    this.offset = null;
-  }
+  onMouseUp = evt =>
+    this.mouseOffset = null;
 
   getBoundingClientRect = () => 
     this.g.getBoundingClientRect();
 
-  get xywh() {
-    return getRectSize(this.g);
-  }
-
-  destroy = () => {
+  destroy = () =>
     this.g.parentNode.removeChild(this.g);
-  }
 
 }
