@@ -48,14 +48,6 @@
           console.log('updated', previous, 'with', annotation);
         });
 
-        anno.on('mouseEnterAnnotation', function(annotation, evt) {
-          console.log('enter', annotation);
-        });
-
-        anno.on('mouseLeaveAnnotation', function(annotation, evt) {
-          console.log('leave', annotation);
-        });
-
         anno.loadAnnotations('annotations.w3c.json');
       })()
     </script>

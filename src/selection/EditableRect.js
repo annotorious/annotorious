@@ -1,8 +1,12 @@
+import EventEmitter from 'tiny-emitter';
 import { drawRect, getRectSize, setRectSize } from '../annotations/RectFragment';
 
-export default class EditableRect {
+export default class EditableRect extends EventEmitter {
 
   constructor(annotation, svg) {
+    super();
+
+    this.annotation = annotation;
     this.svg = svg;
 
     this.g = drawRect(annotation);
@@ -36,18 +40,31 @@ export default class EditableRect {
     // Hack
     if (this.offset) {
       const coord = this.getMousePosition(evt);
-      const { width, height } = getRectSize(this.g);
+      const { w, h } = getRectSize(this.g);
 
       const x = coord.x - this.offset.x;
       const y = coord.y - this.offset.y;
 
-      setRectSize(this.g, x, y, width, height);
+      setRectSize(this.g, x, y, w, h);
+
+      this.emit('update', { x, y, w, h });
     }
   }
 
   onMouseUp = evt => {
     // Hack
     this.offset = null;
+  }
+
+  getBoundingClientRect = () => 
+    this.g.getBoundingClientRect();
+
+  get xywh() {
+    return getRectSize(this.g);
+  }
+
+  destroy = () => {
+    this.g.parentNode.removeChild(this.g);
   }
 
 }

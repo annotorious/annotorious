@@ -1,5 +1,5 @@
 import EventEmitter from 'tiny-emitter';
-import { drawRect, rectArea } from './RectFragment';
+import { drawRect, rectArea, toRectFragment, getRectSize } from './RectFragment';
 import { SVG_NAMESPACE } from '../SVGConst';
 import EditableRect from '../selection/EditableRect';
 import RubberbandRectSelector from '../selection/RubberbandRectSelector';
@@ -19,8 +19,10 @@ export default class AnnotationLayer extends EventEmitter {
 
     // TODO make switchable in the future
     const selector = new RubberbandRectSelector(this.svg);
-    selector.on('complete', this.onDrawingComplete);
+    selector.on('complete', this.selectShape);
     selector.on('cancel', this.onDrawingCanceled);
+
+    this.selectedShape = null;
 
     this.currentTool = selector;
     this.currentHover = null;
@@ -35,9 +37,6 @@ export default class AnnotationLayer extends EventEmitter {
   onMouseDown = evt =>
     this.currentTool.startDrawing(evt);
 
-  onDrawingComplete = evt =>
-    this.emit('select', evt);
-
   onDrawingCanceled = () => {
     if (this.currentHover)
       this.selectShape(this.currentHover);
@@ -49,11 +48,20 @@ export default class AnnotationLayer extends EventEmitter {
       bounds: shape.getBoundingClientRect()
     });
 
-    const editableShape = new EditableRect(shape.annotation, this.svg);
+    /** HACK STARTS HERE **/
+    const { annotation } = shape;
+    this.selectedShape = new EditableRect(shape.annotation, this.svg);
     this.disableDrawing();
-    this.removeAnnotation(shape.annotation);
+    shape.parentNode.removeChild(shape);
 
-    // TODO remove original shape
+    this.selectedShape.on('update', () => {
+      // Need to find a lighter way (separate event?)
+      // or, at least, update the annotation with the correct coords
+      const bounds = this.selectedShape.getBoundingClientRect();
+      const { x, y, w, h } = this.selectedShape.xywh;
+      const target = toRectFragment(x, y, w, h);
+      this.emit('updateBounds', bounds, target);
+    });
   }
 
   addAnnotation = annotation => {
@@ -101,8 +109,14 @@ export default class AnnotationLayer extends EventEmitter {
     annotations.forEach(this.addAnnotation);
   }
 
-  clearSelection = () =>
-    this.currentTool.clear();
+  deselect = () => {
+    if (this.selectedShape) {
+      this.addAnnotation(this.selectedShape.annotation);
+      this.selectedShape.destroy();
+      this.selectedShape = null;
+    }
+    this.enableDrawing();
+  }
 
   /****************/               
   /* External API */

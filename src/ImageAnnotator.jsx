@@ -8,7 +8,8 @@ export default class ImageAnnotator extends Component  {
 
   state = {
     selectedAnnotation: null,
-    selectionBounds: null
+    selectionBounds: null,
+    modifiedTarget: null
   }
 
   /** Shorthand **/
@@ -22,24 +23,16 @@ export default class ImageAnnotator extends Component  {
   componentDidMount() {
     this.annotationLayer = new AnnotationLayer(this.props.wrapperEl);
 
-    this.annotationLayer.on('select', evt => this.setState({
-      selectedAnnotation: evt.selection,
-      selectionBounds: evt.bounds
-    }));
-
     this.annotationLayer.on('mouseEnterAnnotation', this.props.onMouseEnterAnnotation);
     this.annotationLayer.on('mouseLeaveAnnotation', this.props.onMouseLeaveAnnotation);
+    this.annotationLayer.on('select', this.handleSelect);
+    this.annotationLayer.on('updateBounds', this.handleUpdateBounds);
   }
 
   componentWillUnmount() {
     this.annotationLayer.destroy();
   }
 
-  /**************************/  
-  /* Annotation CRUD events */
-  /**************************/    
-
-  /** Selection on the text **/
   handleSelect = evt => {
     const { selection, bounds } = evt;
     if (selection) {
@@ -52,14 +45,27 @@ export default class ImageAnnotator extends Component  {
     }
   }
 
+  handleUpdateBounds = (selectionBounds, modifiedTarget) =>
+    this.setState({ selectionBounds, modifiedTarget });
+  
+  /**************************/  
+  /* Annotation CRUD events */
+  /**************************/  
+
   /** Common handler for annotation CREATE or UPDATE **/
   onCreateOrUpdateAnnotation = method => (annotation, previous) => {
+    // TODO merge bounds
+    const a = (this.state.modifiedTarget) ?
+      annotation.clone({ target: { selector: [ this.state.modifiedTarget ]}}) : annotation;
+
+    console.log(a.underlying);
+
     this.clearState();    
-    this.annotationLayer.addOrUpdateAnnotation(annotation, previous);
-    this.annotationLayer.clearSelection();
+    this.annotationLayer.deselect();
+    this.annotationLayer.addOrUpdateAnnotation(a, previous);
 
     // Call CREATE or UPDATE handler
-    this.props[method](annotation, previous);
+    this.props[method](a, previous);
   }
 
   onDeleteAnnotation = annotation => {
@@ -70,7 +76,7 @@ export default class ImageAnnotator extends Component  {
   /** Cancel button on annotation editor **/
   onCancelAnnotation = () => {
     this.clearState();
-    this.annotationLayer.clearSelection();
+    this.annotationLayer.deselect();
   }
 
   /****************/               

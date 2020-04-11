@@ -7,7 +7,7 @@ export default class RubberbandRectSelector extends EventEmitter {
     super();
 
     this.svg = svg;
-    this.shape = null;
+    this.rubberband = null;
   }
 
   _attachListeners = () => {
@@ -26,29 +26,29 @@ export default class RubberbandRectSelector extends EventEmitter {
 
   startDrawing = evt => {
     this._attachListeners();
-    this.shape = new RubberbandRect(evt.offsetX, evt.offsetY, this.svg);
+    this.rubberband = new RubberbandRect(evt.offsetX, evt.offsetY, this.svg);
   }
 
   clear = () => {
-    if (this.shape) {
-      this.shape.destroy();
-      this.shape = null;
+    if (this.rubberband) {
+      this.rubberband.destroy();
+      this.rubberband = null;
     }
   }
 
   onMouseMove = evt =>
-    this.shape.dragTo(evt.offsetX, evt.offsetY);
+    this.rubberband.dragTo(evt.offsetX, evt.offsetY);
 
   onMouseUp = evt => {
     this._detachListeners();
 
-    const { w } = this.shape.bbox;
+    const { w } = this.rubberband.bbox;
+
+    const shape = this.rubberband.shape;
+    shape.annotation = this.rubberband.toSelection();
 
     if (w > 3) {
-      this.emit('complete', { 
-        selection: this.shape.toSelection(),
-        bounds: this.shape.getBoundingClientRect()
-      });
+      this.emit('complete', shape);
     } else {
       this.clear();
       this.emit('cancel', evt);

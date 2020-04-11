@@ -1,5 +1,5 @@
 import { Selection } from '@recogito/recogito-client-core';
-import { drawRect, setRectSize } from '../annotations/RectFragment';
+import { drawRect, setRectSize, toRectFragment } from '../annotations/RectFragment';
 
 export default class RubberbandRect {
 
@@ -46,11 +46,7 @@ export default class RubberbandRect {
 
   toSelection = () => {
     const { x, y, w, h } = this.bbox;
-    return new Selection([{
-      "type": "FragmentSelector",
-      "conformsTo": "http://www.w3.org/TR/media-frags/",
-      "value": `xywh=pixel:${x},${y},${w},${h}`
-    }]);
+    return new Selection(toRectFragment(x, y, w, h));
   }
 
 }

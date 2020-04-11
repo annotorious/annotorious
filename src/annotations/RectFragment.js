@@ -9,6 +9,14 @@ export const parseRectFragment = annotation => {
   }
 }
 
+export const toRectFragment = (x, y, w, h) => {
+  return {
+    "type": "FragmentSelector",
+    "conformsTo": "http://www.w3.org/TR/media-frags/",
+    "value": `xywh=pixel:${x},${y},${w},${h}`
+  };
+}
+
 const setXYWH = (shape, x, y, w, h) => {
   shape.setAttribute('x', x);
   shape.setAttribute('y', y);
@@ -46,10 +54,10 @@ export const getRectSize = g => {
   
   const x = parseFloat(outerRect.getAttribute('x')) + 0.5;
   const y = parseFloat(outerRect.getAttribute('y')) + 0.5;
-  const width = parseFloat(outerRect.getAttribute('width')) - 1;
-  const height = parseFloat(outerRect.getAttribute('height')) - 1;
+  const w = parseFloat(outerRect.getAttribute('width')) - 1;
+  const h = parseFloat(outerRect.getAttribute('height')) - 1;
 
-  return { x, y, width, height };
+  return { x, y, w, h };
 }
 
 export const setRectSize = (g, x, y, w, h) => {
