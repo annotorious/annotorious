@@ -1,7 +1,7 @@
 import { Selection } from '@recogito/recogito-client-core';
 import { drawRect, setRectSize } from '../annotations/RectFragment';
 
-export default class DraggableRect {
+export default class RubberbandRect {
 
   constructor(anchorX, anchorY, svg) {
     this.anchor = [ anchorX, anchorY ];

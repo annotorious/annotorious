@@ -1,7 +1,7 @@
 import EventEmitter from 'tiny-emitter';
-import DraggableRect from './DraggableRect';
+import RubberbandRect from './RubberbandRect';
 
-export class RectDragSelector extends EventEmitter {
+export default class RubberbandRectSelector extends EventEmitter {
 
   constructor(svg) {
     super();
@@ -26,7 +26,7 @@ export class RectDragSelector extends EventEmitter {
 
   startDrawing = evt => {
     this._attachListeners();
-    this.shape = new DraggableRect(evt.offsetX, evt.offsetY, this.svg);
+    this.shape = new RubberbandRect(evt.offsetX, evt.offsetY, this.svg);
   }
 
   clear = () => {

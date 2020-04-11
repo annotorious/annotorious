@@ -41,6 +41,17 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
   return g;
 }
 
+export const getRectSize = g => {
+  const outerRect = g.querySelector('.outer');
+  
+  const x = parseFloat(outerRect.getAttribute('x')) + 0.5;
+  const y = parseFloat(outerRect.getAttribute('y')) + 0.5;
+  const width = parseFloat(outerRect.getAttribute('width')) - 1;
+  const height = parseFloat(outerRect.getAttribute('height')) - 1;
+
+  return { x, y, width, height };
+}
+
 export const setRectSize = (g, x, y, w, h) => {
   const innerRect = g.querySelector('.inner');
   const outerRect = g.querySelector('.outer');

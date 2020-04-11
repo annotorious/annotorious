@@ -1,7 +1,8 @@
 import EventEmitter from 'tiny-emitter';
 import { drawRect, rectArea } from './RectFragment';
-import { RectDragSelector } from '../selection/RectDragSelector';
 import { SVG_NAMESPACE } from '../SVGConst';
+import EditableRect from '../selection/EditableRect';
+import RubberbandRectSelector from '../selection/RubberbandRectSelector';
 
 export default class AnnotationLayer extends EventEmitter {
 
@@ -13,16 +14,23 @@ export default class AnnotationLayer extends EventEmitter {
 
     wrapperEl.appendChild(this.svg);
 
-    this.svg.addEventListener('mousedown', this.onMouseDown);
+    this.enableDrawing();
+    // this.svg.addEventListener('mousedown', this.onMouseDown);
 
     // TODO make switchable in the future
-    const selector = new RectDragSelector(this.svg);
+    const selector = new RubberbandRectSelector(this.svg);
     selector.on('complete', this.onDrawingComplete);
     selector.on('cancel', this.onDrawingCanceled);
 
     this.currentTool = selector;
     this.currentHover = null;
   }
+
+  enableDrawing = () =>
+    this.svg.addEventListener('mousedown', this.onMouseDown);
+
+  disableDrawing = () =>
+    this.svg.removeEventListener('mousedown', this.onMouseDown);
 
   onMouseDown = evt =>
     this.currentTool.startDrawing(evt);
@@ -31,12 +39,21 @@ export default class AnnotationLayer extends EventEmitter {
     this.emit('select', evt);
 
   onDrawingCanceled = () => {
-    if (this.currentHover) {
-      this.emit('select', { 
-        selection: this.currentHover.annotation,
-        bounds: this.currentHover.getBoundingClientRect()
-      });
-    }
+    if (this.currentHover)
+      this.selectShape(this.currentHover);
+  }
+
+  selectShape = shape => {
+    this.emit('select', { 
+      selection: shape.annotation,
+      bounds: shape.getBoundingClientRect()
+    });
+
+    const editableShape = new EditableRect(shape.annotation, this.svg);
+    this.disableDrawing();
+    this.removeAnnotation(shape.annotation);
+
+    // TODO remove original shape
   }
 
   addAnnotation = annotation => {
@@ -127,12 +144,8 @@ export default class AnnotationLayer extends EventEmitter {
 
   selectAnnotation = annotationOrId => {
     const selected = this.findShape(annotationOrId);
-    if (selected) {
-      this.emit('select', { 
-        selection: selected.annotation,
-        bounds: selected.getBoundingClientRect()
-      });
-    }
+    if (selected)
+      this.selectShape(selected);
   }
 
   destroy = () => {
