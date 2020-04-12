@@ -20,12 +20,13 @@ export default class AnnotationLayer extends EventEmitter {
     this.selectedShape = null;
 
     if (readOnly) {
-      // TODO alternative mouseDown handler - just select current hover
+      // No drawing, only select the current hover shape
+      this.enableSelectHover();
     } else {
       // TODO make switchable in the future
       const selector = new RubberbandRectSelector(this.svg);
       selector.on('complete', this.selectShape);
-      selector.on('cancel', this.onDrawingCanceled);
+      selector.on('cancel', this.selectCurrentHover);
 
       this.currentTool = selector;
 
@@ -35,16 +36,33 @@ export default class AnnotationLayer extends EventEmitter {
     this.currentHover = null;
   }
 
-  enableDrawing = () =>
+  /** Enables drawing (and disables selection of hover shape) **/
+  enableDrawing = () => {
+    this.disableSelectHover();
     this.svg.addEventListener('mousedown', this.startDrawing);
+  }
 
-  disableDrawing = () =>
+  /** Disables drawing (and enables selection of hover shape) **/
+  disableDrawing = () => {
     this.svg.removeEventListener('mousedown', this.startDrawing);
+    this.enableSelectHover();
+  }
 
-  startDrawing = evt =>
+  /** Enables selection of shape under the mouse **/
+  enableSelectHover = () => {
+    this.svg.addEventListener('mousedown', this.selectCurrentHover);
+  }
+
+  /** Disables selection of shape under the mouse **/
+  disableSelectHover = () => {
+    this.svg.removeEventListener('mousedown', this.selectCurrentHover);
+  }
+
+  startDrawing = evt => {
     this.currentTool.startDrawing(evt);
+  }
 
-  onDrawingCanceled = () => {
+  selectCurrentHover = () => {
     if (this.currentHover)
       this.selectShape(this.currentHover);
   }
@@ -109,12 +127,19 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   selectShape = shape => {
+    // Don't re-select
+    if (this.selectedShape?.annotation === shape?.annotation)
+      return;
+    
+    // If another shape is currently selected, deselect first
+    if (this.selectedShape && this.selectedShape.annotation !== shape.annotation)
+      this.deselect();
+
     const { annotation } = shape;
     const bounds = shape.getBoundingClientRect();
 
     if (!this.readOnly) {
-      // No drawing while editing an existing annotation
-      this.disableDrawing(); 
+      this.disableDrawing();
 
       // Replace the shape with an editable version
       shape.parentNode.removeChild(shape);
@@ -132,7 +157,10 @@ export default class AnnotationLayer extends EventEmitter {
   
   deselect = () => {
     if (this.selectedShape) {
-      this.addAnnotation(this.selectedShape.annotation);
+      const { annotation } = this.selectedShape;
+      if (!annotation.isSelection)
+        this.addAnnotation(annotation);
+  
       this.selectedShape.destroy();
       this.selectedShape = null;
     }

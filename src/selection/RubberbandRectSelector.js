@@ -33,7 +33,7 @@ export default class RubberbandRectSelector extends EventEmitter {
     this.rubberband = new RubberbandRect(evt.offsetX, evt.offsetY, this.svg);
   }
 
-  clear = () => {
+  stop = () => {
     if (this.rubberband) {
       this.rubberband.destroy();
       this.rubberband = null;
@@ -54,7 +54,7 @@ export default class RubberbandRectSelector extends EventEmitter {
       shape.annotation = this.rubberband.toSelection();
       this.emit('complete', shape);
     } else {
-      this.clear();
+      this.stop();
       this.emit('cancel', evt);
     }
   }

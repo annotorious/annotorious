@@ -34,7 +34,7 @@ const setXYWH = (shape, x, y, w, h) => {
  * (x, y, w, h)-tuple.
  */
 export const drawRect = (arg1, arg2, arg3, arg4) => {
-  const { x, y, w, h } = arg1.type === 'Annotation' ?
+  const { x, y, w, h } = arg1.type === 'Annotation' || arg1.type === 'Selection' ?
     parseRectFragment(arg1) : { x: arg1, y: arg2, w: arg3, h: arg4 };
 
   const g = document.createElementNS(SVG_NAMESPACE, 'g');
