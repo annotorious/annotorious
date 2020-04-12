@@ -19,6 +19,31 @@ const setHandleXY = (handle, x, y) => {
   handle.setAttribute('y', y - 4);
 }
 
+const getCorners = g => {
+  const { x, y, w, h } = getRectSize(g);
+  return [
+    { x: x,     y: y },
+    { x: x + w, y: y },
+    { x: x + w, y: y + h },
+    { x: x,     y: y + h}
+  ];
+}
+
+const stretchCorners = (corner, opposite) => {
+  const x1 = corner.x;
+  const y1 = corner.y;
+
+  const x2 = opposite.x;
+  const y2 = opposite.y;
+
+  const x = Math.min(x1, x2);
+  const y = Math.min(y1, y2);
+  const w = Math.abs(x2 - x1);
+  const h = Math.abs(y2 - y1);
+
+  return { x, y, w, h };
+}
+
 /**
  * An editable rectangle shape.
  */
@@ -38,7 +63,7 @@ export default class EditableRect extends EventEmitter {
     this.g.querySelector('.inner')
       .addEventListener('mousedown', this.onGrab(this.g));
     
-      this.svg.addEventListener('mousemove', this.onMouseMove);
+    this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
 
     this.handles = [
@@ -95,21 +120,28 @@ export default class EditableRect extends EventEmitter {
     if (this.grabbedElem) {
       const pos = this.getMousePosition(evt);
 
-      const { x, y, w, h } = getRectSize(this.g);
-
       if (this.grabbedElem === this.g) {
-        const newX = pos.x - this.mouseOffset.x;
-        const newY = pos.y - this.mouseOffset.y;
-        this.setSize(newX, newY, w, h); 
-        this.emit('update', { x: newX, y: newY, w, h }); 
+        // x/y changes by mouse offset, w/h remains unchanged
+        const { w, h } = getRectSize(this.g);
+        const x = pos.x - this.mouseOffset.x;
+        const y = pos.y - this.mouseOffset.y;
+
+        this.setSize(x, y, w, h); 
+        this.emit('update', { x, y, w, h }); 
       } else {
-        // TODO 
-        const newX = pos.x;
-        const newY = pos.y;
-        const newW = w - (newX - x);
-        const newH = h - (newY - y);
-        this.setSize(newX, newY, newW, newH); 
-        this.emit('update', { x: newX, y: newY, w: newW, h: newH }); 
+        // Handles
+        const corners = getCorners(this.g);
+
+        // Mouse position replaces one of the corner coords, depending
+        // on which handle is the grabbed element
+        const handleIdx = this.handles.indexOf(this.grabbedElem);
+        const oppositeCorner = handleIdx < 2 ? 
+          corners[handleIdx + 2] : corners[handleIdx - 2];
+
+        const { x, y, w, h } = stretchCorners(pos, oppositeCorner)
+
+        this.setSize(x, y, w, h); 
+        this.emit('update', { x, y, w, h }); 
       }
     }
   }
