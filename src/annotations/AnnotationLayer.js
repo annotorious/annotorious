@@ -1,66 +1,52 @@
 import EventEmitter from 'tiny-emitter';
-import { drawRect, rectArea, toRectFragment, getRectSize } from './RectFragment';
+import { drawRect, rectArea, toRectFragment } from './RectFragment';
 import { SVG_NAMESPACE } from '../SVGConst';
 import EditableRect from '../selection/EditableRect';
 import RubberbandRectSelector from '../selection/RubberbandRectSelector';
 
 export default class AnnotationLayer extends EventEmitter {
 
-  constructor(wrapperEl) {
+  constructor(wrapperEl, readOnly) {
     super();
 
+    this.readOnly = readOnly;
+
+    // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
     this.svg.classList.add('a9s-annotationlayer');
-
     wrapperEl.appendChild(this.svg);
 
-    this.enableDrawing();
-
-    // TODO make switchable in the future
-    const selector = new RubberbandRectSelector(this.svg);
-    selector.on('complete', this.selectShape);
-    selector.on('cancel', this.onDrawingCanceled);
-
+    // Currently open annotation
     this.selectedShape = null;
 
-    this.currentTool = selector;
+    if (readOnly) {
+      // TODO alternative mouseDown handler - just select current hover
+    } else {
+      // TODO make switchable in the future
+      const selector = new RubberbandRectSelector(this.svg);
+      selector.on('complete', this.selectShape);
+      selector.on('cancel', this.onDrawingCanceled);
+
+      this.currentTool = selector;
+
+      this.enableDrawing();
+    }
+
     this.currentHover = null;
   }
 
   enableDrawing = () =>
-    this.svg.addEventListener('mousedown', this.onMouseDown);
+    this.svg.addEventListener('mousedown', this.startDrawing);
 
   disableDrawing = () =>
-    this.svg.removeEventListener('mousedown', this.onMouseDown);
+    this.svg.removeEventListener('mousedown', this.startDrawing);
 
-  onMouseDown = evt =>
+  startDrawing = evt =>
     this.currentTool.startDrawing(evt);
 
   onDrawingCanceled = () => {
     if (this.currentHover)
       this.selectShape(this.currentHover);
-  }
-
-  selectShape = shape => {
-    this.emit('select', { 
-      selection: shape.annotation,
-      bounds: shape.getBoundingClientRect()
-    });
-
-    /** HACK STARTS HERE **/
-    const { annotation } = shape;
-    this.selectedShape = new EditableRect(shape.annotation, this.svg);
-    this.disableDrawing();
-    shape.parentNode.removeChild(shape);
-
-    this.selectedShape.on('update', xywh => {
-      // Need to find a lighter way (separate event?)
-      // or, at least, update the annotation with the correct coords
-      const bounds = this.selectedShape.getBoundingClientRect();
-      const { x, y, w, h } = xywh; // this.selectedShape.xywh;
-      const target = toRectFragment(x, y, w, h);
-      this.emit('updateBounds', bounds, target);
-    });
   }
 
   addAnnotation = annotation => {
@@ -88,11 +74,7 @@ export default class AnnotationLayer extends EventEmitter {
     return g;
   }
 
-  findShape = annotationOrId => {
-    const id = annotationOrId.id ? annotationOrId.id : annotationOrId;
-    return this.svg.querySelector(`.a9s-annotation[data-id="${id}"]`);
-  }
-      /**
+  /**
    * Redraws the whole layer with annotations sorted by
    * size, so that larger ones don't occlude smaller ones.
    */
@@ -108,18 +90,55 @@ export default class AnnotationLayer extends EventEmitter {
     annotations.forEach(this.addAnnotation);
   }
 
+  /** Finds the shape matching the given annotation or Id **/
+  findShape = annotationOrId => {
+    const id = annotationOrId.id ? annotationOrId.id : annotationOrId;
+    return this.svg.querySelector(`.a9s-annotation[data-id="${id}"]`);
+  }
+
+  /** 
+   * Selection always requires annotation + shape. 
+   * The annotation is always a member of the shape.
+   * If we only have the annotation, we need to find
+   * the matching shape first.
+   */
+  selectAnnotation = annotationOrId => {
+    const selected = this.findShape(annotationOrId);
+    if (selected)
+      this.selectShape(selected);
+  }
+
+  selectShape = shape => {
+    const { annotation } = shape;
+    const bounds = shape.getBoundingClientRect();
+
+    if (!this.readOnly) {
+      // No drawing while editing an existing annotation
+      this.disableDrawing(); 
+
+      // Replace the shape with an editable version
+      shape.parentNode.removeChild(shape);
+
+      this.selectedShape = new EditableRect(annotation, this.svg);
+      this.selectedShape.on('update', xywh => {
+        const bounds = this.selectedShape.getBoundingClientRect();
+        const { x, y, w, h } = xywh;
+        this.emit('updateBounds', bounds, toRectFragment(x, y, w, h));
+      });
+    }
+
+    this.emit('select', { annotation, bounds }); 
+  }
+  
   deselect = () => {
     if (this.selectedShape) {
       this.addAnnotation(this.selectedShape.annotation);
       this.selectedShape.destroy();
       this.selectedShape = null;
     }
+    
     this.enableDrawing();
-  }
-
-  /****************/               
-  /* External API */
-  /****************/    
+  } 
 
   init = annotations => {
     // Sort annotations by size
@@ -153,12 +172,6 @@ export default class AnnotationLayer extends EventEmitter {
       this.svg.style.display = null;
     else
       this.svg.style.display = 'none';
-  }
-
-  selectAnnotation = annotationOrId => {
-    const selected = this.findShape(annotationOrId);
-    if (selected)
-      this.selectShape(selected);
   }
 
   destroy = () => {

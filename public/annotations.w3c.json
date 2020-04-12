@@ -16,11 +16,11 @@
       "value": "Upper Austria"
     }],
     "target": {
-      "selector": [{
+      "selector": {
         "type": "FragmentSelector",
         "conformsTo": "http://www.w3.org/TR/media-frags/",
         "value": "xywh=pixel:270,120,90,170"
-      }]
+      }
     }
   }
 ]

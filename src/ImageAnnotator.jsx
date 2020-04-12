@@ -13,15 +13,14 @@ export default class ImageAnnotator extends Component  {
   }
 
   /** Shorthand **/
-  clearState = () => {
-    this.setState({
-      selectionBounds: null,
-      selectedAnnotation: null
-    });
-  }
+  clearState = () => this.setState({
+    selectionBounds: null,
+    selectedAnnotation: null,
+    modifiedTarget: null
+  });
 
   componentDidMount() {
-    this.annotationLayer = new AnnotationLayer(this.props.wrapperEl);
+    this.annotationLayer = new AnnotationLayer(this.props.wrapperEl, this.props.readOnly);
 
     this.annotationLayer.on('mouseEnterAnnotation', this.props.onMouseEnterAnnotation);
     this.annotationLayer.on('mouseLeaveAnnotation', this.props.onMouseLeaveAnnotation);
@@ -34,11 +33,11 @@ export default class ImageAnnotator extends Component  {
   }
 
   handleSelect = evt => {
-    const { selection, bounds } = evt;
-    if (selection) {
+    const { annotation, bounds } = evt;
+    if (annotation) {
       this.setState({ 
-        selectionBounds: bounds,
-        selectedAnnotation: selection 
+        selectedAnnotation: annotation,
+        selectionBounds: bounds
       });
     } else {
       this.clearState();
@@ -54,11 +53,9 @@ export default class ImageAnnotator extends Component  {
 
   /** Common handler for annotation CREATE or UPDATE **/
   onCreateOrUpdateAnnotation = method => (annotation, previous) => {
-    // TODO merge bounds
+    // Merge updated target if necessary
     const a = (this.state.modifiedTarget) ?
-      annotation.clone({ target: { selector: [ this.state.modifiedTarget ]}}) : annotation;
-
-    console.log(a.underlying);
+      annotation.clone({ target: { selector: this.state.modifiedTarget }}) : annotation;
 
     this.clearState();    
     this.annotationLayer.deselect();
