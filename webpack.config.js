@@ -10,7 +10,7 @@ const resolveAppPath = relativePath => path.resolve(APP_DIR, relativePath);
 module.exports = {
   entry: resolveAppPath('src'),
   output: {
-    filename: 'annotorious-2.0.1-alpha.min.js',
+    filename: 'annotorious-2.0.2-alpha.min.js',
     library: 'Annotorious',
     libraryTarget: 'umd',
     umdNamedDefine: true
