@@ -95,15 +95,21 @@ export default class EditableRect extends EventEmitter {
     if (this.grabbedElem) {
       const pos = this.getMousePosition(evt);
 
-      const x = pos.x - this.mouseOffset.x;
-      const y = pos.y - this.mouseOffset.y;
+      const { x, y, w, h } = getRectSize(this.g);
 
       if (this.grabbedElem === this.g) {
-        const { w, h } = getRectSize(this.g);
-        this.setSize(x, y, w, h); 
-        this.emit('update', { x, y, w, h }); 
+        const newX = pos.x - this.mouseOffset.x;
+        const newY = pos.y - this.mouseOffset.y;
+        this.setSize(newX, newY, w, h); 
+        this.emit('update', { x: newX, y: newY, w, h }); 
       } else {
         // TODO 
+        const newX = pos.x;
+        const newY = pos.y;
+        const newW = w - (newX - x);
+        const newH = h - (newY - y);
+        this.setSize(newX, newY, newW, newH); 
+        this.emit('update', { x: newX, y: newY, w: newW, h: newH }); 
       }
     }
   }
