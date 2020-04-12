@@ -38,13 +38,34 @@
 
   .a9s-annotation.editable {
 
-    rect.inner {
-      fill:rgba(100, 100, 228, 0.35);
+    rect.inner:hover {
+      fill:rgba(255, 240, 0, 0.1);
       cursor:move;
     }
 
     .resize-handle {
-      fill:red;
+      stroke:#000;
+      fill:#fff;
+    }
+
+    .resize-handle:hover {
+      fill:#fff000;      
+    }
+
+    .resize-handle.topleft {
+      cursor:nw-resize;
+    }
+
+    .resize-handle.topright {
+      cursor:ne-resize;
+    }
+
+    .resize-handle.bottomright {
+      cursor:se-resize;
+    }
+
+    .resize-handle.bottomleft {
+      cursor:sw-resize;
     }
 
   }

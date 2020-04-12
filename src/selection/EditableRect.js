@@ -5,18 +5,20 @@ import { SVG_NAMESPACE } from '../SVGConst';
 const drawHandle = (x, y, className) => {
   const rect  = document.createElementNS(SVG_NAMESPACE, 'rect'); 
   
-  rect.setAttribute('x', x - 4);
-  rect.setAttribute('y', y - 4);
-  rect.setAttribute('width', 8);
-  rect.setAttribute('height', 8);
+  rect.setAttribute('x', x - 7);
+  rect.setAttribute('y', y - 7);
+  rect.setAttribute('width', 14);
+  rect.setAttribute('height', 14);
+  rect.setAttribute('rx', 5);
+  rect.setAttribute('ry', 5);
   rect.setAttribute('class', `resize-handle ${className}`);
 
   return rect;
 }
 
 const setHandleXY = (handle, x, y) => {
-  handle.setAttribute('x', x - 4);
-  handle.setAttribute('y', y - 4);
+  handle.setAttribute('x', x - 7);
+  handle.setAttribute('y', y - 7);
 }
 
 const stretchCorners = (corner, opposite) => {
@@ -57,10 +59,10 @@ export default class EditableRect extends EventEmitter {
     this.svg.addEventListener('mouseup', this.onMouseUp);
 
     this.handles = [
-      [ x,     y,     'topleft' ], 
-      [ x + w, y,     'topright'], 
+      [ x, y, 'topleft' ], 
+      [ x + w, y, 'topright'], 
       [ x + w, y + h, 'bottomright' ], 
-      [ x,     y + h, 'bottomleft' ]
+      [ x, y + h, 'bottomleft' ]
     ].map(t => { 
       const [ x, y, className ] = t;
       const handle = drawHandle(x, y, className);
