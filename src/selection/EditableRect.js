@@ -35,8 +35,10 @@ export default class EditableRect extends EventEmitter {
     this.g = drawRect(x, y, w, h);
     this.g.setAttribute('class', 'a9s-annotation editable');
 
-    this.g.addEventListener('mousedown', this.onGrabRect);
-    this.svg.addEventListener('mousemove', this.onMouseMove);
+    this.g.querySelector('.inner')
+      .addEventListener('mousedown', this.onGrab(this.g));
+    
+      this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
 
     this.handles = [
@@ -48,13 +50,16 @@ export default class EditableRect extends EventEmitter {
       const [ x, y, className ] = t;
       const handle = drawHandle(x, y, className);
 
-      handle.addEventListener('mousedown', this.onGrabHandle);
+      handle.addEventListener('mousedown', this.onGrab(handle));
       this.g.appendChild(handle);
 
       return handle;
     });
 
     this.svg.appendChild(this.g);
+
+    // The grabbed element (handle or entire group), if any
+    this.grabbedElem = null; 
 
     // Mouse xy offset inside the shape, if mouse pressed
     this.mouseOffset = null;
@@ -79,32 +84,34 @@ export default class EditableRect extends EventEmitter {
     return pt.matrixTransform(this.svg.getScreenCTM().inverse());
   }
 
-  onGrabRect = evt => {
+  onGrab = grabbedElem => evt => {
+    this.grabbedElem = grabbedElem; 
     const pos = this.getMousePosition(evt);
     const { x, y } = getRectSize(this.g);
-    this.mouseOffset = { x: pos.x - x, y: pos.y - y };
-  }
-
-  onGrabHandle = evt => {
-    // 
+    this.mouseOffset = { x: pos.x - x, y: pos.y - y };  
   }
 
   onMouseMove = evt => {
-    if (this.mouseOffset) {
+    if (this.grabbedElem) {
       const pos = this.getMousePosition(evt);
-      const { w, h } = getRectSize(this.g);
 
       const x = pos.x - this.mouseOffset.x;
       const y = pos.y - this.mouseOffset.y;
 
-      this.setSize(x, y, w, h);
-
-      this.emit('update', { x, y, w, h });
+      if (this.grabbedElem === this.g) {
+        const { w, h } = getRectSize(this.g);
+        this.setSize(x, y, w, h); 
+        this.emit('update', { x, y, w, h }); 
+      } else {
+        // TODO 
+      }
     }
   }
 
-  onMouseUp = evt =>
+  onMouseUp = evt => {
+    this.grabbedElem = null;
     this.mouseOffset = null;
+  }
 
   getBoundingClientRect = () => 
     this.g.getBoundingClientRect();
