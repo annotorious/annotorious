@@ -1,5 +1,5 @@
 import EventEmitter from 'tiny-emitter';
-import { drawRect, getRectSize, setRectSize, parseRectFragment } from '../annotations/RectFragment';
+import { drawRect, getCorners, getRectSize, setRectSize, parseRectFragment } from '../annotations/RectFragment';
 import { SVG_NAMESPACE } from '../SVGConst';
 
 const drawHandle = (x, y, className) => {
@@ -17,16 +17,6 @@ const drawHandle = (x, y, className) => {
 const setHandleXY = (handle, x, y) => {
   handle.setAttribute('x', x - 4);
   handle.setAttribute('y', y - 4);
-}
-
-const getCorners = g => {
-  const { x, y, w, h } = getRectSize(g);
-  return [
-    { x: x,     y: y },
-    { x: x + w, y: y },
-    { x: x + w, y: y + h },
-    { x: x,     y: y + h}
-  ];
 }
 
 const stretchCorners = (corner, opposite) => {
