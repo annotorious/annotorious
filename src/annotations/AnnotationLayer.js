@@ -158,13 +158,15 @@ export default class AnnotationLayer extends EventEmitter {
   deselect = () => {
     if (this.selectedShape) {
       const { annotation } = this.selectedShape;
-      if (!annotation.isSelection)
+      if (!annotation.isSelection) {
         this.addAnnotation(annotation);
-  
+        this.redraw();
+      }
+
       this.selectedShape.destroy();
       this.selectedShape = null;
     }
-    
+        
     this.enableDrawing();
   } 
 
