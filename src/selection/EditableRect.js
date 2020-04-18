@@ -64,11 +64,14 @@ export default class EditableRect extends EventEmitter {
 
     const { x, y, w, h } = parseRectFragment(annotation);
 
-    this.g = drawRect(x, y, w, h);
-    this.g.setAttribute('class', 'a9s-annotation editable');
+    this.group = document.createElementNS(SVG_NAMESPACE, 'g');
 
-    this.g.querySelector('.inner')
-      .addEventListener('mousedown', this.onGrab(this.g));
+    this.rectangle = drawRect(x, y, w, h);
+    this.rectangle.setAttribute('class', 'a9s-annotation editable');
+    this.group.appendChild(this.rectangle);
+
+    this.rectangle.querySelector('.inner')
+      .addEventListener('mousedown', this.onGrab(this.rectangle));
     
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
@@ -83,12 +86,12 @@ export default class EditableRect extends EventEmitter {
       const handle = drawHandle(x, y, className);
 
       handle.addEventListener('mousedown', this.onGrab(handle));
-      this.g.appendChild(handle);
+      this.group.appendChild(handle);
 
       return handle;
     });
 
-    this.svg.appendChild(this.g);
+    this.svg.appendChild(this.group);
 
     // The grabbed element (handle or entire group), if any
     this.grabbedElem = null; 
@@ -99,7 +102,7 @@ export default class EditableRect extends EventEmitter {
 
   /** Sets the shape size, including handle positions **/
   setSize = (x, y, w, h) => {
-    setRectSize(this.g, x, y, w, h);
+    setRectSize(this.rectangle, x, y, w, h);
 
     const [ topleft, topright, bottomright, bottomleft] = this.handles;
     setHandleXY(topleft, x, y);
@@ -119,7 +122,7 @@ export default class EditableRect extends EventEmitter {
   onGrab = grabbedElem => evt => {
     this.grabbedElem = grabbedElem; 
     const pos = this.getMousePosition(evt);
-    const { x, y } = getRectSize(this.g);
+    const { x, y } = getRectSize(this.rectangle);
     this.mouseOffset = { x: pos.x - x, y: pos.y - y };  
   }
 
@@ -127,9 +130,9 @@ export default class EditableRect extends EventEmitter {
     if (this.grabbedElem) {
       const pos = this.getMousePosition(evt);
 
-      if (this.grabbedElem === this.g) {
+      if (this.grabbedElem === this.rectangle) {
         // x/y changes by mouse offset, w/h remains unchanged
-        const { w, h } = getRectSize(this.g);
+        const { w, h } = getRectSize(this.rectangle);
         const x = pos.x - this.mouseOffset.x;
         const y = pos.y - this.mouseOffset.y;
 
@@ -137,7 +140,7 @@ export default class EditableRect extends EventEmitter {
         this.emit('update', { x, y, w, h }); 
       } else {
         // Handles
-        const corners = getCorners(this.g);
+        const corners = getCorners(this.rectangle);
 
         // Mouse position replaces one of the corner coords, depending
         // on which handle is the grabbed element
@@ -159,9 +162,9 @@ export default class EditableRect extends EventEmitter {
   }
 
   getBoundingClientRect = () => 
-    this.g.getBoundingClientRect();
+    this.rectangle.getBoundingClientRect();
 
   destroy = () =>
-    this.g.parentNode.removeChild(this.g);
+    this.group.parentNode.removeChild(this.group);
 
 }

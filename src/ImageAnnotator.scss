@@ -47,90 +47,90 @@
       fill:rgba(255, 240, 0, 0.1);
     }
 
-    .resize-handle {
+  }
 
-      rect {
-        fill:transparent;
-        shape-rendering:crispEdges;
-        stroke-linecap:round;
-      }
+  .resize-handle {
 
-      rect.handle-inner {
-        stroke:#fff;
-      }
-
-      rect.handle-outer {
-        stroke:#000;
-      }
-
+    rect {
+      fill:transparent;
+      shape-rendering:crispEdges;
+      stroke-linecap:round;
     }
 
-    .resize-handle:hover rect.handle-inner {
-      stroke:#fff000;
+    rect.handle-inner {
+      stroke:#fff;
     }
 
-    .resize-handle.topleft {
+    rect.handle-outer {
+      stroke:#000;
+    }
 
-      rect {
-        cursor:nw-resize;
-      }
+  }
 
-      .handle-outer {
-        stroke-dasharray:13 26 13;
-      }
+  .resize-handle:hover rect.handle-inner {
+    stroke:#fff000;
+  }
+
+  .resize-handle.topleft {
+
+    rect {
+      cursor:nw-resize;
+    }
+
+    .handle-outer {
+      stroke-dasharray:13 26 13;
+    }
+
+    .handle-inner {
+      stroke-dasharray:11 22 12;
+    }
+
+  }
+
+  .resize-handle.topright {
+
+    rect {
+      cursor:ne-resize;
+    }
+
+    .handle-outer {
+      stroke-dasharray:26 26;
+    }
+
+    .handle-inner {
+      stroke-dasharray:22 22;
+    }
+
+  }
+
+  .resize-handle.bottomright {
   
-      .handle-inner {
-        stroke-dasharray:11 22 12;
-      }
-  
+    rect {
+      cursor:se-resize;
     }
 
-    .resize-handle.topright {
-
-      rect {
-        cursor:ne-resize;
-      }
-
-      .handle-outer {
-        stroke-dasharray:26 26;
-      }
-  
-      .handle-inner {
-        stroke-dasharray:22 22;
-      }
-
+    .handle-outer {
+      stroke-dasharray:0 13 26 13;
     }
 
-    .resize-handle.bottomright {
+    .handle-inner {
+      stroke-dasharray:0 11 22 11;
+    }
+  
+  }
+
+  .resize-handle.bottomleft {
     
-      rect {
-        cursor:se-resize;
-      }
-
-      .handle-outer {
-        stroke-dasharray:0 13 26 13;
-      }
-  
-      .handle-inner {
-        stroke-dasharray:0 11 22 11;
-      }
-    
+    rect {
+      cursor:sw-resize;
     }
 
-    .resize-handle.bottomleft {
-      
-      rect {
-        cursor:sw-resize;
-      }
+    .handle-outer {
+      stroke-dasharray:0 26 26;
+    }
 
-      .handle-outer {
-        stroke-dasharray:0 26 26;
-      }
-  
-      .handle-inner {
-        stroke-dasharray:0 22 22;
-      }
-
+    .handle-inner {
+      stroke-dasharray:0 22 22;
     }
 
   }
