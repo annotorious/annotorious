@@ -3,22 +3,37 @@ import { drawRect, getCorners, getRectSize, setRectSize, parseRectFragment } fro
 import { SVG_NAMESPACE } from '../SVGConst';
 
 const drawHandle = (x, y, className) => {
-  const rect  = document.createElementNS(SVG_NAMESPACE, 'rect'); 
-  
-  rect.setAttribute('x', x - 7);
-  rect.setAttribute('y', y - 7);
-  rect.setAttribute('width', 14);
-  rect.setAttribute('height', 14);
-  rect.setAttribute('rx', 5);
-  rect.setAttribute('ry', 5);
-  rect.setAttribute('class', `resize-handle ${className}`);
+  const g = document.createElementNS(SVG_NAMESPACE, 'g');
+  g.setAttribute('class', `resize-handle ${className}`);
 
-  return rect;
+  const inner = document.createElementNS(SVG_NAMESPACE, 'rect');   
+  inner.setAttribute('x', x - 5.5);
+  inner.setAttribute('y', y - 5.5);
+  inner.setAttribute('width', 11);
+  inner.setAttribute('height', 11);
+  inner.setAttribute('class', 'handle-inner');
+
+  const outer = document.createElementNS(SVG_NAMESPACE, 'rect');   
+  outer.setAttribute('x', x - 6.5);
+  outer.setAttribute('y', y - 6.5);
+  outer.setAttribute('width', 13);
+  outer.setAttribute('height', 13);
+  outer.setAttribute('class', 'handle-outer');
+
+  g.appendChild(outer);
+  g.appendChild(inner);
+
+  return g;
 }
 
 const setHandleXY = (handle, x, y) => {
-  handle.setAttribute('x', x - 7);
-  handle.setAttribute('y', y - 7);
+  const inner = handle.querySelector('.handle-inner');
+  inner.setAttribute('x', x - 5.5);
+  inner.setAttribute('y', y - 5.5);
+
+  const outer = handle.querySelector('.handle-outer');
+  outer.setAttribute('x', x - 6.5);
+  outer.setAttribute('y', y - 6.5);
 }
 
 const stretchCorners = (corner, opposite) => {
