@@ -1,4 +1,6 @@
-![Annotorious Logo](annotorious-logo-transparent.png?s=298)
+<p align="center">
+![Annotorious Logo](annotorious-logo-white-small.png)
+</p>
 
 A JavaScript library for image annotation. Annotorious 2 is a 
 modernized reboot of the (now outdated) original 
