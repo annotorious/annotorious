@@ -1,4 +1,4 @@
-# Annotorious 2
+![Annotorious Logo](annotorious-logo-1280x160.png)
 
 A JavaScript library for image annotation. Annotorious 2 is a 
 modernized reboot of the (now outdated) original 
