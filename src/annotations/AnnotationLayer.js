@@ -164,8 +164,6 @@ export default class AnnotationLayer extends EventEmitter {
 
       this.selectedShape.destroy();
       this.selectedShape = null;
-
-      this.redraw();
     }
 
     this.enableDrawing();

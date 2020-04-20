@@ -56,7 +56,15 @@
         anno.on('deleteAnnotation', function(annotation) {
           console.log('deleted', annotation);
         });
-
+        
+        /*
+        anno.autoApply({
+          type: 'TextualBody',
+          value: 'MyTag',
+          purpose: 'tagging'
+        });
+        */
+        
         anno.loadAnnotations('annotations.w3c.json');
       })()
     </script>

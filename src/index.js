@@ -151,6 +151,13 @@ class Annotorious {
   off = (event, callback) =>
     this._emitter.off(event, callback);
 
+  /******************/               
+  /*  Experimental  */
+  /******************/     
+
+  autoApply = body =>
+    this._app.current.autoApply(body);
+
 }
 
 export const init = config => new Annotorious(config);

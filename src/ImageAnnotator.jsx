@@ -9,7 +9,10 @@ export default class ImageAnnotator extends Component  {
   state = {
     selectedAnnotation: null,
     selectionBounds: null,
-    modifiedTarget: null
+    modifiedTarget: null,
+
+    // Experimental
+    autoApply: null
   }
 
   /** Shorthand **/
@@ -107,6 +110,9 @@ export default class ImageAnnotator extends Component  {
       this.clearState();
   }
 
+  autoApply = body =>
+    this.setState({ autoApply: body });
+
   render() {
     return (this.state.selectedAnnotation && (
       <Editor
@@ -114,6 +120,7 @@ export default class ImageAnnotator extends Component  {
         bounds={this.state.selectionBounds}
         annotation={this.state.selectedAnnotation}
         readOnly={this.props.readOnly}
+        autoApply={this.state.autoApply}
         onAnnotationCreated={this.onCreateOrUpdateAnnotation('onAnnotationCreated')}
         onAnnotationUpdated={this.onCreateOrUpdateAnnotation('onAnnotationUpdated')}
         onAnnotationDeleted={this.onDeleteAnnotation}
