@@ -39,6 +39,9 @@ export default class ImageAnnotator extends Component  {
         selectedAnnotation: annotation,
         selectionBounds: bounds
       });
+
+      if (!annotation.isSelection) 
+        this.props.onAnnotationSelected(annotation);
     } else {
       this.clearState();
     }
@@ -68,6 +71,7 @@ export default class ImageAnnotator extends Component  {
   onDeleteAnnotation = annotation => {
     this.clearState();
     this.annotationLayer.removeAnnotation(annotation);
+    this.props.onAnnotationDeleted(annotation);
   }
 
   /** Cancel button on annotation editor **/
