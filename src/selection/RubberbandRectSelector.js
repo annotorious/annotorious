@@ -41,7 +41,7 @@ export default class RubberbandRectSelector extends EventEmitter {
   }
 
   onMouseMove = evt =>
-    this.rubberband.dragTo(evt.offsetX, evt.offsetY);
+    this.rubberband.dragTo(evt.layerX, evt.layerY);
 
   onMouseUp = evt => {
     this._detachListeners();
