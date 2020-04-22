@@ -57,13 +57,11 @@
           console.log('deleted', annotation);
         });
         
-        /*
-        anno.autoApply({
+        anno.applyTemplate({
           type: 'TextualBody',
           value: 'MyTag',
           purpose: 'tagging'
-        });
-        */
+        }, true);
         
         anno.loadAnnotations('annotations.w3c.json');
       })()

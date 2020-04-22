@@ -130,6 +130,16 @@ class Annotorious {
     this._app.current.selectAnnotation(arg);
   }
 
+  /** 
+   * Applies an annotation template to newly created 
+   * selections. The editor will just apply the template and
+   * stay closed, unless openEditor is se to true.
+   */
+  applyTemplate = (template, openEditor) => {
+    const bodies = Array.isArray(template) ? template : [ template ];
+    this._app.current.applyTemplate(bodies, !openEditor);
+  }
+
   /**
    * Unmounts the annotator component
    */
@@ -150,13 +160,6 @@ class Annotorious {
    */
   off = (event, callback) =>
     this._emitter.off(event, callback);
-
-  /******************/               
-  /*  Experimental  */
-  /******************/     
-
-  autoApply = body =>
-    this._app.current.autoApply(body);
 
 }
 
