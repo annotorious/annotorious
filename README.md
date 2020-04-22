@@ -1,5 +1,4 @@
 <p align="center">
-  <br/><br/>
   <img width="345" src="https://raw.githubusercontent.com/recogito/annotorious/master/annotorious-logo-white-small.png" />
   <br/><br/>
 </p>
