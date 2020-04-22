@@ -1,5 +1,7 @@
-<p align="center" style="padding:30px 0 40px 0">
+<p align="center">
+  <br/><br/>
   <img width="345" src="https://raw.githubusercontent.com/recogito/annotorious/master/annotorious-logo-white-small.png" />
+  <br/><br/>
 </p>
 
 A JavaScript library for image annotation. Annotorious 2 is a 
