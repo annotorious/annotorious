@@ -2,7 +2,7 @@
   "name": "@recogito/annotorious",
   "version": "2.0.2-alpha",
   "description": "A JavaScript image annotation library",
-  "main": "src/index.js",
+  "main": "dist/annotorious.min.js",
   "scripts": {
     "start": "webpack-dev-server --open --mode=development",
     "build": "webpack --mode=production"
