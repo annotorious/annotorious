@@ -162,3 +162,5 @@ export class Annotorious {
     this._emitter.off(event, callback);
 
 }
+
+export const init = config => new Annotorious(config);
