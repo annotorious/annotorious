@@ -25,7 +25,7 @@ export class Annotorious {
     // container DIV, which holds the editor popup, will be attached 
     // as a child to the wrapper element (=a sibling to the image
     // element).
-    let imageEl = (config.image.nodeType) ? 
+    const imageEl = (config.image.nodeType) ? 
       config.image : document.getElementById(config.image);
 
     const wrapperEl = document.createElement('DIV');
