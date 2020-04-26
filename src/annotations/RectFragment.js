@@ -9,8 +9,13 @@ import { SVG_NAMESPACE } from '../SVGConst';
 export const parseRectFragment = annotation => {
   const selector = annotation.selector('FragmentSelector');
   if (selector?.conformsTo.startsWith('http://www.w3.org/TR/media-frags')) {
-    const [ x, y, w, h ] = selector.value.substring(11).split(',').map(parseFloat)
-    return { x, y, w, h };
+    const { value } = selector;
+    const format = value.includes(':') ? value.substring(value.indexOf('=') + 1, value.indexOf(':')) : 'pixel';
+
+    const coords = value.includes(':') ? value.substring(value.indexOf(':') + 1) : value.substring(value.indexOf('=') + 1); 
+    const [ x, y, w, h ] = coords.split(',').map(parseFloat)
+
+    return { x, y, w, h, format };
   }
 }
 

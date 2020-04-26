@@ -164,3 +164,5 @@ export class Annotorious {
 }
 
 export const init = config => new Annotorious(config);
+
+export * from './annotations';
