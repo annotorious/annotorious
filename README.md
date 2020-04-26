@@ -8,10 +8,11 @@ A JavaScript library for image annotation. Annotorious 2 is a
 modernized reboot of the (now outdated) original 
 [Annotorious](http://annotorious.github.io/).
 
-__!! Work in progress !!__
+![Screenshot](screenshot.jpg)
 
 ## Resources
 
+- [Documentation](https://github.com/recogito/annotorious/wiki)
 - [API Reference](https://github.com/recogito/annotorious/wiki/API-Reference)
 - [Demo](https://recogito.github.io/annotorious/)
 
