@@ -41,10 +41,10 @@ and include it in your web page.
       anno.loadAnnotations('annotations.w3c.json');
     })()
   </script>
-  <script type="text/javascript" src="annotorious-2.0.1-alpha.min.js"></script>
+  <script type="text/javascript" src="annotorious.min.js"></script>
 </body>
 ```
-Full documentation is [on the Wiki](https://github.com/recogito/annotorious/wiki)
+Full documentation is [on the Wiki](https://github.com/recogito/annotorious/wiki).
 
 
 
