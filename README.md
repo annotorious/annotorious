@@ -9,6 +9,7 @@ modernized reboot of the (now outdated) original
 [Annotorious](http://annotorious.github.io/).
 
 <p align="center">
+  <br/><br/>
   <img src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
 </p>
 
