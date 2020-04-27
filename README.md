@@ -11,6 +11,7 @@ modernized reboot of the (now outdated) original
 <p align="center">
   <img src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
 </p>
+
 ## Resources
 
 - [Documentation](https://github.com/recogito/annotorious/wiki)
