@@ -10,7 +10,7 @@ modernized reboot of the (now outdated) original
 
 <p align="center">
   <br/><br/>
-  <img src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
+  <img width="600" src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
 </p>
 
 ## Resources
