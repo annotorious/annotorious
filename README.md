@@ -1,19 +1,13 @@
 <p align="center">
-  <br/>
   <img width="345" src="https://raw.githubusercontent.com/recogito/annotorious/master/annotorious-logo-white-small.png" />
   <br/><br/>
 </p>
 
 A JavaScript library for image annotation. Add drawing, commenting and tagging functionality to images
 in Web pages with just a few lines of code. This project is a modernized reboot of the outdated 
-original [Annotorious](http://annotorious.github.io/).
+original [Annotorious](http://annotorious.github.io/). Try the [online Demo](https://recogito.github.io/annotorious/).
 
 <img width="620" src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
-
-## Resources
-
-- [Documentation](https://github.com/recogito/annotorious/wiki)
-- [Online Demo](https://recogito.github.io/annotorious/)
 
 ## Installing
 
@@ -49,6 +43,8 @@ and include in your web page.
   <script type="text/javascript" src="annotorious-2.0.1-alpha.min.js"></script>
 </body>
 ```
+Full documentation is [on the Wiki](https://github.com/recogito/annotorious/wiki)
+
 
 
 
