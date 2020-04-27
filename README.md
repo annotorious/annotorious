@@ -4,12 +4,11 @@
   <br/><br/>
 </p>
 
-A JavaScript library for image annotation. Annotorious 2 is a 
-modernized reboot of the (now outdated) original 
-[Annotorious](http://annotorious.github.io/).
+A JavaScript library for image annotation. Add drawing, commenting and tagging functionality to images
+in Web pages with just a few lines of code. This project is a modernized reboot of the outdated 
+original [Annotorious](http://annotorious.github.io/).
 
 <p align="center">
-  <br/><br/>
   <img width="600" src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
 </p>
 
