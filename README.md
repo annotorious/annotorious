@@ -8,9 +8,7 @@ A JavaScript library for image annotation. Add drawing, commenting and tagging f
 in Web pages with just a few lines of code. This project is a modernized reboot of the outdated 
 original [Annotorious](http://annotorious.github.io/).
 
-<p align="center">
-  <img width="600" src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
-</p>
+<img width="600" src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
 
 ## Resources
 
