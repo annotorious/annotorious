@@ -38,8 +38,10 @@ export default class AnnotationLayer extends EventEmitter {
 
   /** Enables drawing (and disables selection of hover shape) **/
   enableDrawing = () => {
-    this.disableSelectHover();
-    this.svg.addEventListener('mousedown', this.startDrawing);
+    if (!this.readOnly) {
+      this.disableSelectHover();
+      this.svg.addEventListener('mousedown', this.startDrawing);
+    }
   }
 
   /** Disables drawing (and enables selection of hover shape) **/
