@@ -46,6 +46,7 @@ export class Annotorious {
         imageEl={imageEl}
         wrapperEl={wrapperEl}
         readOnly={config.readOnly}
+        headless={config.headless}
         onAnnotationSelected={this.handleAnnotationSelected}
         onAnnotationCreated={this.handleAnnotationCreated} 
         onAnnotationUpdated={this.handleAnnotationUpdated} 
@@ -137,7 +138,7 @@ export class Annotorious {
    */
   applyTemplate = (template, openEditor) => {
     const bodies = Array.isArray(template) ? template : [ template ];
-    this._app.current.applyTemplate(bodies, !openEditor);
+    this._app.current.applyTemplate(bodies, openEditor);
   }
 
   /**

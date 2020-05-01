@@ -6,10 +6,13 @@ import RubberbandRectSelector from '../selection/RubberbandRectSelector';
 
 export default class AnnotationLayer extends EventEmitter {
 
-  constructor(wrapperEl, readOnly) {
+  constructor(props) {
     super();
 
+    const { wrapperEl, readOnly, headless } = props;
+
     this.readOnly = readOnly;
+    this.headless = headless;
 
     // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
@@ -140,7 +143,7 @@ export default class AnnotationLayer extends EventEmitter {
     const { annotation } = shape;
     const bounds = shape.getBoundingClientRect();
 
-    if (!this.readOnly) {
+    if (!(this.readOnly || this.headless)) {
       this.disableDrawing();
 
       // Replace the shape with an editable version

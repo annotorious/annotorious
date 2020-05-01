@@ -12,7 +12,7 @@ export default class ImageAnnotator extends Component  {
     modifiedTarget: null,
 
     applyTemplate: null,
-    headless: false
+    applyImmediately: null
   }
 
   /** Shorthand **/
@@ -23,8 +23,7 @@ export default class ImageAnnotator extends Component  {
   });
 
   componentDidMount() {
-    this.annotationLayer = new AnnotationLayer(this.props.wrapperEl, this.props.readOnly);
-
+    this.annotationLayer = new AnnotationLayer(this.props);
     this.annotationLayer.on('mouseEnterAnnotation', this.props.onMouseEnterAnnotation);
     this.annotationLayer.on('mouseLeaveAnnotation', this.props.onMouseLeaveAnnotation);
     this.annotationLayer.on('select', this.handleSelect);
@@ -43,7 +42,7 @@ export default class ImageAnnotator extends Component  {
         selectionBounds: bounds
       });
 
-      if (!annotation.isSelection) 
+      if (!annotation.isSelection)
         this.props.onAnnotationSelected(annotation);
     } else {
       this.clearState();
@@ -110,18 +109,29 @@ export default class ImageAnnotator extends Component  {
       this.clearState();
   }
 
-  applyTemplate = (bodies, headless) =>
-    this.setState({ applyTemplate: bodies, headless });
+  applyTemplate = (bodies, openEditor) =>
+    this.setState({ applyTemplate: bodies, applyImmediately: !openEditor });
 
   render() {
-    return (this.state.selectedAnnotation && (
+    // The editor should open under normal conditions (no headless mode, annotation was selected),
+    // or if we are in headless mode for immediate template application 
+    const normalConditions = this.state.selectedAnnotation && !this.props.headless;
+
+    const headlessApply =
+      this.props.headless && 
+      this.state.applyTemplate && 
+      this.state.selectedAnnotation?.isSelection;
+
+    const open = (normalConditions == true || headlessApply == true);
+
+    return (open && (
       <Editor
         wrapperEl={this.props.wrapperEl}
         bounds={this.state.selectionBounds}
         annotation={this.state.selectedAnnotation}
         readOnly={this.props.readOnly}
-        headless={this.state.headless}
         applyTemplate={this.state.applyTemplate}
+        applyImmediately={this.state.applyImmediately}
         onAnnotationCreated={this.onCreateOrUpdateAnnotation('onAnnotationCreated')}
         onAnnotationUpdated={this.onCreateOrUpdateAnnotation('onAnnotationUpdated')}
         onAnnotationDeleted={this.onDeleteAnnotation}
