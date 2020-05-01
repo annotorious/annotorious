@@ -17,7 +17,7 @@ If you use npm, `npm install @recogito/annotorious` and
 ```javascript
 import { Annotorious } from '@recogito/annotorious';
 
-const anno = new Annotorious('hallstatt'); // image element or ID
+const anno = new Annotorious({ image: 'hallstatt' }); // image element or ID
 ```
 
 Otherwise download the [latest release](https://github.com/recogito/recogito-js/releases/latest)
