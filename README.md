@@ -16,6 +16,8 @@ If you use npm, `npm install @recogito/annotorious` and
 
 ```javascript
 import { Annotorious } from '@recogito/annotorious';
+
+const anno = new Annotorious('hallstatt'); // image element or ID
 ```
 
 Otherwise download the [latest release](https://github.com/recogito/recogito-js/releases/latest)
@@ -35,7 +37,7 @@ and include it in your web page.
   <script>
     (function() {
       var anno = Annotorious.init({
-        image: 'hallstatt' // image element or ID
+        image: 'hallstatt'
       });
 
       anno.loadAnnotations('annotations.w3c.json');
