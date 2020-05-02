@@ -28,9 +28,20 @@ export default class RubberbandRectSelector extends EventEmitter {
     document.removeEventListener('mouseup', this.onMouseUp);
   }
 
+  _toSVG = (x, y) => {
+    const pt = this.svg.createSVGPoint();
+
+    const { left, top } = this.svg.getBoundingClientRect();
+    pt.x = x + left;
+    pt.y = y + top;
+
+    return pt.matrixTransform(this.svg.getScreenCTM().inverse());
+  }   
+
   startDrawing = evt => {
+    const { x, y } = this._toSVG(evt.layerX, evt.layerY);
     this._attachListeners();
-    this.rubberband = new RubberbandRect(evt.offsetX, evt.offsetY, this.svg);
+    this.rubberband = new RubberbandRect(x, y, this.svg);
   }
 
   stop = () => {
@@ -40,9 +51,11 @@ export default class RubberbandRectSelector extends EventEmitter {
     }
   }
 
-  onMouseMove = evt =>
-    this.rubberband.dragTo(evt.layerX, evt.layerY);
-
+  onMouseMove = evt => {
+    const { x , y } = this._toSVG(evt.layerX, evt.layerY);
+    this.rubberband.dragTo(x, y);
+  }
+  
   onMouseUp = evt => {
     this._detachListeners();
 
