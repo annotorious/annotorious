@@ -43,7 +43,7 @@ export default class ImageAnnotator extends Component  {
       });
 
       if (!annotation.isSelection)
-        this.props.onAnnotationSelected(annotation);
+        this.props.onAnnotationSelected(annotation.clone());
     } else {
       this.clearState();
     }
@@ -60,14 +60,14 @@ export default class ImageAnnotator extends Component  {
   onCreateOrUpdateAnnotation = method => (annotation, previous) => {
     // Merge updated target if necessary
     const a = (this.state.modifiedTarget) ?
-      annotation.clone({ target: { selector: this.state.modifiedTarget }}) : annotation;
+      annotation.clone({ target: { selector: this.state.modifiedTarget }}) : annotation.clone();
 
     this.clearState();    
     this.annotationLayer.deselect();
     this.annotationLayer.addOrUpdateAnnotation(a, previous);
 
     // Call CREATE or UPDATE handler
-    this.props[method](a, previous);
+    this.props[method](a, previous?.clone());
   }
 
   onDeleteAnnotation = annotation => {
@@ -87,16 +87,16 @@ export default class ImageAnnotator extends Component  {
   /****************/    
 
   addAnnotation = annotation =>
-    this.annotationLayer.addOrUpdateAnnotation(annotation);
+    this.annotationLayer.addOrUpdateAnnotation(annotation.clone());
 
   removeAnnotation = annotation =>
-    this.annotationLayer.removeAnnotation(annotation);
+    this.annotationLayer.removeAnnotation(annotation.clone());
 
   setAnnotations = annotations =>
-    this.annotationLayer.init(annotations);
+    this.annotationLayer.init(annotations.map(a => a.clone()));
 
   getAnnotations = () =>
-    this.annotationLayer.getAnnotations();
+    this.annotationLayer.getAnnotations().map(a => a.clone());
 
   setAnnotationsVisible = visible =>
     this.annotationLayer.setAnnotationsVisible(visible);
