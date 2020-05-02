@@ -151,6 +151,9 @@ export default class AnnotationLayer extends EventEmitter {
     if (!(this.readOnly || this.headless)) {
       this.disableDrawing();
 
+      if (shape.annotation.isSelection)
+        this.disableSelectHover();
+
       // Replace the shape with an editable version
       shape.parentNode.removeChild(shape);
 
