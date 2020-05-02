@@ -14,9 +14,12 @@ export default class AnnotationLayer extends EventEmitter {
     this.readOnly = readOnly;
     this.headless = headless;
 
+    const { naturalWidth, naturalHeight } = props.imageEl;
+
     // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
     this.svg.classList.add('a9s-annotationlayer');
+    this.svg.setAttribute('viewBox', `0 0 ${naturalWidth} ${naturalHeight}`);
     wrapperEl.appendChild(this.svg);
 
     // Currently open annotation
