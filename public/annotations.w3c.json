@@ -22,5 +22,28 @@
         "value": "xywh=pixel:270,120,90,170"
       }
     }
+  }, { 
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "id": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+    "type": "Annotation",
+    "body": [{
+      "type": "TextualBody",
+      "value": "It's Hallstatt in Upper Austria"
+    }, {
+      "type": "TextualBody",
+      "purpose": "tagging",
+      "value": "Hallstatt"
+    }, {
+      "type": "TextualBody",
+      "purpose": "tagging",
+      "value": "Upper Austria"
+    }],
+    "target": {
+      "selector": {
+        "type": "FragmentSelector",
+        "conformsTo": "http://www.w3.org/TR/media-frags/",
+        "value": "xywh=pixel:220,100,190,270"
+      }
+    }
   }
 ]

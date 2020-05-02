@@ -103,6 +103,7 @@ export default class AnnotationLayer extends EventEmitter {
    */
   redraw = () => {
     const shapes = Array.from(this.svg.querySelectorAll('.a9s-annotation'));
+
     const annotations = shapes.map(s => s.annotation);
     annotations.sort((a, b) => rectArea(b) - rectArea(a));
 
@@ -164,11 +165,13 @@ export default class AnnotationLayer extends EventEmitter {
     if (this.selectedShape) {
       const { annotation } = this.selectedShape;
 
-      if (!annotation.isSelection)
-        this.addAnnotation(annotation);
-
       this.selectedShape.destroy();
       this.selectedShape = null;
+
+      if (!annotation.isSelection) {
+        this.addAnnotation(annotation);
+        this.redraw(); 
+      }
     }
 
     this.enableDrawing();
