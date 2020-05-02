@@ -48,6 +48,10 @@ and include it in your web page.
 ```
 Full documentation is [on the Wiki](https://github.com/recogito/annotorious/wiki).
 
+## License
 
+[BSD 3-Clause](LICENSE) (= feel free to use this code in whatever way
+you wish. But keep the attribution/license file, and if this code
+breaks something, don't complain to us :-)
 
 
