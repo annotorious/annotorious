@@ -48,10 +48,10 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
   const innerRect  = document.createElementNS(SVG_NAMESPACE, 'rect');
 
   innerRect.setAttribute('class', 'inner');
-  setXYWH(innerRect, x + 0.5, y + 0.5, w - 1, h - 1);
+  setXYWH(innerRect, x, y, w, h);
 
   outerRect.setAttribute('class', 'outer');
-  setXYWH(outerRect, x - 0.5, y - 0.5, w + 1, h + 1);
+  setXYWH(outerRect, x, y, w, h);
 
   g.appendChild(outerRect);
   g.appendChild(innerRect);
@@ -63,10 +63,10 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
 export const getRectSize = g => {
   const outerRect = g.querySelector('.outer');
   
-  const x = parseFloat(outerRect.getAttribute('x')) + 0.5;
-  const y = parseFloat(outerRect.getAttribute('y')) + 0.5;
-  const w = parseFloat(outerRect.getAttribute('width')) - 1;
-  const h = parseFloat(outerRect.getAttribute('height')) - 1;
+  const x = parseFloat(outerRect.getAttribute('x'));
+  const y = parseFloat(outerRect.getAttribute('y'));
+  const w = parseFloat(outerRect.getAttribute('width'));
+  const h = parseFloat(outerRect.getAttribute('height'));
 
   return { x, y, w, h };
 }
@@ -87,8 +87,8 @@ export const setRectSize = (g, x, y, w, h) => {
   const innerRect = g.querySelector('.inner');
   const outerRect = g.querySelector('.outer');
 
-  setXYWH(innerRect, x + 0.5, y + 0.5, w - 1, h - 1);
-  setXYWH(outerRect, x - 0.5, y - 0.5, w + 1, h + 1);
+  setXYWH(innerRect, x, y, w, h);
+  setXYWH(outerRect, x, y, w, h);
 }
 
 /** 
