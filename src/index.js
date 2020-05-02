@@ -28,6 +28,9 @@ export class Annotorious {
     const imageEl = (config.image.nodeType) ? 
       config.image : document.getElementById(config.image);
 
+    // DIV will have unwanted margin at the bottom otherwise!
+    imageEl.style.display = 'block';
+
     const wrapperEl = document.createElement('DIV');
     wrapperEl.style.position = 'relative';
     wrapperEl.style.display = 'inline-block';

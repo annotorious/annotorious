@@ -138,8 +138,13 @@ export default class AnnotationLayer extends EventEmitter {
       return;
     
     // If another shape is currently selected, deselect first
-    if (this.selectedShape && this.selectedShape.annotation !== shape.annotation)
-      this.deselect();
+    if (this.selectedShape && this.selectedShape.annotation !== shape.annotation) {
+      this.selectedShape.destroy();
+      this.selectedShape = null;
+
+      if (!annotation.isSelection) {
+        this.addAnnotation(annotation);
+    }
 
     const { annotation } = shape;
     const bounds = shape.getBoundingClientRect();
