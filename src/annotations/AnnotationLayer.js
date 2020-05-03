@@ -18,8 +18,12 @@ export default class AnnotationLayer extends EventEmitter {
 
     // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-    this.svg.classList.add('a9s-annotationlayer');
     this.svg.setAttribute('viewBox', `0 0 ${naturalWidth} ${naturalHeight}`);
+    this.svg.classList.add('a9s-annotationlayer');
+
+    // Don't attach directly, but in group
+    this.g = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.svg.appendChild(this.g);
     wrapperEl.appendChild(this.svg);
 
     // Currently open annotation
@@ -30,7 +34,7 @@ export default class AnnotationLayer extends EventEmitter {
       this.enableSelectHover();
     } else {
       // TODO make switchable in the future
-      const selector = new RubberbandRectSelector(this.svg);
+      const selector = new RubberbandRectSelector(this.g);
       selector.on('complete', this.selectShape);
       selector.on('cancel', this.selectCurrentHover);
 
@@ -81,7 +85,7 @@ export default class AnnotationLayer extends EventEmitter {
     g.setAttribute('data-id', annotation.id);
     g.annotation = annotation;
   
-    this.svg.appendChild(g);
+    this.g.appendChild(g);
  
     g.addEventListener('mouseenter', evt => {
       if (this.currentHover !== g)
@@ -105,13 +109,13 @@ export default class AnnotationLayer extends EventEmitter {
    * size, so that larger ones don't occlude smaller ones.
    */
   redraw = () => {
-    const shapes = Array.from(this.svg.querySelectorAll('.a9s-annotation'));
+    const shapes = Array.from(this.g.querySelectorAll('.a9s-annotation'));
 
     const annotations = shapes.map(s => s.annotation);
     annotations.sort((a, b) => rectArea(b) - rectArea(a));
 
     // Clear the SVG element
-    shapes.forEach(s => this.svg.removeChild(s));
+    shapes.forEach(s => this.g.removeChild(s));
 
     // Redraw
     annotations.forEach(this.addAnnotation);
@@ -120,7 +124,7 @@ export default class AnnotationLayer extends EventEmitter {
   /** Finds the shape matching the given annotation or Id **/
   findShape = annotationOrId => {
     const id = annotationOrId.id ? annotationOrId.id : annotationOrId;
-    return this.svg.querySelector(`.a9s-annotation[data-id="${id}"]`);
+    return this.g.querySelector(`.a9s-annotation[data-id="${id}"]`);
   }
 
   /** 
@@ -157,7 +161,7 @@ export default class AnnotationLayer extends EventEmitter {
       // Replace the shape with an editable version
       shape.parentNode.removeChild(shape);
 
-      this.selectedShape = new EditableRect(annotation, this.svg);
+      this.selectedShape = new EditableRect(annotation, this.g);
       this.selectedShape.on('update', xywh => {
         const bounds = this.selectedShape.getBoundingClientRect();
         const { x, y, w, h } = xywh;
@@ -186,7 +190,6 @@ export default class AnnotationLayer extends EventEmitter {
   } 
 
   init = annotations => {
-    // Sort annotations by size
     annotations.sort((a, b) => rectArea(b) - rectArea(a));
     annotations.forEach(this.addAnnotation);
   }
@@ -211,7 +214,7 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   getAnnotations = () => {
-    const shapes = Array.from(this.svg.querySelectorAll('.a9s-annotation'));
+    const shapes = Array.from(this.g.querySelectorAll('.a9s-annotation'));
     return shapes.map(s => s.annotation);
   }
 

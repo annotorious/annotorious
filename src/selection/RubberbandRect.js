@@ -7,7 +7,7 @@ import { drawRect, setRectSize, toRectFragment } from '../annotations/RectFragme
  */
 export default class RubberbandRect {
 
-  constructor(anchorX, anchorY, svg) {
+  constructor(anchorX, anchorY, g) {
     this.anchor = [ anchorX, anchorY ];
     this.opposite = [ anchorX + 2, anchorY + 2];
 
@@ -19,7 +19,7 @@ export default class RubberbandRect {
     // annotations' mouseleave/enter events
     this.shape.style.pointerEvents = 'none';
 
-    svg.appendChild(this.shape);
+    g.appendChild(this.shape);
   }
 
   get bbox() {

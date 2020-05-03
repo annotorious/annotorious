@@ -56,16 +56,18 @@ const stretchCorners = (corner, opposite) => {
  */
 export default class EditableRect extends EventEmitter {
 
-  constructor(annotation, svg) {
+  constructor(annotation, g) {
     super();
 
     this.annotation = annotation;
-    this.svg = svg;
+
+    // SVG element
+    this.svg = g.closest('svg');
 
     const { x, y, w, h } = parseRectFragment(annotation);
 
+    // 'g' for the editable rect compound shape
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
-
     this.rectangle = drawRect(x, y, w, h);
     this.rectangle.setAttribute('class', 'a9s-annotation editable');
     this.group.appendChild(this.rectangle);
@@ -91,7 +93,7 @@ export default class EditableRect extends EventEmitter {
       return handle;
     });
 
-    this.svg.appendChild(this.group);
+    g.appendChild(this.group);
 
     // The grabbed element (handle or entire group), if any
     this.grabbedElem = null; 

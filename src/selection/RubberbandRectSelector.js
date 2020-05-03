@@ -6,24 +6,21 @@ import RubberbandRect from './RubberbandRect';
  */
 export default class RubberbandRectSelector extends EventEmitter {
 
-  constructor(svg) {
+  constructor(g) {
     super();
 
-    this.svg = svg;
+    this.svg = g.closest('svg');
+    this.g = g;
 
     this.rubberband = null;
   }
 
   _attachListeners = () => {
-    this.svg.addEventListener('mousedown', this.onMouseDown);
-    this.svg.addEventListener('mousemove', this.onMouseMove);
-    
-    // capture outside SVG, too
+    this.svg.addEventListener('mousemove', this.onMouseMove);    
     document.addEventListener('mouseup', this.onMouseUp);
   }
 
   _detachListeners = () => {
-    this.svg.removeEventListener('mousedown', this.onMouseDown);
     this.svg.removeEventListener('mousemove', this.onMouseMove);
     document.removeEventListener('mouseup', this.onMouseUp);
   }
@@ -35,13 +32,13 @@ export default class RubberbandRectSelector extends EventEmitter {
     pt.x = x + left;
     pt.y = y + top;
 
-    return pt.matrixTransform(this.svg.getScreenCTM().inverse());
+    return pt.matrixTransform(this.g.getScreenCTM().inverse());
   }   
 
   startDrawing = evt => {
     const { x, y } = this._toSVG(evt.layerX, evt.layerY);
     this._attachListeners();
-    this.rubberband = new RubberbandRect(x, y, this.svg);
+    this.rubberband = new RubberbandRect(x, y, this.g);
   }
 
   stop = () => {
