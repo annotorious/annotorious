@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import AnnotationLayer from './annotations/AnnotationLayer';
-import { Editor } from '@recogito/recogito-client-core';
+import { Editor, addPolyfills } from '@recogito/recogito-client-core';
+
+addPolyfills(); // For Microsoft Edge
 
 import './ImageAnnotator.scss';
 
