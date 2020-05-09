@@ -7,9 +7,11 @@ import { drawRect, setRectSize, toRectFragment } from '../annotations/RectFragme
  */
 export default class RubberbandRect {
 
-  constructor(anchorX, anchorY, g) {
+  constructor(anchorX, anchorY, g, imageSrc) {
     this.anchor = [ anchorX, anchorY ];
     this.opposite = [ anchorX + 2, anchorY + 2];
+
+    this.imageSrc = imageSrc;
 
     this.shape = drawRect(anchorX, anchorY, 2, 2);
     this.shape.setAttribute('class', 'a9s-selection');
@@ -45,7 +47,7 @@ export default class RubberbandRect {
 
   toSelection = () => {
     const { x, y, w, h } = this.bbox;
-    return new Selection(toRectFragment(x, y, w, h));
+    return new Selection(toRectFragment(x, y, w, h, this.imageSrc));
   }
 
   destroy = () => {

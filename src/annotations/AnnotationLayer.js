@@ -9,8 +9,9 @@ export default class AnnotationLayer extends EventEmitter {
   constructor(props) {
     super();
 
-    const { wrapperEl, readOnly, headless } = props;
+    const { wrapperEl, imageEl, readOnly, headless } = props;
 
+    this.imageSrc = imageEl.src;
     this.readOnly = readOnly;
     this.headless = headless;
 
@@ -34,7 +35,7 @@ export default class AnnotationLayer extends EventEmitter {
       this.enableSelectHover();
     } else {
       // TODO make switchable in the future
-      const selector = new RubberbandRectSelector(this.g);
+      const selector = new RubberbandRectSelector(this.g, this.imageSrc);
       selector.on('complete', this.selectShape);
       selector.on('cancel', this.selectCurrentHover);
 
@@ -165,7 +166,7 @@ export default class AnnotationLayer extends EventEmitter {
       this.selectedShape.on('update', xywh => {
         const bounds = this.selectedShape.getBoundingClientRect();
         const { x, y, w, h } = xywh;
-        this.emit('updateBounds', bounds, toRectFragment(x, y, w, h));
+        this.emit('updateBounds', bounds, toRectFragment(x, y, w, h, this.imageSrc));
       });
     }
 

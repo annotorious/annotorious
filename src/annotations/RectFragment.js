@@ -20,10 +20,13 @@ export const parseRectFragment = annotation => {
 }
 
 /** Serializes a (x, y, w, h)-tuple as Media Fragment selector **/
-export const toRectFragment = (x, y, w, h) => ({
-  "type": "FragmentSelector",
-  "conformsTo": "http://www.w3.org/TR/media-frags/",
-  "value": `xywh=pixel:${x},${y},${w},${h}`
+export const toRectFragment = (x, y, w, h, imageSrc) => ({
+  source: imageSrc,
+  selector: {
+    type: "FragmentSelector",
+    conformsTo: "http://www.w3.org/TR/media-frags/",
+    value: `xywh=pixel:${x},${y},${w},${h}`
+  }
 });
 
 /** Shorthand to apply the given (x, y, w, h) to the SVG shape **/
