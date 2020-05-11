@@ -51,8 +51,14 @@ export default class ImageAnnotator extends Component  {
     }
   }
 
-  handleUpdateBounds = (selectionBounds, modifiedTarget) =>
-    this.setState({ selectionBounds, modifiedTarget });
+  handleUpdateBounds = (selectionBounds, modifiedTarget) => {
+    // Bounds might have change because the user has modified the target,
+    // or because the UI has been scaled (in which case there is no new target)
+    if (modifiedTarget)
+      this.setState({ selectionBounds, modifiedTarget });
+    else 
+      this.setState({ selectionBounds });
+  }
   
   /**************************/  
   /* Annotation CRUD events */

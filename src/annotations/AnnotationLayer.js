@@ -44,7 +44,19 @@ export default class AnnotationLayer extends EventEmitter {
       this.enableDrawing();
     }
 
+    this.enableResponsive(wrapperEl);
+
     this.currentHover = null;
+  }
+
+  /** Enables support for responsive images by making SVG layer scalable **/
+  enableResponsive = elem => {
+    this.resizeObserver = new ResizeObserver(() => {
+      if (this.selectedShape)
+        this.emit('updateBounds', this.selectedShape.getBoundingClientRect());
+    });
+
+    this.resizeObserver.observe(elem);
   }
 
   /** Enables drawing (and disables selection of hover shape) **/
@@ -229,7 +241,11 @@ export default class AnnotationLayer extends EventEmitter {
   destroy = () => {
     this.currentTool = null;
     this.currentHover = null;
+
     this.svg.parentNode.removeChild(this.svg);
+    
+    this.resizeObserver.disconnect();
+    this.resizeObserver = null;
   }
 
 }
