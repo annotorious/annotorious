@@ -5,6 +5,7 @@ import { SVG_NAMESPACE } from '../SVGConst';
 const drawHandle = (x, y, className) => {
   const g = document.createElementNS(SVG_NAMESPACE, 'g');
   g.setAttribute('class', `resize-handle ${className}`);
+  g.setAttribute('transform-origin', `${x}px ${y}px`);
 
   const inner = document.createElementNS(SVG_NAMESPACE, 'rect');   
   inner.setAttribute('x', x - 5.5);
@@ -27,6 +28,8 @@ const drawHandle = (x, y, className) => {
 }
 
 const setHandleXY = (handle, x, y) => {
+  handle.setAttribute('transform-origin', `${x}px ${y}px`);
+
   const inner = handle.querySelector('.handle-inner');
   inner.setAttribute('x', x - 5.5);
   inner.setAttribute('y', y - 5.5);
@@ -100,6 +103,23 @@ export default class EditableRect extends EventEmitter {
 
     // Mouse xy offset inside the shape, if mouse pressed
     this.mouseOffset = null;
+
+    this.enableResponsive()
+  }
+
+  enableResponsive = () => {
+    this.resizeObserver = new ResizeObserver(() => {
+      const svgBounds = this.svg.getBoundingClientRect();
+      const { width, height } = this.svg.viewBox.baseVal;
+
+      const scaleX = width / svgBounds.width;
+      const scaleY = height / svgBounds.height;
+      
+      this.handles.forEach(handle =>
+        handle.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
+    });
+    
+    this.resizeObserver.observe(this.svg.parentNode);
   }
 
   /** Sets the shape size, including handle positions **/
@@ -166,7 +186,10 @@ export default class EditableRect extends EventEmitter {
   getBoundingClientRect = () => 
     this.rectangle.getBoundingClientRect();
 
-  destroy = () =>
+  destroy = () => {
     this.group.parentNode.removeChild(this.group);
+    this.resizeObserver.disconnect();
+    this.resizeObserver = null;
+  }
 
 }
