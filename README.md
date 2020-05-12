@@ -46,7 +46,10 @@ and include it in your web page.
   <script type="text/javascript" src="annotorious.min.js"></script>
 </body>
 ```
-Full documentation is [on the Wiki](https://github.com/recogito/annotorious/wiki).
+Full documentation is [on the Wiki](https://github.com/recogito/annotorious/wiki). Questions? Feedack? Feature requests? Join the 
+[Annotorious chat on Gitter](https://gitter.im/recogito/annotorious).
+
+[![Join the chat at https://gitter.im/recogito/annotorious](https://badges.gitter.im/recogito/annotorious.svg)](https://gitter.im/recogito/annotorious?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## License
 
