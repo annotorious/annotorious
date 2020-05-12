@@ -232,9 +232,6 @@ export default class AnnotationLayer extends EventEmitter {
     this.currentHover = null;
 
     this.svg.parentNode.removeChild(this.svg);
-    
-    this.resizeObserver.disconnect();
-    this.resizeObserver = null;
   }
 
 }
