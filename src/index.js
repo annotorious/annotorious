@@ -2,8 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Emitter from 'tiny-emitter';
 import axios from 'axios';
-import { WebAnnotation, Editor } from '@recogito/recogito-client-core'; 
+import { WebAnnotation, Editor, addPolyfills } from '@recogito/recogito-client-core'; 
 import ImageAnnotator from './ImageAnnotator';
+import Environment from './Environment';
+
+addPolyfills(); // For Microsoft Edge
 
 import '@recogito/recogito-client-core/themes/default';
 
@@ -30,6 +33,9 @@ export class Annotorious {
 
     // DIV will have unwanted margin at the bottom otherwise!
     imageEl.style.display = 'block';
+
+    // Store image reference in the Environment
+    Environment.image = imageEl;
 
     const wrapperEl = document.createElement('DIV');
     wrapperEl.style.position = 'relative';

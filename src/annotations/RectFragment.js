@@ -1,4 +1,5 @@
 import { SVG_NAMESPACE } from '../SVGConst';
+import Environment from '../Environment';
 
 /** 
  * Parses a W3C Web Annotation FragmentSelector conforming
@@ -20,8 +21,8 @@ export const parseRectFragment = annotation => {
 }
 
 /** Serializes a (x, y, w, h)-tuple as Media Fragment selector **/
-export const toRectFragment = (x, y, w, h, imageSrc) => ({
-  source: imageSrc,
+export const toRectFragment = (x, y, w, h) => ({
+  source: Environment.image.src,
   selector: {
     type: "FragmentSelector",
     conformsTo: "http://www.w3.org/TR/media-frags/",

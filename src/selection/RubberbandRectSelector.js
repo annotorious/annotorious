@@ -6,12 +6,11 @@ import RubberbandRect from './RubberbandRect';
  */
 export default class RubberbandRectSelector extends EventEmitter {
 
-  constructor(g, imageSrc) {
+  constructor(g) {
     super();
 
     this.svg = g.closest('svg');
     this.g = g;
-    this.imageSrc = imageSrc;
 
     this.rubberband = null;
   }
@@ -39,7 +38,7 @@ export default class RubberbandRectSelector extends EventEmitter {
   startDrawing = evt => {
     const { x, y } = this._toSVG(evt.layerX, evt.layerY);
     this._attachListeners();
-    this.rubberband = new RubberbandRect(x, y, this.g, this.imageSrc);
+    this.rubberband = new RubberbandRect(x, y, this.g);
   }
 
   stop = () => {

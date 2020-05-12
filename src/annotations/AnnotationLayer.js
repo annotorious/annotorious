@@ -35,7 +35,7 @@ export default class AnnotationLayer extends EventEmitter {
       this.enableSelectHover();
     } else {
       // TODO make switchable in the future
-      const selector = new RubberbandRectSelector(this.g, this.imageSrc);
+      const selector = new RubberbandRectSelector(this.g);
       selector.on('complete', this.selectShape);
       selector.on('cancel', this.selectCurrentHover);
 
