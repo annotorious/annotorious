@@ -107,6 +107,10 @@ export default class EditableRect extends EventEmitter {
     this.enableResponsive()
   }
 
+  get element() {
+    return this.rectangle;
+  } 
+
   enableResponsive = () => {
     this.resizeObserver = new ResizeObserver(() => {
       const svgBounds = this.svg.getBoundingClientRect();
@@ -182,9 +186,6 @@ export default class EditableRect extends EventEmitter {
     this.grabbedElem = null;
     this.mouseOffset = null;
   }
-
-  getBoundingClientRect = () => 
-    this.rectangle.getBoundingClientRect();
 
   destroy = () => {
     this.group.parentNode.removeChild(this.group);

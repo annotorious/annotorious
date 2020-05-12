@@ -8,7 +8,7 @@ export default class ImageAnnotator extends Component  {
 
   state = {
     selectedAnnotation: null,
-    selectionBounds: null,
+    selectedDOMElement: null,
     modifiedTarget: null,
 
     applyTemplate: null,
@@ -17,8 +17,8 @@ export default class ImageAnnotator extends Component  {
 
   /** Shorthand **/
   clearState = () => this.setState({
-    selectionBounds: null,
     selectedAnnotation: null,
+    selectedDOMElement: null,
     modifiedTarget: null
   });
 
@@ -27,7 +27,7 @@ export default class ImageAnnotator extends Component  {
     this.annotationLayer.on('mouseEnterAnnotation', this.props.onMouseEnterAnnotation);
     this.annotationLayer.on('mouseLeaveAnnotation', this.props.onMouseLeaveAnnotation);
     this.annotationLayer.on('select', this.handleSelect);
-    this.annotationLayer.on('updateBounds', this.handleUpdateBounds);
+    this.annotationLayer.on('updateTarget', this.handleUpdateTarget);
   }
 
   componentWillUnmount() {
@@ -35,11 +35,11 @@ export default class ImageAnnotator extends Component  {
   }
 
   handleSelect = evt => {
-    const { annotation, bounds } = evt;
+    const { annotation, element } = evt;
     if (annotation) {
       this.setState({ 
         selectedAnnotation: annotation,
-        selectionBounds: bounds
+        selectedDOMElement: element
       });
 
       if (!annotation.isSelection)
@@ -49,15 +49,9 @@ export default class ImageAnnotator extends Component  {
     }
   }
 
-  handleUpdateBounds = (selectionBounds, modifiedTarget) => {
-    // Bounds might have change because the user has modified the target,
-    // or because the UI has been scaled (in which case there is no new target)
-    if (modifiedTarget)
-      this.setState({ selectionBounds, modifiedTarget });
-    else 
-      this.setState({ selectionBounds });
-  }
-  
+  handleUpdateTarget = (selectedDOMElement, modifiedTarget) =>
+    this.setState({ selectedDOMElement, modifiedTarget });
+
   /**************************/  
   /* Annotation CRUD events */
   /**************************/  
@@ -133,8 +127,8 @@ export default class ImageAnnotator extends Component  {
     return (open && (
       <Editor
         wrapperEl={this.props.wrapperEl}
-        bounds={this.state.selectionBounds}
         annotation={this.state.selectedAnnotation}
+        selectedElement={this.state.selectedDOMElement}
         readOnly={this.props.readOnly}
         applyTemplate={this.state.applyTemplate}
         applyImmediately={this.state.applyImmediately}

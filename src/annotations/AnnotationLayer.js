@@ -44,19 +44,7 @@ export default class AnnotationLayer extends EventEmitter {
       this.enableDrawing();
     }
 
-    this.enableResponsive(wrapperEl);
-
     this.currentHover = null;
-  }
-
-  /** Enables support for responsive images by making SVG layer scalable **/
-  enableResponsive = elem => {
-    this.resizeObserver = new ResizeObserver(() => {
-      if (this.selectedShape)
-        this.emit('updateBounds', this.selectedShape.getBoundingClientRect());
-    });
-
-    this.resizeObserver.observe(elem);
   }
 
   /** Enables drawing (and disables selection of hover shape) **/
@@ -163,7 +151,6 @@ export default class AnnotationLayer extends EventEmitter {
     }
 
     const { annotation } = shape;
-    const bounds = shape.getBoundingClientRect();
 
     if (!(this.readOnly || this.headless)) {
       this.disableDrawing();
@@ -176,13 +163,15 @@ export default class AnnotationLayer extends EventEmitter {
 
       this.selectedShape = new EditableRect(annotation, this.g);
       this.selectedShape.on('update', xywh => {
-        const bounds = this.selectedShape.getBoundingClientRect();
         const { x, y, w, h } = xywh;
-        this.emit('updateBounds', bounds, toRectFragment(x, y, w, h, this.imageSrc));
+        this.emit('updateTarget', this.selectedShape.element, toRectFragment(x, y, w, h));
       });
+
+      this.emit('select', { annotation, element: this.selectedShape.element }); 
+    } else {
+      this.emit('select', { annotation, element: shape }); 
     }
 
-    this.emit('select', { annotation, bounds }); 
   }
   
   deselect = skipRedraw => {
