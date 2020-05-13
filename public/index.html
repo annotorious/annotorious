@@ -8,16 +8,22 @@
       html, body {
         padding:20px;
         margin:0px;
+        font-family:'Lato', sans-serif;
       }
       
-      .r6o-editor {
-        font-family:'Lato', sans-serif;
-        font-size:17px;
-        line-height:27px;
-      }
-
       #content {
         width:100%;
+      }
+
+      h1 {
+        font-size:21px;
+        font-weight:normal;
+        margin:0;
+        padding:0;
+      }
+
+      p.instructions {
+        padding:10px 0;
       }
 
       img {
@@ -35,7 +41,11 @@
     </style>
   </head>
   <body>
-    <div id="content">      
+    <div id="content">    
+      <h1>Annotorious: Basic Example</h1>  
+      <p class="instructions">
+        Click the annotation to edit. Click and drag the mouse to create a new annotation.
+      </p>
       <img id="hallstatt" src="640px-Hallstatt.jpg">
       <p class="caption">
         Sample image source: <a href="http://commons.wikimedia.org/wiki/File:Hallstatt_300.jpg">Hallstatt,
