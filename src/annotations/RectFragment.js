@@ -22,7 +22,7 @@ export const parseRectFragment = annotation => {
 
 /** Serializes a (x, y, w, h)-tuple as Media Fragment selector **/
 export const toRectFragment = (x, y, w, h) => ({
-  source: Environment.image.src,
+  source: Environment.image?.src,
   selector: {
     type: "FragmentSelector",
     conformsTo: "http://www.w3.org/TR/media-frags/",
