@@ -1,5 +1,5 @@
 import { SVG_NAMESPACE } from '../SVGConst';
-import Environment from '../Environment';
+import { Environment } from '@recogito/recogito-client-core';
 
 /** 
  * Parses a W3C Web Annotation FragmentSelector conforming

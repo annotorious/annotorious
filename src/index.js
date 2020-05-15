@@ -2,9 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Emitter from 'tiny-emitter';
 import axios from 'axios';
-import { WebAnnotation, Editor, addPolyfills } from '@recogito/recogito-client-core'; 
+import { WebAnnotation, Editor, Environment, addPolyfills } from '@recogito/recogito-client-core'; 
 import ImageAnnotator from './ImageAnnotator';
-import Environment from './Environment';
 
 addPolyfills(); // For Microsoft Edge
 
