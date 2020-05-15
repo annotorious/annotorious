@@ -156,6 +156,14 @@ export class Annotorious {
   destroy = () =>
     ReactDOM.unmountComponentAtNode(this._appContainerEl);
 
+  /** Sets user auth information **/
+  setAuthInfo = authinfo =>
+    Environment.user = authinfo;
+
+  /** Clears the user auth information **/
+  clearAuthInfo = () =>
+    Environment.user = null;
+
   /** 
    * Adds an event handler.
    */

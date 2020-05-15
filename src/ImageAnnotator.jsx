@@ -111,7 +111,7 @@ export default class ImageAnnotator extends Component  {
 
   applyTemplate = (bodies, openEditor) =>
     this.setState({ applyTemplate: bodies, applyImmediately: !openEditor });
-
+    
   render() {
     // The editor should open under normal conditions (no headless mode, annotation was selected),
     // or if we are in headless mode for immediate template application 
