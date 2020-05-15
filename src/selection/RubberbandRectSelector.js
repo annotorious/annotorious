@@ -64,9 +64,13 @@ export default class RubberbandRectSelector extends EventEmitter {
       shape.annotation = this.rubberband.toSelection();
       this.emit('complete', shape);
     } else {
-      this.stop();
       this.emit('cancel', evt);
+      this.stop();
     }
+  }
+
+  get isDrawing() {
+    return this.rubberband != null;
   }
 
 }
