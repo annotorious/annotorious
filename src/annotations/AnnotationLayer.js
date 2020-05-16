@@ -61,18 +61,15 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   /** Enables selection of shape under the mouse **/
-  enableSelectHover = () => {
+  enableSelectHover = () =>
     this.svg.addEventListener('mousedown', this.selectCurrentHover);
-  }
 
   /** Disables selection of shape under the mouse **/
-  disableSelectHover = () => {
+  disableSelectHover = () =>
     this.svg.removeEventListener('mousedown', this.selectCurrentHover);
-  }
 
-  startDrawing = evt => {
+  startDrawing = evt =>
     this.currentTool.startDrawing(evt);
-  }
 
   selectCurrentHover = () => {
     if (this.currentHover)
@@ -128,18 +125,26 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   /** 
-   * Selection always requires annotation + shape. 
-   * The annotation is always a member of the shape.
-   * If we only have the annotation, we need to find
-   * the matching shape first.
+   * Programmatic selection via the API. Should work as normal,
+   * but the selectAnnotation event should not be fired to the outside.
    */
   selectAnnotation = annotationOrId => {
+    // Deselect first
+    if (this.selectedShape)
+      this.deselect();
+
     const selected = this.findShape(annotationOrId);
+
+    // Select with 'skipEvent' flag
     if (selected)
-      this.selectShape(selected);
+      this.selectShape(selected, true);
+    else
+      this.deselect();
+
+    return selected?.annotation;
   }
 
-  selectShape = shape => {
+  selectShape = (shape, skipEvent) => {
     // Don't re-select
     if (this.selectedShape?.annotation === shape?.annotation)
       return;
@@ -166,11 +171,11 @@ export default class AnnotationLayer extends EventEmitter {
         this.emit('updateTarget', this.selectedShape.element, toRectFragment(x, y, w, h));
       });
 
-      this.emit('select', { annotation, element: this.selectedShape.element }); 
+      // Don't fire select event if selection was made programmatically
+      this.emit('select', { annotation, element: this.selectedShape.element, skipEvent }); 
     } else {
-      this.emit('select', { annotation, element: shape }); 
+      this.emit('select', { annotation, element: shap, skipEvent }); 
     }
-
   }
   
   deselect = skipRedraw => {
@@ -229,7 +234,6 @@ export default class AnnotationLayer extends EventEmitter {
   destroy = () => {
     this.currentTool = null;
     this.currentHover = null;
-
     this.svg.parentNode.removeChild(this.svg);
   }
 

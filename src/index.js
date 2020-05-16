@@ -136,7 +136,8 @@ export class Annotorious {
     const arg = (annotationOrId?.type === 'Annotation') ? 
       new WebAnnotation(annotationOrId) : annotationOrId;
 
-    this._app.current.selectAnnotation(arg);
+    const selected = this._app.current.selectAnnotation(arg);
+    return selected?.underlying;
   }
 
   /** 

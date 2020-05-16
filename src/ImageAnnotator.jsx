@@ -35,14 +35,14 @@ export default class ImageAnnotator extends Component  {
   }
 
   handleSelect = evt => {
-    const { annotation, element } = evt;
+    const { annotation, element, skipEvent } = evt;
     if (annotation) {
       this.setState({ 
         selectedAnnotation: annotation,
         selectedDOMElement: element
       });
 
-      if (!annotation.isSelection)
+      if (!annotation.isSelection && !skipEvent)
         this.props.onAnnotationSelected(annotation.clone());
     } else {
       this.clearState();
@@ -102,11 +102,12 @@ export default class ImageAnnotator extends Component  {
     this.annotationLayer.setAnnotationsVisible(visible);
 
   selectAnnotation = arg => {
-    if (arg)
-      this.annotationLayer.selectAnnotation(arg);
-    else
-      // Deselect
-      this.clearState();
+    const annotation = this.annotationLayer.selectAnnotation(arg);
+    
+    if (!annotation)
+      this.clearState(); // Deselect
+
+    return annotation;
   }
 
   applyTemplate = (bodies, openEditor) =>
