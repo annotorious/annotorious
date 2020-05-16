@@ -120,7 +120,7 @@ export default class AnnotationLayer extends EventEmitter {
 
   /** Finds the shape matching the given annotation or Id **/
   findShape = annotationOrId => {
-    const id = annotationOrId.id ? annotationOrId.id : annotationOrId;
+    const id = annotationOrId?.id ? annotationOrId.id : annotationOrId;
     return this.g.querySelector(`.a9s-annotation[data-id="${id}"]`);
   }
 
