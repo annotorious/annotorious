@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Emitter from 'tiny-emitter';
 import axios from 'axios';
-import { WebAnnotation, Editor, Environment, addPolyfills } from '@recogito/recogito-client-core'; 
+import { WebAnnotation, Editor, Environment, addPolyfills, setLocale } from '@recogito/recogito-client-core'; 
 import ImageAnnotator from './ImageAnnotator';
 
 addPolyfills(); // For Microsoft Edge
@@ -35,6 +35,8 @@ export class Annotorious {
 
     // Store image reference in the Environment
     Environment.image = imageEl;
+
+    setLocale(config.locale);
 
     const wrapperEl = document.createElement('DIV');
     wrapperEl.style.position = 'relative';
