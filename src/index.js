@@ -164,6 +164,10 @@ export class Annotorious {
   clearAuthInfo = () =>
     Environment.user = null;
 
+  /** Sets the current 'server time', to avoid problems with locally-generated timestamps **/
+  setServerTime = timestamp => 
+    Environment.setServerTime(timestamp);
+
   /** 
    * Adds an event handler.
    */
