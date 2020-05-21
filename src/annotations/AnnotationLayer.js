@@ -202,8 +202,10 @@ export default class AnnotationLayer extends EventEmitter {
 
   addOrUpdateAnnotation = (annotation, previous) => {
     if (previous)
-      this.removeAnnotation(annotation);
-
+      this.removeAnnotation(previous);
+    
+    this.removeAnnotation(annotation);
+    
     this.addAnnotation(annotation);
 
     // Make sure rendering order is large-to-small
