@@ -174,7 +174,7 @@ export default class AnnotationLayer extends EventEmitter {
       // Don't fire select event if selection was made programmatically
       this.emit('select', { annotation, element: this.selectedShape.element, skipEvent }); 
     } else {
-      this.emit('select', { annotation, element: shap, skipEvent }); 
+      this.emit('select', { annotation, element: shape, skipEvent }); 
     }
   }
   
@@ -201,6 +201,9 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   addOrUpdateAnnotation = (annotation, previous) => {
+    if (this.selectedShape?.annotation === annotation || this.selectShape?.annotation == previous)
+      this.deselect();
+  
     if (previous)
       this.removeAnnotation(previous);
     
