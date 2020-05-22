@@ -112,7 +112,7 @@ export default class EditableRect extends EventEmitter {
   } 
 
   enableResponsive = () => {
-    if (ResizeObserver) {
+    if (window.ResizeObserver) {
       this.resizeObserver = new ResizeObserver(() => {
         const svgBounds = this.svg.getBoundingClientRect();
         const { width, height } = this.svg.viewBox.baseVal;
