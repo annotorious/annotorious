@@ -112,18 +112,20 @@ export default class EditableRect extends EventEmitter {
   } 
 
   enableResponsive = () => {
-    this.resizeObserver = new ResizeObserver(() => {
-      const svgBounds = this.svg.getBoundingClientRect();
-      const { width, height } = this.svg.viewBox.baseVal;
+    if (ResizeObserver) {
+      this.resizeObserver = new ResizeObserver(() => {
+        const svgBounds = this.svg.getBoundingClientRect();
+        const { width, height } = this.svg.viewBox.baseVal;
 
-      const scaleX = width / svgBounds.width;
-      const scaleY = height / svgBounds.height;
+        const scaleX = width / svgBounds.width;
+        const scaleY = height / svgBounds.height;
+        
+        this.handles.forEach(handle =>
+          handle.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
+      });
       
-      this.handles.forEach(handle =>
-        handle.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
-    });
-    
-    this.resizeObserver.observe(this.svg.parentNode);
+      this.resizeObserver.observe(this.svg.parentNode);
+    }
   }
 
   /** Sets the shape size, including handle positions **/
@@ -189,7 +191,10 @@ export default class EditableRect extends EventEmitter {
 
   destroy = () => {
     this.group.parentNode.removeChild(this.group);
-    this.resizeObserver.disconnect();
+
+    if (this.resizeObserver)
+      this.resizeObserver.disconnect();
+    
     this.resizeObserver = null;
   }
 
