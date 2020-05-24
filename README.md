@@ -20,7 +20,7 @@ import { Annotorious } from '@recogito/annotorious';
 const anno = new Annotorious({ image: 'hallstatt' }); // image element or ID
 ```
 
-Otherwise download the [latest release](https://github.com/recogito/recogito-js/releases/latest)
+Otherwise download the [latest release](https://github.com/recogito/annotorious/releases/latest)
 and include it in your web page.
 
 ```html
