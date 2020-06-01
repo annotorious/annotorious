@@ -14,7 +14,7 @@ export default class AnnotationLayer extends EventEmitter {
     this.readOnly = readOnly;
     this.headless = headless;
 
-    const { naturalWidth, naturalHeight } = props.imageEl;
+    const { naturalWidth, naturalHeight } = imageEl;
 
     // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
@@ -156,7 +156,9 @@ export default class AnnotationLayer extends EventEmitter {
 
     const { annotation } = shape;
 
-    if (!(this.readOnly || this.headless)) {
+    const readOnly = this.readOnly || annotation.readOnly;
+
+    if (!(readOnly || this.headless)) {
       this.disableDrawing();
 
       if (shape.annotation.isSelection)

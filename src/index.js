@@ -97,8 +97,8 @@ export class Annotorious {
   /**
    * Adds a single JSON-LD WebAnnotation to the annotation layer.
    */
-  addAnnotation = annotation =>
-    this._app.current.addAnnotation(new WebAnnotation(annotation));
+  addAnnotation = (annotation, readOnly) =>
+    this._app.current.addAnnotation(new WebAnnotation(annotation, { readOnly }));
 
   /**
    * Removes the given JSON-LD WebAnnotation from the annotation layer.

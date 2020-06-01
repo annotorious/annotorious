@@ -125,12 +125,14 @@ export default class ImageAnnotator extends Component  {
 
     const open = (normalConditions == true || headlessApply == true);
 
+    const readOnly = this.props.readOnly || this.state.selectedAnnotation?.readOnly
+
     return (open && (
       <Editor
         wrapperEl={this.props.wrapperEl}
         annotation={this.state.selectedAnnotation}
         selectedElement={this.state.selectedDOMElement}
-        readOnly={this.props.readOnly}
+        readOnly={readOnly}
         applyTemplate={this.state.applyTemplate}
         applyImmediately={this.state.applyImmediately}
         onAnnotationCreated={this.onCreateOrUpdateAnnotation('onAnnotationCreated')}
