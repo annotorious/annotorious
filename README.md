@@ -3,10 +3,10 @@
   <br/><br/>
 </p>
 
-A JavaScript library for image annotation. Add drawing, commenting and tagging functionality to images
+A JavaScript library for image annotation. Add drawing, commenting and labeling functionality to images
 in Web pages with just a few lines of code. This project is a modernized reboot of the outdated 
-original [Annotorious](http://annotorious.github.io/). Try the [online demo](https://recogito.github.io/annotorious/)
-or see the [API reference](https://github.com/recogito/annotorious/wiki/API-Reference).
+original [Annotorious](https://github.com/annotorious/annotorious). See the 
+[project website](https://recogito.github.io/site/annotorious/) for details and live demos.
 
 <img width="620" src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
 
