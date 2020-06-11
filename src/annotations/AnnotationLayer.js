@@ -18,8 +18,14 @@ export default class AnnotationLayer extends EventEmitter {
 
     // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-    this.svg.setAttribute('viewBox', `0 0 ${naturalWidth} ${naturalHeight}`);
     this.svg.classList.add('a9s-annotationlayer');
+
+    if (naturalWidth == 0 && naturalHeight == 0) {
+      imageEl.onload = () =>
+        this.svg.setAttribute('viewBox', `0 0 ${imageEl.naturalWidth} ${imageEl.naturalHeight}`);
+    } else {
+      this.svg.setAttribute('viewBox', `0 0 ${naturalWidth} ${naturalHeight}`);
+    }
 
     // Don't attach directly, but in group
     this.g = document.createElementNS(SVG_NAMESPACE, 'g');
