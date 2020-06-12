@@ -98,8 +98,8 @@ export default class ImageAnnotator extends Component  {
   getAnnotations = () =>
     this.annotationLayer.getAnnotations().map(a => a.clone());
 
-  setAnnotationsVisible = visible =>
-    this.annotationLayer.setAnnotationsVisible(visible);
+  setVisible = visible =>
+    this.annotationLayer.setVisible(visible);
 
   selectAnnotation = arg => {
     const annotation = this.annotationLayer.selectAnnotation(arg);

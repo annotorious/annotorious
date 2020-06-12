@@ -237,7 +237,7 @@ export default class AnnotationLayer extends EventEmitter {
     return shapes.map(s => s.annotation);
   }
 
-  setAnnotationsVisible = visible => {
+  setVisible = visible => {
     if (visible)
       this.svg.style.display = null;
     else

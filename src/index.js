@@ -130,8 +130,8 @@ export class Annotorious {
   }
 
   /** Shows or hides the annotation layer **/
-  setAnnotationsVisible = visible =>
-    this._app.current.setAnnotationsVisible(visible);
+  setVisible = visible =>
+    this._app.current.setVisible(visible);
 
   /** Programmatically selects the annotation, opening the editor popup **/
   selectAnnotation = annotationOrId => {
