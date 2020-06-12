@@ -6,7 +6,7 @@
 A JavaScript library for image annotation. Add drawing, commenting and labeling functionality to images
 in Web pages with just a few lines of code. This project is a modernized reboot of the outdated 
 original [Annotorious](https://github.com/annotorious/annotorious). See the 
-[project website](https://recogito.github.io/site/annotorious/) for details and live demos.
+[project website](https://recogito.github.io/annotorious/) for details and live demos.
 
 <img width="620" src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
 
@@ -46,7 +46,7 @@ and include it in your web page.
   <script type="text/javascript" src="annotorious.min.js"></script>
 </body>
 ```
-Full documentation is [on the project website](https://recogito.github.io/site/annotorious/). Questions? Feedack? Feature requests? Join the 
+Full documentation is [on the project website](https://recogito.github.io/annotorious/). Questions? Feedack? Feature requests? Join the 
 [Annotorious chat on Gitter](https://gitter.im/recogito/annotorious).
 
 [![Join the chat at https://gitter.im/recogito/annotorious](https://badges.gitter.im/recogito/annotorious.svg)](https://gitter.im/recogito/annotorious?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
