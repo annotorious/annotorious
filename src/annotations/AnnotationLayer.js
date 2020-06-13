@@ -3,6 +3,7 @@ import { drawRect, rectArea, toRectFragment } from './RectFragment';
 import { SVG_NAMESPACE } from '../SVGConst';
 import EditableRect from '../selection/EditableRect';
 import RubberbandRectSelector from '../selection/RubberbandRectSelector';
+import { drawPolygon } from './Polygon';
 
 export default class AnnotationLayer extends EventEmitter {
 
@@ -83,7 +84,8 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   addAnnotation = annotation => {
-    const g = drawRect(annotation);  
+    const g = drawPolygon(annotation); // drawRect(annotation); 
+    console.log(g); 
     g.setAttribute('class', 'a9s-annotation');
     g.setAttribute('data-id', annotation.id);
     g.annotation = annotation;
