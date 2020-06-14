@@ -1,4 +1,4 @@
-import { SVG_NAMESPACE } from '../SVGConst';
+import { SVG_NAMESPACE } from '../../SVGConst';
 
 export const parseSVGFragment = annotation => {
   const selector = annotation.selector('SvgSelector');
@@ -25,6 +25,6 @@ export const parseSVGFragment = annotation => {
   }
 }
 
-export const drawPolygon = annotation => {
+export const drawEmbeddedSVG = annotation => {
   return parseSVGFragment(annotation);
 }

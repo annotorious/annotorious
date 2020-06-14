@@ -1,9 +1,9 @@
 import EventEmitter from 'tiny-emitter';
-import { drawRect, rectArea, toRectFragment } from './RectFragment';
+import { drawShape } from './selectors';
 import { SVG_NAMESPACE } from '../SVGConst';
 import EditableRect from '../selection/EditableRect';
 import RubberbandRectSelector from '../selection/RubberbandRectSelector';
-import { drawPolygon } from './Polygon';
+// import { drawRect, rectArea, toRectFragment } from './RectFragment';
 
 export default class AnnotationLayer extends EventEmitter {
 
@@ -84,7 +84,7 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   addAnnotation = annotation => {
-    const g = drawPolygon(annotation); // drawRect(annotation); 
+    const g = drawShape(annotation);
     g.setAttribute('class', 'a9s-annotation');
     g.setAttribute('data-id', annotation.id);
     g.annotation = annotation;
@@ -205,7 +205,7 @@ export default class AnnotationLayer extends EventEmitter {
   } 
 
   init = annotations => {
-    annotations.sort((a, b) => rectArea(b) - rectArea(a));
+    // annotations.sort((a, b) => rectArea(b) - rectArea(a));
     annotations.forEach(this.addAnnotation);
   }
 

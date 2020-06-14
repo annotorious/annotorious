@@ -1,5 +1,5 @@
 import EventEmitter from 'tiny-emitter';
-import { drawRect, getCorners, getRectSize, setRectSize, parseRectFragment } from '../annotations/RectFragment';
+import { drawRect, getCorners, getRectSize, setRectSize, parseRectFragment } from '../annotations/selectors/RectFragment';
 import { SVG_NAMESPACE } from '../SVGConst';
 
 const drawHandle = (x, y, className) => {

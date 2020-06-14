@@ -1,4 +1,4 @@
-import { SVG_NAMESPACE } from '../SVGConst';
+import { SVG_NAMESPACE } from '../../SVGConst';
 import { Environment } from '@recogito/recogito-client-core';
 
 /** 
