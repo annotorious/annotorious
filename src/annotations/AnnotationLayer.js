@@ -171,7 +171,7 @@ export default class AnnotationLayer extends EventEmitter {
       if (shape.annotation.isSelection)
         this.disableSelectHover();
 
-      // Replace the shape with an editable version
+      /* Replace the shape with an editable version
       shape.parentNode.removeChild(shape);
 
       this.selectedShape = new EditableRect(annotation, this.g);
@@ -179,9 +179,10 @@ export default class AnnotationLayer extends EventEmitter {
         const { x, y, w, h } = xywh;
         this.emit('updateTarget', this.selectedShape.element, toRectFragment(x, y, w, h));
       });
+      */
 
-      // Don't fire select event if selection was made programmatically
-      this.emit('select', { annotation, element: this.selectedShape.element, skipEvent }); 
+      // this.emit('select', { annotation, element: this.selectedShape.element, skipEvent });
+      this.emit('select', { annotation, element: shape, skipEvent }); 
     } else {
       this.emit('select', { annotation, element: shape, skipEvent }); 
     }

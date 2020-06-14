@@ -28,12 +28,12 @@
     "type": "Annotation",
     "body": [{
       "type": "TextualBody",
-      "value": "A polygon selection!"
+      "value": "Coming soon: polygon selection"
     }],
     "target": {
       "selector": [{
         "type": "SvgSelector",
-        "value": "<svg xmlns='http://www.w3.org/2000/svg'><polygon points='400,140 480,200 440,300 400,140' /></svg>"
+        "value": "<svg xmlns='http://www.w3.org/2000/svg'><polygon points='100,130 180,170 140,260 80,190 100,130' /></svg>"
       }]
     }
   }
