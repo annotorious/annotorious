@@ -12,22 +12,22 @@
 
   .a9s-annotation, .a9s-selection {
   
-    rect {
+    rect, polygon {
       fill:transparent;
       cursor:pointer;
       vector-effect:non-scaling-stroke;
     }
 
-    rect.inner {
+    .inner {
       stroke:#fff;
       stroke-width:1px;
     }
 
-    rect.inner:hover {
+    .inner:hover {
       stroke:#fff000;
     }
 
-    rect.outer {
+    .outer {
       stroke:rgba(0, 0, 0, 0.7);
       stroke-width:3px;
     }

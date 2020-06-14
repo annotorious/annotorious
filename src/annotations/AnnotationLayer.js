@@ -85,7 +85,6 @@ export default class AnnotationLayer extends EventEmitter {
 
   addAnnotation = annotation => {
     const g = drawPolygon(annotation); // drawRect(annotation); 
-    console.log(g); 
     g.setAttribute('class', 'a9s-annotation');
     g.setAttribute('data-id', annotation.id);
     g.annotation = annotation;
