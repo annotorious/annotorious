@@ -57,8 +57,7 @@
       (function() {
         var anno = Annotorious.init({
           image: 'hallstatt',
-          locale: 'auto',
-          readOnly: true
+          locale: 'auto'
         });
         
         anno.on('selectAnnotation', function(annotation) {
@@ -77,7 +76,7 @@
           console.log('deleted', annotation);
         });
         
-        anno.loadAnnotations('annotations.w3c.json');
+        // anno.loadAnnotations('annotations.w3c.json');
       })()
     </script>
   </body>

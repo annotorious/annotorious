@@ -2,7 +2,8 @@ import EventEmitter from 'tiny-emitter';
 import { drawShape, shapeArea } from './selectors';
 import { SVG_NAMESPACE } from '../SVGConst';
 import EditableRect from '../selection/EditableRect';
-import RubberbandRectSelector from '../selection/RubberbandRectSelector';
+// import RubberbandRectSelector from '../selection/RubberbandRectSelector';
+import PolygonDrawingTool from '../selection/PolygonDrawingTool';
 // import { drawRect, rectArea, toRectFragment } from './RectFragment';
 
 export default class AnnotationLayer extends EventEmitter {
@@ -41,10 +42,14 @@ export default class AnnotationLayer extends EventEmitter {
       this.enableSelectHover();
     } else {
       // TODO make switchable in the future
+
+      const selector = new PolygonDrawingTool(this.g);
+      /*
       const selector = new RubberbandRectSelector(this.g);
+      */
       selector.on('complete', this.selectShape);
       selector.on('cancel', this.selectCurrentHover);
-
+      
       this.currentTool = selector;
 
       this.enableDrawing();
@@ -57,7 +62,10 @@ export default class AnnotationLayer extends EventEmitter {
   enableDrawing = () => {
     if (!this.readOnly) {
       this.disableSelectHover();
-      this.svg.addEventListener('mousedown', this.startDrawing);
+      this.svg.addEventListener('mousedown', evt => {
+        if (!this.currentTool?.isDrawing)
+          this.startDrawing(evt);
+      });
     }
   }
 
