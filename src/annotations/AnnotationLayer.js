@@ -1,5 +1,5 @@
 import EventEmitter from 'tiny-emitter';
-import { drawShape } from './selectors';
+import { drawShape, shapeArea } from './selectors';
 import { SVG_NAMESPACE } from '../SVGConst';
 import EditableRect from '../selection/EditableRect';
 import RubberbandRectSelector from '../selection/RubberbandRectSelector';
@@ -205,7 +205,7 @@ export default class AnnotationLayer extends EventEmitter {
   } 
 
   init = annotations => {
-    // annotations.sort((a, b) => rectArea(b) - rectArea(a));
+    annotations.sort((a, b) => shapeArea(b) - shapeArea(a));
     annotations.forEach(this.addAnnotation);
   }
 
