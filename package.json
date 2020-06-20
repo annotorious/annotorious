@@ -20,7 +20,7 @@
   "bugs": {
     "url": "https://github.com/recogito/annotorious/issues"
   },
-  "homepage": "https://github.com/recogito/annotorious#readme",
+  "homepage": "https://recogito.github.io/annotorious",
   "devDependencies": {
     "@babel/core": "^7.6.2",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
