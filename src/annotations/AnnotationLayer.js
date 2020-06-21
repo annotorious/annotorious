@@ -102,7 +102,7 @@ export default class AnnotationLayer extends EventEmitter {
     g.addEventListener('mouseenter', evt => {
       if (this.currentHover !== g)
         this.emit('mouseEnterAnnotation', annotation, evt);
-        
+
       this.currentHover = g;
     });
 
@@ -124,7 +124,7 @@ export default class AnnotationLayer extends EventEmitter {
     const shapes = Array.from(this.g.querySelectorAll('.a9s-annotation'));
 
     const annotations = shapes.map(s => s.annotation);
-    annotations.sort((a, b) => rectArea(b) - rectArea(a));
+    annotations.sort((a, b) => shapeArea(b) - shapeArea(a));
 
     // Clear the SVG element
     shapes.forEach(s => this.g.removeChild(s));

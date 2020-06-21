@@ -1,16 +1,43 @@
 import { SVG_NAMESPACE } from '../../SVGConst';
 import { Environment } from '@recogito/recogito-client-core';
 
+/** Helper that forces an un-namespaced node to SVG **/
+const insertSVGNamespace = originalDoc => {
+  // Set the attribute
+  originalDoc.firstChild.setAttribute('xmlns', SVG_NAMESPACE);
+
+  // Serialize and parse for the namespace to take effect on every node
+  const serializer = new XMLSerializer();
+  const str = serializer.serializeToString(originalDoc);
+
+  const parser = new DOMParser();
+  const updateDoc = parser.parseFromString(str, "image/svg+xml");   
+  return updateDoc.firstChild;
+}
+
+/** Parse SVG from string **/
+const parseSVG = str => {
+  const parser = new DOMParser();
+
+  // Parse the XML document, assuming SVG
+  let doc = parser.parseFromString(str, "image/svg+xml");    
+
+  // SVG needs a namespace declaration - check if it's set
+  const isPrefixDeclared = doc.lookupPrefix(SVG_NAMESPACE); // SVG declared via prefix
+  const isDefaultNamespaceSVG = doc.lookupNamespaceURI(null); // SVG declared as default namespace
+
+  if (!(isPrefixDeclared || isDefaultNamespaceSVG)) 
+    doc = insertSVGNamespace(doc);
+
+  return doc.firstChild;
+}
+
 export const parseSVGFragment = annotation => {
   const selector = annotation.selector('SvgSelector');
   if (selector) {
     const { value } = selector;
-    const parser = new DOMParser();
-    
-    // TODO hack...
-    const doc = parser.parseFromString(value, "image/svg+xml");    
-    const shape = doc.firstChild.firstChild; // importNode?
-
+    const shape = parseSVG(value);
+ 
     const g = document.createElementNS(SVG_NAMESPACE, 'g');
     
     const inner = shape.cloneNode(true);
@@ -34,8 +61,8 @@ export const toSVGTarget = shape => {
   return {
     source: Environment.image?.src,
     selector: {
-      type: "SVGSelector",
-      value: `<svg:svg>${inner.outerHTML}</svg:svg>`
+      type: "SvgSelector",
+      value: `<svg>${inner.outerHTML}</svg>`
     }
   }
 };
