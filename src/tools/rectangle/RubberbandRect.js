@@ -1,5 +1,5 @@
 import { Selection } from '@recogito/recogito-client-core';
-import { drawRect, setRectSize, toRectFragment } from '../annotations/selectors/RectFragment';
+import { drawRect, setRectSize, toRectFragment } from '../../annotations/selectors/RectFragment';
 
 /**
  * A 'rubberband' selection tool for creating a rectangle by

@@ -1,10 +1,7 @@
 import EventEmitter from 'tiny-emitter';
 import { drawShape, shapeArea } from './selectors';
 import { SVG_NAMESPACE } from '../SVGConst';
-import EditableRect from '../selection/EditableRect';
-// import RubberbandRectSelector from '../selection/RubberbandRectSelector';
-import PolygonDrawingTool from '../selection/PolygonDrawingTool';
-// import { drawRect, rectArea, toRectFragment } from './RectFragment';
+import DrawingTools from '../tools/DrawingTools';
 
 export default class AnnotationLayer extends EventEmitter {
 
@@ -34,23 +31,18 @@ export default class AnnotationLayer extends EventEmitter {
     this.svg.appendChild(this.g);
     wrapperEl.appendChild(this.svg);
 
-    // Currently open annotation
+    // Currently selected shape
     this.selectedShape = null;
 
     if (readOnly) {
       // No drawing, only select the current hover shape
       this.enableSelectHover();
     } else {
-      // TODO make switchable in the future
+      // Attach handlers to the drawing tool palette
+      this.tools = new DrawingTools(this.g);
 
-      const selector = new PolygonDrawingTool(this.g);
-      /*
-      const selector = new RubberbandRectSelector(this.g);
-      */
-      selector.on('complete', this.selectShape);
-      selector.on('cancel', this.selectCurrentHover);
-      
-      this.currentTool = selector;
+      this.tools.on('complete', this.selectShape);
+      this.tools.on('cancel', this.selectCurrentHover);
 
       this.enableDrawing();
     }
@@ -63,7 +55,7 @@ export default class AnnotationLayer extends EventEmitter {
     if (!this.readOnly) {
       this.disableSelectHover();
       this.svg.addEventListener('mousedown', evt => {
-        if (!this.currentTool?.isDrawing)
+        if (!this.tools.current.isDrawing)
           this.startDrawing(evt);
       });
     }
@@ -84,7 +76,7 @@ export default class AnnotationLayer extends EventEmitter {
     this.svg.removeEventListener('mousedown', this.selectCurrentHover);
 
   startDrawing = evt =>
-    this.currentTool.startDrawing(evt);
+    this.tools.current.startDrawing(evt);
 
   selectCurrentHover = () => {
     if (this.currentHover)
@@ -179,18 +171,21 @@ export default class AnnotationLayer extends EventEmitter {
       if (shape.annotation.isSelection)
         this.disableSelectHover();
 
-      /* Replace the shape with an editable version
-      shape.parentNode.removeChild(shape);
+      if (this.tools.current.supportsModify) {
+        // Replace the shape with an editable version
+        shape.parentNode.removeChild(shape);
 
-      this.selectedShape = new EditableRect(annotation, this.g);
-      this.selectedShape.on('update', xywh => {
-        const { x, y, w, h } = xywh;
-        this.emit('updateTarget', this.selectedShape.element, toRectFragment(x, y, w, h));
-      });
-      */
+        this.selectedShape = this.tools.current.createEditableShape(annotation, this.g);
 
-      // this.emit('select', { annotation, element: this.selectedShape.element, skipEvent });
-      this.emit('select', { annotation, element: shape, skipEvent }); 
+        this.selectedShape.on('update', xywh => {
+          const { x, y, w, h } = xywh;
+          this.emit('updateTarget', this.selectedShape.element, toRectFragment(x, y, w, h));
+        });
+
+        this.emit('select', { annotation, element: this.selectedShape.element, skipEvent });
+      } else {
+        this.emit('select', { annotation, element: shape, skipEvent });  
+      }
     } else {
       this.emit('select', { annotation, element: shape, skipEvent }); 
     }
@@ -200,13 +195,19 @@ export default class AnnotationLayer extends EventEmitter {
     if (this.selectedShape) {
       const { annotation } = this.selectedShape;
 
-      this.selectedShape.destroy();
-      this.selectedShape = null;
+      if (this.selectShape.destroy) {
+        // Modifiable shape: destroy and re-add the annotation
+        this.selectedShape.destroy();
+        this.selectedShape = null;
 
-      if (!annotation.isSelection) {
-        this.addAnnotation(annotation);
-        if (!skipRedraw)
-          this.redraw(); 
+        if (!annotation.isSelection) {
+          this.addAnnotation(annotation);
+          if (!skipRedraw)
+            this.redraw(); 
+        }
+      } else {
+        // Not modifiable - just set to null
+        this.selectShape = null;
       }
     }
 
@@ -255,7 +256,7 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   destroy = () => {
-    this.currentTool = null;
+    // this.currentTool = null;
     this.currentHover = null;
     this.svg.parentNode.removeChild(this.svg);
   }

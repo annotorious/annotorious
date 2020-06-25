@@ -1,10 +1,11 @@
 import EventEmitter from 'tiny-emitter';
 import RubberbandRect from './RubberbandRect';
+import EditableRect from './EditableRect';
 
 /**
  * A rubberband selector for rectangle fragments.
  */
-export default class RubberbandRectSelector extends EventEmitter {
+export default class RubberbandRectTool extends EventEmitter {
 
   constructor(g) {
     super();
@@ -70,8 +71,15 @@ export default class RubberbandRectSelector extends EventEmitter {
     this.stop();
   }
 
+  createEditableShape = (annotation, g) =>
+    new EditableRect(annotation, g);
+
   get isDrawing() {
     return this.rubberband != null;
+  }
+
+  get supportsModify() {
+    return true;
   }
 
 }
