@@ -46,6 +46,9 @@
       <p class="instructions">
         Click the annotation to edit. Click and drag the mouse to create a new annotation.
       </p>
+      <p>
+        <button id="current-tool">RECTANGLE</button>
+      </p>
       <img id="hallstatt" src="640px-Hallstatt.jpg">
       <p class="caption">
         Sample image source: <a href="http://commons.wikimedia.org/wiki/File:Hallstatt_300.jpg">Hallstatt,
@@ -77,6 +80,19 @@
         });
         
         anno.loadAnnotations('annotations.w3c.json');
+
+        anno.setDrawingTool('rect');
+        
+        var toolToggle = document.getElementById('current-tool');
+        toolToggle.addEventListener('click', function() {
+          if (toolToggle.innerHTML == 'RECTANGLE') {
+            toolToggle.innerHTML = 'POLYGON';
+            anno.setDrawingTool('polygon');
+          } else {
+            toolToggle.innerHTML = 'RECTANGLE';
+            anno.setDrawingTool('rect');
+          }
+        });
       })()
     </script>
   </body>

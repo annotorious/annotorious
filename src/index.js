@@ -121,6 +121,9 @@ export class Annotorious {
     this._app.current.setAnnotations(webannotations);
   }
 
+  setDrawingTool = shape =>
+    this._app.current.setDrawingTool(shape);
+
   /**
    * Returns all annotations
    */

@@ -98,6 +98,9 @@ export default class ImageAnnotator extends Component  {
   getAnnotations = () =>
     this.annotationLayer.getAnnotations().map(a => a.clone());
 
+  setDrawingTool = shape =>
+    this.annotationLayer.setDrawingTool(shape);
+
   setVisible = visible =>
     this.annotationLayer.setVisible(visible);
 
