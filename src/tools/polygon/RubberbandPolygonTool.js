@@ -1,4 +1,5 @@
 import EventEmitter from 'tiny-emitter';
+import RubberbandPolygon from './RubberbandPolygon';
 
 /**
  * A rubberband selector for rectangle fragments.
@@ -35,9 +36,11 @@ export default class RubberbandPolygonTool extends EventEmitter {
   }
 
   startDrawing = evt => {
-    const { x, y } = this._toSVG(evt.layerX, evt.layerY);
-    this._attachListeners();
-    this.rubberband = new RubberbandPolygon([ x, y ], this.g);
+    if (!this.isDrawing) {
+      const { x, y } = this._toSVG(evt.layerX, evt.layerY);
+      this._attachListeners();
+      this.rubberband = new RubberbandPolygon([ x, y ], this.g);
+    }
   }
 
   stop = () => {
