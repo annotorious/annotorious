@@ -40,10 +40,8 @@ export default class AnnotationLayer extends EventEmitter {
     } else {
       // Attach handlers to the drawing tool palette
       this.tools = new DrawingTools(this.g);
-
       this.tools.on('complete', this.selectShape);
       this.tools.on('cancel', this.selectCurrentHover);
-
       this.enableDrawing();
     }
 
@@ -55,8 +53,9 @@ export default class AnnotationLayer extends EventEmitter {
     if (!this.readOnly) {
       this.disableSelectHover();
       this.svg.addEventListener('mousedown', evt => {
-        if (!this.tools.current.isDrawing)
+        if (!this.tools.current.isDrawing) {
           this.startDrawing(evt);
+        }
       });
     }
   }
@@ -171,15 +170,10 @@ export default class AnnotationLayer extends EventEmitter {
       if (shape.annotation.isSelection)
         this.disableSelectHover();
 
-      if (this.tools.current.supportsModify) {
-        // Replace the shape with an editable version
-        shape.parentNode.removeChild(shape);
-
-        this.selectedShape = this.tools.current.createEditableShape(annotation, this.g);
-
-        this.selectedShape.on('update', xywh => {
-          const { x, y, w, h } = xywh;
-          this.emit('updateTarget', this.selectedShape.element, toRectFragment(x, y, w, h));
+      if (this.tools.forShape(shape).supportsModify) {
+        this.selectedShape = this.tools.forShape(shape).createEditableShape(annotation);
+        this.selectedShape.on('update', fragment => {
+          this.emit('updateTarget', this.selectedShape.element, fragment);
         });
 
         this.emit('select', { annotation, element: this.selectedShape.element, skipEvent });
@@ -195,7 +189,7 @@ export default class AnnotationLayer extends EventEmitter {
     if (this.selectedShape) {
       const { annotation } = this.selectedShape;
 
-      if (this.selectShape.destroy) {
+      if (this.selectedShape.destroy) {
         // Modifiable shape: destroy and re-add the annotation
         this.selectedShape.destroy();
         this.selectedShape = null;

@@ -1,5 +1,5 @@
 import EventEmitter from 'tiny-emitter';
-import { drawRect, getCorners, getRectSize, setRectSize, parseRectFragment } from '../../annotations/selectors/RectFragment';
+import { drawRect, getCorners, getRectSize, setRectSize, parseRectFragment, toRectFragment } from '../../annotations/selectors/RectFragment';
 import { SVG_NAMESPACE } from '../../SVGConst';
 
 const drawHandle = (x, y, className) => {
@@ -165,7 +165,7 @@ export default class EditableRect extends EventEmitter {
         const y = pos.y - this.mouseOffset.y;
 
         this.setSize(x, y, w, h); 
-        this.emit('update', { x, y, w, h }); 
+        this.emit('update', toRectFragment(x, y, w, h)); 
       } else {
         // Handles
         const corners = getCorners(this.rectangle);
@@ -179,7 +179,7 @@ export default class EditableRect extends EventEmitter {
         const { x, y, w, h } = stretchCorners(pos, oppositeCorner)
 
         this.setSize(x, y, w, h); 
-        this.emit('update', { x, y, w, h }); 
+        this.emit('update', toRectFragment(x, y, w, h)); 
       }
     }
   }

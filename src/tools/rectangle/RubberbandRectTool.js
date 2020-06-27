@@ -71,8 +71,8 @@ export default class RubberbandRectTool extends EventEmitter {
     this.stop();
   }
 
-  createEditableShape = (annotation, g) =>
-    new EditableRect(annotation, g);
+  createEditableShape = annotation =>
+    new EditableRect(annotation, this.g);
 
   get isDrawing() {
     return this.rubberband != null;
