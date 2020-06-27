@@ -66,9 +66,8 @@ export default class RubberbandRectTool extends EventEmitter {
       this.emit('complete', shape);
     } else {
       this.emit('cancel', evt);
+      this.stop();
     }
-
-    this.stop();
   }
 
   createEditableShape = annotation =>

@@ -52,11 +52,7 @@ export default class AnnotationLayer extends EventEmitter {
   enableDrawing = () => {
     if (!this.readOnly) {
       this.disableSelectHover();
-      this.svg.addEventListener('mousedown', evt => {
-        if (!this.tools.current.isDrawing) {
-          this.startDrawing(evt);
-        }
-      });
+      this.svg.addEventListener('mousedown', this.startDrawing);
     }
   }
 
@@ -170,8 +166,13 @@ export default class AnnotationLayer extends EventEmitter {
       if (shape.annotation.isSelection)
         this.disableSelectHover();
 
-      if (this.tools.forShape(shape).supportsModify) {
-        this.selectedShape = this.tools.forShape(shape).createEditableShape(annotation);
+      const toolForShape = this.tools.forShape(shape);
+
+      if (toolForShape.supportsModify) {
+        // Replace the shape with an editable version
+        shape.parentNode.removeChild(shape);
+
+        this.selectedShape = toolForShape.createEditableShape(annotation);
         this.selectedShape.on('update', fragment => {
           this.emit('updateTarget', this.selectedShape.element, fragment);
         });
