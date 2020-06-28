@@ -233,6 +233,9 @@ export default class AnnotationLayer extends EventEmitter {
     if (this.selectedShape?.annotation === annotation)
       this.deselect();
 
+    if (this.currentHover?.annotation === annotation)
+      this.currentHover = null;
+
     const shape = this.findShape(annotation);
     if (shape)
       shape.parentNode.removeChild(shape);
@@ -254,7 +257,6 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   destroy = () => {
-    // this.currentTool = null;
     this.currentHover = null;
     this.svg.parentNode.removeChild(this.svg);
   }
