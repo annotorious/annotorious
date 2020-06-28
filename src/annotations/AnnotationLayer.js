@@ -168,7 +168,7 @@ export default class AnnotationLayer extends EventEmitter {
 
       const toolForShape = this.tools.forShape(shape);
 
-      if (toolForShape.supportsModify) {
+      if (toolForShape?.supportsModify) {
         // Replace the shape with an editable version
         shape.parentNode.removeChild(shape);
 
