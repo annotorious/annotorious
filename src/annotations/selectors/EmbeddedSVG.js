@@ -3,16 +3,16 @@ import { Environment } from '@recogito/recogito-client-core';
 
 /** Helper that forces an un-namespaced node to SVG **/
 const insertSVGNamespace = originalDoc => {
-  // Set the attribute
-  originalDoc.firstChild.setAttribute('xmlns', SVG_NAMESPACE);
-
   // Serialize and parse for the namespace to take effect on every node
   const serializer = new XMLSerializer();
-  const str = serializer.serializeToString(originalDoc);
+  const str = serializer.serializeToString(originalDoc.documentElement);
+
+  // Doesn't seem that there's a clean cross-browser way for this...
+  const namespaced = str.replace('<svg>', `<svg xmlns="${SVG_NAMESPACE}">`);
 
   const parser = new DOMParser();
-  const updateDoc = parser.parseFromString(str, "image/svg+xml");   
-  return updateDoc.firstChild;
+  const namespacedDoc = parser.parseFromString(namespaced, "image/svg+xml");   
+  return namespacedDoc.documentElement;
 }
 
 /** TODO allow only primitive types (polygon, path, circle, rect) **/
@@ -36,13 +36,14 @@ const parseSVGFragment = annotation => {
     if (isPrefixDeclared || isDefaultNamespaceSVG) {
       return sanitize(doc).firstChild;
     } else {
-      return sanitize(insertSVGNamespace(doc)).firstChild;
+      return sanitize(insertSVGNamespace(doc));
     }
   }
 }
 
 export const drawEmbeddedSVG = annotation => {
   const shape = parseSVGFragment(annotation);
+  console.log(shape);
 
   // Because we're nitpicky, we don't just draw the shape, 
   // but duplicate it, so we can have inner and an outer lines
