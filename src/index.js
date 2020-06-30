@@ -129,7 +129,7 @@ export class Annotorious {
    */
   getAnnotations = () => {
     const annotations = this._app.current.getAnnotations();
-    return annotations.map(a => a._annotation);
+    return annotations.map(a => a.underlying);
   }
 
   /** Shows or hides the annotation layer **/
