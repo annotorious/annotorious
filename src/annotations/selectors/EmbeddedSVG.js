@@ -43,7 +43,6 @@ const parseSVGFragment = annotation => {
 
 export const drawEmbeddedSVG = annotation => {
   const shape = parseSVGFragment(annotation);
-  console.log(shape);
 
   // Because we're nitpicky, we don't just draw the shape, 
   // but duplicate it, so we can have inner and an outer lines
