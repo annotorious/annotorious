@@ -1,2 +1,1 @@
-export { default as RubberbandPolygonTool } from './polygon/RubberbandPolygonTool';
-export { default as RubberbandRectTool } from './rectangle/RubberbandRectTool';
+export { default as DrawingTools } from './DrawingTools';
