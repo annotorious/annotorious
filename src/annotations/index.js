@@ -1,1 +1,1 @@
-export * from './selectors/RectFragment';
+export * from './selectors';
