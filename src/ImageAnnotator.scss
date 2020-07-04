@@ -40,7 +40,7 @@
   
   }
 
-  .a9s-selection rect.inner {
+  .a9s-annotation.selected .inner, .a9s-selection .inner {
     stroke:#fff000;
   } 
 

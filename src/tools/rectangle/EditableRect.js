@@ -72,7 +72,7 @@ export default class EditableRect extends EventEmitter {
     // 'g' for the editable rect compound shape
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
     this.rectangle = drawRect(x, y, w, h);
-    this.rectangle.setAttribute('class', 'a9s-annotation editable');
+    this.rectangle.setAttribute('class', 'a9s-annotation editable selected');
     this.group.appendChild(this.rectangle);
 
     this.rectangle.querySelector('.inner')

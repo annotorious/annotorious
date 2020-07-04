@@ -155,7 +155,7 @@ export default class AnnotationLayer extends EventEmitter {
     if (this.selectedShape && this.selectedShape.annotation !== shape.annotation) {
       this.deselect(true);
     }
-
+    
     const { annotation } = shape;
 
     const readOnly = this.readOnly || annotation.readOnly;
@@ -179,6 +179,8 @@ export default class AnnotationLayer extends EventEmitter {
 
         this.emit('select', { annotation, element: this.selectedShape.element, skipEvent });
       } else {
+        shape.classList.add('selected');
+        this.selectedShape = shape;
         this.emit('select', { annotation, element: shape, skipEvent });  
       }
     } else {
@@ -201,8 +203,9 @@ export default class AnnotationLayer extends EventEmitter {
             this.redraw(); 
         }
       } else {
-        // Not modifiable - just set to null
-        this.selectShape = null;
+        // Not modifiable - just clear
+        this.selectedShape.classList.remove('selected');
+        this.selectedShape = null;
       }
     }
 
