@@ -1,5 +1,6 @@
 import EventEmitter from 'tiny-emitter';
 import RubberbandPolygon from './RubberbandPolygon';
+import EditablePolygon from './EditablePolygon';
 
 /**
  * A rubberband selector for rectangle fragments.
@@ -75,8 +76,15 @@ export default class RubberbandPolygonTool extends EventEmitter {
     this.stop();
   }
 
+  createEditableShape = annotation =>
+    new EditablePolygon(annotation, this.g);
+
   get isDrawing() {
     return this.rubberband != null;
+  }
+
+  get supportsModify() {
+    return true;
   }
 
 }

@@ -36,7 +36,7 @@ const parseSVGFragment = annotation => {
     if (isPrefixDeclared || isDefaultNamespaceSVG) {
       return sanitize(doc).firstChild;
     } else {
-      return sanitize(insertSVGNamespace(doc));
+      return sanitize(insertSVGNamespace(doc)).firstChild;
     }
   }
 }
