@@ -46,12 +46,12 @@
 
   .a9s-annotation.editable {
 
-    rect.inner {
+    .inner {
       stroke:#fff000;
       cursor:move;
     }
 
-    rect.inner:hover {
+    .inner:hover {
       fill:rgba(255, 240, 0, 0.1);
     }
 

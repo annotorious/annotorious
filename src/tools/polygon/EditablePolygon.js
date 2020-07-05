@@ -71,18 +71,16 @@ export default class EditablePolygon extends EventEmitter {
       return handle;
     });
 
-    /*
-    this.rectangle.querySelector('.inner')
-      .addEventListener('mousedown', this.onGrab(this.rectangle));
-    */
+    this.shape.querySelector('.inner')
+      .addEventListener('mousedown', this.onGrab(this.shape));
 
     g.appendChild(this.group);
 
     // The grabbed element (handle or entire shape), if any
     this.grabbedElem = null; 
 
-    // Mouse xy offset inside the shape, if mouse pressed
-    this.mouseOffset = null;
+    // Mouse grab point
+    this.grabbedAt = null;
 
     // this.enableResponsive()
   }
@@ -110,10 +108,8 @@ export default class EditablePolygon extends EventEmitter {
   }
 
   onGrab = grabbedElem => evt => {
-    this.grabbedElem = grabbedElem; 
-    // const pos = this.getMousePosition(evt);
-    // const { x, y } = getRectSize(this.rectangle);
-    // this.mouseOffset = { x: pos.x - x, y: pos.y - y };  
+    this.grabbedElem = grabbedElem;
+    this.grabbedAt = this.getMousePosition(evt);
   }
 
   onMouseMove = evt => {
@@ -121,14 +117,17 @@ export default class EditablePolygon extends EventEmitter {
       const pos = this.getMousePosition(evt);
 
       if (this.grabbedElem === this.shape) {
-        /* x/y changes by mouse offset, w/h remains unchanged
-        const { w, h } = getRectSize(this.rectangle);
-        const x = pos.x - this.mouseOffset.x;
-        const y = pos.y - this.mouseOffset.y;
+        const dx = pos.x - this.grabbedAt.x;
+        const dy = pos.y - this.grabbedAt.y;
+        
+        const updatedPoints = getPoints(this.shape).map(pt => {
+          return { x: pt.x + dx, y: pt.y + dy }
+        });
 
-        this.setSize(x, y, w, h); 
-        this.emit('update', toRectFragment(x, y, w, h)); 
-        */
+        this.grabbedAt = pos;
+
+        this.setPoints(updatedPoints);
+        this.emit('update', toSVGTarget(this.shape)); 
       } else {
         // Handles
         const handleIdx = this.handles.indexOf(this.grabbedElem);
@@ -147,7 +146,7 @@ export default class EditablePolygon extends EventEmitter {
 
   onMouseUp = evt => {
     this.grabbedElem = null;
-    this.mouseOffset = null;
+    this.grabbedAt = null;
   }
 
   get element() {
