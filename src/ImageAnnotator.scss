@@ -57,6 +57,26 @@
 
   }
 
+  .vertex-handle {
+    cursor:move;
+
+    .vertex-handle-inner {
+      stroke:#fff000;
+      fill:#000;  
+    }
+
+    .vertex-handle-outer {
+      stroke:#000;
+      fill:#fff;
+    }
+  }
+
+  .vertex-handle:hover .vertex-handle-inner {
+    fill:#fff000;
+  }
+
+
+
   .resize-handle {
 
     rect {

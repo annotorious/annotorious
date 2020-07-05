@@ -33,7 +33,7 @@
     "target": {
       "selector": [{
         "type": "SvgSelector",
-        "value": "<svg><polygon points='100,130 180,170 140,260 80,190 100,130' /></svg>"
+        "value": "<svg><polygon points='100,130 180,170 140,260 80,190' /></svg>"
       }]
     }
   }
