@@ -65,7 +65,7 @@ export class Annotorious {
         onMouseLeaveAnnotation={this.handleMouseLeaveAnnotation}>
         
         <CommentWidget />
-        <TagWidget />
+        <TagWidget vocabulary={config.tagVocabulary} />
 
       </ImageAnnotator>,
     

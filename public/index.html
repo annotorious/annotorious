@@ -60,7 +60,8 @@
       (function() {
         var anno = Annotorious.init({
           image: 'hallstatt',
-          locale: 'auto'
+          locale: 'auto',
+          tagVocabulary: [ 'Animal', 'Artwork', 'Building', 'Person', 'Vegetation', 'Waterbody' ]
         });
         
         anno.on('selectAnnotation', function(annotation) {
