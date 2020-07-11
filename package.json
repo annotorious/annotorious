@@ -39,7 +39,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "@recogito/recogito-client-core": "^0.1.5",
+    "@recogito/recogito-client-core": "^0.1.6",
     "axios": "^0.19.2",
     "preact": "^10.4.1",
     "tiny-emitter": "^2.1.0"
