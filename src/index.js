@@ -57,8 +57,10 @@ export class Annotorious {
         wrapperEl={wrapperEl}
         readOnly={config.readOnly}
         headless={config.headless}
-        onAnnotationSelected={this.handleAnnotationSelected}
+        onSelectionCreated={this.handleSelectionCreated}
+        onSelectionTargetChanged={this.handleSelectionTargetChanged}
         onAnnotationCreated={this.handleAnnotationCreated} 
+        onAnnotationSelected={this.handleAnnotationSelected}
         onAnnotationUpdated={this.handleAnnotationUpdated} 
         onAnnotationDeleted={this.handleAnnotationDeleted}
         onMouseEnterAnnotation={this.handleMouseEnterAnnotation}
@@ -71,6 +73,12 @@ export class Annotorious {
     
     this._appContainerEl);
   }
+
+  handleSelectionCreated = selection =>
+    this._emitter.emit('createSelection', selection._stub);
+
+  handleSelectionTargetChanged = target => 
+    this._emitter.emit('changeSelectionTarget', target);
 
   handleAnnotationSelected = annotation => 
     this._emitter.emit('selectAnnotation', annotation.underlying);

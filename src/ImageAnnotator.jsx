@@ -24,15 +24,27 @@ export default class ImageAnnotator extends Component  {
 
   componentDidMount() {
     this.annotationLayer = new AnnotationLayer(this.props);
-    this.annotationLayer.on('mouseEnterAnnotation', this.props.onMouseEnterAnnotation);
-    this.annotationLayer.on('mouseLeaveAnnotation', this.props.onMouseLeaveAnnotation);
+
+    // A new shape selection was created with a drawing tool
+    this.annotationLayer.on('createSelection', this.handleCreateSelection);
+
+    // An existing annotation was selected
     this.annotationLayer.on('select', this.handleSelect);
+
+    // The current selection shape was moved, resized or changed
     this.annotationLayer.on('updateTarget', this.handleUpdateTarget);
+
+    // Mouse entered or left an annotation shape
+    this.annotationLayer.on('mouseEnterAnnotation', this.handleMouseEnter);
+    this.annotationLayer.on('mouseLeaveAnnotation', this.handleMouseLeave);
   }
 
   componentWillUnmount() {
     this.annotationLayer.destroy();
   }
+
+  handleCreateSelection = selection => 
+    this.props.onSelectionCreated(selection.clone());
 
   handleSelect = evt => {
     const { annotation, element, skipEvent } = evt;
@@ -49,8 +61,18 @@ export default class ImageAnnotator extends Component  {
     }
   }
 
-  handleUpdateTarget = (selectedDOMElement, modifiedTarget) =>
+  handleUpdateTarget = (selectedDOMElement, modifiedTarget) => {
     this.setState({ selectedDOMElement, modifiedTarget });
+
+    const clone = JSON.parse(JSON.stringify(modifiedTarget));
+    this.props.onSelectionTargetChanged(clone);
+  }
+
+  handleMouseEnter = annotation =>
+    this.props.onMouseEnterAnnotation(annotation.clone());
+
+  handleMouseLeave = annotation =>
+    this.props.onMouseLeaveAnnotation(annotation.clone());
 
   /**************************/  
   /* Annotation CRUD events */
