@@ -74,11 +74,9 @@ export class Annotorious {
     this._appContainerEl);
   }
 
-  handleSelectionCreated = selection =>
-    this._emitter.emit('createSelection', selection._stub);
-
-  handleSelectionTargetChanged = target => 
-    this._emitter.emit('changeSelectionTarget', target);
+  /********************/               
+  /*  External events */
+  /********************/  
 
   handleAnnotationSelected = annotation => 
     this._emitter.emit('selectAnnotation', annotation.underlying);
@@ -86,65 +84,63 @@ export class Annotorious {
   handleAnnotationCreated = annotation =>
     this._emitter.emit('createAnnotation', annotation.underlying);
 
-  handleAnnotationUpdated = (annotation, previous) =>
-    this._emitter.emit('updateAnnotation', annotation.underlying, previous.underlying);
-
   handleAnnotationDeleted = annotation =>
     this._emitter.emit('deleteAnnotation', annotation.underlying);
+
+  handleAnnotationUpdated = (annotation, previous) =>
+    this._emitter.emit('updateAnnotation', annotation.underlying, previous.underlying);
 
   handleMouseEnterAnnotation = (annotation, evt) =>
     this._emitter.emit('mouseEnterAnnotation', annotation.underlying, evt);
 
   handleMouseLeaveAnnotation = (annotation, evt) =>
     this._emitter.emit('mouseLeaveAnnotation', annotation.underlying, evt);
-  
+
+  handleSelectionCreated = selection =>
+    this._emitter.emit('createSelection', selection._stub);
+
+  handleSelectionTargetChanged = target => 
+    this._emitter.emit('changeSelectionTarget', target);
+
   /******************/               
   /*  External API  */
   /******************/     
   
-  /**
-   * Adds a single JSON-LD WebAnnotation to the annotation layer.
-   */
   addAnnotation = (annotation, readOnly) =>
     this._app.current.addAnnotation(new WebAnnotation(annotation, { readOnly }));
 
-  /**
-   * Removes the given JSON-LD WebAnnotation from the annotation layer.
-   */
-  removeAnnotation = annotation =>
-    this._app.current.removeAnnotation(new WebAnnotation(annotation));
+  // @deprecated
+  applyTemplate = (template, openEditor) => {
+    const bodies = Array.isArray(template) ? template : [ template ];
+    this._app.current.applyTemplate(bodies, openEditor);
+  }
 
-  /** 
-   * Loads JSON-LD WebAnnotations from the given URL.
-   */
+  clearAuthInfo = () =>
+    Environment.user = null;
+
+  destroy = () =>
+    ReactDOM.unmountComponentAtNode(this._appContainerEl);
+
+  getAnnotations = () => {
+    const annotations = this._app.current.getAnnotations();
+    return annotations.map(a => a.underlying);
+  }
+  
   loadAnnotations = url => axios.get(url).then(response => {
     const annotations = response.data.map(a => new WebAnnotation(a));
     this._app.current.setAnnotations(annotations);
     return annotations;
   });
 
-  /** Initializes the annotation layer with the list of WebAnnotations **/
-  setAnnotations = annotations => {
-    const webannotations = annotations.map(a => new WebAnnotation(a));
-    this._app.current.setAnnotations(webannotations);
-  }
+  on = (event, handler) =>
+    this._emitter.on(event, handler);
 
-  setDrawingTool = shape =>
-    this._app.current.setDrawingTool(shape);
+  off = (event, callback) =>
+    this._emitter.off(event, callback);
+  
+  removeAnnotation = annotation =>
+    this._app.current.removeAnnotation(new WebAnnotation(annotation));
 
-  /**
-   * Returns all annotations
-   */
-  getAnnotations = () => {
-    const annotations = this._app.current.getAnnotations();
-    return annotations.map(a => a.underlying);
-  }
-
-  /** Shows or hides the annotation layer **/
-  setVisible = visible =>
-    this._app.current.setVisible(visible);
-
-  /** Programmatically selects the annotation, opening the editor popup **/
   selectAnnotation = annotationOrId => {
     const arg = (annotationOrId?.type === 'Annotation') ? 
       new WebAnnotation(annotationOrId) : annotationOrId;
@@ -153,48 +149,22 @@ export class Annotorious {
     return selected?.underlying;
   }
 
-  /** 
-   * Applies an annotation template to newly created 
-   * selections. The editor will just apply the template and
-   * stay closed, unless openEditor is se to true.
-   */
-  applyTemplate = (template, openEditor) => {
-    const bodies = Array.isArray(template) ? template : [ template ];
-    this._app.current.applyTemplate(bodies, openEditor);
-  }
-
-  /**
-   * Unmounts the annotator component
-   */
-  destroy = () =>
-    ReactDOM.unmountComponentAtNode(this._appContainerEl);
-
-  /** Sets user auth information **/
   setAuthInfo = authinfo =>
     Environment.user = authinfo;
 
-  /** Clears the user auth information **/
-  clearAuthInfo = () =>
-    Environment.user = null;
+  setAnnotations = annotations => {
+    const webannotations = annotations.map(a => new WebAnnotation(a));
+    this._app.current.setAnnotations(webannotations);
+  }
 
-  /** Sets the current 'server time', to avoid problems with locally-generated timestamps **/
+  setDrawingTool = shape =>
+    this._app.current.setDrawingTool(shape);
+
+  setVisible = visible =>
+    this._app.current.setVisible(visible);
+
   setServerTime = timestamp => 
     Environment.setServerTime(timestamp);
-
-  /** 
-   * Adds an event handler.
-   */
-  on = (event, handler) =>
-    this._emitter.on(event, handler);
-
-  /** 
-   * Removes an event handler.
-   * 
-   * If no callback, removes all handlers for 
-   * the given event.
-   */
-  off = (event, callback) =>
-    this._emitter.off(event, callback);
 
 }
 
