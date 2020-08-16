@@ -14,10 +14,10 @@ const drawHandle = pt => {
     return c;
   }
 
-  const inner = drawCircle(7);
+  const inner = drawCircle(6);
   inner.setAttribute('class', 'vertex-handle-inner')
 
-  const outer = drawCircle(8);
+  const outer = drawCircle(7);
   outer.setAttribute('class', 'vertex-handle-outer')
 
   group.appendChild(outer);
@@ -127,6 +127,9 @@ export default class EditablePolygon extends EventEmitter {
         this.grabbedAt = pos;
 
         this.setPoints(updatedPoints);
+
+        updatedPoints.forEach((pt, idx) => moveHandle(this.handles[idx], pt)); 
+
         this.emit('update', toSVGTarget(this.shape)); 
       } else {
         // Handles

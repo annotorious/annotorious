@@ -2,6 +2,7 @@ import EventEmitter from 'tiny-emitter';
 import { drawRect, getCorners, getRectSize, setRectSize, parseRectFragment, toRectFragment } from '../../annotations/selectors/RectFragment';
 import { SVG_NAMESPACE } from '../../SVGConst';
 
+/*
 const drawHandle = (x, y, className) => {
   const g = document.createElementNS(SVG_NAMESPACE, 'g');
   g.setAttribute('class', `resize-handle ${className}`);
@@ -26,17 +27,47 @@ const drawHandle = (x, y, className) => {
 
   return g;
 }
+*/
+const drawHandle = (x, y) => {
+  const group = document.createElementNS(SVG_NAMESPACE, 'g');
+  group.setAttribute('class', 'vertex-handle');
+
+  const drawCircle = r => {
+    const c = document.createElementNS(SVG_NAMESPACE, 'circle');
+    c.setAttribute('cx', x);
+    c.setAttribute('cy', y);
+    c.setAttribute('r', r);
+    return c;
+  }
+
+  const inner = drawCircle(6);
+  inner.setAttribute('class', 'vertex-handle-inner')
+
+  const outer = drawCircle(7);
+  outer.setAttribute('class', 'vertex-handle-outer')
+
+  group.appendChild(outer);
+  group.appendChild(inner);
+
+  return group;
+}
+
 
 const setHandleXY = (handle, x, y) => {
-  handle.setAttribute('transform-origin', `${x}px ${y}px`);
+  // handle.setAttribute('transform-origin', `${x}px ${y}px`);
 
-  const inner = handle.querySelector('.handle-inner');
-  inner.setAttribute('x', x - 5.5);
-  inner.setAttribute('y', y - 5.5);
+  const inner = handle.querySelector('.vertex-handle-inner');
+  // inner.setAttribute('x', x - 5.5);
+  // inner.setAttribute('y', y - 5.5);
+  inner.setAttribute('cx', x);
+  inner.setAttribute('cy', y);
 
-  const outer = handle.querySelector('.handle-outer');
-  outer.setAttribute('x', x - 6.5);
-  outer.setAttribute('y', y - 6.5);
+  const outer = handle.querySelector('.vertex-handle-outer');
+  // outer.setAttribute('x', x - 6.5);
+  // outer.setAttribute('y', y - 6.5);
+  outer.setAttribute('cx', x);
+  outer.setAttribute('cy', y);
+
 }
 
 const stretchCorners = (corner, opposite) => {
