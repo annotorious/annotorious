@@ -12,6 +12,10 @@ export default class RubberbandPolygonTool extends EventEmitter {
 
     this.svg = g.closest('svg');
     this.g = g;
+
+    this.isDrawing = false;
+
+    this.supportsModify = true;
   }
 
   _attachListeners = () => {
@@ -38,6 +42,8 @@ export default class RubberbandPolygonTool extends EventEmitter {
 
   startDrawing = evt => {
     if (!this.isDrawing) {
+      this.isDrawing = true;
+
       const { x, y } = this._toSVG(evt.layerX, evt.layerY);
       this._attachListeners();
       this.rubberband = new RubberbandPolygon([ x, y ], this.g);
@@ -46,6 +52,7 @@ export default class RubberbandPolygonTool extends EventEmitter {
 
   stop = () => {
     this._detachListeners();
+    this.isDrawing = false;
     
     if (this.rubberband) {
       this.rubberband.destroy();
@@ -69,6 +76,9 @@ export default class RubberbandPolygonTool extends EventEmitter {
   }
 
   onDblClick = evt => {
+    this._detachListeners();
+    this.isDrawing = false;
+
     const { x , y } = this._toSVG(evt.layerX, evt.layerY);
     this.rubberband.addPoint([ x, y ]);
 
@@ -76,19 +86,9 @@ export default class RubberbandPolygonTool extends EventEmitter {
     const shape = this.rubberband.g;
     shape.annotation = this.rubberband.toSelection();
     this.emit('complete', shape);
-
-    this.stop();
   }
 
   createEditableShape = annotation =>
     new EditablePolygon(annotation, this.g);
-
-  get isDrawing() {
-    return this.rubberband != null;
-  }
-
-  get supportsModify() {
-    return true;
-  }
 
 }
