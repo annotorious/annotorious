@@ -47,7 +47,8 @@ export default class RubberbandPolygon {
   }
 
   destroy = () => {
-
+    this.g.parentNode.removeChild(this.g);
+    this.g = null;
   }
 
   toSelection = () => {

@@ -46,7 +46,11 @@ export default class RubberbandPolygonTool extends EventEmitter {
 
   stop = () => {
     this._detachListeners();
-    this.rubberband = null;
+    
+    if (this.rubberband) {
+      this.rubberband.destroy();
+      this.rubberband = null;
+    }
   }
 
   onMouseMove = evt => {
