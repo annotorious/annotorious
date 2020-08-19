@@ -27,25 +27,25 @@ export class Annotorious {
     // container DIV, which holds the editor popup, will be attached 
     // as a child to the wrapper element (=a sibling to the image
     // element).
-    const imageEl = (config.image.nodeType) ? 
+    this._imageEl = (config.image.nodeType) ? 
       config.image : document.getElementById(config.image);
 
     // DIV will have unwanted margin at the bottom otherwise!
-    imageEl.style.display = 'block';
+    this._imageEl.style.display = 'block';
 
     // Store image reference in the Environment
-    Environment.image = imageEl;
+    Environment.image = this._imageEl;
 
     setLocale(config.locale);
 
-    const wrapperEl = document.createElement('DIV');
-    wrapperEl.style.position = 'relative';
-    wrapperEl.style.display = 'inline-block';
-    imageEl.parentNode.insertBefore(wrapperEl, imageEl);
-    wrapperEl.appendChild(imageEl);
+    this._wrapperEl = document.createElement('DIV');
+    this._wrapperEl.style.position = 'relative';
+    this._wrapperEl.style.display = 'inline-block';
+    this._imageEl.parentNode.insertBefore(this._wrapperEl, this._imageEl);
+    this._wrapperEl.appendChild(this._imageEl);
     
     this._appContainerEl = document.createElement('DIV');
-    wrapperEl.appendChild(this._appContainerEl);
+    this._wrapperEl.appendChild(this._appContainerEl);
 
     const { CommentWidget, TagWidget } = Editor;
    
@@ -53,8 +53,8 @@ export class Annotorious {
     ReactDOM.render(
       <ImageAnnotator 
         ref={this._app}
-        imageEl={imageEl}
-        wrapperEl={wrapperEl}
+        imageEl={this._imageEl}
+        wrapperEl={this._wrapperEl}
         readOnly={config.readOnly}
         headless={config.headless}
         onSelectionCreated={this.handleSelectionCreated}
@@ -118,8 +118,11 @@ export class Annotorious {
   clearAuthInfo = () =>
     Environment.user = null;
 
-  destroy = () =>
+  destroy = () => {
     ReactDOM.unmountComponentAtNode(this._appContainerEl);
+    this._wrapperEl.parentNode.insertBefore(this._imageEl, this._wrapperEl);
+    this._wrapperEl.parentNode.removeChild(this._wrapperEl);
+  }
 
   getAnnotations = () => {
     const annotations = this._app.current.getAnnotations();
