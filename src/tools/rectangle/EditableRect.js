@@ -2,35 +2,10 @@ import EventEmitter from 'tiny-emitter';
 import { drawRect, getCorners, getRectSize, setRectSize, parseRectFragment, toRectFragment } from '../../annotations/selectors/RectFragment';
 import { SVG_NAMESPACE } from '../../SVGConst';
 
-/*
-const drawHandle = (x, y, className) => {
-  const g = document.createElementNS(SVG_NAMESPACE, 'g');
-  g.setAttribute('class', `resize-handle ${className}`);
-  g.setAttribute('transform-origin', `${x}px ${y}px`);
-
-  const inner = document.createElementNS(SVG_NAMESPACE, 'rect');   
-  inner.setAttribute('x', x - 5.5);
-  inner.setAttribute('y', y - 5.5);
-  inner.setAttribute('width', 11);
-  inner.setAttribute('height', 11);
-  inner.setAttribute('class', 'handle-inner');
-
-  const outer = document.createElementNS(SVG_NAMESPACE, 'rect');   
-  outer.setAttribute('x', x - 6.5);
-  outer.setAttribute('y', y - 6.5);
-  outer.setAttribute('width', 13);
-  outer.setAttribute('height', 13);
-  outer.setAttribute('class', 'handle-outer');
-
-  g.appendChild(outer);
-  g.appendChild(inner);
-
-  return g;
-}
-*/
 const drawHandle = (x, y) => {
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
   group.setAttribute('class', 'vertex-handle');
+  group.setAttribute('transform-origin', `${x}px ${y}px`);
 
   const drawCircle = r => {
     const c = document.createElementNS(SVG_NAMESPACE, 'circle');
@@ -54,20 +29,15 @@ const drawHandle = (x, y) => {
 
 
 const setHandleXY = (handle, x, y) => {
-  // handle.setAttribute('transform-origin', `${x}px ${y}px`);
+  handle.setAttribute('transform-origin', `${x}px ${y}px`);
 
   const inner = handle.querySelector('.vertex-handle-inner');
-  // inner.setAttribute('x', x - 5.5);
-  // inner.setAttribute('y', y - 5.5);
   inner.setAttribute('cx', x);
   inner.setAttribute('cy', y);
 
   const outer = handle.querySelector('.vertex-handle-outer');
-  // outer.setAttribute('x', x - 6.5);
-  // outer.setAttribute('y', y - 6.5);
   outer.setAttribute('cx', x);
   outer.setAttribute('cy', y);
-
 }
 
 const stretchCorners = (corner, opposite) => {
@@ -135,7 +105,7 @@ export default class EditableRect extends EventEmitter {
     // Mouse xy offset inside the shape, if mouse pressed
     this.mouseOffset = null;
 
-    this.enableResponsive()
+    this.enableResponsive();
   }
 
   get element() {

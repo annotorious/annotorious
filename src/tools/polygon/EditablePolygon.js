@@ -5,6 +5,7 @@ import { SVG_NAMESPACE } from '../../SVGConst';
 const drawHandle = pt => {
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
   group.setAttribute('class', 'vertex-handle');
+  group.setAttribute('transform-origin', `${pt.x}px ${pt.y}px`);
 
   const drawCircle = r => {
     const c = document.createElementNS(SVG_NAMESPACE, 'circle');
@@ -27,6 +28,8 @@ const drawHandle = pt => {
 }
 
 const moveHandle = (handle, pt) => {
+  handle.setAttribute('transform-origin', `${pt.x}px ${pt.y}px`);
+
   const inner = handle.querySelector('.vertex-handle-inner');
   inner.setAttribute('cx', pt.x);
   inner.setAttribute('cy', pt.y);
@@ -82,7 +85,24 @@ export default class EditablePolygon extends EventEmitter {
     // Mouse grab point
     this.grabbedAt = null;
 
-    // this.enableResponsive()
+    this.enableResponsive()
+  }
+
+  enableResponsive = () => {
+    if (window.ResizeObserver) {
+      this.resizeObserver = new ResizeObserver(() => {
+        const svgBounds = this.svg.getBoundingClientRect();
+        const { width, height } = this.svg.viewBox.baseVal;
+
+        const scaleX = width / svgBounds.width;
+        const scaleY = height / svgBounds.height;
+        
+        this.handles.forEach(handle =>
+          handle.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
+      });
+      
+      this.resizeObserver.observe(this.svg.parentNode);
+    }
   }
 
   setPoints = (points) => {
@@ -145,7 +165,6 @@ export default class EditablePolygon extends EventEmitter {
       }
     }
   }
-
 
   onMouseUp = evt => {
     this.grabbedElem = null;
