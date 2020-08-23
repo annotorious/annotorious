@@ -78,17 +78,17 @@ export class Annotorious {
   /*  External events */
   /********************/  
 
-  handleAnnotationSelected = annotation => 
-    this._emitter.emit('selectAnnotation', annotation.underlying);
+  handleSelectionTargetChanged = target => 
+    this._emitter.emit('changeSelectionTarget', target);
 
   handleAnnotationCreated = annotation =>
     this._emitter.emit('createAnnotation', annotation.underlying);
+  
+  handleSelectionCreated = selection =>
+    this._emitter.emit('createSelection', selection._stub);
 
   handleAnnotationDeleted = annotation =>
     this._emitter.emit('deleteAnnotation', annotation.underlying);
-
-  handleAnnotationUpdated = (annotation, previous) =>
-    this._emitter.emit('updateAnnotation', annotation.underlying, previous.underlying);
 
   handleMouseEnterAnnotation = (annotation, evt) =>
     this._emitter.emit('mouseEnterAnnotation', annotation.underlying, evt);
@@ -96,11 +96,11 @@ export class Annotorious {
   handleMouseLeaveAnnotation = (annotation, evt) =>
     this._emitter.emit('mouseLeaveAnnotation', annotation.underlying, evt);
 
-  handleSelectionCreated = selection =>
-    this._emitter.emit('createSelection', selection._stub);
+  handleAnnotationSelected = annotation => 
+    this._emitter.emit('selectAnnotation', annotation.underlying);
 
-  handleSelectionTargetChanged = target => 
-    this._emitter.emit('changeSelectionTarget', target);
+  handleAnnotationUpdated = (annotation, previous) =>
+    this._emitter.emit('updateAnnotation', annotation.underlying, previous.underlying);
 
   /******************/               
   /*  External API  */
@@ -135,11 +135,11 @@ export class Annotorious {
     return annotations;
   });
 
-  on = (event, handler) =>
-    this._emitter.on(event, handler);
-
   off = (event, callback) =>
     this._emitter.off(event, callback);
+
+  on = (event, handler) =>
+    this._emitter.on(event, handler);
   
   removeAnnotation = annotation =>
     this._app.current.removeAnnotation(new WebAnnotation(annotation));
@@ -152,13 +152,13 @@ export class Annotorious {
     return selected?.underlying;
   }
 
-  setAuthInfo = authinfo =>
-    Environment.user = authinfo;
-
   setAnnotations = annotations => {
     const webannotations = annotations.map(a => new WebAnnotation(a));
     this._app.current.setAnnotations(webannotations);
   }
+
+  setAuthInfo = authinfo =>
+    Environment.user = authinfo;
 
   setDrawingTool = shape =>
     this._app.current.setDrawingTool(shape);
