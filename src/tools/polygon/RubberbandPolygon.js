@@ -42,8 +42,15 @@ export default class RubberbandPolygon {
 
   addPoint = xy => {
     const head = this.points.slice(0, this.points.length - 1);
-    this.points = [ ...head, xy, head[0] ];
-    this.setPoints(this.points);   
+
+    // Don't add a new point if distance < 2 pixels
+    const lastCorner = head[head.length - 1];
+    const dist = Math.pow(xy[0] - lastCorner[0], 2) + Math.pow(xy[1] - lastCorner[1], 2);
+    
+    if (dist > 4) {
+      this.points = [ ...head, xy, head[0] ];
+      this.setPoints(this.points);   
+    }
   }
 
   destroy = () => {
