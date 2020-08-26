@@ -1,6 +1,6 @@
 import EventEmitter from 'tiny-emitter';
 import { drawShape, shapeArea } from './selectors';
-import { SVG_NAMESPACE } from '../SVGConst';
+import { SVG_NAMESPACE, addClass, removeClass } from '../SVGConst';
 import DrawingTools from '../tools/DrawingTools';
 
 export default class AnnotationLayer extends EventEmitter {
@@ -17,7 +17,7 @@ export default class AnnotationLayer extends EventEmitter {
 
     // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-    this.svg.classList.add('a9s-annotationlayer');
+    this.svg.setAttribute('class', 'a9s-annotationlayer');
 
     if (naturalWidth == 0 && naturalHeight == 0) {
       imageEl.onload = () =>
@@ -184,12 +184,12 @@ export default class AnnotationLayer extends EventEmitter {
 
         this.emit('select', { annotation, element: this.selectedShape.element, skipEvent });
       } else {
-        shape.classList.add('selected');
+        addClass(shape, 'selected');
         this.selectedShape = shape;
         this.emit('select', { annotation, element: shape, skipEvent });  
       }
     } else {
-      shape.classList.add('selected');
+      addClass(shape, 'selected');
       this.selectedShape = shape;
       this.emit('select', { annotation, element: shape, skipEvent }); 
     }
@@ -211,7 +211,7 @@ export default class AnnotationLayer extends EventEmitter {
         }
       } else {
         // Not modifiable - just clear
-        this.selectedShape.classList.remove('selected');
+        removeClass(this.selectedShape, 'selected');
         this.selectedShape = null;
       }
     }
