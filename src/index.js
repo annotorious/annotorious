@@ -2,20 +2,22 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Emitter from 'tiny-emitter';
 import axios from 'axios';
-import { WebAnnotation, Editor, Environment, addPolyfills, setLocale } from '@recogito/recogito-client-core'; 
+import { WebAnnotation, Editor, Environment, addPolyfills, setLocale } from '@recogito/recogito-client-core';
 import ImageAnnotator from './ImageAnnotator';
+
+import "@babel/polyfill";
 
 addPolyfills(); // For Microsoft Edge
 
 import '@recogito/recogito-client-core/themes/default';
 
 /**
- * The entrypoint into the application. Provides the 
+ * The entrypoint into the application. Provides the
  * externally visible JavaScript API.
  */
 export class Annotorious {
 
-  constructor(config) {   
+  constructor(config) {
     // Programmatic calls to this instance from outside are forwarded
     // through a ref
     this._app = React.createRef();
@@ -23,11 +25,11 @@ export class Annotorious {
     // Event handling via tiny-emitter
     this._emitter = new Emitter();
 
-    // The image is wrapped in a DIV ('wrapperEl'). The application 
-    // container DIV, which holds the editor popup, will be attached 
+    // The image is wrapped in a DIV ('wrapperEl'). The application
+    // container DIV, which holds the editor popup, will be attached
     // as a child to the wrapper element (=a sibling to the image
     // element).
-    this._imageEl = (config.image.nodeType) ? 
+    this._imageEl = (config.image.nodeType) ?
       config.image : document.getElementById(config.image);
 
     // DIV will have unwanted margin at the bottom otherwise!
@@ -43,15 +45,15 @@ export class Annotorious {
     this._wrapperEl.style.display = 'inline-block';
     this._imageEl.parentNode.insertBefore(this._wrapperEl, this._imageEl);
     this._wrapperEl.appendChild(this._imageEl);
-    
+
     this._appContainerEl = document.createElement('DIV');
     this._wrapperEl.appendChild(this._appContainerEl);
 
     const { CommentWidget, TagWidget } = Editor;
-   
+
     // A basic ImageAnnotator with just a comment and a tag widget
     ReactDOM.render(
-      <ImageAnnotator 
+      <ImageAnnotator
         ref={this._app}
         imageEl={this._imageEl}
         wrapperEl={this._wrapperEl}
@@ -59,31 +61,31 @@ export class Annotorious {
         headless={config.headless}
         onSelectionCreated={this.handleSelectionCreated}
         onSelectionTargetChanged={this.handleSelectionTargetChanged}
-        onAnnotationCreated={this.handleAnnotationCreated} 
+        onAnnotationCreated={this.handleAnnotationCreated}
         onAnnotationSelected={this.handleAnnotationSelected}
-        onAnnotationUpdated={this.handleAnnotationUpdated} 
+        onAnnotationUpdated={this.handleAnnotationUpdated}
         onAnnotationDeleted={this.handleAnnotationDeleted}
         onMouseEnterAnnotation={this.handleMouseEnterAnnotation}
         onMouseLeaveAnnotation={this.handleMouseLeaveAnnotation}>
-        
+
         <CommentWidget />
         <TagWidget vocabulary={config.tagVocabulary} />
 
       </ImageAnnotator>,
-    
+
     this._appContainerEl);
   }
 
-  /********************/               
+  /********************/
   /*  External events */
-  /********************/  
+  /********************/
 
-  handleSelectionTargetChanged = target => 
+  handleSelectionTargetChanged = target =>
     this._emitter.emit('changeSelectionTarget', target);
 
   handleAnnotationCreated = annotation =>
     this._emitter.emit('createAnnotation', annotation.underlying);
-  
+
   handleSelectionCreated = selection =>
     this._emitter.emit('createSelection', selection._stub);
 
@@ -96,16 +98,16 @@ export class Annotorious {
   handleMouseLeaveAnnotation = (annotation, evt) =>
     this._emitter.emit('mouseLeaveAnnotation', annotation.underlying, evt);
 
-  handleAnnotationSelected = annotation => 
+  handleAnnotationSelected = annotation =>
     this._emitter.emit('selectAnnotation', annotation.underlying);
 
   handleAnnotationUpdated = (annotation, previous) =>
     this._emitter.emit('updateAnnotation', annotation.underlying, previous.underlying);
 
-  /******************/               
+  /******************/
   /*  External API  */
-  /******************/     
-  
+  /******************/
+
   addAnnotation = (annotation, readOnly) =>
     this._app.current.addAnnotation(new WebAnnotation(annotation, { readOnly }));
 
@@ -128,7 +130,7 @@ export class Annotorious {
     const annotations = this._app.current.getAnnotations();
     return annotations.map(a => a.underlying);
   }
-  
+
   loadAnnotations = url => axios.get(url).then(response => {
     const annotations = response.data.map(a => new WebAnnotation(a));
     this._app.current.setAnnotations(annotations);
@@ -140,12 +142,12 @@ export class Annotorious {
 
   on = (event, handler) =>
     this._emitter.on(event, handler);
-  
+
   removeAnnotation = annotation =>
     this._app.current.removeAnnotation(new WebAnnotation(annotation));
 
   selectAnnotation = annotationOrId => {
-    const arg = (annotationOrId?.type === 'Annotation') ? 
+    const arg = (annotationOrId?.type === 'Annotation') ?
       new WebAnnotation(annotationOrId) : annotationOrId;
 
     const selected = this._app.current.selectAnnotation(arg);
@@ -166,7 +168,7 @@ export class Annotorious {
   setVisible = visible =>
     this._app.current.setVisible(visible);
 
-  setServerTime = timestamp => 
+  setServerTime = timestamp =>
     Environment.setServerTime(timestamp);
 
 }
