@@ -6,8 +6,7 @@ import { WebAnnotation, Editor, Environment, addPolyfills, setLocale } from '@re
 import ImageAnnotator from './ImageAnnotator';
 
 import "@babel/polyfill";
-
-addPolyfills(); // For Microsoft Edge
+addPolyfills(); // Extra polyfills that babel doesn't include
 
 import '@recogito/recogito-client-core/themes/default';
 
