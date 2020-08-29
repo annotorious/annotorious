@@ -5,7 +5,7 @@ import { SVG_NAMESPACE } from '../../SVGConst';
 const drawHandle = pt => {
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
   group.setAttribute('class', 'vertex-handle');
-  group.setAttribute('transform-origin', `${pt.x}px ${pt.y}px`);
+  // group.setAttribute('transform-origin', `${pt.x}px ${pt.y}px`);
 
   const drawCircle = r => {
     const c = document.createElementNS(SVG_NAMESPACE, 'circle');
@@ -34,15 +34,23 @@ const moveHandle = (handle, pt) => {
   inner.setAttribute('cx', pt.x);
   inner.setAttribute('cy', pt.y);
 
-  const outer = handle.querySelector('.vertex-handle-outer');    
+  const outer = handle.querySelector('.vertex-handle-outer');
   outer.setAttribute('cx', pt.x);
   outer.setAttribute('cy', pt.y);
 }
 
+const getPoints = shape => {
+  // Could just be Array.from(shape.querySelector('.inner').points) but...
+  // IE11 :-(
+  const pointList = shape.querySelector('.inner').points;
+  const points = [];
 
-// Shorthand
-const getPoints = shape =>
-  Array.from(shape.querySelector('.inner').points)
+  for (let i=0; i<pointList.numberOfItems; i++) {
+    points.push(pointList.getItem(i));
+  }
+
+  return points;
+}
 
 /**
  * An editable rectangle shape.
@@ -80,7 +88,7 @@ export default class EditablePolygon extends EventEmitter {
     g.appendChild(this.group);
 
     // The grabbed element (handle or entire shape), if any
-    this.grabbedElem = null; 
+    this.grabbedElem = null;
 
     // Mouse grab point
     this.grabbedAt = null;
@@ -96,11 +104,11 @@ export default class EditablePolygon extends EventEmitter {
 
         const scaleX = width / svgBounds.width;
         const scaleY = height / svgBounds.height;
-        
+
         this.handles.forEach(handle =>
           handle.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
       });
-      
+
       this.resizeObserver.observe(this.svg.parentNode);
     }
   }
@@ -115,9 +123,9 @@ export default class EditablePolygon extends EventEmitter {
     outer.setAttribute('points', str);
   }
 
-  /** 
+  /**
    * Converts mouse coordinates to SVG coordinates
-   * 
+   *
    * TODO redundant with EditableRect
    */
   getMousePosition = evt => {
@@ -139,7 +147,7 @@ export default class EditablePolygon extends EventEmitter {
       if (this.grabbedElem === this.shape) {
         const dx = pos.x - this.grabbedAt.x;
         const dy = pos.y - this.grabbedAt.y;
-        
+
         const updatedPoints = getPoints(this.shape).map(pt => {
           return { x: pt.x + dx, y: pt.y + dy }
         });
@@ -148,20 +156,20 @@ export default class EditablePolygon extends EventEmitter {
 
         this.setPoints(updatedPoints);
 
-        updatedPoints.forEach((pt, idx) => moveHandle(this.handles[idx], pt)); 
+        updatedPoints.forEach((pt, idx) => moveHandle(this.handles[idx], pt));
 
-        this.emit('update', toSVGTarget(this.shape)); 
+        this.emit('update', toSVGTarget(this.shape));
       } else {
         // Handles
         const handleIdx = this.handles.indexOf(this.grabbedElem);
-        
+
         const updatedPoints = getPoints(this.shape).map((pt, idx) =>
           (idx === handleIdx) ? pos : pt);
-        
+
         this.setPoints(updatedPoints);
         moveHandle(this.handles[handleIdx], pos);
-      
-        this.emit('update', toSVGTarget(this.shape)); 
+
+        this.emit('update', toSVGTarget(this.shape));
       }
     }
   }
@@ -178,10 +186,10 @@ export default class EditablePolygon extends EventEmitter {
   destroy = () => {
     this.group.parentNode.removeChild(this.group);
 
-    // if (this.resizeObserver)
-    //  this.resizeObserver.disconnect();
-    
-    // this.resizeObserver = null;
+    if (this.resizeObserver)
+      this.resizeObserver.disconnect();
+
+    this.resizeObserver = null;
   }
 
 }
