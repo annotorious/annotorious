@@ -19,8 +19,8 @@ export default class RubberbandPolygonTool extends EventEmitter {
   }
 
   _attachListeners = () => {
-    this.svg.addEventListener('mousemove', this.onMouseMove);  
-    this.svg.addEventListener('dblclick', this.onDblClick);  
+    this.svg.addEventListener('mousemove', this.onMouseMove);
+    this.svg.addEventListener('dblclick', this.onDblClick);
     document.addEventListener('mouseup', this.onMouseUp);
   }
 
@@ -53,7 +53,7 @@ export default class RubberbandPolygonTool extends EventEmitter {
   stop = () => {
     this._detachListeners();
     this.isDrawing = false;
-    
+
     if (this.rubberband) {
       this.rubberband.destroy();
       this.rubberband = null;
@@ -71,7 +71,6 @@ export default class RubberbandPolygonTool extends EventEmitter {
       this.stop();
     } else {
       const { x , y } = this._toSVG(evt.layerX, evt.layerY);
-      console.log('toSVG', x, y);
       this.rubberband.addPoint([ x, y ]);
     }
   }
@@ -83,7 +82,7 @@ export default class RubberbandPolygonTool extends EventEmitter {
     const { x , y } = this._toSVG(evt.layerX, evt.layerY);
     this.rubberband.addPoint([ x, y ]);
 
-    // Emit the SVG shape with selection attached    
+    // Emit the SVG shape with selection attached
     const shape = this.rubberband.g;
     shape.annotation = this.rubberband.toSelection();
     this.emit('complete', shape);

@@ -11,7 +11,7 @@ const insertSVGNamespace = originalDoc => {
   const namespaced = str.replace('<svg>', `<svg xmlns="${SVG_NAMESPACE}">`);
 
   const parser = new DOMParser();
-  const namespacedDoc = parser.parseFromString(namespaced, "image/svg+xml");   
+  const namespacedDoc = parser.parseFromString(namespaced, "image/svg+xml");
   return namespacedDoc.documentElement;
 }
 
@@ -27,7 +27,7 @@ const parseSVGFragment = annotation => {
 
     // Parse the XML document, assuming SVG
     const { value } = selector;
-    const doc = parser.parseFromString(value, "image/svg+xml");    
+    const doc = parser.parseFromString(value, "image/svg+xml");
 
     // SVG needs a namespace declaration - check if it's set or insert if not
     const isPrefixDeclared = doc.lookupPrefix(SVG_NAMESPACE); // SVG declared via prefix
@@ -44,10 +44,10 @@ const parseSVGFragment = annotation => {
 export const drawEmbeddedSVG = annotation => {
   const shape = parseSVGFragment(annotation);
 
-  // Because we're nitpicky, we don't just draw the shape, 
+  // Because we're nitpicky, we don't just draw the shape,
   // but duplicate it, so we can have inner and an outer lines
   const g = document.createElementNS(SVG_NAMESPACE, 'g');
-    
+
   const inner = shape.cloneNode(true);
   inner.setAttribute('class', 'inner');
 
@@ -65,11 +65,14 @@ export const toSVGTarget = shape => {
   inner.removeAttribute('class');
   inner.removeAttribute('xmlns');
 
+  let serialized = inner.outerHTML || new XMLSerializer().serializeToString(inner);
+  serialized = serialized.replace(` xmlns="${SVG_NAMESPACE}"`, '');
+
   return {
     source: Environment.image?.src,
     selector: {
       type: "SvgSelector",
-      value: `<svg>${inner.outerHTML}</svg>`
+      value: `<svg>${serialized}</svg>`
     }
   }
 }
