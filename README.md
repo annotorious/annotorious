@@ -57,4 +57,8 @@ Full documentation is [on the project website](https://recogito.github.io/annoto
 you wish. But keep the attribution/license file, and if this code
 breaks something, don't complain to us :-)
 
+## Who's Using Annotorious
 
+![NHS Wales Logo](logos/NHSWalesCavLogo.png) 
+
+Using Annotorious? [Let us know!](https://gitter.im/recogito/annotorious)
