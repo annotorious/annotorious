@@ -19,7 +19,7 @@
       "selector": [{
         "type": "FragmentSelector",
         "conformsTo": "http://www.w3.org/TR/media-frags/",
-        "value": "xywh=pixel:270,120,90,170"
+        "value": "xywh=pixel:273,171,123,94"
       }]
     }
   }, { 
@@ -28,12 +28,16 @@
     "type": "Annotation",
     "body": [{
       "type": "TextualBody",
-      "value": "Coming soon: polygon selection"
+      "value": "Evangelische Pfarrkirche Hallstatt"
+    }, {
+      "type": "TextualBody",
+      "purpose": "tagging",
+      "value": "Church"
     }],
     "target": {
       "selector": [{
         "type": "SvgSelector",
-        "value": "<svg><polygon points='100,130 180,170 140,260 80,190' /></svg>"
+        "value": "<svg><polygon points='172,160 199,15 223,6 239,132 244,173 285,179 313,208 313,251 218,306 170,290 172,160'></polygon></svg>"
       }]
     }
   }
