@@ -39,6 +39,31 @@
       p.caption a {
         color:#3f3f3f;
       }
+
+      svg.a9s-annotationlayer .a9s-annotation.RED .outer {
+        stroke:red;
+        stroke-width:3;
+        fill:rgba(255, 0, 0, 0.3);
+      }
+
+      svg.a9s-annotationlayer .a9s-annotation.GREEN .outer {
+        stroke:green;
+        stroke-width:3;
+        fill:rgba(0, 255, 0, 0.3);
+      }
+
+      svg.a9s-annotationlayer .a9s-annotation.BLUE .outer {
+        stroke:blue;
+        stroke-width:3;
+        fill:rgba(0, 0, 255, 0.3);
+      }
+
+      svg.a9s-annotationlayer .a9s-annotation.RED .inner,
+      svg.a9s-annotationlayer .a9s-annotation.GREEN .inner,
+      svg.a9s-annotationlayer .a9s-annotation.BLUE .inner {
+        fill:transparent;
+        stroke:none;
+      }
     </style>
   </head>
   <body>
@@ -65,7 +90,7 @@
           formatter: function(annotation) {
             // Get 'highlight' body and set CSS class accordingly
             var highlightBody = annotation.bodies.find(function(b) {
-              return b.purpose = 'highlighting';
+              return b.purpose == 'highlighting';
             });
 
             if (highlightBody)

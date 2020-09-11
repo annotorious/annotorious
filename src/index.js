@@ -59,6 +59,7 @@ export class Annotorious {
         readOnly={config.readOnly}
         headless={config.headless}
         widgets={config.widgets}
+        formatter={config.formatter}
         onSelectionCreated={this.handleSelectionCreated}
         onSelectionTargetChanged={this.handleSelectionTargetChanged}
         onAnnotationCreated={this.handleAnnotationCreated}

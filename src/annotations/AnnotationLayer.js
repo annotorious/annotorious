@@ -8,10 +8,11 @@ export default class AnnotationLayer extends EventEmitter {
   constructor(props) {
     super();
 
-    const { wrapperEl, imageEl, readOnly, headless } = props;
+    const { wrapperEl, imageEl, readOnly, headless, formatter } = props;
 
     this.readOnly = readOnly;
     this.headless = headless;
+    this.formatter = formatter;
 
     const { naturalWidth, naturalHeight } = imageEl;
 
@@ -84,7 +85,13 @@ export default class AnnotationLayer extends EventEmitter {
 
   addAnnotation = annotation => {
     const g = drawShape(annotation);
-    g.setAttribute('class', 'a9s-annotation');
+
+    const formatterClass = this.formatter ? this.formatter(annotation) : null;
+    if (formatterClass)
+      g.setAttribute('class', `a9s-annotation ${formatterClass}`);
+    else
+      g.setAttribute('class', 'a9s-annotation');
+    
     g.setAttribute('data-id', annotation.id);
     g.annotation = annotation;
   
