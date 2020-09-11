@@ -58,6 +58,7 @@ export class Annotorious {
         wrapperEl={this._wrapperEl}
         readOnly={config.readOnly}
         headless={config.headless}
+        widgets={config.widgets}
         onSelectionCreated={this.handleSelectionCreated}
         onSelectionTargetChanged={this.handleSelectionTargetChanged}
         onAnnotationCreated={this.handleAnnotationCreated}

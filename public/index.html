@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title>Annotorious | Basic Example</title>
     <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+    <script src="hello-world-plugin.js"></script>
     <style>
       html, body {
         padding:20px;
@@ -57,7 +58,10 @@
         var anno = Annotorious.init({
           image: 'hallstatt',
           locale: 'auto',
-          tagVocabulary: [ 'Animal', 'Artwork', 'Building', 'Person', 'Vegetation', 'Waterbody' ]
+          tagVocabulary: [ 'Animal', 'Artwork', 'Building', 'Person', 'Vegetation', 'Waterbody' ],
+          widgets: [
+            HelloWorldPlugin
+          ]
         });
 
         anno.on('createSelection', function(selection) {
