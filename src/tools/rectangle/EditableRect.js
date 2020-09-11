@@ -60,7 +60,7 @@ const stretchCorners = (corner, opposite) => {
  */
 export default class EditableRect extends EventEmitter {
 
-  constructor(annotation, g) {
+  constructor(annotation, g, formatter) {
     super();
 
     this.annotation = annotation;
@@ -73,7 +73,14 @@ export default class EditableRect extends EventEmitter {
     // 'g' for the editable rect compound shape
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
     this.rectangle = drawRect(x, y, w, h);
-    this.rectangle.setAttribute('class', 'a9s-annotation editable selected');
+
+    const formatClass = formatter ? formatter(annotation) : null;
+    if (formatClass) {
+      this.rectangle.setAttribute('class', `a9s-annotation ${formatClass} editable selected`);
+    } else {
+      this.rectangle.setAttribute('class', 'a9s-annotation editable selected');
+    }
+
     this.group.appendChild(this.rectangle);
 
     this.rectangle.querySelector('.inner')

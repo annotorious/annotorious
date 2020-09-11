@@ -7,11 +7,12 @@ import EditablePolygon from './EditablePolygon';
  */
 export default class RubberbandPolygonTool extends EventEmitter {
 
-  constructor(g) {
+  constructor(g, formatter) {
     super();
 
     this.svg = g.closest('svg');
     this.g = g;
+    this.formatter = formatter;
 
     this.isDrawing = false;
 
@@ -89,6 +90,6 @@ export default class RubberbandPolygonTool extends EventEmitter {
   }
 
   createEditableShape = annotation =>
-    new EditablePolygon(annotation, this.g);
+    new EditablePolygon(annotation, this.g, this.formatter);
 
 }

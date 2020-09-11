@@ -57,7 +57,7 @@ const getPoints = shape => {
  */
 export default class EditablePolygon extends EventEmitter {
 
-  constructor(annotation, g) {
+  constructor(annotation, g, formatter) {
     super();
 
     this.annotation = annotation;
@@ -71,7 +71,14 @@ export default class EditablePolygon extends EventEmitter {
     // 'g' for the editable polygon compound shape
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
     this.shape = drawEmbeddedSVG(annotation);
-    this.shape.setAttribute('class', 'a9s-annotation editable selected');
+
+    const formatClass = formatter ? formatter(annotation) : null;
+    if (formatClass) {
+      this.shape.setAttribute('class', `a9s-annotation ${formatClass} editable selected`);
+    } else {
+      this.shape.setAttribute('class', 'a9s-annotation editable selected');
+    }
+
     this.group.appendChild(this.shape);
 
     this.handles = getPoints(this.shape).map(pt => {

@@ -7,11 +7,12 @@ import EditableRect from './EditableRect';
  */
 export default class RubberbandRectTool extends EventEmitter {
 
-  constructor(g) {
+  constructor(g, formatter) {
     super();
 
     this.svg = g.closest('svg');
     this.g = g;
+    this.formatter = formatter;
 
     this.rubberband = null;
   }
@@ -71,7 +72,7 @@ export default class RubberbandRectTool extends EventEmitter {
   }
 
   createEditableShape = annotation =>
-    new EditableRect(annotation, this.g);
+    new EditableRect(annotation, this.g, this.formatter);
 
   get isDrawing() {
     return this.rubberband != null;

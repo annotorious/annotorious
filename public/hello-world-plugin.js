@@ -18,11 +18,16 @@ var HelloWorldPlugin = function(args) {
   }
 
   var createButton = function(value) {
+    var outline = document.createElement('div');
+    outline.className = 'button-outline';
+
     var button = document.createElement('button');
     button.dataset.tag = value;
-    button.innerHTML = value;
+    button.style.backgroundColor = value;
     button.addEventListener('click', addTag); 
-    return button;
+    
+    outline.appendChild(button);
+    return outline;
   }
 
   var container = document.createElement('div');

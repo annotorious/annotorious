@@ -40,7 +40,7 @@ export default class AnnotationLayer extends EventEmitter {
       this.enableSelectHover();
     } else {
       // Attach handlers to the drawing tool palette
-      this.tools = new DrawingTools(this.g);
+      this.tools = new DrawingTools(this.g, formatter);
       this.tools.on('cancel', this.selectCurrentHover);
       this.tools.on('complete', shape => {
         this.emit('createSelection', shape.annotation);
