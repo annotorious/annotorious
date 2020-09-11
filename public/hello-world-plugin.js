@@ -1,33 +1,38 @@
-/** 
- * Plugin is a function that gets a set of
- * predefined arguments (annotation, settings,
- * callbacks to call on user actions) and
- * returns a DOM element.
- */
+/** A minimal plugin example **/
 var HelloWorldPlugin = function(args) {
 
-  var addTag = function(evt) {
-    
-    const tag = evt.target.dataset.tag;
+  var currentColorBody = args.annotation ? args.annotation.bodies.find(function(b) {
+    return b.purpose == 'highlighting';
+  }) : null;
 
-    args.onAppendBody({
-      type: 'TextualBody',
-      purpose: 'highlighting',
-      value: tag
-    });
+  var currentColorValue = currentColorBody ? currentColorBody.value : null;
+
+  var addTag = function(evt) {
+    if (currentColorBody) {
+      args.onUpdateBody(currentColorBody, {
+        type: 'TextualBody',
+        purpose: 'highlighting',
+        value: evt.target.dataset.tag
+      });
+    } else { 
+      args.onAppendBody({
+        type: 'TextualBody',
+        purpose: 'highlighting',
+        value: evt.target.dataset.tag
+      });
+    }
   }
 
   var createButton = function(value) {
-    var outline = document.createElement('div');
-    outline.className = 'button-outline';
-
     var button = document.createElement('button');
+
+    if (value == currentColorValue)
+      button.className = 'selected';
+
     button.dataset.tag = value;
     button.style.backgroundColor = value;
     button.addEventListener('click', addTag); 
-    
-    outline.appendChild(button);
-    return outline;
+    return button;
   }
 
   var container = document.createElement('div');
@@ -42,4 +47,14 @@ var HelloWorldPlugin = function(args) {
   container.appendChild(button3);
 
   return container;
+}
+
+/** A matching formatter that sets the color according to the 'highlighting' body value **/
+var HelloWorldFormatter = function(annotation) {
+  var highlightBody = annotation.bodies.find(function(b) {
+    return b.purpose == 'highlighting';
+  });
+
+  if (highlightBody)
+    return highlightBody.value;
 }

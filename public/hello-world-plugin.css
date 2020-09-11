@@ -1,0 +1,46 @@
+.helloworld-plugin {
+  padding:5px;
+  border-bottom:1px solid #e5e5e5;
+}
+
+.helloworld-plugin button {
+  outline:none;
+  border:none;
+  display:inline-block;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  cursor:pointer;
+  opacity:0.5;
+  margin:4px;
+}
+
+.helloworld-plugin button.selected,
+.helloworld-plugin button:hover {
+  opacity:1;
+}
+
+svg.a9s-annotationlayer .a9s-annotation.RED .outer {
+  stroke:red;
+  stroke-width:3;
+  fill:rgba(255, 0, 0, 0.3);
+}
+
+svg.a9s-annotationlayer .a9s-annotation.GREEN .outer {
+  stroke:green;
+  stroke-width:3;
+  fill:rgba(0, 255, 0, 0.3);
+}
+
+svg.a9s-annotationlayer .a9s-annotation.BLUE .outer {
+  stroke:blue;
+  stroke-width:3;
+  fill:rgba(0, 0, 255, 0.3);
+}
+
+svg.a9s-annotationlayer .a9s-annotation.RED .inner,
+svg.a9s-annotationlayer .a9s-annotation.GREEN .inner,
+svg.a9s-annotationlayer .a9s-annotation.BLUE .inner {
+  fill:transparent;
+  stroke:none;
+}
