@@ -64,18 +64,6 @@
           ]
         });
 
-        anno.on('createSelection', function(selection) {
-          console.log('created selection', selection);
-        });
-
-        anno.on('changeSelectionTarget', function(target) {
-          console.log('selection changed', target);
-        });
-
-        anno.on('selectAnnotation', function(annotation) {
-          console.log('selected', annotation);
-        });
-
         anno.on('createAnnotation', function(a) {
           console.log('created', a);
         });
@@ -88,14 +76,6 @@
           console.log('deleted', annotation);
         });
         
-        anno.on('mouseEnterAnnotation', function(annotation) {
-          console.log('enter', annotation);
-        });
-        
-        anno.on('mouseLeaveAnnotation', function(annotation) {
-          console.log('leave', annotation);
-        });
-
         anno.loadAnnotations('annotations.w3c.json');
 
         anno.setDrawingTool('rect');
