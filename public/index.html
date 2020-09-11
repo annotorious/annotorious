@@ -61,7 +61,16 @@
           tagVocabulary: [ 'Animal', 'Artwork', 'Building', 'Person', 'Vegetation', 'Waterbody' ],
           widgets: [
             HelloWorldPlugin
-          ]
+          ],
+          formatter: function(annotation) {
+            // Get 'highlight' body and set CSS class accordingly
+            var highlightBody = annotation.bodies.find(function(b) {
+              return b.purpose = 'highlighting';
+            });
+
+            if (highlightBody)
+              return highlightBody.value;
+          }
         });
 
         anno.on('createAnnotation', function(a) {
