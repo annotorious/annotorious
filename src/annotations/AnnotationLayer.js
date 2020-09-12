@@ -1,6 +1,6 @@
 import EventEmitter from 'tiny-emitter';
 import { drawShape, shapeArea } from './selectors';
-import { SVG_NAMESPACE, addClass, removeClass } from '../SVGConst';
+import { SVG_NAMESPACE, addClass, removeClass } from '../SVG';
 import DrawingTools from '../tools/DrawingTools';
 
 export default class AnnotationLayer extends EventEmitter {

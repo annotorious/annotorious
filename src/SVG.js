@@ -1,5 +1,7 @@
 export const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
+// IE11 doesn't support adding/removing classes to SVG elements except 
+// via .setAttribute
 export const addClass = (el, className) => {
   const classNames = new Set(el.getAttribute('class').split(' '));
   classNames.add(className)

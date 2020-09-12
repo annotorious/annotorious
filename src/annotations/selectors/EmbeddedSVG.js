@@ -1,4 +1,4 @@
-import { SVG_NAMESPACE } from '../../SVGConst';
+import { SVG_NAMESPACE } from '../../SVG';
 import { Environment } from '@recogito/recogito-client-core';
 
 /** Helper that forces an un-namespaced node to SVG **/

@@ -1,6 +1,6 @@
 import EventEmitter from 'tiny-emitter';
 import { drawRect, getCorners, getRectSize, setRectSize, parseRectFragment, toRectFragment } from '../../annotations/selectors/RectFragment';
-import { SVG_NAMESPACE } from '../../SVGConst';
+import { SVG_NAMESPACE } from '../../SVG';
 
 const drawHandle = (x, y) => {
   const group = document.createElementNS(SVG_NAMESPACE, 'g');

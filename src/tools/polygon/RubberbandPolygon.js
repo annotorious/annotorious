@@ -1,6 +1,6 @@
 import { Selection } from '@recogito/recogito-client-core';
 import { toSVGTarget } from '../../annotations/selectors/EmbeddedSVG';
-import { SVG_NAMESPACE } from '../../SVGConst';
+import { SVG_NAMESPACE } from '../../SVG';
 
 export default class RubberbandPolygon {
 

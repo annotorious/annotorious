@@ -1,6 +1,6 @@
 import EventEmitter from 'tiny-emitter';
 import { drawEmbeddedSVG, toSVGTarget } from '../../annotations/selectors/EmbeddedSVG';
-import { SVG_NAMESPACE } from '../../SVGConst';
+import { SVG_NAMESPACE } from '../../SVG';
 
 const drawHandle = pt => {
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
