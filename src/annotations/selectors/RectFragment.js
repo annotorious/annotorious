@@ -63,6 +63,25 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
   return g;
 }
 
+/*
+export const drawRect = (arg1, arg2, arg3, arg4) => {
+  const { x, y, w, h } = arg1.type === 'Annotation' || arg1.type === 'Selection' ?
+    parseRectFragment(arg1) : { x: arg1, y: arg2, w: arg3, h: arg4 };
+
+    const g = document.createElementNS(SVG_NAMESPACE, 'g');
+    g.setAttribute('fill-rule', 'evenodd');
+
+    const { naturalWidth, naturalHeight } = Environment.image;
+
+    const mask = document.createElementNS(SVG_NAMESPACE, 'path');
+    mask.setAttribute('d', `M0 0 h${naturalWidth} v${naturalHeight} h-640 z M${x} ${y} h${w} v${h} h-${w} z`);
+    mask.setAttribute('fill', 'rgba(0, 0, 0, 0.6)')
+
+    g.appendChild(mask);    
+    return g;
+}
+*/
+
 /** Gets the (x, y, w, h)-values from the attributes of the SVG group **/
 export const getRectSize = g => {
   const outerRect = g.querySelector('.outer');

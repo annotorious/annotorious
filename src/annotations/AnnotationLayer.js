@@ -8,11 +8,11 @@ export default class AnnotationLayer extends EventEmitter {
   constructor(props) {
     super();
 
-    const { wrapperEl, imageEl, readOnly, headless, formatter } = props;
+    const { wrapperEl, imageEl, config } = props;
 
-    this.readOnly = readOnly;
-    this.headless = headless;
-    this.formatter = formatter;
+    this.readOnly = config.readOnly;
+    this.headless = config.headless;
+    this.formatter = config.formatter;
 
     const { naturalWidth, naturalHeight } = imageEl;
 
@@ -35,12 +35,12 @@ export default class AnnotationLayer extends EventEmitter {
     // Currently selected shape
     this.selectedShape = null;
 
-    if (readOnly) {
+    if (this.readOnly) {
       // No drawing, only select the current hover shape
       this.enableSelectHover();
     } else {
       // Attach handlers to the drawing tool palette
-      this.tools = new DrawingTools(this.g, formatter);
+      this.tools = new DrawingTools(this.g, this.formatter);
       this.tools.on('cancel', this.selectCurrentHover);
       this.tools.on('complete', shape => {
         this.emit('createSelection', shape.annotation);
@@ -85,7 +85,7 @@ export default class AnnotationLayer extends EventEmitter {
 
   addAnnotation = annotation => {
     const g = drawShape(annotation);
-
+    
     const formatterClass = this.formatter ? this.formatter(annotation) : null;
     if (formatterClass)
       g.setAttribute('class', `a9s-annotation ${formatterClass}`);

@@ -2,8 +2,11 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Annotorious | Basic Example</title>
+    <title>Annotorious | Editor Plugin Example</title>
     <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+    <link href="hello-world-plugin.css" rel="stylesheet">
+    <script src="hello-world-plugin.js"></script>
+    <script type="text/javascript" src="/annotorious.min.js"></script></head>
     <style>
       html, body {
         padding:20px;
@@ -42,14 +45,10 @@
   </head>
   <body>
     <div id="content">    
-      <h1>Annotorious: Basic Example</h1>  
-      <p class="instructions">
-        Click the annotation to edit. Click and drag the mouse to create a new annotation.
-      </p>
       <p>
         <button id="current-tool">RECTANGLE</button>
       </p>
-      <img id="hallstatt" src="640px-Hallstatt.jpg">
+      <img id="hallstatt" src="/640px-Hallstatt.jpg">
     </div>
   </div>
     <script>
@@ -57,7 +56,8 @@
         var anno = Annotorious.init({
           image: 'hallstatt',
           locale: 'auto',
-          tagVocabulary: [ 'Animal', 'Building', 'Waterbody']
+          widgets: [ HelloWorldPlugin ],
+          formatter: HelloWorldFormatter
         });
 
         anno.on('createAnnotation', function(a) {
@@ -71,11 +71,7 @@
         anno.on('deleteAnnotation', function(annotation) {
           console.log('deleted', annotation);
         });
-        
-        anno.loadAnnotations('annotations.w3c.json');
 
-        anno.setDrawingTool('rect');
-        
         var toolToggle = document.getElementById('current-tool');
         toolToggle.addEventListener('click', function() {
           if (toolToggle.innerHTML == 'RECTANGLE') {
