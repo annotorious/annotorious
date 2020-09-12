@@ -141,16 +141,16 @@ export default class ImageAnnotator extends Component  {
   render() {
     // The editor should open under normal conditions (no headless mode, annotation was selected),
     // or if we are in headless mode for immediate template application 
-    const normalConditions = this.state.selectedAnnotation && !this.props.headless;
+    const normalConditions = this.state.selectedAnnotation && !this.props.config.headless;
 
     const headlessApply =
-      this.props.headless && 
+      this.props.config.headless && 
       this.state.applyTemplate && 
       this.state.selectedAnnotation?.isSelection;
 
     const open = (normalConditions == true || headlessApply == true);
 
-    const readOnly = this.props.readOnly || this.state.selectedAnnotation?.readOnly
+    const readOnly = this.props.config.readOnly || this.state.selectedAnnotation?.readOnly
 
     return (open && (
       <Editor
@@ -158,17 +158,13 @@ export default class ImageAnnotator extends Component  {
         annotation={this.state.selectedAnnotation}
         selectedElement={this.state.selectedDOMElement}
         readOnly={readOnly}
-        widgets={this.props.widgets}
+        config={this.props.config}
         applyTemplate={this.state.applyTemplate}
         applyImmediately={this.state.applyImmediately}
         onAnnotationCreated={this.onCreateOrUpdateAnnotation('onAnnotationCreated')}
         onAnnotationUpdated={this.onCreateOrUpdateAnnotation('onAnnotationUpdated')}
         onAnnotationDeleted={this.onDeleteAnnotation}
-        onCancel={this.onCancelAnnotation}>
-
-        {this.props.children}
-
-      </Editor>
+        onCancel={this.onCancelAnnotation} />
     ))
   }
 

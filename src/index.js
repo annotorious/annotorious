@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Emitter from 'tiny-emitter';
 import axios from 'axios';
-import { WebAnnotation, Editor, Environment, addPolyfills, setLocale } from '@recogito/recogito-client-core';
+import { WebAnnotation, Environment, addPolyfills, setLocale } from '@recogito/recogito-client-core';
 import ImageAnnotator from './ImageAnnotator';
 
-import "@babel/polyfill";
-addPolyfills(); // Extra polyfills that babel doesn't include
+import '@babel/polyfill';
+addPolyfills(); // Some extra polyfills that babel doesn't include
 
 import '@recogito/recogito-client-core/themes/default';
 
@@ -24,21 +24,24 @@ export class Annotorious {
     // Event handling via tiny-emitter
     this._emitter = new Emitter();
 
-    // The image is wrapped in a DIV ('wrapperEl'). The application
-    // container DIV, which holds the editor popup, will be attached
-    // as a child to the wrapper element (=a sibling to the image
-    // element).
+    // Host app may supply the image as either a DOM node or ID - normalize
     this._imageEl = (config.image.nodeType) ?
       config.image : document.getElementById(config.image);
 
-    // DIV will have unwanted margin at the bottom otherwise!
+    // Wrapper div might produce unwanted margin at the bottom otherwise!
     this._imageEl.style.display = 'block';
 
     // Store image reference in the Environment
+    // TODO fix! 
     Environment.image = this._imageEl;
 
     setLocale(config.locale);
 
+    // We'll wrap the image in a DIV ('_wrapperEl'). The application
+    // container DIV, which holds the editor popup, will be attached
+    // as a child to the same wrapper element (=a sibling to the image
+    // element), so that editor and image share the same offset coordinate
+    // space.
     this._wrapperEl = document.createElement('DIV');
     this._wrapperEl.style.position = 'relative';
     this._wrapperEl.style.display = 'inline-block';
@@ -48,18 +51,13 @@ export class Annotorious {
     this._appContainerEl = document.createElement('DIV');
     this._wrapperEl.appendChild(this._appContainerEl);
 
-    const { CommentWidget, TagWidget } = Editor;
-
     // A basic ImageAnnotator with just a comment and a tag widget
     ReactDOM.render(
       <ImageAnnotator
         ref={this._app}
         imageEl={this._imageEl}
         wrapperEl={this._wrapperEl}
-        readOnly={config.readOnly}
-        headless={config.headless}
-        widgets={config.widgets}
-        formatter={config.formatter}
+        config={config}
         onSelectionCreated={this.handleSelectionCreated}
         onSelectionTargetChanged={this.handleSelectionTargetChanged}
         onAnnotationCreated={this.handleAnnotationCreated}
@@ -67,14 +65,7 @@ export class Annotorious {
         onAnnotationUpdated={this.handleAnnotationUpdated}
         onAnnotationDeleted={this.handleAnnotationDeleted}
         onMouseEnterAnnotation={this.handleMouseEnterAnnotation}
-        onMouseLeaveAnnotation={this.handleMouseLeaveAnnotation}>
-
-        <CommentWidget />
-        <TagWidget vocabulary={config.tagVocabulary} />
-
-      </ImageAnnotator>,
-
-    this._appContainerEl);
+        onMouseLeaveAnnotation={this.handleMouseLeaveAnnotation} />, this._appContainerEl);
   }
 
   /********************/
