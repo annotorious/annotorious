@@ -57,7 +57,10 @@
         var anno = Annotorious.init({
           image: 'hallstatt',
           locale: 'auto',
-          widgets: [ HelloWorldPlugin ],
+          widgets: [ 
+            HelloWorldPlugin,
+            {widget: 'TAG', vocabulary: ['Animal', 'Building', 'Vegetation', 'Waterway']}
+          ],
           formatter: HelloWorldFormatter
         });
 
