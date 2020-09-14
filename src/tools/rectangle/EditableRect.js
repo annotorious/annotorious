@@ -90,13 +90,13 @@ export default class EditableRect extends EventEmitter {
     this.svg.addEventListener('mouseup', this.onMouseUp);
 
     this.handles = [
-      [ x, y, 'topleft' ], 
-      [ x + w, y, 'topright'], 
-      [ x + w, y + h, 'bottomright' ], 
-      [ x, y + h, 'bottomleft' ]
+      [ x, y ], 
+      [ x + w, y ], 
+      [ x + w, y + h ], 
+      [ x, y + h ]
     ].map(t => { 
-      const [ x, y, className ] = t;
-      const handle = drawHandle(x, y, className);
+      const [ x, y ] = t;
+      const handle = drawHandle(x, y);
 
       handle.addEventListener('mousedown', this.onGrab(handle));
       this.group.appendChild(handle);
