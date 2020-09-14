@@ -75,8 +75,8 @@ export class Annotorious {
   handleSelectionTargetChanged = target =>
     this._emitter.emit('changeSelectionTarget', target);
 
-  handleAnnotationCreated = annotation =>
-    this._emitter.emit('createAnnotation', annotation.underlying);
+  handleAnnotationCreated = (annotation, overrideId) =>
+    this._emitter.emit('createAnnotation', annotation.underlying, overrideId);
 
   handleSelectionCreated = selection =>
     this._emitter.emit('createSelection', selection._stub);
