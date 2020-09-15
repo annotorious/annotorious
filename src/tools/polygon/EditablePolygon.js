@@ -5,7 +5,7 @@ import { SVG_NAMESPACE } from '../../SVG';
 const drawHandle = pt => {
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
   group.setAttribute('class', 'vertex-handle');
-  // group.setAttribute('transform-origin', `${pt.x}px ${pt.y}px`);
+  group.setAttribute('transform-origin', `${pt.x}px ${pt.y}px`);
 
   const drawCircle = r => {
     const c = document.createElementNS(SVG_NAMESPACE, 'circle');
@@ -84,7 +84,6 @@ export default class EditablePolygon extends EventEmitter {
     this.handles = getPoints(this.shape).map(pt => {
       const handle = drawHandle(pt);
       handle.addEventListener('mousedown', this.onGrab(handle));
-
       this.group.appendChild(handle);
       return handle;
     });
