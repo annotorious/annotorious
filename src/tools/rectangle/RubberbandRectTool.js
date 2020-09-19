@@ -65,7 +65,7 @@ export default class RubberbandRectTool extends EventEmitter {
       const shape = this.rubberband.shape;
       shape.annotation = this.rubberband.toSelection();
       this.emit('complete', shape);
-      this.rubberband.destroy();
+      // this.rubberband.destroy();
     } else {
       this.emit('cancel', evt);
       this.stop();

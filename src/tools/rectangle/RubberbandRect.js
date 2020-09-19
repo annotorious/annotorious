@@ -18,26 +18,26 @@ export default class RubberbandRect {
     this.anchor = [ anchorX, anchorY ];
     this.opposite = [ anchorX, anchorY ];
 
-    this.group = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.shape = document.createElementNS(SVG_NAMESPACE, 'g');
     
     this.mask = drawRectMask(anchorX, anchorY, 2, 2);
     this.mask.setAttribute('class', 'a9s-selection-mask');
 
-    this.shape = drawRect(anchorX, anchorY, 2, 2);
-    this.shape.setAttribute('class', 'a9s-selection');
+    this.rect = drawRect(anchorX, anchorY, 2, 2);
+    this.rect.setAttribute('class', 'a9s-selection');
 
     // We make the selection transparent to 
     // pointer events because it would interfere with the 
     // rendered annotations' mouseleave/enter events
-    this.group.style.pointerEvents = 'none';
+    this.shape.style.pointerEvents = 'none';
 
     // Additionally, selection remains hidden until 
     // the user actually moves the mouse
-    this.group.style.display = 'none';
+    this.shape.style.display = 'none';
 
-    this.group.appendChild(this.mask);
-    this.group.appendChild(this.shape);
-    g.appendChild(this.group);
+    this.shape.appendChild(this.mask);
+    this.shape.appendChild(this.rect);
+    g.appendChild(this.shape);
   }
 
   get bbox() {
@@ -54,17 +54,17 @@ export default class RubberbandRect {
 
   dragTo = (oppositeX, oppositeY) => {
     // Make visible
-    this.group.style.display = null;
+    this.shape.style.display = null;
 
     this.opposite = [ oppositeX, oppositeY ];
     const { x, y, w, h } = this.bbox;
 
     setRectMaskSize(this.mask, x, y, w, h);
-    setRectSize(this.shape, x, y, w, h);
+    setRectSize(this.rect, x, y, w, h);
   }
 
   getBoundingClientRect = () => 
-    this.shape.getBoundingClientRect();
+    this.rect.getBoundingClientRect();
 
   toSelection = () => {
     const { x, y, w, h } = this.bbox;
@@ -72,11 +72,11 @@ export default class RubberbandRect {
   }
 
   destroy = () => {
-    this.group.parentNode.removeChild(this.group);
+    this.shape.parentNode.removeChild(this.shape);
 
     this.mask = null;
+    this.rect = null;
     this.shape = null;
-    this.group = null;
   }
 
 }

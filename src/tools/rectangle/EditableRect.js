@@ -1,6 +1,15 @@
 import EventEmitter from 'tiny-emitter';
-import { drawRect, getCorners, getRectSize, setRectSize, parseRectFragment, toRectFragment } from '../../annotations/selectors/RectFragment';
 import { SVG_NAMESPACE } from '../../SVG';
+import { 
+  drawRect, 
+  drawRectMask,
+  getCorners, 
+  parseRectFragment,
+  getRectSize, 
+  setRectSize, 
+  toRectFragment, 
+  setRectMaskSize
+} from '../../annotations/selectors/RectFragment';
 
 const drawHandle = (x, y) => {
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
@@ -26,7 +35,6 @@ const drawHandle = (x, y) => {
 
   return group;
 }
-
 
 const setHandleXY = (handle, x, y) => {
   handle.setAttribute('transform-origin', `${x}px ${y}px`);
@@ -72,6 +80,10 @@ export default class EditableRect extends EventEmitter {
 
     // 'g' for the editable rect compound shape
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
+
+    this.mask = drawRectMask(x, y, w, h);
+    this.mask.setAttribute('class', 'a9s-selection-mask');
+
     this.rectangle = drawRect(x, y, w, h);
 
     const formatClass = formatter ? formatter(annotation) : null;
@@ -81,6 +93,7 @@ export default class EditableRect extends EventEmitter {
       this.rectangle.setAttribute('class', 'a9s-annotation editable selected');
     }
 
+    this.group.appendChild(this.mask);
     this.group.appendChild(this.rectangle);
 
     this.rectangle.querySelector('.inner')
@@ -139,6 +152,7 @@ export default class EditableRect extends EventEmitter {
   /** Sets the shape size, including handle positions **/
   setSize = (x, y, w, h) => {
     setRectSize(this.rectangle, x, y, w, h);
+    setRectMaskSize(this.mask, x, y, w, h);
 
     const [ topleft, topright, bottomright, bottomleft] = this.handles;
     setHandleXY(topleft, x, y);
