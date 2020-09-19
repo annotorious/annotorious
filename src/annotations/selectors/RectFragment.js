@@ -38,6 +38,20 @@ const setXYWH = (shape, x, y, w, h) => {
   shape.setAttribute('height',  h);
 }
 
+export const drawRectMask = (x, y, w, h) => {
+  const mask = document.createElementNS(SVG_NAMESPACE, 'path');
+  mask.setAttribute('fill-rule', 'evenodd');
+
+  setRectMaskSize(mask, x, y, w, h);
+
+  return mask;
+}
+
+export const setRectMaskSize = (mask, x, y, w, h) => {
+  const { naturalWidth, naturalHeight } = Environment.image;
+  mask.setAttribute('d', `M0 0 h${naturalWidth} v${naturalHeight} h-640 z M${x} ${y} h${w} v${h} h-${w} z`);
+}
+
 /** 
  * Draws an SVG rectangle, either from an annotation, or an
  * (x, y, w, h)-tuple.

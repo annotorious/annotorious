@@ -1,5 +1,12 @@
 import { Selection } from '@recogito/recogito-client-core';
-import { drawRect, setRectSize, toRectFragment } from '../../annotations/selectors/RectFragment';
+import { SVG_NAMESPACE } from '../../SVG';
+import { 
+  drawRect, 
+  drawRectMask,
+  setRectSize, 
+  setRectMaskSize,
+  toRectFragment 
+} from '../../annotations/selectors/RectFragment';
 
 /**
  * A 'rubberband' selection tool for creating a rectangle by
@@ -9,17 +16,28 @@ export default class RubberbandRect {
 
   constructor(anchorX, anchorY, g) {
     this.anchor = [ anchorX, anchorY ];
-    this.opposite = [ anchorX + 2, anchorY + 2];
+    this.opposite = [ anchorX, anchorY ];
+
+    this.group = document.createElementNS(SVG_NAMESPACE, 'g');
+    
+    this.mask = drawRectMask(anchorX, anchorY, 2, 2);
+    this.mask.setAttribute('class', 'a9s-selection-mask');
 
     this.shape = drawRect(anchorX, anchorY, 2, 2);
     this.shape.setAttribute('class', 'a9s-selection');
 
-    // We make this shape transparent to pointer events
-    // because it would interfere with the rendered 
-    // annotations' mouseleave/enter events
-    this.shape.style.pointerEvents = 'none';
+    // We make the selection transparent to 
+    // pointer events because it would interfere with the 
+    // rendered annotations' mouseleave/enter events
+    this.group.style.pointerEvents = 'none';
 
-    g.appendChild(this.shape);
+    // Additionally, selection remains hidden until 
+    // the user actually moves the mouse
+    this.group.style.display = 'none';
+
+    this.group.appendChild(this.mask);
+    this.group.appendChild(this.shape);
+    g.appendChild(this.group);
   }
 
   get bbox() {
@@ -35,8 +53,13 @@ export default class RubberbandRect {
   }
 
   dragTo = (oppositeX, oppositeY) => {
+    // Make visible
+    this.group.style.display = null;
+
     this.opposite = [ oppositeX, oppositeY ];
     const { x, y, w, h } = this.bbox;
+
+    setRectMaskSize(this.mask, x, y, w, h);
     setRectSize(this.shape, x, y, w, h);
   }
 
@@ -49,8 +72,11 @@ export default class RubberbandRect {
   }
 
   destroy = () => {
-    this.shape.parentNode.removeChild(this.shape);
+    this.group.parentNode.removeChild(this.group);
+
+    this.mask = null;
     this.shape = null;
+    this.group = null;
   }
 
 }
