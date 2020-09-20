@@ -20,7 +20,7 @@ export default class RubberbandRect {
 
     this.shape = document.createElementNS(SVG_NAMESPACE, 'g');
     
-    this.mask = drawRectMask(anchorX, anchorY, 2, 2);
+    this.mask = drawRectMask(g.closest('svg'), anchorX, anchorY, 2, 2);
     this.mask.setAttribute('class', 'a9s-selection-mask');
 
     this.rect = drawRect(anchorX, anchorY, 2, 2);

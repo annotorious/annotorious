@@ -17,9 +17,8 @@
           user-select:none;
 
   .a9s-selection-mask {
-    display:none;
-    // stroke:none;
-    // fill:rgba(0, 0, 0, 0.6);
+    stroke:none;
+    fill:transparent;
   }
 
   .a9s-annotation, .a9s-selection {

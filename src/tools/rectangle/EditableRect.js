@@ -81,7 +81,7 @@ export default class EditableRect extends EventEmitter {
     // 'g' for the editable rect compound shape
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
 
-    this.mask = drawRectMask(x, y, w, h);
+    this.mask = drawRectMask(this.svg, x, y, w, h);
     this.mask.setAttribute('class', 'a9s-selection-mask');
 
     this.rectangle = drawRect(x, y, w, h);
