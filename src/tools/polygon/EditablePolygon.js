@@ -57,10 +57,12 @@ const getPoints = shape => {
  */
 export default class EditablePolygon extends EventEmitter {
 
-  constructor(annotation, g, formatter) {
+  constructor(annotation, g, config, env) {
     super();
 
     this.annotation = annotation;
+
+    this.env = env;
 
     // SVG element
     this.svg = g.closest('svg');
@@ -72,7 +74,7 @@ export default class EditablePolygon extends EventEmitter {
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
     this.shape = drawEmbeddedSVG(annotation);
 
-    const formatClass = formatter ? formatter(annotation) : null;
+    const formatClass = config.formatter ? config.formatter(annotation) : null;
     if (formatClass) {
       this.shape.setAttribute('class', `a9s-annotation ${formatClass} editable selected`);
     } else {
@@ -164,7 +166,7 @@ export default class EditablePolygon extends EventEmitter {
 
         updatedPoints.forEach((pt, idx) => moveHandle(this.handles[idx], pt));
 
-        this.emit('update', toSVGTarget(this.shape));
+        this.emit('update', toSVGTarget(this.shape, this.env.image));
       } else {
         // Handles
         const handleIdx = this.handles.indexOf(this.grabbedElem);
@@ -175,7 +177,7 @@ export default class EditablePolygon extends EventEmitter {
         this.setPoints(updatedPoints);
         moveHandle(this.handles[handleIdx], pos);
 
-        this.emit('update', toSVGTarget(this.shape));
+        this.emit('update', toSVGTarget(this.shape, this.env.image));
       }
     }
   }

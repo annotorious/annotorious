@@ -4,9 +4,11 @@ import { SVG_NAMESPACE } from '../../SVG';
 
 export default class RubberbandPolygon {
 
-  constructor(anchor, g) {
+  constructor(anchor, g, env) {
     this.g = document.createElementNS(SVG_NAMESPACE, 'g');
     this.g.setAttribute('class', 'a9s-selection');
+
+    this.env = env;
 
     this.outer = document.createElementNS(SVG_NAMESPACE, 'polygon');
     this.outer.setAttribute('class', 'outer');
@@ -59,7 +61,7 @@ export default class RubberbandPolygon {
   }
 
   toSelection = () => {
-    return new Selection(toSVGTarget(this.g));
+    return new Selection(toSVGTarget(this.g, this.env.image));
   }
 
 }
