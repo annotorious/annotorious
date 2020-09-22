@@ -32,3 +32,6 @@ export const drawShape = annotation =>
 
 export const shapeArea = annotation =>
   areaFn[getFirstSelector(annotation).type](annotation);
+
+export { parseRectFragment } from './RectFragment';
+
