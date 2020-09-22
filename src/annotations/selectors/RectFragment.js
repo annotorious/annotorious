@@ -38,21 +38,20 @@ const setXYWH = (shape, x, y, w, h) => {
   shape.setAttribute('height',  h);
 }
 
-export const drawRectMask = (svg, x, y, w, h) => {
+export const drawRectMask = (x, y, w, h) => {
   const mask = document.createElementNS(SVG_NAMESPACE, 'path');
   mask.setAttribute('fill-rule', 'evenodd');
   mask.setAttribute('fill', 'red');
 
-  const [ left, top, width, height ] = svg.getAttribute('viewBox').split(' ');
-  mask.setAttribute('d', `M0 0 h${width} v${height} h-${width} z M${x} ${y} h${w} v${h} h-${w} z`);
+  const { naturalWidth, naturalHeight } = Environment.image;
+  mask.setAttribute('d', `M0 0 h${naturalWidth} v${naturalHeight} h-${naturalWidth} z M${x} ${y} h${w} v${h} h-${w} z`);
 
   return mask;
 }
 
 export const setRectMaskSize = (mask, x, y, w, h) => {
-  // TODO optimize: parse from current d attribute instead of pulling from the DOM
-  const [ left, top, width, height ] = mask.closest('svg').getAttribute('viewBox').split(' ');
-  mask.setAttribute('d', `M0 0 h${width} v${height} h-${width} z M${x} ${y} h${w} v${h} h-${w} z`);
+  const { naturalWidth, naturalHeight } = Environment.image;
+  mask.setAttribute('d', `M0 0 h${naturalWidth} v${naturalHeight} h-${naturalWidth} z M${x} ${y} h${w} v${h} h-${w} z`);
 }
 
 /** 

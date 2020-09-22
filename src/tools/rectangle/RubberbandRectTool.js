@@ -62,10 +62,14 @@ export default class RubberbandRectTool extends EventEmitter {
 
     if (w > 3) {
       // Emit the SVG shape with selection attached    
-      const shape = this.rubberband.shape;
-      shape.annotation = this.rubberband.toSelection();
-      this.emit('complete', shape);
-      // this.rubberband.destroy();
+      const { element, mask } = this.rubberband;
+      element.annotation = this.rubberband.toSelection();
+
+      // Emit the completed shape...
+      this.emit('complete', element);
+
+      // ...and remove the mask
+      mask.parentNode.removeChild(mask)
     } else {
       this.emit('cancel', evt);
       this.stop();

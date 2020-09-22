@@ -18,9 +18,9 @@ export default class RubberbandRect {
     this.anchor = [ anchorX, anchorY ];
     this.opposite = [ anchorX, anchorY ];
 
-    this.shape = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.group = document.createElementNS(SVG_NAMESPACE, 'g');
     
-    this.mask = drawRectMask(g.closest('svg'), anchorX, anchorY, 2, 2);
+    this.mask = drawRectMask(anchorX, anchorY, 2, 2);
     this.mask.setAttribute('class', 'a9s-selection-mask');
 
     this.rect = drawRect(anchorX, anchorY, 2, 2);
@@ -29,15 +29,15 @@ export default class RubberbandRect {
     // We make the selection transparent to 
     // pointer events because it would interfere with the 
     // rendered annotations' mouseleave/enter events
-    this.shape.style.pointerEvents = 'none';
+    this.group.style.pointerEvents = 'none';
 
     // Additionally, selection remains hidden until 
     // the user actually moves the mouse
-    this.shape.style.display = 'none';
+    this.group.style.display = 'none';
 
-    this.shape.appendChild(this.mask);
-    this.shape.appendChild(this.rect);
-    g.appendChild(this.shape);
+    this.group.appendChild(this.mask);
+    this.group.appendChild(this.rect);
+    g.appendChild(this.group);
   }
 
   get bbox() {
@@ -52,9 +52,13 @@ export default class RubberbandRect {
     };
   }
 
+  get element() {
+    return this.rect;
+  }
+
   dragTo = (oppositeX, oppositeY) => {
     // Make visible
-    this.shape.style.display = null;
+    this.group.style.display = null;
 
     this.opposite = [ oppositeX, oppositeY ];
     const { x, y, w, h } = this.bbox;
@@ -72,11 +76,11 @@ export default class RubberbandRect {
   }
 
   destroy = () => {
-    this.shape.parentNode.removeChild(this.shape);
+    this.group.parentNode.removeChild(this.group);
 
     this.mask = null;
     this.rect = null;
-    this.shape = null;
+    this.group = null;
   }
 
 }
