@@ -11,10 +11,10 @@ export default class RubberbandPolygon {
     this.env = env;
 
     this.outer = document.createElementNS(SVG_NAMESPACE, 'polygon');
-    this.outer.setAttribute('class', 'outer');
+    this.outer.setAttribute('class', 'a9s-outer');
 
     this.inner = document.createElementNS(SVG_NAMESPACE, 'polygon');
-    this.inner.setAttribute('class', 'inner');
+    this.inner.setAttribute('class', 'a9s-inner');
 
     this.points = [ anchor, anchor ];
 

@@ -55,7 +55,7 @@ class DrawingToolRegistry extends EventEmitter {
 
   /** TODO inefficient - maybe organize this in a different way **/
   forShape = svgShape => {
-    const inner = svgShape.querySelector('.inner');
+    const inner = svgShape.querySelector('.a9s-inner');
     const Tool = this._registered[inner.nodeName];
     return Tool ? new Tool(this._g, this._config, this._env) : null;
   }

@@ -20,27 +20,27 @@
   opacity:1;
 }
 
-svg.a9s-annotationlayer .a9s-annotation.RED .outer {
+svg.a9s-annotationlayer .a9s-annotation.RED .a9s-outer {
   stroke:red;
   stroke-width:3;
   fill:rgba(255, 0, 0, 0.3);
 }
 
-svg.a9s-annotationlayer .a9s-annotation.GREEN .outer {
+svg.a9s-annotationlayer .a9s-annotation.GREEN .a9s-outer {
   stroke:green;
   stroke-width:3;
   fill:rgba(0, 255, 0, 0.3);
 }
 
-svg.a9s-annotationlayer .a9s-annotation.BLUE .outer {
+svg.a9s-annotationlayer .a9s-annotation.BLUE .a9s-outer {
   stroke:blue;
   stroke-width:3;
   fill:rgba(0, 0, 255, 0.3);
 }
 
-svg.a9s-annotationlayer .a9s-annotation.RED .inner,
-svg.a9s-annotationlayer .a9s-annotation.GREEN .inner,
-svg.a9s-annotationlayer .a9s-annotation.BLUE .inner {
+svg.a9s-annotationlayer .a9s-annotation.RED .a9s-inner,
+svg.a9s-annotationlayer .a9s-annotation.GREEN .a9s-inner,
+svg.a9s-annotationlayer .a9s-annotation.BLUE .a9s-inner {
   fill:transparent;
   stroke:none;
 }

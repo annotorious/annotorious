@@ -4,7 +4,7 @@ import { SVG_NAMESPACE } from '../../SVG';
 
 const drawHandle = pt => {
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
-  group.setAttribute('class', 'vertex-handle');
+  group.setAttribute('class', 'a9s-handle');
   group.setAttribute('transform-origin', `${pt.x}px ${pt.y}px`);
 
   const drawCircle = r => {
@@ -16,10 +16,10 @@ const drawHandle = pt => {
   }
 
   const inner = drawCircle(6);
-  inner.setAttribute('class', 'vertex-handle-inner')
+  inner.setAttribute('class', 'a9s-handle-inner')
 
   const outer = drawCircle(7);
-  outer.setAttribute('class', 'vertex-handle-outer')
+  outer.setAttribute('class', 'a9s-handle-outer')
 
   group.appendChild(outer);
   group.appendChild(inner);
@@ -30,11 +30,11 @@ const drawHandle = pt => {
 const moveHandle = (handle, pt) => {
   handle.setAttribute('transform-origin', `${pt.x}px ${pt.y}px`);
 
-  const inner = handle.querySelector('.vertex-handle-inner');
+  const inner = handle.querySelector('.a9s-handle-inner');
   inner.setAttribute('cx', pt.x);
   inner.setAttribute('cy', pt.y);
 
-  const outer = handle.querySelector('.vertex-handle-outer');
+  const outer = handle.querySelector('.a9s-handle-outer');
   outer.setAttribute('cx', pt.x);
   outer.setAttribute('cy', pt.y);
 }
@@ -42,7 +42,7 @@ const moveHandle = (handle, pt) => {
 const getPoints = shape => {
   // Could just be Array.from(shape.querySelector('.inner').points) but...
   // IE11 :-(
-  const pointList = shape.querySelector('.inner').points;
+  const pointList = shape.querySelector('.a9s-inner').points;
   const points = [];
 
   for (let i=0; i<pointList.numberOfItems; i++) {
@@ -90,7 +90,7 @@ export default class EditablePolygon extends EventEmitter {
       return handle;
     });
 
-    this.shape.querySelector('.inner')
+    this.shape.querySelector('.a9s-inner')
       .addEventListener('mousedown', this.onGrab(this.shape));
 
     g.appendChild(this.group);
@@ -124,10 +124,10 @@ export default class EditablePolygon extends EventEmitter {
   setPoints = (points) => {
     const str = points.map(pt => `${pt.x},${pt.y}`).join();
 
-    const inner = this.shape.querySelector('.inner');
+    const inner = this.shape.querySelector('.a9s-inner');
     inner.setAttribute('points', str);
 
-    const outer = this.shape.querySelector('.outer');
+    const outer = this.shape.querySelector('.a9s-outer');
     outer.setAttribute('points', str);
   }
 

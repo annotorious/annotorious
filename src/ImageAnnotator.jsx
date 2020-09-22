@@ -183,6 +183,7 @@ export default class ImageAnnotator extends Component  {
         selectedElement={this.state.selectedDOMElement}
         readOnly={readOnly}
         config={this.props.config}
+        env={this.props.env}
         applyTemplate={this.state.applyTemplate}
         applyImmediately={this.state.applyImmediately}
         onAnnotationCreated={this.onCreateOrUpdateAnnotation('onAnnotationCreated')}

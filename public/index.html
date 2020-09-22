@@ -64,6 +64,11 @@
           tagVocabulary: [ 'Animal', 'Building', 'Waterbody']
         });
 
+        anno.setAuthInfo({
+          id: 'http://www.example.com/rainer',
+          displayName: 'rainer'
+        });
+
         anno.on('createAnnotation', function(a) {
           console.log('created', a);
         });

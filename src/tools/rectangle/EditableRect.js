@@ -13,7 +13,7 @@ import {
 
 const drawHandle = (x, y) => {
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
-  group.setAttribute('class', 'vertex-handle');
+  group.setAttribute('class', 'a9s-handle');
   group.setAttribute('transform-origin', `${x}px ${y}px`);
 
   const drawCircle = r => {
@@ -25,10 +25,10 @@ const drawHandle = (x, y) => {
   }
 
   const inner = drawCircle(6);
-  inner.setAttribute('class', 'vertex-handle-inner')
+  inner.setAttribute('class', 'a9s-handle-inner')
 
   const outer = drawCircle(7);
-  outer.setAttribute('class', 'vertex-handle-outer')
+  outer.setAttribute('class', 'a9s-handle-outer')
 
   group.appendChild(outer);
   group.appendChild(inner);
@@ -39,11 +39,11 @@ const drawHandle = (x, y) => {
 const setHandleXY = (handle, x, y) => {
   handle.setAttribute('transform-origin', `${x}px ${y}px`);
 
-  const inner = handle.querySelector('.vertex-handle-inner');
+  const inner = handle.querySelector('.a9s-handle-inner');
   inner.setAttribute('cx', x);
   inner.setAttribute('cy', y);
 
-  const outer = handle.querySelector('.vertex-handle-outer');
+  const outer = handle.querySelector('.a9s-handle-outer');
   outer.setAttribute('cx', x);
   outer.setAttribute('cy', y);
 }
@@ -98,7 +98,7 @@ export default class EditableRect extends EventEmitter {
     this.group.appendChild(this.mask);
     this.group.appendChild(this.rectangle);
 
-    this.rectangle.querySelector('.inner')
+    this.rectangle.querySelector('.a9s-inner')
       .addEventListener('mousedown', this.onGrab(this.rectangle));
     
     this.svg.addEventListener('mousemove', this.onMouseMove);

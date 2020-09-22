@@ -48,10 +48,10 @@ export const drawEmbeddedSVG = annotation => {
   const g = document.createElementNS(SVG_NAMESPACE, 'g');
 
   const inner = shape.cloneNode(true);
-  inner.setAttribute('class', 'inner');
+  inner.setAttribute('class', 'a9s-inner');
 
   const outer = shape.cloneNode(true);
-  outer.setAttribute('class', 'outer');
+  outer.setAttribute('class', 'a9s-outer');
 
   g.appendChild(outer);
   g.appendChild(inner);
@@ -60,7 +60,7 @@ export const drawEmbeddedSVG = annotation => {
 }
 
 export const toSVGTarget = (shape, imageSrc) => {
-  const inner = shape.querySelector('.inner').cloneNode(true);
+  const inner = shape.querySelector('.a9s-inner').cloneNode(true);
   inner.removeAttribute('class');
   inner.removeAttribute('xmlns');
 

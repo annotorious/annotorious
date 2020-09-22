@@ -40,7 +40,6 @@ const setXYWH = (shape, x, y, w, h) => {
 export const drawRectMask = (imageDimensions, x, y, w, h) => {
   const mask = document.createElementNS(SVG_NAMESPACE, 'path');
   mask.setAttribute('fill-rule', 'evenodd');
-  mask.setAttribute('fill', 'red');
   
   const { naturalWidth, naturalHeight } = imageDimensions;
   mask.setAttribute('d', `M0 0 h${naturalWidth} v${naturalHeight} h-${naturalWidth} z M${x} ${y} h${w} v${h} h-${w} z`);
@@ -66,10 +65,10 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
   const outerRect  = document.createElementNS(SVG_NAMESPACE, 'rect');
   const innerRect  = document.createElementNS(SVG_NAMESPACE, 'rect');
 
-  innerRect.setAttribute('class', 'inner');
+  innerRect.setAttribute('class', 'a9s-inner');
   setXYWH(innerRect, x, y, w, h);
 
-  outerRect.setAttribute('class', 'outer');
+  outerRect.setAttribute('class', 'a9s-outer');
   setXYWH(outerRect, x, y, w, h);
 
   g.appendChild(outerRect);
@@ -80,7 +79,7 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
 
 /** Gets the (x, y, w, h)-values from the attributes of the SVG group **/
 export const getRectSize = g => {
-  const outerRect = g.querySelector('.outer');
+  const outerRect = g.querySelector('.a9s-outer');
   
   const x = parseFloat(outerRect.getAttribute('x'));
   const y = parseFloat(outerRect.getAttribute('y'));
@@ -103,8 +102,8 @@ export const getCorners = g => {
 
 /** Applies the (x, y, w, h)-values to the rects in the SVG group **/
 export const setRectSize = (g, x, y, w, h) => {
-  const innerRect = g.querySelector('.inner');
-  const outerRect = g.querySelector('.outer');
+  const innerRect = g.querySelector('.a9s-inner');
+  const outerRect = g.querySelector('.a9s-outer');
 
   setXYWH(innerRect, x, y, w, h);
   setXYWH(outerRect, x, y, w, h);
