@@ -32,8 +32,8 @@ export class Annotorious {
     this._imageEl.style.display = 'block';
 
     // Store image reference in the Environment
-    const env = createEnvironment();
-    env.image = this._imageEl;
+    this._env = createEnvironment();
+    this._env.image = this._imageEl;
 
     setLocale(config.locale);
 
@@ -55,7 +55,7 @@ export class Annotorious {
     ReactDOM.render(
       <ImageAnnotator
         ref={this._app}
-        env={env}
+        env={this._env}
         wrapperEl={this._wrapperEl}
         config={config}
         onSelectionCreated={this.handleSelectionCreated}
@@ -110,7 +110,7 @@ export class Annotorious {
   }
 
   clearAuthInfo = () =>
-    Environment.user = null;
+    this._env.user = null;
 
   destroy = () => {
     ReactDOM.unmountComponentAtNode(this._appContainerEl);
@@ -152,7 +152,7 @@ export class Annotorious {
   }
 
   setAuthInfo = authinfo =>
-    Environment.user = authinfo;
+    this._env.user = authinfo;
 
   setDrawingTool = shape =>
     this._app.current.setDrawingTool(shape);
@@ -161,7 +161,7 @@ export class Annotorious {
     this._app.current.setVisible(visible);
 
   setServerTime = timestamp =>
-    Environment.setServerTime(timestamp);
+    this._env.setServerTime(timestamp);
 
 }
 
