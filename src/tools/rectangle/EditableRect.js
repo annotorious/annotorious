@@ -68,10 +68,12 @@ const stretchCorners = (corner, opposite) => {
  */
 export default class EditableRect extends EventEmitter {
 
-  constructor(annotation, g, formatter) {
+  constructor(annotation, g, config, env) {
     super();
 
     this.annotation = annotation;
+
+    this.env = env;
 
     // SVG element
     this.svg = g.closest('svg');
@@ -81,12 +83,12 @@ export default class EditableRect extends EventEmitter {
     // 'g' for the editable rect compound shape
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
 
-    this.mask = drawRectMask(x, y, w, h);
+    this.mask = drawRectMask(env.image, x, y, w, h);
     this.mask.setAttribute('class', 'a9s-selection-mask');
 
     this.rectangle = drawRect(x, y, w, h);
 
-    const formatClass = formatter ? formatter(annotation) : null;
+    const formatClass = config.formatter ? config.formatter(annotation) : null;
     if (formatClass) {
       this.rectangle.setAttribute('class', `a9s-annotation ${formatClass} editable selected`);
     } else {
@@ -152,7 +154,7 @@ export default class EditableRect extends EventEmitter {
   /** Sets the shape size, including handle positions **/
   setSize = (x, y, w, h) => {
     setRectSize(this.rectangle, x, y, w, h);
-    setRectMaskSize(this.mask, x, y, w, h);
+    setRectMaskSize(this.mask, this.env.image, x, y, w, h);
 
     const [ topleft, topright, bottomright, bottomleft] = this.handles;
     setHandleXY(topleft, x, y);
@@ -187,7 +189,7 @@ export default class EditableRect extends EventEmitter {
         const y = pos.y - this.mouseOffset.y;
 
         this.setSize(x, y, w, h); 
-        this.emit('update', toRectFragment(x, y, w, h)); 
+        this.emit('update', toRectFragment(x, y, w, h, this.env.image)); 
       } else {
         // Handles
         const corners = getCorners(this.rectangle);

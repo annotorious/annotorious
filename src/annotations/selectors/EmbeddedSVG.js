@@ -1,5 +1,4 @@
 import { SVG_NAMESPACE } from '../../SVG';
-import { Environment } from '@recogito/recogito-client-core';
 
 /** Helper that forces an un-namespaced node to SVG **/
 const insertSVGNamespace = originalDoc => {
@@ -60,7 +59,7 @@ export const drawEmbeddedSVG = annotation => {
   return g;
 }
 
-export const toSVGTarget = shape => {
+export const toSVGTarget = (shape, imageSrc) => {
   const inner = shape.querySelector('.inner').cloneNode(true);
   inner.removeAttribute('class');
   inner.removeAttribute('xmlns');
@@ -69,7 +68,7 @@ export const toSVGTarget = shape => {
   serialized = serialized.replace(` xmlns="${SVG_NAMESPACE}"`, '');
 
   return {
-    source: Environment.image?.src,
+    source: imageSrc,
     selector: {
       type: "SvgSelector",
       value: `<svg>${serialized}</svg>`

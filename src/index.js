@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Emitter from 'tiny-emitter';
 import axios from 'axios';
-import { WebAnnotation, Environment, addPolyfills, setLocale } from '@recogito/recogito-client-core';
+import { WebAnnotation, createEnvironment, addPolyfills, setLocale } from '@recogito/recogito-client-core';
 import ImageAnnotator from './ImageAnnotator';
 
 import '@babel/polyfill';
@@ -32,8 +32,8 @@ export class Annotorious {
     this._imageEl.style.display = 'block';
 
     // Store image reference in the Environment
-    // TODO fix! 
-    Environment.image = this._imageEl;
+    const env = createEnvironment();
+    env.image = this._imageEl;
 
     setLocale(config.locale);
 
@@ -55,7 +55,7 @@ export class Annotorious {
     ReactDOM.render(
       <ImageAnnotator
         ref={this._app}
-        imageEl={this._imageEl}
+        env={env}
         wrapperEl={this._wrapperEl}
         config={config}
         onSelectionCreated={this.handleSelectionCreated}

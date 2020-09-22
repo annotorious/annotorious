@@ -1,5 +1,4 @@
 import { SVG_NAMESPACE } from '../../SVG';
-import { Environment } from '@recogito/recogito-client-core';
 
 /** 
  * Parses a W3C Web Annotation FragmentSelector conforming
@@ -21,8 +20,8 @@ export const parseRectFragment = annotation => {
 }
 
 /** Serializes a (x, y, w, h)-tuple as Media Fragment selector **/
-export const toRectFragment = (x, y, w, h) => ({
-  source: Environment.image?.src,
+export const toRectFragment = (x, y, w, h, imageSrc) => ({
+  source: imageSrc,
   selector: {
     type: "FragmentSelector",
     conformsTo: "http://www.w3.org/TR/media-frags/",
@@ -38,19 +37,19 @@ const setXYWH = (shape, x, y, w, h) => {
   shape.setAttribute('height',  h);
 }
 
-export const drawRectMask = (x, y, w, h) => {
+export const drawRectMask = (imageDimensions, x, y, w, h) => {
   const mask = document.createElementNS(SVG_NAMESPACE, 'path');
   mask.setAttribute('fill-rule', 'evenodd');
   mask.setAttribute('fill', 'red');
-
-  const { naturalWidth, naturalHeight } = Environment.image;
+  
+  const { naturalWidth, naturalHeight } = imageDimensions;
   mask.setAttribute('d', `M0 0 h${naturalWidth} v${naturalHeight} h-${naturalWidth} z M${x} ${y} h${w} v${h} h-${w} z`);
 
   return mask;
 }
 
-export const setRectMaskSize = (mask, x, y, w, h) => {
-  const { naturalWidth, naturalHeight } = Environment.image;
+export const setRectMaskSize = (mask, imageDimensions, x, y, w, h) => {
+  const { naturalWidth, naturalHeight } = imageDimensions;
   mask.setAttribute('d', `M0 0 h${naturalWidth} v${naturalHeight} h-${naturalWidth} z M${x} ${y} h${w} v${h} h-${w} z`);
 }
 
@@ -78,25 +77,6 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
 
   return g;
 }
-
-/*
-export const drawRect = (arg1, arg2, arg3, arg4) => {
-  const { x, y, w, h } = arg1.type === 'Annotation' || arg1.type === 'Selection' ?
-    parseRectFragment(arg1) : { x: arg1, y: arg2, w: arg3, h: arg4 };
-
-    const g = document.createElementNS(SVG_NAMESPACE, 'g');
-    g.setAttribute('fill-rule', 'evenodd');
-
-    const { naturalWidth, naturalHeight } = Environment.image;
-
-    const mask = document.createElementNS(SVG_NAMESPACE, 'path');
-    mask.setAttribute('d', `M0 0 h${naturalWidth} v${naturalHeight} h-640 z M${x} ${y} h${w} v${h} h-${w} z`);
-    mask.setAttribute('fill', 'rgba(0, 0, 0, 0.6)')
-
-    g.appendChild(mask);    
-    return g;
-}
-*/
 
 /** Gets the (x, y, w, h)-values from the attributes of the SVG group **/
 export const getRectSize = g => {

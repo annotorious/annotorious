@@ -7,12 +7,13 @@ import EditableRect from './EditableRect';
  */
 export default class RubberbandRectTool extends EventEmitter {
 
-  constructor(g, formatter) {
+  constructor(g, config, env) {
     super();
 
     this.svg = g.closest('svg');
     this.g = g;
-    this.formatter = formatter;
+    this.config = config;
+    this.env = env;
 
     this.rubberband = null;
   }
@@ -40,7 +41,7 @@ export default class RubberbandRectTool extends EventEmitter {
   startDrawing = evt => {
     const { x, y } = this._toSVG(evt.layerX, evt.layerY);
     this._attachListeners();
-    this.rubberband = new RubberbandRect(x, y, this.g);
+    this.rubberband = new RubberbandRect(x, y, this.g, this.env);
   }
 
   stop = () => {
@@ -77,7 +78,7 @@ export default class RubberbandRectTool extends EventEmitter {
   }
 
   createEditableShape = annotation =>
-    new EditableRect(annotation, this.g, this.formatter);
+    new EditableRect(annotation, this.g, this.config, this.env);
 
   get isDrawing() {
     return this.rubberband != null;

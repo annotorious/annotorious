@@ -8,8 +8,10 @@ export default class AnnotationLayer extends EventEmitter {
   constructor(props) {
     super();
 
-    const { wrapperEl, imageEl, config } = props;
+    const { wrapperEl, config, env } = props;
 
+    const imageEl = env.image;
+    
     this.readOnly = config.readOnly;
     this.headless = config.headless;
     this.formatter = config.formatter;
@@ -40,7 +42,7 @@ export default class AnnotationLayer extends EventEmitter {
       this.enableSelectHover();
     } else {
       // Attach handlers to the drawing tool palette
-      this.tools = new DrawingTools(this.g, this.formatter);
+      this.tools = new DrawingTools(this.g, config, env);
       this.tools.on('cancel', this.selectCurrentHover);
       this.tools.on('complete', shape => {
         this.emit('createSelection', shape.annotation);
