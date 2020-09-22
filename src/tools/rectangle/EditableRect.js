@@ -1,5 +1,6 @@
 import EventEmitter from 'tiny-emitter';
 import { SVG_NAMESPACE } from '../../SVG';
+import { format } from '../../Formatting';
 import { 
   drawRect, 
   drawRectMask,
@@ -9,7 +10,7 @@ import {
   setRectSize, 
   toRectFragment, 
   setRectMaskSize
-} from '../../annotations/selectors/RectFragment';
+} from '../../selectors/RectFragment';
 
 const drawHandle = (x, y) => {
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
@@ -87,13 +88,9 @@ export default class EditableRect extends EventEmitter {
     this.mask.setAttribute('class', 'a9s-selection-mask');
 
     this.rectangle = drawRect(x, y, w, h);
+    this.rectangle.setAttribute('class', 'a9s-annotation editable selected');
 
-    const formatClass = config.formatter ? config.formatter(annotation) : null;
-    if (formatClass) {
-      this.rectangle.setAttribute('class', `a9s-annotation ${formatClass} editable selected`);
-    } else {
-      this.rectangle.setAttribute('class', 'a9s-annotation editable selected');
-    }
+    format(this.rectangle, annotation, config.formatter);
 
     this.group.appendChild(this.mask);
     this.group.appendChild(this.rectangle);

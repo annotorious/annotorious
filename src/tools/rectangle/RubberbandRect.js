@@ -6,7 +6,7 @@ import {
   setRectSize, 
   setRectMaskSize,
   toRectFragment 
-} from '../../annotations/selectors/RectFragment';
+} from '../../selectors/RectFragment';
 
 /**
  * A 'rubberband' selection tool for creating a rectangle by

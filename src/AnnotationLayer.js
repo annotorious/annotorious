@@ -1,7 +1,8 @@
 import EventEmitter from 'tiny-emitter';
 import { drawShape, shapeArea } from './selectors';
-import { SVG_NAMESPACE, addClass, removeClass } from '../SVG';
-import DrawingTools from '../tools/DrawingTools';
+import { SVG_NAMESPACE, addClass, removeClass } from './SVG';
+import DrawingTools from './tools/DrawingTools';
+import { format } from './Formatting';
 
 export default class AnnotationLayer extends EventEmitter {
 
@@ -88,11 +89,8 @@ export default class AnnotationLayer extends EventEmitter {
   addAnnotation = annotation => {
     const g = drawShape(annotation);
     
-    const formatterClass = this.formatter ? this.formatter(annotation) : null;
-    if (formatterClass)
-      g.setAttribute('class', `a9s-annotation ${formatterClass}`);
-    else
-      g.setAttribute('class', 'a9s-annotation');
+    g.setAttribute('class', 'a9s-annotation');
+    format(g, annotation, this.formatter);
     
     g.setAttribute('data-id', annotation.id);
     g.annotation = annotation;

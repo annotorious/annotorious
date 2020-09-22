@@ -1,6 +1,7 @@
 import EventEmitter from 'tiny-emitter';
-import { drawEmbeddedSVG, toSVGTarget } from '../../annotations/selectors/EmbeddedSVG';
+import { drawEmbeddedSVG, toSVGTarget } from '../../selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '../../SVG';
+import { format } from '../../Formatting';
 
 const drawHandle = pt => {
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
@@ -73,13 +74,9 @@ export default class EditablePolygon extends EventEmitter {
     // 'g' for the editable polygon compound shape
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
     this.shape = drawEmbeddedSVG(annotation);
+    this.shape.setAttribute('class', `a9s-annotation editable selected`);
 
-    const formatClass = config.formatter ? config.formatter(annotation) : null;
-    if (formatClass) {
-      this.shape.setAttribute('class', `a9s-annotation ${formatClass} editable selected`);
-    } else {
-      this.shape.setAttribute('class', 'a9s-annotation editable selected');
-    }
+    format(this.shape, annotation, config.formatter);
 
     this.group.appendChild(this.shape);
 
