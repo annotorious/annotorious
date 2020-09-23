@@ -59,7 +59,7 @@ export const drawEmbeddedSVG = annotation => {
   return g;
 }
 
-export const toSVGTarget = (shape, imageSrc) => {
+export const toSVGTarget = (shape, image) => {
   const inner = shape.querySelector('.a9s-inner').cloneNode(true);
   inner.removeAttribute('class');
   inner.removeAttribute('xmlns');
@@ -68,7 +68,7 @@ export const toSVGTarget = (shape, imageSrc) => {
   serialized = serialized.replace(` xmlns="${SVG_NAMESPACE}"`, '');
 
   return {
-    source: imageSrc,
+    source: image.src,
     selector: {
       type: "SvgSelector",
       value: `<svg>${serialized}</svg>`
