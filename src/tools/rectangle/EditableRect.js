@@ -200,7 +200,7 @@ export default class EditableRect extends EventEmitter {
         const { x, y, w, h } = stretchCorners(pos, oppositeCorner)
 
         this.setSize(x, y, w, h); 
-        this.emit('update', toRectFragment(x, y, w, h)); 
+        this.emit('update', toRectFragment(x, y, w, h, this.env.image)); 
       }
     }
   }
