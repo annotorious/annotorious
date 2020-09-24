@@ -2,6 +2,7 @@ import EventEmitter from 'tiny-emitter';
 import { drawEmbeddedSVG, toSVGTarget } from '../../selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '../../SVG';
 import { format } from '../../Formatting';
+import Mask from './PolygonMask';
 
 const drawHandle = pt => {
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
@@ -17,10 +18,10 @@ const drawHandle = pt => {
   }
 
   const inner = drawCircle(6);
-  inner.setAttribute('class', 'a9s-handle-inner')
+  inner.setAttribute('class', 'a9s-handle-inner');
 
   const outer = drawCircle(7);
-  outer.setAttribute('class', 'a9s-handle-outer')
+  outer.setAttribute('class', 'a9s-handle-outer');
 
   group.appendChild(outer);
   group.appendChild(inner);

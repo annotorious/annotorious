@@ -1,6 +1,7 @@
 import { Selection } from '@recogito/recogito-client-core';
 import { toSVGTarget } from '../../selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '../../SVG';
+import Mask from './PolygonMask';
 
 export default class RubberbandPolygon {
 
@@ -16,10 +17,13 @@ export default class RubberbandPolygon {
     this.inner = document.createElementNS(SVG_NAMESPACE, 'polygon');
     this.inner.setAttribute('class', 'a9s-inner');
 
-    this.points = [ anchor, anchor ];
+    this.points = [ anchor ];
 
     this.setPoints(this.points);
 
+    this.mask = new Mask(env.image, this.inner);
+
+    this.g.appendChild(this.mask.element);
     this.g.appendChild(this.outer);
     this.g.appendChild(this.inner);
 
@@ -37,21 +41,20 @@ export default class RubberbandPolygon {
   dragTo = xy => {
     this.isCollapsed = false;
 
-    const head = this.points.slice(0, this.points.length - 1);
-    const rubberband = [ ...head, xy, head[0] ];
+    const rubberband = [ ...this.points, xy ];
     this.setPoints(rubberband);
+    this.mask.redraw();
   }
 
   addPoint = xy => {
-    const head = this.points.slice(0, this.points.length - 1);
-
     // Don't add a new point if distance < 2 pixels
-    const lastCorner = head[head.length - 1];
+    const lastCorner = this.points[this.points.length - 1];
     const dist = Math.pow(xy[0] - lastCorner[0], 2) + Math.pow(xy[1] - lastCorner[1], 2);
     
     if (dist > 4) {
-      this.points = [ ...head, xy, head[0] ];
+      this.points = [ ...this.points, xy ];
       this.setPoints(this.points);   
+      this.mask.redraw();
     }
   }
 
