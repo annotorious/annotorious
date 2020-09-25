@@ -15,69 +15,68 @@
       -ms-user-select:none;
        -o-user-select:none;
           user-select:none;
+}
 
-  .a9s-selection-mask {
-    stroke:none;
+.a9s-selection-mask {
+  stroke:none;
+  fill:transparent;
+}
+
+.a9s-annotation, .a9s-selection {
+
+  rect, polygon {
     fill:transparent;
+    cursor:pointer;
+    vector-effect:non-scaling-stroke;
   }
 
-  .a9s-annotation, .a9s-selection {
-  
-    rect, polygon {
-      fill:transparent;
-      cursor:pointer;
-      vector-effect:non-scaling-stroke;
-    }
-
-    .a9s-inner {
-      stroke:#fff;
-      stroke-width:1px;
-    }
-
-    .a9s-inner:hover {
-      stroke:#fff000;
-    }
-
-    .a9s-outer {
-      stroke:rgba(0, 0, 0, 0.7);
-      stroke-width:3px;
-    }
-  
+  .a9s-inner {
+    stroke:#fff;
+    stroke-width:1px;
   }
 
-  .a9s-annotation.selected .a9s-inner, .a9s-selection .a9s-inner {
+  .a9s-inner:hover {
     stroke:#fff000;
-  } 
-
-  .a9s-annotation.editable {
-
-    .a9s-inner {
-      stroke:#fff000;
-      cursor:move;
-    }
-
-    .a9s-inner:hover {
-      fill:rgba(255, 240, 0, 0.1);
-    }
-
   }
 
-  .a9s-handle {
+  .a9s-outer {
+    stroke:rgba(0, 0, 0, 0.7);
+    stroke-width:3px;
+  }
+
+}
+
+.a9s-annotation.selected .a9s-inner, .a9s-selection .a9s-inner {
+  stroke:#fff000;
+} 
+
+.a9s-annotation.editable {
+
+  .a9s-inner {
+    stroke:#fff000;
     cursor:move;
-
-    .a9s-handle-inner {
-      stroke:#fff000;
-      fill:#000;  
-    }
-
-    .a9s-handle-outer {
-      stroke:#000;
-      fill:#fff;
-    }
   }
 
-  .a9s-handle:hover .a9s-handle-inner {
-    fill:#fff000;
+  .a9s-inner:hover {
+    fill:rgba(255, 240, 0, 0.1);
   }
 
+}
+
+.a9s-handle {
+  cursor:move;
+
+  .a9s-handle-inner {
+    stroke:#fff000;
+    fill:#000;  
+  }
+
+  .a9s-handle-outer {
+    stroke:#000;
+    fill:#fff;
+  }
+}
+
+.a9s-handle:hover .a9s-handle-inner {
+  fill:#fff000;
 }
