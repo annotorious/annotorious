@@ -61,7 +61,10 @@
         var anno = Annotorious.init({
           image: 'hallstatt',
           locale: 'auto',
-          tagVocabulary: [ 'Animal', 'Building', 'Waterbody']
+          widgets: [
+            'COMMENT',
+            { widget: 'TAG', vocabulary: [ 'Animal', 'Building', 'Waterbody'] }
+          ]
         });
 
         anno.setAuthInfo({

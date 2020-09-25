@@ -17,6 +17,10 @@ export const format = (element, annotation, formatter) => {
 
   const format = formatter(annotation);
 
+  // The formatter is allowed to return null
+  if (!format)
+    return element;
+
   if (typeof format === 'string' || format instanceof String) {
     // Apply CSS class
     addClass(element, format); 
