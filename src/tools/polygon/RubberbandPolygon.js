@@ -11,6 +11,8 @@ export default class RubberbandPolygon {
 
     this.env = env;
 
+    this.polygon = document.createElementNS(SVG_NAMESPACE, 'g');
+
     this.outer = document.createElementNS(SVG_NAMESPACE, 'polygon');
     this.outer.setAttribute('class', 'a9s-outer');
 
@@ -23,9 +25,11 @@ export default class RubberbandPolygon {
 
     this.mask = new Mask(env.image, this.inner);
 
+    this.polygon.appendChild(this.outer);
+    this.polygon.appendChild(this.inner);
+
     this.g.appendChild(this.mask.element);
-    this.g.appendChild(this.outer);
-    this.g.appendChild(this.inner);
+    this.g.appendChild(this.polygon);
 
     this.isCollapsed = true;
 
@@ -56,6 +60,10 @@ export default class RubberbandPolygon {
       this.setPoints(this.points);   
       this.mask.redraw();
     }
+  }
+
+  get element() {
+    return this.polygon;
   }
 
   destroy = () => {

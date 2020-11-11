@@ -23,4 +23,8 @@ export default class PolygonMask {
     return this.mask;
   }
 
+  destroy = () => {
+    this.mask.parentNode.removeChild(this.mask);
+  }
+
 }

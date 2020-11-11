@@ -70,7 +70,7 @@ export default class RubberbandRectTool extends EventEmitter {
       this.emit('complete', element);
 
       // ...and remove the mask
-      mask.parentNode.removeChild(mask)
+      mask.parentNode.removeChild(mask);
     } else {
       this.emit('cancel', evt);
       this.stop();

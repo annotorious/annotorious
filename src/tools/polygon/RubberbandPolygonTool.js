@@ -88,6 +88,9 @@ export default class RubberbandPolygonTool extends EventEmitter {
     const shape = this.rubberband.g;
     shape.annotation = this.rubberband.toSelection();
     this.emit('complete', shape);
+
+    // ...and remove the mask
+    this.rubberband.mask.destroy();
   }
 
   createEditableShape = annotation =>
