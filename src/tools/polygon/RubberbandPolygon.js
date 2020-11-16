@@ -28,6 +28,10 @@ export default class RubberbandPolygon {
     this.polygon.appendChild(this.outer);
     this.polygon.appendChild(this.inner);
 
+    // Additionally, selection remains hidden until 
+    // the user actually moves the mouse
+    this.g.style.display = 'none';
+
     this.g.appendChild(this.mask.element);
     this.g.appendChild(this.polygon);
 
@@ -43,6 +47,9 @@ export default class RubberbandPolygon {
   }
 
   dragTo = xy => {
+    // Make visible
+    this.g.style.display = null;
+
     this.isCollapsed = false;
 
     const rubberband = [ ...this.points, xy ];
