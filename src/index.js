@@ -79,7 +79,7 @@ export class Annotorious {
     this._emitter.emit('createAnnotation', annotation.underlying, overrideId);
 
   handleSelectionCreated = selection =>
-    this._emitter.emit('createSelection', selection._stub);
+    this._emitter.emit('createSelection', selection._underlying);
 
   handleAnnotationDeleted = annotation =>
     this._emitter.emit('deleteAnnotation', annotation.underlying);
@@ -121,6 +121,11 @@ export class Annotorious {
   getAnnotations = () => {
     const annotations = this._app.current.getAnnotations();
     return annotations.map(a => a.underlying);
+  }
+
+  getSelected = () => {
+    const selected = this._app.current.getSelected();
+    return selected?.underlying;
   }
 
   loadAnnotations = url => axios.get(url).then(response => {

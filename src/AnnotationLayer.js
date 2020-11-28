@@ -270,6 +270,9 @@ export default class AnnotationLayer extends EventEmitter {
     return shapes.map(s => s.annotation);
   }
 
+  getSelected = () =>
+    this.selectedShape?.annotation;
+
   setDrawingTool = shape =>
     this.tools.setCurrent(shape);
 
