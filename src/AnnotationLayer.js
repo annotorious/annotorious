@@ -85,13 +85,13 @@ export default class AnnotationLayer extends EventEmitter {
     if (this.currentHover) {
       // Select the currently hovered shape
       this.selectShape(this.currentHover);
-    } else if (this.selectedShape) {
+    } /*else if (this.selectedShape) {
       // No shape under the mouse, but there is a selection -> deselect and close editor
       this.deselect();
       this.emit('select', { skipEvent: true });
     }
 
-    this.currentHover = null;
+    this.currentHover = null; */
   }
 
   addAnnotation = annotation => {
