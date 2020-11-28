@@ -47,6 +47,7 @@
         Click the annotation to edit. Click and drag the mouse to create a new annotation.
       </p>
       <p>
+        <button id="add-body">Add Body</button>
         <button id="current-tool">RECTANGLE</button>
       </p>
       <img id="hallstatt" src="640px-Hallstatt.jpg">
@@ -83,6 +84,17 @@
         anno.loadAnnotations('annotations.w3c.json');
 
         anno.setDrawingTool('rect');
+
+        var btnAddBody = document.getElementById('add-body');
+        btnAddBody.addEventListener('click', function() {
+          var selected = anno.getSelected();
+
+          // TODO add a body
+
+          // TODO update the selected annotation
+          
+          console.log(selected);
+        });
 
         var toolToggle = document.getElementById('current-tool');
         toolToggle.addEventListener('click', function() {
