@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Emitter from 'tiny-emitter';
 import axios from 'axios';
-import { WebAnnotation, createEnvironment, addPolyfills, setLocale } from '@recogito/recogito-client-core';
+import { WebAnnotation, Selection, createEnvironment, addPolyfills, setLocale } from '@recogito/recogito-client-core';
 import ImageAnnotator from './ImageAnnotator';
 
 import '@babel/polyfill';
@@ -167,6 +167,19 @@ export class Annotorious {
 
   setServerTime = timestamp =>
     this._env.setServerTime(timestamp);
+
+  updateSelected = annotation => {
+    let updated = null;
+
+    if (annotation.type === 'Annotation') {
+      updated = new WebAnnotation(annotation);
+    } else if (annotation.type === 'Selection') {
+      updated = new Selection(annotation.target, annotation.body);
+    }
+    
+    if (updated)
+      this._app.current.updateSelected(updated);
+  }
 
 }
 

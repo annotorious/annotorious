@@ -146,8 +146,7 @@ export default class ImageAnnotator extends Component  {
 
   getSelected = () => {
     const selected = this.annotationLayer.getSelected();
-    console.log(selected);
-    return selected ? selected.clone() : null;
+    return selected ? selected.annotation.clone() : null;
   }
 
   setDrawingTool = shape =>
@@ -163,6 +162,13 @@ export default class ImageAnnotator extends Component  {
       return annotation.clone();
     else
       this.clearState(); // Deselect
+  }
+
+  updateSelected = annotation => {
+    if (this.state.selectedAnnotation)
+      this.setState({ selectedAnnotation: annotation });
+    else
+      console.warn('No selection - cannot update');
   }
 
   applyTemplate = (bodies, openEditor) =>

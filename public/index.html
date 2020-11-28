@@ -89,11 +89,13 @@
         btnAddBody.addEventListener('click', function() {
           var selected = anno.getSelected();
 
-          // TODO add a body
+          selected.body = [{
+            type: 'TextualBody',
+            purpose: 'tagging',
+            value: 'Just a tag'
+          }];
 
-          // TODO update the selected annotation
-          
-          console.log(selected);
+          anno.updateSelected(selected);
         });
 
         var toolToggle = document.getElementById('current-tool');
