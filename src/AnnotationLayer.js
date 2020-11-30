@@ -69,9 +69,8 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   selectCurrentHover = () => {
-    if (this.tools.current?.isDrawing)
-      return; // Don't do anything if we're currently drawing
-
+    console.log(this.currentHover);
+    
     if (this.currentHover) {
       this.selectShape(this.currentHover);
     } else {
