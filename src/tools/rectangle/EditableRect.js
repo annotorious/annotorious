@@ -79,30 +79,43 @@ export default class EditableRect extends EventEmitter {
     // SVG element
     this.svg = g.closest('svg');
 
+    this.svg.addEventListener('mousemove', this.onMouseMove);
+    this.svg.addEventListener('mouseup', this.onMouseUp);
+
     const { x, y, w, h } = parseRectFragment(annotation);
 
+    // SVG markup for this class looks like this:
+    // 
+    // <g>
+    //   <path class="a9s-selection mask"... />
+    //   <g> <-- return this node as .element
+    //     <rect class="a9s-outer" ... />
+    //     <rect class="a9s-inner" ... />
+    //     <g class="a9s-handle" ...> ... </g>
+    //     <g class="a9s-handle" ...> ... </g>
+    //     <g class="a9s-handle" ...> ... </g>
+    //     <g class="a9s-handle" ...> ... </g>
+    //   </g> 
+    // </g>
+
     // 'g' for the editable rect compound shape
-    this.group = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.containerGroup = document.createElementNS(SVG_NAMESPACE, 'g');
 
     this.mask = drawRectMask(env.image, x, y, w, h);
     this.mask.setAttribute('class', 'a9s-selection-mask');
-    this.group.appendChild(this.mask);
+    this.containerGroup.appendChild(this.mask);
 
     // The 'element' = rectangles + handles
-    this.element = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.elementGroup = document.createElementNS(SVG_NAMESPACE, 'g');
 
     this.rectangle = drawRect(x, y, w, h);
     this.rectangle.setAttribute('class', 'a9s-annotation editable selected');
+    this.rectangle.querySelector('.a9s-inner')
+      .addEventListener('mousedown', this.onGrab(this.rectangle));
 
     format(this.rectangle, annotation, config.formatter);
 
-    this.element.appendChild(this.rectangle);
-
-    this.rectangle.querySelector('.a9s-inner')
-      .addEventListener('mousedown', this.onGrab(this.rectangle));
-    
-    this.svg.addEventListener('mousemove', this.onMouseMove);
-    this.svg.addEventListener('mouseup', this.onMouseUp);
+    this.elementGroup.appendChild(this.rectangle);    
 
     this.handles = [
       [ x, y ], 
@@ -114,13 +127,14 @@ export default class EditableRect extends EventEmitter {
       const handle = drawHandle(x, y);
 
       handle.addEventListener('mousedown', this.onGrab(handle));
-      this.element.appendChild(handle);
+      this.elementGroup.appendChild(handle);
 
       return handle;
     });
 
-    this.group.appendChild(this.element);
-    g.appendChild(this.group);
+    this.containerGroup.appendChild(this.elementGroup);
+
+    g.appendChild(this.containerGroup);
 
     // The grabbed element (handle or entire group), if any
     this.grabbedElem = null; 
@@ -129,6 +143,15 @@ export default class EditableRect extends EventEmitter {
     this.mouseOffset = null;
 
     this.enableResponsive();
+  }
+
+  /**
+   * Not really needed (could just define a this.element).
+   * But to make this more explicit: element is a field every
+   * editable shape implementation must provide
+   */
+  get element() {	
+    return this.elementGroup;	
   }
 
   enableResponsive = () => {
@@ -211,7 +234,7 @@ export default class EditableRect extends EventEmitter {
   }
 
   destroy = () => {
-    this.group.parentNode.removeChild(this.group);
+    this.containerGroup.parentNode.removeChild(this.containerGroup);
 
     if (this.resizeObserver)
       this.resizeObserver.disconnect();
