@@ -72,30 +72,46 @@ export default class EditablePolygon extends EventEmitter {
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
 
+    // SVG markup for this class looks like this:
+    // 
+    // <g>
+    //   <path class="a9s-selection mask"... />
+    //   <g> <-- return this node as .element
+    //     <polygon class="a9s-outer" ... />
+    //     <polygon class="a9s-inner" ... />
+    //     <g class="a9s-handle" ...> ... </g>
+    //     <g class="a9s-handle" ...> ... </g>
+    //     <g class="a9s-handle" ...> ... </g>
+    //     ...
+    //   </g> 
+    // </g>
+
     // 'g' for the editable polygon compound shape
-    this.group = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.containerGroup = document.createElementNS(SVG_NAMESPACE, 'g');
 
     this.shape = drawEmbeddedSVG(annotation);
     this.shape.setAttribute('class', `a9s-annotation editable selected`);
+    this.shape.querySelector('.a9s-inner')
+      .addEventListener('mousedown', this.onGrab(this.shape));
 
     format(this.shape, annotation, config.formatter);
 
     this.mask = new Mask(env.image, this.shape.querySelector('.a9s-inner'));
     
-    this.group.appendChild(this.mask.element);
-    this.group.appendChild(this.shape);
+    this.containerGroup.appendChild(this.mask.element);
+
+    this.elementGroup = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.elementGroup.appendChild(this.shape);
 
     this.handles = getPoints(this.shape).map(pt => {
       const handle = drawHandle(pt);
       handle.addEventListener('mousedown', this.onGrab(handle));
-      this.group.appendChild(handle);
+      this.elementGroup.appendChild(handle);
       return handle;
     });
 
-    this.shape.querySelector('.a9s-inner')
-      .addEventListener('mousedown', this.onGrab(this.shape));
-
-    g.appendChild(this.group);
+    this.containerGroup.appendChild(this.elementGroup);
+    g.appendChild(this.containerGroup);
 
     // The grabbed element (handle or entire shape), if any
     this.grabbedElem = null;
@@ -104,6 +120,10 @@ export default class EditablePolygon extends EventEmitter {
     this.grabbedAt = null;
 
     this.enableResponsive()
+  }
+
+  get element() {
+    return this.elementGroup;
   }
 
   enableResponsive = () => {
@@ -191,12 +211,8 @@ export default class EditablePolygon extends EventEmitter {
     this.grabbedAt = null;
   }
 
-  get element() {
-    return this.shape;
-  }
-
   destroy = () => {
-    this.group.parentNode.removeChild(this.group);
+    this.containerGroup.parentNode.removeChild(this.containerGroup);
 
     if (this.resizeObserver)
       this.resizeObserver.disconnect();
