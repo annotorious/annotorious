@@ -78,6 +78,7 @@ export default class EditableRect extends EventEmitter {
 
     // SVG element
     this.svg = g.closest('svg');
+    this.g = g;
 
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
@@ -163,8 +164,8 @@ export default class EditableRect extends EventEmitter {
         const scaleX = width / svgBounds.width;
         const scaleY = height / svgBounds.height;
         
-        this.handles.forEach(handle =>
-          handle.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
+        // this.handles.forEach(handle =>
+        //   handle.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
       });
       
       this.resizeObserver.observe(this.svg.parentNode);
@@ -188,7 +189,7 @@ export default class EditableRect extends EventEmitter {
     const pt = this.svg.createSVGPoint();
     pt.x = evt.clientX;
     pt.y = evt.clientY;
-    return pt.matrixTransform(this.svg.getScreenCTM().inverse());
+    return pt.matrixTransform(this.g.getScreenCTM().inverse());
   }
 
   onGrab = grabbedElem => evt => {
