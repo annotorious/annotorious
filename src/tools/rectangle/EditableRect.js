@@ -13,14 +13,18 @@ import {
 } from '../../selectors/RectFragment';
 
 const drawHandle = (x, y) => {
+  const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
+  svg.setAttribute('class', 'a9s-handle');
+  svg.setAttribute('overflow', 'visible');
+  svg.setAttribute('x', x);
+  svg.setAttribute('y', y);
+
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
-  group.setAttribute('class', 'a9s-handle');
-  group.setAttribute('transform-origin', `${x}px ${y}px`);
 
   const drawCircle = r => {
     const c = document.createElementNS(SVG_NAMESPACE, 'circle');
-    c.setAttribute('cx', x);
-    c.setAttribute('cy', y);
+    c.setAttribute('cx', 0);
+    c.setAttribute('cy', 0);
     c.setAttribute('r', r);
     return c;
   }
@@ -34,19 +38,13 @@ const drawHandle = (x, y) => {
   group.appendChild(outer);
   group.appendChild(inner);
 
-  return group;
+  svg.appendChild(group);
+  return svg;
 }
 
 const setHandleXY = (handle, x, y) => {
-  handle.setAttribute('transform-origin', `${x}px ${y}px`);
-
-  const inner = handle.querySelector('.a9s-handle-inner');
-  inner.setAttribute('cx', x);
-  inner.setAttribute('cy', y);
-
-  const outer = handle.querySelector('.a9s-handle-outer');
-  outer.setAttribute('cx', x);
-  outer.setAttribute('cy', y);
+  handle.setAttribute('x', x);
+  handle.setAttribute('y', y);
 }
 
 const stretchCorners = (corner, opposite) => {
@@ -73,7 +71,6 @@ export default class EditableRect extends EventEmitter {
     super();
 
     this.annotation = annotation;
-
     this.env = env;
 
     // SVG element
@@ -143,7 +140,12 @@ export default class EditableRect extends EventEmitter {
     // Mouse xy offset inside the shape, if mouse pressed
     this.mouseOffset = null;
 
-    this.enableResponsive();
+    // Bit of a hack. If we are dealing with a 'real' image, we enable
+    // reponsive mode. OpenSeadragon handles scaling in a different way,
+    // so we don't need responsive mode.
+    const { image } = env;
+    if (image instanceof Element || image instanceof HTMLDocument)
+      this.enableResponsive();
   }
 
   /**
@@ -163,13 +165,19 @@ export default class EditableRect extends EventEmitter {
 
         const scaleX = width / svgBounds.width;
         const scaleY = height / svgBounds.height;
-        
-        // this.handles.forEach(handle =>
-        //   handle.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
+        this.scaleHandles(scaleX, scaleY);
       });
       
       this.resizeObserver.observe(this.svg.parentNode);
     }
+  }
+
+  scaleHandles = (scaleOrScaleX, optScaleY) => {
+    const scaleX = scaleOrScaleX;
+    const scaleY = optScaleY || scaleOrScaleX;
+
+    this.handles.forEach(handle => 
+      handle.firstChild.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
   }
 
   /** Sets the shape size, including handle positions **/
