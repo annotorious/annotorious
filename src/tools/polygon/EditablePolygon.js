@@ -4,41 +4,41 @@ import { SVG_NAMESPACE } from '../../SVG';
 import { format } from '../../Formatting';
 import Mask from './PolygonMask';
 
-const drawHandle = pt => {
+// TODO redundancy with EditableRect
+const drawHandle = (x, y) => {
+  const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
+  svg.setAttribute('class', 'a9s-handle');
+  svg.setAttribute('overflow', 'visible');
+  svg.setAttribute('x', x);
+  svg.setAttribute('y', y);
+
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
-  group.setAttribute('class', 'a9s-handle');
-  group.setAttribute('transform-origin', `${pt.x}px ${pt.y}px`);
 
   const drawCircle = r => {
     const c = document.createElementNS(SVG_NAMESPACE, 'circle');
-    c.setAttribute('cx', pt.x);
-    c.setAttribute('cy', pt.y);
+    c.setAttribute('cx', 0);
+    c.setAttribute('cy', 0);
     c.setAttribute('r', r);
     return c;
   }
 
   const inner = drawCircle(6);
-  inner.setAttribute('class', 'a9s-handle-inner');
+  inner.setAttribute('class', 'a9s-handle-inner')
 
   const outer = drawCircle(7);
-  outer.setAttribute('class', 'a9s-handle-outer');
+  outer.setAttribute('class', 'a9s-handle-outer')
 
   group.appendChild(outer);
   group.appendChild(inner);
 
-  return group;
+  svg.appendChild(group);
+  return svg;
 }
 
-const moveHandle = (handle, pt) => {
-  handle.setAttribute('transform-origin', `${pt.x}px ${pt.y}px`);
-
-  const inner = handle.querySelector('.a9s-handle-inner');
-  inner.setAttribute('cx', pt.x);
-  inner.setAttribute('cy', pt.y);
-
-  const outer = handle.querySelector('.a9s-handle-outer');
-  outer.setAttribute('cx', pt.x);
-  outer.setAttribute('cy', pt.y);
+// TODO redundancy with EditableRect
+const setHandleXY = (handle, x, y) => {
+  handle.setAttribute('x', x);
+  handle.setAttribute('y', y);
 }
 
 const getPoints = shape => {
@@ -104,7 +104,7 @@ export default class EditablePolygon extends EventEmitter {
     this.elementGroup.appendChild(this.shape);
 
     this.handles = getPoints(this.shape).map(pt => {
-      const handle = drawHandle(pt);
+      const handle = drawHandle(pt.x, pt.y);
       handle.addEventListener('mousedown', this.onGrab(handle));
       this.elementGroup.appendChild(handle);
       return handle;
@@ -119,7 +119,12 @@ export default class EditablePolygon extends EventEmitter {
     // Mouse grab point
     this.grabbedAt = null;
 
-    this.enableResponsive()
+    // Bit of a hack. If we are dealing with a 'real' image, we enable
+    // reponsive mode. OpenSeadragon handles scaling in a different way,
+    // so we don't need responsive mode.
+    const { image } = env;
+    if (image instanceof Element || image instanceof HTMLDocument)
+      this.enableResponsive();
   }
 
   get element() {
@@ -135,12 +140,19 @@ export default class EditablePolygon extends EventEmitter {
         const scaleX = width / svgBounds.width;
         const scaleY = height / svgBounds.height;
 
-        this.handles.forEach(handle =>
-          handle.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
+        this.scaleHandles(scaleX, scaleY);
       });
 
       this.resizeObserver.observe(this.svg.parentNode);
     }
+  }
+
+  scaleHandles = (scaleOrScaleX, optScaleY) => {
+    const scaleX = scaleOrScaleX;
+    const scaleY = optScaleY || scaleOrScaleX;
+
+    this.handles.forEach(handle => 
+      handle.firstChild.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
   }
 
   setPoints = (points) => {
@@ -164,7 +176,7 @@ export default class EditablePolygon extends EventEmitter {
     const pt = this.svg.createSVGPoint();
     pt.x = evt.clientX;
     pt.y = evt.clientY;
-    return pt.matrixTransform(this.svg.getScreenCTM().inverse());
+    return pt.matrixTransform(this.containerGroup.getScreenCTM().inverse());
   }
 
   onGrab = grabbedElem => evt => {
@@ -180,26 +192,23 @@ export default class EditablePolygon extends EventEmitter {
         const dx = pos.x - this.grabbedAt.x;
         const dy = pos.y - this.grabbedAt.y;
 
-        const updatedPoints = getPoints(this.shape).map(pt => {
-          return { x: pt.x + dx, y: pt.y + dy }
-        });
+        const updatedPoints = getPoints(this.shape).map(pt =>
+          ({ x: pt.x + dx, y: pt.y + dy }));
 
         this.grabbedAt = pos;
 
         this.setPoints(updatedPoints);
-
-        updatedPoints.forEach((pt, idx) => moveHandle(this.handles[idx], pt));
-
+        updatedPoints.forEach((pt, idx) => setHandleXY(this.handles[idx], pt.x, pt.y));
+        
         this.emit('update', toSVGTarget(this.shape, this.env.image));
       } else {
-        // Handles
         const handleIdx = this.handles.indexOf(this.grabbedElem);
 
         const updatedPoints = getPoints(this.shape).map((pt, idx) =>
           (idx === handleIdx) ? pos : pt);
 
         this.setPoints(updatedPoints);
-        moveHandle(this.handles[handleIdx], pos);
+        setHandleXY(this.handles[handleIdx], pos.x, pos.y);
 
         this.emit('update', toSVGTarget(this.shape, this.env.image));
       }

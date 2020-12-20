@@ -85,7 +85,7 @@ export default class RubberbandPolygonTool extends EventEmitter {
     this.rubberband.addPoint([ x, y ]);
 
     // Emit the SVG shape with selection attached
-    const shape = this.rubberband.g;
+    const shape = this.rubberband.element;
     shape.annotation = this.rubberband.toSelection();
     this.emit('complete', shape);
 

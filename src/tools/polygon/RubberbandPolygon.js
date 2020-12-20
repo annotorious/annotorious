@@ -6,20 +6,19 @@ import Mask from './PolygonMask';
 export default class RubberbandPolygon {
 
   constructor(anchor, g, env) {
-    this.g = document.createElementNS(SVG_NAMESPACE, 'g');
-    this.g.setAttribute('class', 'a9s-selection');
-
+    this.points = [ anchor ];
     this.env = env;
 
+    this.group = document.createElementNS(SVG_NAMESPACE, 'g');
+    
     this.polygon = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.polygon.setAttribute('class', 'a9s-selection');
 
     this.outer = document.createElementNS(SVG_NAMESPACE, 'polygon');
     this.outer.setAttribute('class', 'a9s-outer');
 
     this.inner = document.createElementNS(SVG_NAMESPACE, 'polygon');
     this.inner.setAttribute('class', 'a9s-inner');
-
-    this.points = [ anchor ];
 
     this.setPoints(this.points);
 
@@ -30,14 +29,14 @@ export default class RubberbandPolygon {
 
     // Additionally, selection remains hidden until 
     // the user actually moves the mouse
-    this.g.style.display = 'none';
+    this.group.style.display = 'none';
 
-    this.g.appendChild(this.mask.element);
-    this.g.appendChild(this.polygon);
+    this.group.appendChild(this.mask.element);
+    this.group.appendChild(this.polygon);
 
     this.isCollapsed = true;
 
-    g.appendChild(this.g);
+    g.appendChild(this.group);
   }
 
   setPoints = points => {
@@ -48,7 +47,7 @@ export default class RubberbandPolygon {
 
   dragTo = xy => {
     // Make visible
-    this.g.style.display = null;
+    this.group.style.display = null;
 
     this.isCollapsed = false;
 
@@ -74,12 +73,13 @@ export default class RubberbandPolygon {
   }
 
   destroy = () => {
-    this.g.parentNode.removeChild(this.g);
-    this.g = null;
+    this.group.parentNode.removeChild(this.group);
+    this.polygon = null;    
+    this.group = null;
   }
 
   toSelection = () => {
-    return new Selection(toSVGTarget(this.g, this.env.image));
+    return new Selection(toSVGTarget(this.group, this.env.image));
   }
 
 }
