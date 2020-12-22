@@ -59,6 +59,6 @@ breaks something, don't complain to us :-)
 
 ## Who's Using Annotorious
 
-![NHS Wales Logo](logos/NHSWalesCavLogo.png) 
+![NHS Wales Logo](logos/NHSWalesCavLogo.png) &nbsp; [![MicroPasts Logo](logos/MicroPasts.png)](https://crowdsourced.micropasts.org/)
 
 Using Annotorious? [Let us know!](https://gitter.im/recogito/annotorious)
