@@ -3,6 +3,7 @@ import { drawShape, shapeArea } from './selectors';
 import { SVG_NAMESPACE, addClass, removeClass } from './SVG';
 import DrawingTools from './tools/DrawingTools';
 import { format } from './Formatting';
+import { getSnippet } from './ImageSnippet';
 
 export default class AnnotationLayer extends EventEmitter {
 
@@ -10,22 +11,21 @@ export default class AnnotationLayer extends EventEmitter {
     super();
 
     const { wrapperEl, config, env } = props;
-
-    const imageEl = env.image;
     
+    this.imageEl = env.image;
     this.readOnly = config.readOnly;
     this.headless = config.headless;
     this.formatter = config.formatter;
 
-    const { naturalWidth, naturalHeight } = imageEl;
+    const { naturalWidth, naturalHeight } = this.imageEl;
 
     // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
     this.svg.setAttribute('class', 'a9s-annotationlayer');
 
     if (naturalWidth == 0 && naturalHeight == 0) {
-      imageEl.onload = () =>
-        this.svg.setAttribute('viewBox', `0 0 ${imageEl.naturalWidth} ${imageEl.naturalHeight}`);
+      this.imageEl.onload = () =>
+        this.svg.setAttribute('viewBox', `0 0 ${this.imageEl.naturalWidth} ${this.imageEl.naturalHeight}`);
     } else {
       this.svg.setAttribute('viewBox', `0 0 ${naturalWidth} ${naturalHeight}`);
     }
@@ -46,8 +46,8 @@ export default class AnnotationLayer extends EventEmitter {
       this.tools = new DrawingTools(this.g, config, env);
       this.tools.on('cancel', this.selectCurrentHover);
       this.tools.on('complete', shape => {
-        this.emit('createSelection', shape.annotation);
         this.selectShape(shape);
+        this.emit('createSelection', shape.annotation);
       });
 
       // Enable drawing
@@ -58,26 +58,7 @@ export default class AnnotationLayer extends EventEmitter {
     this.currentHover = null;
   }
 
-  startDrawing = evt => {
-    if (!this.selectedShape) {
-      // Only start drawing if there's no active selection
-      this.tools.current.startDrawing(evt);
-    } else if (this.selectedShape !== this.currentHover) {
-      // If there is none, select the current hover
-      this.selectCurrentHover();
-    }
-  }
-
-  selectCurrentHover = () => {
-    if (this.currentHover) {
-      this.selectShape(this.currentHover);
-    } else {
-      this.deselect();
-      this.emit('select', { skipEvent: true });
-    }
-  }
-
-  attachHoverListener = (elem, annotation) => {
+  _attachHoverListener = (elem, annotation) => {
     elem.addEventListener('mouseenter', evt => {
       if (this.currentHover !== elem)
         this.emit('mouseEnterAnnotation', annotation, evt);
@@ -101,10 +82,96 @@ export default class AnnotationLayer extends EventEmitter {
     
     g.setAttribute('data-id', annotation.id);
     g.annotation = annotation;
-    this.attachHoverListener(g, annotation);
+    this._attachHoverListener(g, annotation);
   
     this.g.appendChild(g);
     return g;
+  }
+
+  addOrUpdateAnnotation = (annotation, previous) => {
+    if (this.selectedShape?.annotation === annotation || this.selectShape?.annotation == previous)
+      this.deselect();
+  
+    if (previous)
+      this.removeAnnotation(previous);
+    
+    this.removeAnnotation(annotation);
+    
+    this.addAnnotation(annotation);
+
+    // Make sure rendering order is large-to-small
+    this.redraw();
+  }
+
+  deselect = skipRedraw => {
+    if (this.selectedShape) {
+      const { annotation } = this.selectedShape;
+
+      if (this.selectedShape.destroy) {
+        // Modifiable shape: destroy and re-add the annotation
+        this.selectedShape.destroy();
+        this.selectedShape = null;
+
+        if (!annotation.isSelection) {
+          this.addAnnotation(annotation);
+          if (!skipRedraw)
+            this.redraw(); 
+        }
+      } else {
+        // Not modifiable - just clear
+        removeClass(this.selectedShape, 'selected');
+        this.selectedShape = null;
+      }
+    }
+  } 
+
+  destroy = () => {
+    this.currentHover = null;
+    this.svg.parentNode.removeChild(this.svg);
+  }
+
+  /** Finds the shape matching the given annotation or Id **/
+  findShape = annotationOrId => {
+    const id = annotationOrId?.id ? annotationOrId.id : annotationOrId;
+    return this.g.querySelector(`.a9s-annotation[data-id="${id}"]`);
+  }
+
+  getAnnotations = () => {
+    const shapes = Array.from(this.g.querySelectorAll('.a9s-annotation'));
+    return shapes.map(s => s.annotation);
+  }
+
+  getSelectedAnnotation = () =>
+    this.selectedShape ? { annotation: this.selectedShape.annotation, element: this.selectedShape.element } : null;
+
+  getSelectedImageSnippet = () => {
+    if (this.selectedShape) {
+      const element = this.selectedShape.element || this.selectedShape;
+      return getSnippet(this.imageEl, element);
+    }  
+  }
+
+  init = annotations => {
+    annotations.sort((a, b) => shapeArea(b) - shapeArea(a));
+    annotations.forEach(this.addAnnotation);
+  }
+
+  /** 
+   * Forces a new ID on the annotation with the given ID. 
+   * @returns the updated annotation for convenience
+   */
+  overrideId = (originalId, forcedId) => {
+    // Update SVG shape data attribute
+    const shape = this.findShape(originalId);
+    shape.setAttribute('data-id', forcedId);
+
+    // Update annotation
+    const { annotation } = shape;
+
+    const updated = annotation.clone({ id : forcedId });
+    shape.annotation = updated;
+
+    return updated;
   }
 
   /**
@@ -124,10 +191,16 @@ export default class AnnotationLayer extends EventEmitter {
     annotations.forEach(this.addAnnotation);
   }
 
-  /** Finds the shape matching the given annotation or Id **/
-  findShape = annotationOrId => {
-    const id = annotationOrId?.id ? annotationOrId.id : annotationOrId;
-    return this.g.querySelector(`.a9s-annotation[data-id="${id}"]`);
+  removeAnnotation = annotation => {
+    if (this.selectedShape?.annotation === annotation)
+      this.deselect();
+
+    if (this.currentHover?.annotation === annotation)
+      this.currentHover = null;
+
+    const shape = this.findShape(annotation);
+    if (shape)
+      shape.parentNode.removeChild(shape);
   }
 
   /** 
@@ -148,6 +221,15 @@ export default class AnnotationLayer extends EventEmitter {
       this.deselect();
 
     return selected?.annotation;
+  }
+
+  selectCurrentHover = () => {
+    if (this.currentHover) {
+      this.selectShape(this.currentHover);
+    } else {
+      this.deselect();
+      this.emit('select', { skipEvent: true });
+    }
   }
 
   selectShape = (shape, skipEvent) => {
@@ -175,7 +257,7 @@ export default class AnnotationLayer extends EventEmitter {
 
         // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
         this.selectedShape.element.annotation = annotation;         
-        this.attachHoverListener(this.selectedShape.element, annotation);
+        this._attachHoverListener(this.selectedShape.element, annotation);
 
         this.selectedShape.on('update', fragment => {
           this.emit('updateTarget', this.selectedShape.element, fragment);
@@ -193,68 +275,6 @@ export default class AnnotationLayer extends EventEmitter {
       this.emit('select', { annotation, element: shape, skipEvent }); 
     }
   }
-  
-  deselect = skipRedraw => {
-    if (this.selectedShape) {
-      const { annotation } = this.selectedShape;
-
-      if (this.selectedShape.destroy) {
-        // Modifiable shape: destroy and re-add the annotation
-        this.selectedShape.destroy();
-        this.selectedShape = null;
-
-        if (!annotation.isSelection) {
-          this.addAnnotation(annotation);
-          if (!skipRedraw)
-            this.redraw(); 
-        }
-      } else {
-        // Not modifiable - just clear
-        removeClass(this.selectedShape, 'selected');
-        this.selectedShape = null;
-      }
-    }
-  } 
-
-  init = annotations => {
-    annotations.sort((a, b) => shapeArea(b) - shapeArea(a));
-    annotations.forEach(this.addAnnotation);
-  }
-
-  addOrUpdateAnnotation = (annotation, previous) => {
-    if (this.selectedShape?.annotation === annotation || this.selectShape?.annotation == previous)
-      this.deselect();
-  
-    if (previous)
-      this.removeAnnotation(previous);
-    
-    this.removeAnnotation(annotation);
-    
-    this.addAnnotation(annotation);
-
-    // Make sure rendering order is large-to-small
-    this.redraw();
-  }
-
-  removeAnnotation = annotation => {
-    if (this.selectedShape?.annotation === annotation)
-      this.deselect();
-
-    if (this.currentHover?.annotation === annotation)
-      this.currentHover = null;
-
-    const shape = this.findShape(annotation);
-    if (shape)
-      shape.parentNode.removeChild(shape);
-  }
-
-  getAnnotations = () => {
-    const shapes = Array.from(this.g.querySelectorAll('.a9s-annotation'));
-    return shapes.map(s => s.annotation);
-  }
-
-  getSelected = () =>
-    this.selectedShape ? { annotation: this.selectedShape.annotation, element: this.selectedShape.element } : null;
 
   setDrawingTool = shape =>
     this.tools.setCurrent(shape);
@@ -266,27 +286,14 @@ export default class AnnotationLayer extends EventEmitter {
       this.svg.style.display = 'none';
   }
 
-  destroy = () => {
-    this.currentHover = null;
-    this.svg.parentNode.removeChild(this.svg);
-  }
-
-  /** 
-   * Forces a new ID on the annotation with the given ID. 
-   * @returns the updated annotation for convenience
-   */
-  overrideId = (originalId, forcedId) => {
-    // Update SVG shape data attribute
-    const shape = this.findShape(originalId);
-    shape.setAttribute('data-id', forcedId);
-
-    // Update annotation
-    const { annotation } = shape;
-
-    const updated = annotation.clone({ id : forcedId });
-    shape.annotation = updated;
-
-    return updated;
+  startDrawing = evt => {
+    if (!this.selectedShape) {
+      // Only start drawing if there's no active selection
+      this.tools.current.startDrawing(evt);
+    } else if (this.selectedShape !== this.currentHover) {
+      // If there is none, select the current hover
+      this.selectCurrentHover();
+    }
   }
 
 }

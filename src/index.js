@@ -123,10 +123,13 @@ export class Annotorious {
     return annotations.map(a => a.underlying);
   }
 
-  getSelected = () => {
-    const selected = this._app.current.getSelected();
+  getSelectedAnnotation = () => {
+    const selected = this._app.current.getSelectedAnnotation();
     return selected?.underlying;
   }
+
+  getSelectedImageSnippet = () =>
+    this._app.current.getSelectedImageSnippet();
 
   loadAnnotations = url => axios.get(url).then(response => {
     const annotations = response.data.map(a => new WebAnnotation(a));

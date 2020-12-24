@@ -135,25 +135,19 @@ export default class ImageAnnotator extends Component  {
   addAnnotation = annotation =>
     this.annotationLayer.addOrUpdateAnnotation(annotation.clone());
 
-  removeAnnotation = annotation =>
-    this.annotationLayer.removeAnnotation(annotation.clone());
-
-  setAnnotations = annotations =>
-    this.annotationLayer.init(annotations.map(a => a.clone()));
-
   getAnnotations = () =>
     this.annotationLayer.getAnnotations().map(a => a.clone());
 
-  getSelected = () => {
-    const selected = this.annotationLayer.getSelected();
+  getSelectedAnnotation = () => {
+    const selected = this.annotationLayer.getSelectedAnnotation();
     return selected ? selected.annotation.clone() : null;
   }
 
-  setDrawingTool = shape =>
-    this.annotationLayer.setDrawingTool(shape);
+  getSelectedImageSnippet = () =>
+    this.annotationLayer.getSelectedImageSnippet();
 
-  setVisible = visible =>
-    this.annotationLayer.setVisible(visible);
+  removeAnnotation = annotation =>
+    this.annotationLayer.removeAnnotation(annotation.clone());
 
   selectAnnotation = arg => {
     const annotation = this.annotationLayer.selectAnnotation(arg);
@@ -163,6 +157,15 @@ export default class ImageAnnotator extends Component  {
     else
       this.clearState(); // Deselect
   }
+  
+  setAnnotations = annotations =>
+    this.annotationLayer.init(annotations.map(a => a.clone()));
+
+  setDrawingTool = shape =>
+    this.annotationLayer.setDrawingTool(shape);
+
+  setVisible = visible =>
+    this.annotationLayer.setVisible(visible);
 
   updateSelected = annotation => {
     if (this.state.selectedAnnotation)
@@ -171,6 +174,9 @@ export default class ImageAnnotator extends Component  {
       console.warn('No selection - cannot update');
   }
 
+  /**
+   * @deprecated
+   */
   applyTemplate = (bodies, openEditor) =>
     this.setState({ applyTemplate: bodies, applyImmediately: !openEditor });
     

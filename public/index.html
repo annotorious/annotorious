@@ -69,6 +69,12 @@
           displayName: 'rainer'
         });
 
+        anno.on('createSelection', function(s) {
+          console.log('createSelection');
+          const snippet = anno.getSelectedImageSnippet();
+          document.body.appendChild(snippet);
+        });
+
         anno.on('createAnnotation', function(a) {
           console.log('created', a);
         });

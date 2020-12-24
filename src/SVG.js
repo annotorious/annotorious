@@ -12,3 +12,11 @@ export const removeClass = (el, className) => {
   const classNames = el.getAttribute('class').split(' ').filter(c => c !== className);
   el.setAttribute('class', classNames.join(' '));
 }
+
+export const hasClass = (el, className) => {
+  const classAttr = el.getAttribute('class');
+  if (classAttr) {
+    const classNames = new Set(classAttr.split(' '));
+    return classNames.has(className);
+  }
+}
