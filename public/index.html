@@ -71,8 +71,8 @@
 
         anno.on('createSelection', function(s) {
           console.log('createSelection');
-          const snippet = anno.getSelectedImageSnippet();
-          document.body.appendChild(snippet);
+          console.log(anno.getSelectedImageSnippet());
+          
         });
 
         anno.on('createAnnotation', function(a) {
