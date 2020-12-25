@@ -138,8 +138,8 @@ export default class ImageAnnotator extends Component  {
   getAnnotations = () =>
     this.annotationLayer.getAnnotations().map(a => a.clone());
 
-  getSelectedAnnotation = () => {
-    const selected = this.annotationLayer.getSelectedAnnotation();
+  getSelected = () => {
+    const selected = this.annotationLayer.getSelected();
     return selected ? selected.annotation.clone() : null;
   }
 

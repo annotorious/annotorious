@@ -141,7 +141,7 @@ export default class AnnotationLayer extends EventEmitter {
     return shapes.map(s => s.annotation);
   }
 
-  getSelectedAnnotation = () =>
+  getSelected = () =>
     this.selectedShape ? { annotation: this.selectedShape.annotation, element: this.selectedShape.element } : null;
 
   getSelectedImageSnippet = () => {

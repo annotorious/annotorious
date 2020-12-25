@@ -123,8 +123,8 @@ export class Annotorious {
     return annotations.map(a => a.underlying);
   }
 
-  getSelectedAnnotation = () => {
-    const selected = this._app.current.getSelectedAnnotation();
+  getSelected = () => {
+    const selected = this._app.current.getSelected();
     return selected?.underlying;
   }
 
