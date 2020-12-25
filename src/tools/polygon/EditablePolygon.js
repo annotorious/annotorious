@@ -1,7 +1,7 @@
 import EventEmitter from 'tiny-emitter';
 import { drawEmbeddedSVG, toSVGTarget } from '../../selectors/EmbeddedSVG';
-import { SVG_NAMESPACE } from '../../SVG';
-import { format } from '../../Formatting';
+import { SVG_NAMESPACE } from '../../util/SVG';
+import { format } from '../../util/Formatting';
 import Mask from './PolygonMask';
 
 // TODO redundancy with EditableRect

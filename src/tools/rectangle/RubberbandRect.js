@@ -1,5 +1,5 @@
 import { Selection } from '@recogito/recogito-client-core';
-import { SVG_NAMESPACE } from '../../SVG';
+import { SVG_NAMESPACE } from '../../util/SVG';
 import { 
   drawRect, 
   drawRectMask,

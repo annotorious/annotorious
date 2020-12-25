@@ -1,4 +1,4 @@
-import { SVG_NAMESPACE } from '../../SVG';
+import { SVG_NAMESPACE } from '../../util/SVG';
 
 export default class PolygonMask {
 

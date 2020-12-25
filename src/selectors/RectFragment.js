@@ -1,4 +1,4 @@
-import { SVG_NAMESPACE } from '../SVG';
+import { SVG_NAMESPACE } from '../util/SVG';
 
 /** 
  * Parses a W3C Web Annotation FragmentSelector conforming

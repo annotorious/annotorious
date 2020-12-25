@@ -1,4 +1,4 @@
-import { SVG_NAMESPACE } from '../SVG';
+import { SVG_NAMESPACE } from '../util/SVG';
 
 /** Helper that forces an un-namespaced node to SVG **/
 const insertSVGNamespace = originalDoc => {

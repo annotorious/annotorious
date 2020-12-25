@@ -1,6 +1,6 @@
 import EventEmitter from 'tiny-emitter';
-import { SVG_NAMESPACE } from '../../SVG';
-import { format } from '../../Formatting';
+import { SVG_NAMESPACE } from '../../util/SVG';
+import { format } from '../../utilFormatting';
 import { 
   drawRect, 
   drawRectMask,
