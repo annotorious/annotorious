@@ -108,6 +108,9 @@ export class Annotorious {
     const bodies = Array.isArray(template) ? template : [ template ];
     this._app.current.applyTemplate(bodies, openEditor);
   }
+  
+  clearAnnotations = () => 
+    this.setAnnotations([]);
 
   clearAuthInfo = () =>
     this._env.user = null;
@@ -154,7 +157,8 @@ export class Annotorious {
     return selected?.underlying;
   }
 
-  setAnnotations = annotations => {
+  setAnnotations = a => {
+    const annotations = a || []; // Allow null arg
     const webannotations = annotations.map(a => new WebAnnotation(a));
     this._app.current.setAnnotations(webannotations);
   }
