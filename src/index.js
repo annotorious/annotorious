@@ -193,5 +193,6 @@ export class Annotorious {
 export const init = config => new Annotorious(config);
 
 export * from './util/Formatting';
+export * from './util/SVG';
 export * from './selectors';
 export * from './tools';
