@@ -10,14 +10,16 @@ export default class ImageAnnotator extends Component  {
     selectedAnnotation: null,
     selectedDOMElement: null,
     modifiedTarget: null,
+    beforeHeadlessModify: null
   }
 
   /** Shorthand **/
-  clearState = () => this.setState({
+  clearState = opt_callback => this.setState({
     selectedAnnotation: null,
     selectedDOMElement: null,
-    modifiedTarget: null
-  });
+    modifiedTarget: null,
+    beforeHeadlessModify: null
+  }, opt_callback);
 
   componentDidMount() {
     this.annotationLayer = new AnnotationLayer(this.props);
@@ -44,7 +46,9 @@ export default class ImageAnnotator extends Component  {
     if (annotation) {
       this.setState({ 
         selectedAnnotation: annotation,
-        selectedDOMElement: element
+        selectedDOMElement: element,
+        modifiedTarget: null,
+        beforeHeadlessModify: null
       });
 
       if (!annotation.isSelection && !skipEvent)
@@ -76,11 +80,7 @@ export default class ImageAnnotator extends Component  {
 
     // Force the editor to close first, otherwise there's a risk of orphaned annotation
     if (this.state.selectedAnnotation) {
-      this.setState({
-        selectedAnnotation: null,
-        selectedDOMElement: null,
-        modifiedTarget: null
-      }, () => {
+      this.clearState(() => {
         this.annotationLayer.overrideId(id, forcedId);
       });
     } else {
@@ -128,6 +128,9 @@ export default class ImageAnnotator extends Component  {
   addAnnotation = annotation =>
     this.annotationLayer.addOrUpdateAnnotation(annotation.clone());
 
+  cancelSelected = () =>
+    this.onCancelAnnotation();
+
   getAnnotations = () =>
     this.annotationLayer.getAnnotations().map(a => a.clone());
 
@@ -141,6 +144,24 @@ export default class ImageAnnotator extends Component  {
 
   removeAnnotation = annotation =>
     this.annotationLayer.removeAnnotation(annotation.clone());
+
+  saveSelected = () => {
+    const a = this.state.selectedAnnotation;
+
+    if (a) {
+      if (a.isSelection) {
+        this.onCreateOrUpdateAnnotation('onAnnotationCreated')(a.toAnnotation(), a);
+      } else {
+        const { beforeHeadlessModify } = this.state;
+        if (beforeHeadlessModify) {
+          this.onCreateOrUpdateAnnotation('onAnnotationUpdated')(a, beforeHeadlessModify);
+        } else {
+          console.log('No change - canceling');
+          this.onCancelAnnotation();
+        } 
+      }
+    }
+  }
 
   selectAnnotation = arg => {
     const annotation = this.annotationLayer.selectAnnotation(arg);
@@ -169,7 +190,10 @@ export default class ImageAnnotator extends Component  {
       else
         this.onCreateOrUpdateAnnotation('onAnnotationCreated')(a);
     } else {
-      this.setState({ selectedAnnotation: a });
+      this.setState({ 
+        selectedAnnotation: a, // Updated annotation 
+        beforeHeadlessModify: this.state.beforeHeadlessModify || this.state.selectedAnnotation 
+      });
     }
   }
     

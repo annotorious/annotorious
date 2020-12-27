@@ -103,9 +103,8 @@ export class Annotorious {
   addAnnotation = (annotation, readOnly) =>
     this._app.current.addAnnotation(new WebAnnotation(annotation, { readOnly }));
 
-  cancelSelected = () => {
-    // TODO implement
-  }
+  cancelSelected = () =>
+    this._app.current.cancelSelected();
   
   clearAnnotations = () => 
     this.setAnnotations([]);
@@ -147,9 +146,8 @@ export class Annotorious {
   removeAnnotation = annotation =>
     this._app.current.removeAnnotation(new WebAnnotation(annotation));
 
-  saveSelected = () => {
-    // TODO implement
-  }
+  saveSelected = () =>
+    this._app.current.saveSelected();
 
   selectAnnotation = annotationOrId => {
     const arg = (annotationOrId?.type === 'Annotation') ?
