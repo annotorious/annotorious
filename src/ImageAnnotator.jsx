@@ -22,16 +22,12 @@ export default class ImageAnnotator extends Component  {
   componentDidMount() {
     this.annotationLayer = new AnnotationLayer(this.props);
 
-    // A new shape selection was created with a drawing tool
     this.annotationLayer.on('createSelection', this.handleCreateSelection);
 
-    // An existing annotation was selected
     this.annotationLayer.on('select', this.handleSelect);
 
-    // The current selection shape was moved, resized or changed
     this.annotationLayer.on('updateTarget', this.handleUpdateTarget);
 
-    // Mouse entered or left an annotation shape
     this.annotationLayer.on('mouseEnterAnnotation', this.handleMouseEnter);
     this.annotationLayer.on('mouseLeaveAnnotation', this.handleMouseLeave);
   }
@@ -165,14 +161,15 @@ export default class ImageAnnotator extends Component  {
     this.annotationLayer.setVisible(visible);
 
   updateSelected = (annotation, applyImmediately) => {
+    const a = annotation.isSelection ? annotation.toAnnotation() : annotation;
+
     if (applyImmediately) {
-      const a = annotation.isSelection ? annotation.toAnnotation() : annotation;
       if (this.state.selectedAnnotation)
         this.onCreateOrUpdateAnnotation('onAnnotationUpdated')(a, this.state.selectedAnnotation);
       else
         this.onCreateOrUpdateAnnotation('onAnnotationCreated')(a);
     } else {
-      this.setState({ selectedAnnotation: annotation })
+      this.setState({ selectedAnnotation: a });
     }
   }
     
