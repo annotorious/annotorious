@@ -246,7 +246,7 @@ export default class AnnotationLayer extends EventEmitter {
 
     const readOnly = this.readOnly || annotation.readOnly;
 
-    if (!(readOnly || this.headless)) {
+    if (!readOnly) {
       const toolForShape = this.tools.forShape(shape);
 
       if (toolForShape?.supportsModify) {

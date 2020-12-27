@@ -164,11 +164,16 @@ export default class ImageAnnotator extends Component  {
   setVisible = visible =>
     this.annotationLayer.setVisible(visible);
 
-  updateSelected = annotation => {
-    if (this.state.selectedAnnotation)
-      this.setState({ selectedAnnotation: annotation });
-    else
-      console.warn('No selection - cannot update');
+  updateSelected = (annotation, applyImmediately) => {
+    if (applyImmediately) {
+      const a = annotation.isSelection ? annotation.toAnnotation() : annotation;
+      if (this.state.selectedAnnotation)
+        this.onCreateOrUpdateAnnotation('onAnnotationUpdated')(a, this.state.selectedAnnotation);
+      else
+        this.onCreateOrUpdateAnnotation('onAnnotationCreated')(a);
+    } else {
+      this.setState({ selectedAnnotation: annotation })
+    }
   }
     
   render() {

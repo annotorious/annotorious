@@ -68,13 +68,11 @@ export default class RubberbandRectTool extends EventEmitter {
 
       // Emit the completed shape...
       this.emit('complete', element);
-
-      // ...and remove the mask
-      mask.parentNode.removeChild(mask);
     } else {
       this.emit('cancel', evt);
-      this.stop();
     }
+
+    this.stop();
   }
 
   createEditableShape = annotation =>

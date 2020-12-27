@@ -69,6 +69,13 @@
           displayName: 'rainer'
         });
 
+        // Whenever a new annotation is created by the user, we want to append this body
+        var templateBody = {
+          type: 'TextualBody',
+          value: 'My Tag',
+          purpose: 'tagging'
+        };
+
         anno.on('createSelection', function(s) {
           console.log('createSelection');
           console.log(anno.getSelectedImageSnippet());
@@ -106,6 +113,7 @@
 
         var toolToggle = document.getElementById('current-tool');
         toolToggle.addEventListener('click', function() {
+          console.log(anno.getAnnotations());
           if (toolToggle.innerHTML == 'RECTANGLE') {
             toolToggle.innerHTML = 'POLYGON';
             anno.setDrawingTool('polygon');

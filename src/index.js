@@ -169,7 +169,7 @@ export class Annotorious {
   setServerTime = timestamp =>
     this._env.setServerTime(timestamp);
 
-  updateSelected = annotation => {
+  updateSelected = (annotation, applyImmediately) => {
     let updated = null;
 
     if (annotation.type === 'Annotation') {
@@ -179,7 +179,7 @@ export class Annotorious {
     }
     
     if (updated)
-      this._app.current.updateSelected(updated);
+      this._app.current.updateSelected(updated, applyImmediately);
   }
 
 }
