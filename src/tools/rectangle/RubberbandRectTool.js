@@ -63,7 +63,7 @@ export default class RubberbandRectTool extends EventEmitter {
 
     if (w > 3) {
       // Emit the SVG shape with selection attached    
-      const { element, mask } = this.rubberband;
+      const { element } = this.rubberband;
       element.annotation = this.rubberband.toSelection();
 
       // Emit the completed shape...

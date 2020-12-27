@@ -58,7 +58,6 @@
         var anno = Annotorious.init({
           image: 'hallstatt',
           locale: 'auto',
-          headless: true,
           widgets: [
             { widget: 'COMMENT' },
             { widget: 'TAG', vocabulary: [ 'Animal', 'Building', 'Waterbody'] }
@@ -79,9 +78,6 @@
 
         anno.on('createSelection', function(s) {
           console.log('createSelection');
-          s.body = [ templateBody ];
-          anno.updateSelected(s, true);
-          // console.log(anno.getSelectedImageSnippet());
         });
 
         anno.on('createAnnotation', function(a) {
