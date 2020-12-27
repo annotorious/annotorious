@@ -43,7 +43,7 @@ export default class ImageAnnotator extends Component  {
     this.annotationLayer.destroy();
   }
 
-  handleCreateSelection = selection => 
+  handleCreateSelection = selection =>
     this.props.onSelectionCreated(selection.clone());
 
   handleSelect = evt => {

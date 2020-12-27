@@ -79,7 +79,7 @@ export class Annotorious {
     this._emitter.emit('createAnnotation', annotation.underlying, overrideId);
 
   handleSelectionCreated = selection =>
-    this._emitter.emit('createSelection', selection._underlying);
+    this._emitter.emit('createSelection', selection.underlying);
 
   handleAnnotationDeleted = annotation =>
     this._emitter.emit('deleteAnnotation', annotation.underlying);
