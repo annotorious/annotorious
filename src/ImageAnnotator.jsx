@@ -10,9 +10,6 @@ export default class ImageAnnotator extends Component  {
     selectedAnnotation: null,
     selectedDOMElement: null,
     modifiedTarget: null,
-
-    applyTemplate: null,
-    applyImmediately: null
   }
 
   /** Shorthand **/
@@ -173,24 +170,10 @@ export default class ImageAnnotator extends Component  {
     else
       console.warn('No selection - cannot update');
   }
-
-  /**
-   * @deprecated
-   */
-  applyTemplate = (bodies, openEditor) =>
-    this.setState({ applyTemplate: bodies, applyImmediately: !openEditor });
     
   render() {
-    // The editor should open under normal conditions (no headless mode, annotation was selected),
-    // or if we are in headless mode for immediate template application 
-    const normalConditions = this.state.selectedAnnotation && !this.props.config.headless;
-
-    const headlessApply =
-      this.props.config.headless && 
-      this.state.applyTemplate && 
-      this.state.selectedAnnotation?.isSelection;
-
-    const open = (normalConditions == true || headlessApply == true);
+    // The editor should open under normal conditions - annotation was selected, no headless mode
+    const open = this.state.selectedAnnotation && !this.props.config.headless;
 
     const readOnly = this.props.config.readOnly || this.state.selectedAnnotation?.readOnly
 
@@ -202,8 +185,6 @@ export default class ImageAnnotator extends Component  {
         readOnly={readOnly}
         config={this.props.config}
         env={this.props.env}
-        applyTemplate={this.state.applyTemplate}
-        applyImmediately={this.state.applyImmediately}
         onAnnotationCreated={this.onCreateOrUpdateAnnotation('onAnnotationCreated')}
         onAnnotationUpdated={this.onCreateOrUpdateAnnotation('onAnnotationUpdated')}
         onAnnotationDeleted={this.onDeleteAnnotation}

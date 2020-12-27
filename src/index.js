@@ -102,12 +102,6 @@ export class Annotorious {
 
   addAnnotation = (annotation, readOnly) =>
     this._app.current.addAnnotation(new WebAnnotation(annotation, { readOnly }));
-
-  // @deprecated
-  applyTemplate = (template, openEditor) => {
-    const bodies = Array.isArray(template) ? template : [ template ];
-    this._app.current.applyTemplate(bodies, openEditor);
-  }
   
   clearAnnotations = () => 
     this.setAnnotations([]);
