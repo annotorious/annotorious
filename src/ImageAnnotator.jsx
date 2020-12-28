@@ -116,7 +116,7 @@ export default class ImageAnnotator extends Component  {
   }
 
   /** Cancel button on annotation editor **/
-  onCancelAnnotation = () => {
+  onCancelAnnotation = annotation => {
     this.clearState();
     this.annotationLayer.deselect();
 
