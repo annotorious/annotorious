@@ -119,6 +119,9 @@ export default class ImageAnnotator extends Component  {
   onCancelAnnotation = () => {
     this.clearState();
     this.annotationLayer.deselect();
+
+    if (annotation.isSelection)
+      this.props.onSelectionCanceled(annotation);
   }
 
   /****************/               
