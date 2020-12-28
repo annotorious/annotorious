@@ -131,9 +131,12 @@ export default class ImageAnnotator extends Component  {
   addAnnotation = annotation =>
     this.annotationLayer.addOrUpdateAnnotation(annotation.clone());
 
-  cancelSelected = () =>
-    this.onCancelAnnotation();
-
+  cancelSelected = () => {
+    const { selectedAnnotation } = this.state;
+    if (selectedAnnotation)
+      this.onCancelAnnotation(selectedAnnotation);
+  }
+  
   getAnnotations = () =>
     this.annotationLayer.getAnnotations().map(a => a.clone());
 
