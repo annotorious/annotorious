@@ -72,29 +72,29 @@ export class Annotorious {
   /*  External events */
   /********************/
 
-  handleSelectionTargetChanged = target =>
-    this._emitter.emit('changeSelectionTarget', target);
-
   handleAnnotationCreated = (annotation, overrideId) =>
     this._emitter.emit('createAnnotation', annotation.underlying, overrideId);
 
-  handleSelectionCreated = selection =>
-    this._emitter.emit('createSelection', selection.underlying);
-
   handleAnnotationDeleted = annotation =>
     this._emitter.emit('deleteAnnotation', annotation.underlying);
-
-  handleMouseEnterAnnotation = (annotation, evt) =>
-    this._emitter.emit('mouseEnterAnnotation', annotation.underlying, evt);
-
-  handleMouseLeaveAnnotation = (annotation, evt) =>
-    this._emitter.emit('mouseLeaveAnnotation', annotation.underlying, evt);
 
   handleAnnotationSelected = annotation =>
     this._emitter.emit('selectAnnotation', annotation.underlying);
 
   handleAnnotationUpdated = (annotation, previous) =>
     this._emitter.emit('updateAnnotation', annotation.underlying, previous.underlying);
+
+  handleSelectionCreated = selection =>
+    this._emitter.emit('createSelection', selection.underlying);
+
+  handleSelectionTargetChanged = target =>
+    this._emitter.emit('changeSelectionTarget', target);
+
+  handleMouseEnterAnnotation = (annotation, evt) =>
+    this._emitter.emit('mouseEnterAnnotation', annotation.underlying, evt);
+
+  handleMouseLeaveAnnotation = (annotation, evt) =>
+    this._emitter.emit('mouseLeaveAnnotation', annotation.underlying, evt);
 
   /******************/
   /*  External API  */
