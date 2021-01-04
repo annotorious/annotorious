@@ -17,6 +17,8 @@ If you use npm, `npm install @recogito/annotorious` and
 ```javascript
 import { Annotorious } from '@recogito/annotorious';
 
+import '@recogito/annotorious/dist/annotorious.min.css';
+
 const anno = new Annotorious({ image: 'hallstatt' }); // image element or ID
 ```
 
@@ -24,6 +26,7 @@ Otherwise download the [latest release](https://github.com/recogito/annotorious/
 and include it in your web page.
 
 ```html
+<link rel="stylesheet" href="annotorious.min.css">
 <script src="annotorious.min.js"></script>
 ```
 
