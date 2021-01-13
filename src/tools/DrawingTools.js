@@ -32,7 +32,8 @@ class DrawingToolRegistry extends EventEmitter {
     this.registerTool('polygon', RubberbandPolygonTool);
     this.registerTool('circle', RubberbandCircleTool);
 
-    this.setCurrent('circle');
+    // this.setCurrent('circle');
+    this.setCurrent('polygon');
   }
 
   registerTool = (id, impl) => {
