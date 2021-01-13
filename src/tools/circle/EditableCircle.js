@@ -48,7 +48,6 @@ const setHandleXY = (handle, x, y) => {
 }
 
 const stretchCorners = (corner, opposite) => {
-  console.log('stretchCorners111111', corner, opposite);
   const x1 = corner.x;
 
   const y1 = corner.y;
@@ -60,7 +59,6 @@ const stretchCorners = (corner, opposite) => {
   const cx = Math.min(x1, x2) + w/2;
   const cy = Math.min(y1, y2) + h/2;
   const r = Math.pow(w**2 + h**2, 0.5)/2
-  console.log('stretchCorners222222', cx, cy);
 
   return { cx, cy, r};
 }
@@ -225,14 +223,12 @@ export default class EditableCircle extends EventEmitter {
       } else {
         // Handles
         const corners = getCorners(this.circle);
-        console.log('corner', corners);
 
         // Mouse position replaces one of the corner coords, depending
         // on which handle is the grabbed element
         const handleIdx = this.handles.indexOf(this.grabbedElem);
         const oppositeCorner = handleIdx < 2 ? 
           corners[handleIdx + 2] : corners[handleIdx - 2];
-        console.log('strechhhhhh', handleIdx);
         const { cx, cy, r } = stretchCorners(pos, oppositeCorner)
 
         this.setSize(cx, cy, r);

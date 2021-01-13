@@ -65,7 +65,6 @@ export default class RubberbandCircleTool extends EventEmitter {
       // Emit the SVG shape with selection attached    
       const { element } = this.rubberband;
       element.annotation = this.rubberband.toSelection();
-
       // Emit the completed shape...
       this.emit('complete', element);
     } else {

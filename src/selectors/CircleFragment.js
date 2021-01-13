@@ -8,7 +8,7 @@ import { SVG_NAMESPACE } from '../util/SVG';
  */
 //TODO
 export const parseCircleFragment = annotation => {
-  const selector = annotation.selector('FragmentSelector');
+  const selector = annotation.selector('CircleFragmentSelector');
   if (selector?.conformsTo.startsWith('http://www.w3.org/TR/media-frags')) {
     const { value } = selector;
     const format = value.includes(':') ? value.substring(value.indexOf('=') + 1, value.indexOf(':')) : 'pixel';
@@ -23,7 +23,7 @@ export const parseCircleFragment = annotation => {
 export const toCircleFragment = (x, y, r, image) => ({
   source: image.src,
   selector: {
-    type: "FragmentSelector",
+    type: "CircleFragmentSelector",
     conformsTo: "http://www.w3.org/TR/media-frags/",
     value: `xyr=pixel:${x},${y},${r}`
   }
