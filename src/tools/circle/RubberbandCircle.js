@@ -1,18 +1,18 @@
 import { Selection } from '@recogito/recogito-client-core';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { 
-  drawRect, 
-  drawRectMask,
-  setRectSize, 
-  setRectMaskSize,
-  toRectFragment 
-} from '../../selectors/RectFragment';
+  drawCircle,
+  drawCircleMask,
+  setCircleSize,
+  setCircleMaskSize,
+  toCircleFragment
+} from '../../selectors/CircleFragment';
 
 /**
- * A 'rubberband' selection tool for creating a rectangle by
+ * A 'rubberband' selection tool for creating a circle by
  * clicking and dragging.
  */
-export default class RubberbandRect {
+export default class RubberbandCircle {
 
   constructor(anchorX, anchorY, g, env) {
     this.anchor = [ anchorX, anchorY ];
@@ -21,11 +21,12 @@ export default class RubberbandRect {
     this.env = env;
 
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
-    this.mask = drawRectMask(env.image, anchorX, anchorY, 2, 2);
+
+    this.mask = drawCircleMask(env.image, anchorX, anchorY, 2);
     this.mask.setAttribute('class', 'a9s-selection-mask');
 
-    this.rect = drawRect(anchorX, anchorY, 2, 2);
-    this.rect.setAttribute('class', 'a9s-selection');
+    this.circle = drawCircle(anchorX, anchorY, 2);
+    this.circle.setAttribute('class', 'a9s-selection');
 
     // We make the selection transparent to 
     // pointer events because it would interfere with the 
@@ -37,7 +38,7 @@ export default class RubberbandRect {
     this.group.style.display = 'none';
 
     this.group.appendChild(this.mask);
-    this.group.appendChild(this.rect);
+    this.group.appendChild(this.circle);
 
     g.appendChild(this.group);
   }
@@ -47,15 +48,14 @@ export default class RubberbandRect {
     const h = this.opposite[1] - this.anchor[1];
 
     return {
-      x: w > 0 ? this.anchor[0] : this.opposite[0],
-      y: h > 0 ? this.anchor[1] : this.opposite[1],
-      w: Math.max(1, Math.abs(w)), // Negative values
-      h: Math.max(1, Math.abs(h)) 
+      cx: w > 0 ? this.anchor[0] + w/2 : this.opposite[0] + w/2,
+      cy: h > 0 ? this.anchor[1] + h/2 : this.opposite[1] + h/2,
+      r: Math.max(1, Math.pow(w**2 + h**2, 0.5)/2), // Negative values
     };
   }
 
   get element() {
-    return this.rect;
+    return this.circle;
   }
 
   dragTo = (oppositeX, oppositeY) => {
@@ -63,25 +63,24 @@ export default class RubberbandRect {
     this.group.style.display = null;
 
     this.opposite = [ oppositeX, oppositeY ];
-    const { x, y, w, h } = this.bbox;
-
-    setRectMaskSize(this.mask, this.env.image, x, y, w, h);
-    setRectSize(this.rect, x, y, w, h);
+    const { cx, cy, r} = this.bbox;
+    setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
+    setCircleSize(this.circle, cx, cy, r);
   }
 
   getBoundingClientRect = () => 
-    this.rect.getBoundingClientRect();
+    this.circle.getBoundingClientRect();
 
   toSelection = () => {
-    const { x, y, w, h } = this.bbox;
-    return new Selection(toRectFragment(x, y, w, h, this.env.image));
+    const { cx, cy, r} = this.bbox;
+    return new Selection(toCircleFragment(cx, cy, r, this.env.image));
   }
 
   destroy = () => {
     this.group.parentNode.removeChild(this.group);
 
     this.mask = null;
-    this.rect = null;
+    this.circle = null;
     this.group = null;
   }
 

@@ -11,6 +11,7 @@ export default class AnnotationLayer extends EventEmitter {
     super();
 
     const { wrapperEl, config, env } = props;
+    console.log('env', env);
     
     this.imageEl = env.image;
     this.readOnly = config.readOnly;
@@ -42,6 +43,7 @@ export default class AnnotationLayer extends EventEmitter {
       // No drawing, only select the current hover shape
       this.svg.addEventListener('mousedown', this.selectCurrentHover);
     } else {
+      console.log('gggg', this.g);
       // Attach handlers to the drawing tool palette
       this.tools = new DrawingTools(this.g, config, env);
       this.tools.on('cancel', this.selectCurrentHover);

@@ -35,7 +35,7 @@ const drawHandle = (x, y) => {
   return svg;
 }
 
-// TODO redundancy with EditableRect
+// TODO redundancy with EditableCircle
 const setHandleXY = (handle, x, y) => {
   handle.setAttribute('x', x);
   handle.setAttribute('y', y);
@@ -170,7 +170,7 @@ export default class EditablePolygon extends EventEmitter {
   /**
    * Converts mouse coordinates to SVG coordinates
    *
-   * TODO redundant with EditableRect
+   * TODO redundant with EditableCircle
    */
   getMousePosition = evt => {
     const pt = this.svg.createSVGPoint();

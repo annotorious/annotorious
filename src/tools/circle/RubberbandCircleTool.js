@@ -1,11 +1,11 @@
 import EventEmitter from 'tiny-emitter';
-import RubberbandRect from './RubberbandRect';
-import EditableRect from './EditableRect';
+import RubberbandCircle from './RubberbandCircle';
+import EditableCircle from './EditableCircle';
 
 /**
- * A rubberband selector for rectangle fragments.
+ * A rubberband selector for circle fragments.
  */
-export default class RubberbandRectTool extends EventEmitter {
+export default class RubberbandCircleTool extends EventEmitter {
 
   constructor(g, config, env) {
     super();
@@ -34,13 +34,14 @@ export default class RubberbandRectTool extends EventEmitter {
     const { left, top } = this.svg.getBoundingClientRect();
     pt.x = x + left;
     pt.y = y + top;
+
     return pt.matrixTransform(this.g.getScreenCTM().inverse());
-  }
+  }   
 
   startDrawing = evt => {
     const { x, y } = this._toSVG(evt.layerX, evt.layerY);
     this._attachListeners();
-    this.rubberband = new RubberbandRect(x, y, this.g, this.env);
+    this.rubberband = new RubberbandCircle(x, y, this.g, this.env);
   }
 
   stop = () => {
@@ -58,9 +59,9 @@ export default class RubberbandRectTool extends EventEmitter {
   onMouseUp = evt => {
     this._detachListeners();
 
-    const { w } = this.rubberband.bbox;
+    const { r } = this.rubberband.bbox;
 
-    if (w > 3) {
+    if (r > 3) {
       // Emit the SVG shape with selection attached    
       const { element } = this.rubberband;
       element.annotation = this.rubberband.toSelection();
@@ -75,7 +76,7 @@ export default class RubberbandRectTool extends EventEmitter {
   }
 
   createEditableShape = annotation =>
-    new EditableRect(annotation, this.g, this.config, this.env);
+    new EditableCircle(annotation, this.g, this.config, this.env);
 
   get isDrawing() {
     return this.rubberband != null;

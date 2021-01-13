@@ -1,12 +1,13 @@
 import EventEmitter from 'tiny-emitter';
 import RubberbandRectTool from './rectangle/RubberbandRectTool';
 import RubberbandPolygonTool from './polygon/RubberbandPolygonTool';
+import RubberbandCircleTool from "./circle/RubberbandCircleTool";
 
 /** The drawing tool 'registry' **/
 class DrawingToolRegistry extends EventEmitter {
  
   constructor(g, config, env) {
-    super(); 
+    super();
 
     // SVG annotation layer group
     this._g = g;
@@ -29,7 +30,9 @@ class DrawingToolRegistry extends EventEmitter {
   setDefaults() {
     this.registerTool('rect', RubberbandRectTool);
     this.registerTool('polygon', RubberbandPolygonTool);
-    this.setCurrent('rect');
+    this.registerTool('circle', RubberbandCircleTool);
+
+    this.setCurrent('circle');
   }
 
   registerTool = (id, impl) => {

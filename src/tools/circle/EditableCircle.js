@@ -2,17 +2,16 @@ import EventEmitter from 'tiny-emitter';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { format } from '../../util/Formatting';
 import { 
-  drawRect, 
-  drawRectMask,
-  getCorners, 
-  parseRectFragment,
-  getRectSize, 
-  setRectSize, 
-  toRectFragment, 
-  setRectMaskSize
-} from '../../selectors/RectFragment';
+  drawCircle,
+  drawCircleMask,
+  getCorners,
+  parseCircleFragment,
+  getCircleSize,
+  setCircleSize,
+  toCircleFragment,
+  setCircleMaskSize
+} from '../../selectors/CircleFragment';
 
-// draw circle point at (x, y)
 const drawHandle = (x, y) => {
   const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
   svg.setAttribute('class', 'a9s-handle');
@@ -49,30 +48,34 @@ const setHandleXY = (handle, x, y) => {
 }
 
 const stretchCorners = (corner, opposite) => {
+  console.log('stretchCorners111111', corner, opposite);
   const x1 = corner.x;
+
   const y1 = corner.y;
-
   const x2 = opposite.x;
-  const y2 = opposite.y;
 
-  const x = Math.min(x1, x2);
-  const y = Math.min(y1, y2);
+  const y2 = opposite.y;
   const w = Math.abs(x2 - x1);
   const h = Math.abs(y2 - y1);
+  const cx = Math.min(x1, x2) + w/2;
+  const cy = Math.min(y1, y2) + h/2;
+  const r = Math.pow(w**2 + h**2, 0.5)/2
+  console.log('stretchCorners222222', cx, cy);
 
-  return { x, y, w, h };
+  return { cx, cy, r};
 }
 
 /**
  * An editable rectangle shape.
  */
-export default class EditableRect extends EventEmitter {
+export default class EditableCircle extends EventEmitter {
 
   constructor(annotation, g, config, env) {
     super();
 
     this.annotation = annotation;
     this.env = env;
+
     // SVG element
     this.svg = g.closest('svg');
     this.g = g;
@@ -80,7 +83,7 @@ export default class EditableRect extends EventEmitter {
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
 
-    const { x, y, w, h } = parseRectFragment(annotation);
+    const { cx, cy, r } = parseCircleFragment(annotation);
 
     // SVG markup for this class looks like this:
     // 
@@ -99,27 +102,26 @@ export default class EditableRect extends EventEmitter {
     // 'g' for the editable rect compound shape
     this.containerGroup = document.createElementNS(SVG_NAMESPACE, 'g');
 
-    this.mask = drawRectMask(env.image, x, y, w, h);
+    this.mask = drawCircleMask(env.image, cx, cy, r);
     this.mask.setAttribute('class', 'a9s-selection-mask');
     this.containerGroup.appendChild(this.mask);
 
     // The 'element' = rectangles + handles
     this.elementGroup = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.circle = drawCircle(cx, cy, r);
+    this.circle.setAttribute('class', 'a9s-annotation editable selected');
+    this.circle.querySelector('.a9s-inner')
+      .addEventListener('mousedown', this.onGrab(this.circle));
 
-    this.rectangle = drawRect(x, y, w, h);
-    this.rectangle.setAttribute('class', 'a9s-annotation editable selected');
-    this.rectangle.querySelector('.a9s-inner')
-      .addEventListener('mousedown', this.onGrab(this.rectangle));
+    format(this.circle, annotation, config.formatter);
 
-    format(this.rectangle, annotation, config.formatter);
-
-    this.elementGroup.appendChild(this.rectangle);    
+    this.elementGroup.appendChild(this.circle);
 
     this.handles = [
-      [ x, y ],
-      [ x + w, y ],
-      [ x + w, y + h ],
-      [ x, y + h ]
+      [cx, cy - r],
+      [cx + r, cy],
+      [cx, cy + r],
+      [cx - r, cy]
     ].map(t => { 
       const [ x, y ] = t;
       const handle = drawHandle(x, y);
@@ -161,6 +163,7 @@ export default class EditableRect extends EventEmitter {
     if (window.ResizeObserver) {
       this.resizeObserver = new ResizeObserver(() => {
         const svgBounds = this.svg.getBoundingClientRect();
+        // console.log('svgBounds', svgBounds);
         const { width, height } = this.svg.viewBox.baseVal;
 
         const scaleX = width / svgBounds.width;
@@ -181,15 +184,15 @@ export default class EditableRect extends EventEmitter {
   }
 
   /** Sets the shape size, including handle positions **/
-  setSize = (x, y, w, h) => {
-    setRectSize(this.rectangle, x, y, w, h);
-    setRectMaskSize(this.mask, this.env.image, x, y, w, h);
+  setSize = (cx, cy, r) => {
+    setCircleSize(this.circle, cx, cy, r);
+    setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
 
-    const [ topleft, topright, bottomright, bottomleft] = this.handles;
-    setHandleXY(topleft, x, y);
-    setHandleXY(topright, x + w, y);
-    setHandleXY(bottomright, x + w, y + h);
-    setHandleXY(bottomleft, x, y + h);
+    const [ top, right, bottom, left] = this.handles;
+    setHandleXY(top, cx, cy - r);
+    setHandleXY(right, cx + r, cy);
+    setHandleXY(bottom, cx, cy + r);
+    setHandleXY(left, cx - r, cy);
   }
 
   /** Converts mouse coordinates to SVG coordinates **/
@@ -203,36 +206,37 @@ export default class EditableRect extends EventEmitter {
   onGrab = grabbedElem => evt => {
     this.grabbedElem = grabbedElem; 
     const pos = this.getMousePosition(evt);
-    const { x, y } = getRectSize(this.rectangle);
-    this.mouseOffset = { x: pos.x - x, y: pos.y - y };
+    const { cx, cy } = getCircleSize(this.circle);
+    this.mouseOffset = { x: pos.x - cx, y: pos.y - cy };
   }
 
   onMouseMove = evt => {
     if (this.grabbedElem) {
       const pos = this.getMousePosition(evt);
 
-      if (this.grabbedElem === this.rectangle) {
+      if (this.grabbedElem === this.circle) {
         // x/y changes by mouse offset, w/h remains unchanged
-        const { w, h } = getRectSize(this.rectangle);
-        const x = pos.x - this.mouseOffset.x;
-        const y = pos.y - this.mouseOffset.y;
+        const { r} = getCircleSize(this.circle);
+        const cx = pos.x - this.mouseOffset.x;
+        const cy = pos.y - this.mouseOffset.y;
 
-        this.setSize(x, y, w, h);
-        this.emit('update', toRectFragment(x, y, w, h, this.env.image)); 
+        this.setSize(cx, cy, r);
+        this.emit('update', toCircleFragment(cx, cy, r, this.env.image));
       } else {
         // Handles
-        const corners = getCorners(this.rectangle);
+        const corners = getCorners(this.circle);
+        console.log('corner', corners);
 
         // Mouse position replaces one of the corner coords, depending
         // on which handle is the grabbed element
         const handleIdx = this.handles.indexOf(this.grabbedElem);
-        const oppositeCorner = handleIdx < 2 ?
+        const oppositeCorner = handleIdx < 2 ? 
           corners[handleIdx + 2] : corners[handleIdx - 2];
+        console.log('strechhhhhh', handleIdx);
+        const { cx, cy, r } = stretchCorners(pos, oppositeCorner)
 
-        const { x, y, w, h } = stretchCorners(pos, oppositeCorner)
-
-        this.setSize(x, y, w, h); 
-        this.emit('update', toRectFragment(x, y, w, h, this.env.image)); 
+        this.setSize(cx, cy, r);
+        this.emit('update', toCircleFragment(cx, cy, r, this.env.image));
       }
     }
   }
