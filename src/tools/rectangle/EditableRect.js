@@ -12,6 +12,7 @@ import {
   setRectMaskSize
 } from '../../selectors/RectFragment';
 
+// draw circle point at (x, y)
 const drawHandle = (x, y) => {
   const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
   svg.setAttribute('class', 'a9s-handle');
@@ -72,7 +73,6 @@ export default class EditableRect extends EventEmitter {
 
     this.annotation = annotation;
     this.env = env;
-
     // SVG element
     this.svg = g.closest('svg');
     this.g = g;
@@ -116,9 +116,9 @@ export default class EditableRect extends EventEmitter {
     this.elementGroup.appendChild(this.rectangle);    
 
     this.handles = [
-      [ x, y ], 
-      [ x + w, y ], 
-      [ x + w, y + h ], 
+      [ x, y ],
+      [ x + w, y ],
+      [ x + w, y + h ],
       [ x, y + h ]
     ].map(t => { 
       const [ x, y ] = t;
@@ -204,7 +204,7 @@ export default class EditableRect extends EventEmitter {
     this.grabbedElem = grabbedElem; 
     const pos = this.getMousePosition(evt);
     const { x, y } = getRectSize(this.rectangle);
-    this.mouseOffset = { x: pos.x - x, y: pos.y - y };  
+    this.mouseOffset = { x: pos.x - x, y: pos.y - y };
   }
 
   onMouseMove = evt => {
@@ -217,7 +217,7 @@ export default class EditableRect extends EventEmitter {
         const x = pos.x - this.mouseOffset.x;
         const y = pos.y - this.mouseOffset.y;
 
-        this.setSize(x, y, w, h); 
+        this.setSize(x, y, w, h);
         this.emit('update', toRectFragment(x, y, w, h, this.env.image)); 
       } else {
         // Handles
@@ -226,7 +226,7 @@ export default class EditableRect extends EventEmitter {
         // Mouse position replaces one of the corner coords, depending
         // on which handle is the grabbed element
         const handleIdx = this.handles.indexOf(this.grabbedElem);
-        const oppositeCorner = handleIdx < 2 ? 
+        const oppositeCorner = handleIdx < 2 ?
           corners[handleIdx + 2] : corners[handleIdx - 2];
 
         const { x, y, w, h } = stretchCorners(pos, oppositeCorner)

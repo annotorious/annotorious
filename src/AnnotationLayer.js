@@ -11,6 +11,7 @@ export default class AnnotationLayer extends EventEmitter {
     super();
 
     const { wrapperEl, config, env } = props;
+    console.log('env', env);
     
     this.imageEl = env.image;
     this.readOnly = config.readOnly;
