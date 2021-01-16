@@ -1,6 +1,7 @@
 import EventEmitter from 'tiny-emitter';
 import RubberbandRectTool from './rectangle/RubberbandRectTool';
 import RubberbandPolygonTool from './polygon/RubberbandPolygonTool';
+import { SVG_NAMESPACE } from '../util/SVG';
 
 /** The drawing tool 'registry' **/
 class DrawingToolRegistry extends EventEmitter {
@@ -67,3 +68,44 @@ class DrawingToolRegistry extends EventEmitter {
 }
 
 export default DrawingToolRegistry;
+
+/**
+ * Common code for drawing resize handles
+ */
+export const drawHandle = (x, y) => {
+  const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
+  svg.setAttribute('class', 'a9s-handle');
+  svg.setAttribute('overflow', 'visible');
+  svg.setAttribute('x', x);
+  svg.setAttribute('y', y);
+
+  const group = document.createElementNS(SVG_NAMESPACE, 'g');
+
+  const drawCircle = r => {
+    const c = document.createElementNS(SVG_NAMESPACE, 'circle');
+    c.setAttribute('cx', 0);
+    c.setAttribute('cy', 0);
+    c.setAttribute('r', r);
+    return c;
+  }
+
+  const inner = drawCircle(6);
+  inner.setAttribute('class', 'a9s-handle-inner')
+
+  const outer = drawCircle(7);
+  outer.setAttribute('class', 'a9s-handle-outer')
+
+  group.appendChild(outer);
+  group.appendChild(inner);
+
+  svg.appendChild(group);
+  return svg;
+}
+
+/**
+ * Common code for setting handle position
+ */
+export const setHandleXY = (handle, x, y) => {
+  handle.setAttribute('x', x);
+  handle.setAttribute('y', y);
+}

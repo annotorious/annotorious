@@ -2,44 +2,8 @@ import EventEmitter from 'tiny-emitter';
 import { drawEmbeddedSVG, toSVGTarget } from '../../selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { format } from '../../util/Formatting';
+
 import Mask from './PolygonMask';
-
-// TODO redundancy with EditableRect
-const drawHandle = (x, y) => {
-  const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-  svg.setAttribute('class', 'a9s-handle');
-  svg.setAttribute('overflow', 'visible');
-  svg.setAttribute('x', x);
-  svg.setAttribute('y', y);
-
-  const group = document.createElementNS(SVG_NAMESPACE, 'g');
-
-  const drawCircle = r => {
-    const c = document.createElementNS(SVG_NAMESPACE, 'circle');
-    c.setAttribute('cx', 0);
-    c.setAttribute('cy', 0);
-    c.setAttribute('r', r);
-    return c;
-  }
-
-  const inner = drawCircle(6);
-  inner.setAttribute('class', 'a9s-handle-inner')
-
-  const outer = drawCircle(7);
-  outer.setAttribute('class', 'a9s-handle-outer')
-
-  group.appendChild(outer);
-  group.appendChild(inner);
-
-  svg.appendChild(group);
-  return svg;
-}
-
-// TODO redundancy with EditableRect
-const setHandleXY = (handle, x, y) => {
-  handle.setAttribute('x', x);
-  handle.setAttribute('y', y);
-}
 
 const getPoints = shape => {
   // Could just be Array.from(shape.querySelector('.inner').points) but...
