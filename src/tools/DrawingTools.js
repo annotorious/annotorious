@@ -73,18 +73,17 @@ export default DrawingToolRegistry;
  * Common code for drawing resize handles
  */
 export const drawHandle = (x, y) => {
-  const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-  svg.setAttribute('class', 'a9s-handle');
-  svg.setAttribute('overflow', 'visible');
-  svg.setAttribute('x', x);
-  svg.setAttribute('y', y);
+  const containerGroup = document.createElementNS(SVG_NAMESPACE, 'g');
+  containerGroup.setAttribute('class', 'a9s-handle');
+  containerGroup.setAttribute('transform-origin', `${x}px ${y}px`);
 
   const group = document.createElementNS(SVG_NAMESPACE, 'g');
+  group.setAttribute('transform-origin', `${x}px ${y}px`);
 
   const drawCircle = r => {
     const c = document.createElementNS(SVG_NAMESPACE, 'circle');
-    c.setAttribute('cx', 0);
-    c.setAttribute('cy', 0);
+    c.setAttribute('cx', x);
+    c.setAttribute('cy', y);
     c.setAttribute('r', r);
     return c;
   }
@@ -98,14 +97,22 @@ export const drawHandle = (x, y) => {
   group.appendChild(outer);
   group.appendChild(inner);
 
-  svg.appendChild(group);
-  return svg;
+  containerGroup.appendChild(group);
+  return containerGroup;
 }
 
 /**
  * Common code for setting handle position
  */
 export const setHandleXY = (handle, x, y) => {
-  handle.setAttribute('x', x);
-  handle.setAttribute('y', y);
+  handle.setAttribute('transform-origin', `${x}px ${y}px`);	
+  handle.firstChild.setAttribute('transform-origin', `${x}px ${y}px`);	
+
+  const inner = handle.querySelector('.a9s-handle-inner');	
+  inner.setAttribute('cx', x);	
+  inner.setAttribute('cy', y);	
+
+  const outer = handle.querySelector('.a9s-handle-outer');	
+  outer.setAttribute('cx', x);	
+  outer.setAttribute('cy', y);
 }

@@ -2,7 +2,7 @@ import EventEmitter from 'tiny-emitter';
 import { drawEmbeddedSVG, toSVGTarget } from '../../selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { format } from '../../util/Formatting';
-
+import { drawHandle, setHandleXY } from '../DrawingTools';
 import Mask from './PolygonMask';
 
 const getPoints = shape => {
