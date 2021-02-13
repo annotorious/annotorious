@@ -10,6 +10,10 @@ export default class ImageAnnotator extends Component  {
     selectedAnnotation: null,
     selectedDOMElement: null,
     modifiedTarget: null,
+
+    // Records the state before any potential headless modify (done via
+    // .updateSelected) so we can properly fire the updateAnnotation(a, previous)
+    // event, and distinguish between headless Save and Cancel 
     beforeHeadlessModify: null
   }
 
@@ -26,23 +30,39 @@ export default class ImageAnnotator extends Component  {
 
     this.annotationLayer.on('createSelection', this.handleCreateSelection);
 
-    this.annotationLayer.on('select', this.handleSelect);
-
+    this.annotationLayer.on('select', this.props.config.headless ? this.handleHeadlessSelect : this.handleSelect);
+  
     this.annotationLayer.on('updateTarget', this.handleUpdateTarget);
 
     this.annotationLayer.on('mouseEnterAnnotation', this.handleMouseEnter);
     this.annotationLayer.on('mouseLeaveAnnotation', this.handleMouseLeave);
+
+    // In headless mode, Escape cancels editing
+    if (this.props.config.headless)
+      document.addEventListener('keyup', this.headlessCancel);
   }
 
   componentWillUnmount() {
     this.annotationLayer.destroy();
+
+    if (this.props.config.headless)
+      document.removeEventListener('keyup', this.headlessCancel);
+  }
+
+  // Handle Escape key in headless mode
+  headlessCancel = evt => {
+    if (evt.which === 27)  { // Escape
+      this.clearState();
+      this.annotationLayer.deselect();
+    }
   }
 
   handleCreateSelection = selection =>
     this.props.onSelectionCreated(selection.clone());
 
-  handleSelect = evt => {
+  handleSelect = evt => {   
     const { annotation, element, skipEvent } = evt;
+
     if (annotation) {
       this.setState({ 
         selectedAnnotation: annotation,
@@ -55,6 +75,22 @@ export default class ImageAnnotator extends Component  {
         this.props.onAnnotationSelected(annotation.clone());
     } else {
       this.clearState();
+    }
+  }
+
+  handleHeadlessSelect = evt => {
+    // When in headless mode, changing selection acts as 'Ok' - changes
+    // to the previous annotation are stored! (In normal mode, selection
+    // acts as 'Cancel'.)
+    const { beforeHeadlessModify, modifiedTarget} = this.state;
+
+    if (beforeHeadlessModify || modifiedTarget) {
+      this.saveSelected(() =>  { 
+        this.annotationLayer.selectAnnotation(evt.annotation);
+        this.handleSelect(evt);
+      });
+    } else {
+      this.handleSelect(evt);
     }
   }
 
@@ -93,7 +129,7 @@ export default class ImageAnnotator extends Component  {
   /**************************/  
 
   /** Common handler for annotation CREATE or UPDATE **/
-  onCreateOrUpdateAnnotation = method => (annotation, previous) => {
+  onCreateOrUpdateAnnotation = (method, opt_callback) => (annotation, previous) => {
     // Merge updated target if necessary
     const a = (this.state.modifiedTarget) ?
       annotation.clone({ target: this.state.modifiedTarget }) : annotation.clone();
@@ -104,7 +140,7 @@ export default class ImageAnnotator extends Component  {
     else
       this.props[method](a, this.overrideAnnotationId(a));
 
-    this.clearState();    
+    this.clearState(opt_callback);    
     this.annotationLayer.deselect();
     this.annotationLayer.addOrUpdateAnnotation(a, previous);
   }
@@ -151,16 +187,22 @@ export default class ImageAnnotator extends Component  {
   removeAnnotation = annotation =>
     this.annotationLayer.removeAnnotation(annotation.clone());
 
-  saveSelected = () => {
+  saveSelected = opt_callback => {
     const a = this.state.selectedAnnotation;
 
     if (a) {
       if (a.isSelection) {
-        this.onCreateOrUpdateAnnotation('onAnnotationCreated')(a.toAnnotation(), a);
+        this.onCreateOrUpdateAnnotation('onAnnotationCreated', opt_callback)(a.toAnnotation(), a);
       } else {
-        const { beforeHeadlessModify } = this.state;
+        // Headless update? 
+        const { beforeHeadlessModify, modifiedTarget } = this.state;
+
         if (beforeHeadlessModify) {
-          this.onCreateOrUpdateAnnotation('onAnnotationUpdated')(a, beforeHeadlessModify);
+          // Annotation was modified using '.updateSelected()'
+          this.onCreateOrUpdateAnnotation('onAnnotationUpdated', opt_callback)(a, beforeHeadlessModify);
+        } else if (modifiedTarget) {
+          // Target was modified, but otherwise no change
+          this.onCreateOrUpdateAnnotation('onAnnotationUpdated', opt_callback)(a, a);
         } else {
           console.log('No change - canceling');
           this.onCancelAnnotation();
