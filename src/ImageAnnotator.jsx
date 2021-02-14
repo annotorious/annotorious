@@ -255,6 +255,7 @@ export default class ImageAnnotator extends Component  {
       <Editor
         wrapperEl={this.props.wrapperEl}
         annotation={this.state.selectedAnnotation}
+        modifiedTarget={this.state.modifiedTarget}
         selectedElement={this.state.selectedDOMElement}
         readOnly={readOnly}
         config={this.props.config}
