@@ -205,7 +205,7 @@ export default class ImageAnnotator extends Component  {
           this.onCreateOrUpdateAnnotation('onAnnotationUpdated', opt_callback)(a, a);
         } else {
           console.log('No change - canceling');
-          this.onCancelAnnotation();
+          this.onCancelAnnotation(a);
         } 
       }
     }
