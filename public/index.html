@@ -111,7 +111,6 @@
 
         var toolToggle = document.getElementById('current-tool');
         toolToggle.addEventListener('click', function() {
-          console.log(anno.getAnnotations());
           if (toolToggle.innerHTML == 'RECTANGLE') {
             toolToggle.innerHTML = 'POLYGON';
             anno.setDrawingTool('polygon');

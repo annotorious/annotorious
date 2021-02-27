@@ -42,6 +42,7 @@
     "@babel/polyfill": "^7.10.4",
     "@recogito/recogito-client-core": "1.0.0",
     "axios": "^0.21.1",
+    "hammerjs": "^2.0.8",
     "preact": "^10.4.1",
     "tiny-emitter": "^2.1.0"
   }
