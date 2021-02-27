@@ -4,7 +4,7 @@ import { SVG_NAMESPACE, addClass, removeClass } from './util/SVG';
 import DrawingTools from './tools/DrawingTools';
 import { format } from './util/Formatting';
 import { getSnippet } from './util/ImageSnippet';
-import { enableTouch } from './util/Touch';
+import { isTouchDevice, enableTouch } from './util/Touch';
 
 export default class AnnotationLayer extends EventEmitter {
 
@@ -22,9 +22,13 @@ export default class AnnotationLayer extends EventEmitter {
 
     // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-    this.svg.setAttribute('class', 'a9s-annotationlayer');
 
-    enableTouch(this.svg);
+    if (isTouchDevice()) {
+      this.svg.setAttribute('class', 'a9s-annotationlayer touch');
+      enableTouch(this.svg);
+    } else {
+      this.svg.setAttribute('class', 'a9s-annotationlayer');
+    }
 
     if (naturalWidth == 0 && naturalHeight == 0) {
       this.imageEl.onload = () =>

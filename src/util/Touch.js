@@ -36,19 +36,17 @@ export const enableTouch = el => {
     srcEvent.preventDefault();
   }
 
-  if (isTouchDevice()) {
     // Handle double taps via hammer.js
     const manager = new Hammer.Manager(el);
     manager.add(new Hammer.Press({
       time: 400
     }));
 
-    el.addEventListener('touchstart', touchHandler, true);
-    el.addEventListener('touchmove', touchHandler, true);
-    el.addEventListener('touchend', touchHandler, true);
-    el.addEventListener('touchcancel', touchHandler, true);
+  el.addEventListener('touchstart', touchHandler, true);
+  el.addEventListener('touchmove', touchHandler, true);
+  el.addEventListener('touchend', touchHandler, true);
+  el.addEventListener('touchcancel', touchHandler, true);
 
-    manager.on('press', pressAndHoldHandler);
-  };
+  manager.on('press', pressAndHoldHandler);
 
 }
