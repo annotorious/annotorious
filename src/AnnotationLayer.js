@@ -15,7 +15,6 @@ export default class AnnotationLayer extends EventEmitter {
     
     this.imageEl = env.image;
     this.readOnly = config.readOnly;
-    this.headless = config.headless;
     this.formatter = config.formatter;
 
     const { naturalWidth, naturalHeight } = this.imageEl;
