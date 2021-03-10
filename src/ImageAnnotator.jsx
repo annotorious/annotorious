@@ -134,15 +134,15 @@ export default class ImageAnnotator extends Component  {
     const a = (this.state.modifiedTarget) ?
       annotation.clone({ target: this.state.modifiedTarget }) : annotation.clone();
 
+    this.clearState(opt_callback);    
+    this.annotationLayer.deselect();
+    this.annotationLayer.addOrUpdateAnnotation(a, previous);
+  
     // Call CREATE or UPDATE handler
     if (previous)
       this.props[method](a, previous.clone());
     else
       this.props[method](a, this.overrideAnnotationId(a));
-
-    this.clearState(opt_callback);    
-    this.annotationLayer.deselect();
-    this.annotationLayer.addOrUpdateAnnotation(a, previous);
   }
 
   onDeleteAnnotation = annotation => {
