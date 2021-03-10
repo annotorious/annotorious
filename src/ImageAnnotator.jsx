@@ -74,7 +74,12 @@ export default class ImageAnnotator extends Component  {
       if (!annotation.isSelection && !skipEvent)
         this.props.onAnnotationSelected(annotation.clone());
     } else {
-      this.clearState();
+      const { selectedAnnotation } = this.state; 
+
+      if (selectedAnnotation)
+        this.clearState(() => this.props.onCancelSelected(selectedAnnotation));
+      else
+        this.clearState();
     }
   }
 
@@ -155,9 +160,7 @@ export default class ImageAnnotator extends Component  {
   onCancelAnnotation = annotation => {
     this.clearState();
     this.annotationLayer.deselect();
-
-    if (annotation.isSelection)
-      this.props.onSelectionCanceled(annotation);
+    this.props.onCancelSelected(annotation);
   }
 
   /****************/               
