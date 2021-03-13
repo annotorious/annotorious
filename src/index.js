@@ -136,8 +136,8 @@ export class Annotorious {
     this._app.current.getSelectedImageSnippet();
 
   loadAnnotations = url => axios.get(url).then(response => {
-    const annotations = response.data.map(a => new WebAnnotation(a));
-    this._app.current.setAnnotations(annotations);
+    const annotations = response.data;
+    this.setAnnotations(annotation);
     return annotations;
   });
 
