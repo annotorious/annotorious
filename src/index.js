@@ -137,7 +137,7 @@ export class Annotorious {
 
   loadAnnotations = url => axios.get(url).then(response => {
     const annotations = response.data;
-    this.setAnnotations(annotation);
+    this.setAnnotations(annotations);
     return annotations;
   });
 
