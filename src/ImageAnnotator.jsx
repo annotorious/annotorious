@@ -190,6 +190,9 @@ export default class ImageAnnotator extends Component  {
   addAnnotation = annotation =>
     this.annotationLayer.addOrUpdateAnnotation(annotation.clone());
 
+  addDrawingTool = (id, plugin) =>
+    this.annotationLayer.addDrawingTool(id, plugin);
+
   cancelSelected = () => {
     const { selectedAnnotation } = this.state;
     if (selectedAnnotation)

@@ -94,6 +94,9 @@ export default class AnnotationLayer extends EventEmitter {
     return g;
   }
 
+  addDrawingTool = (id, plugin) =>
+    this.tools.registerTool(id, plugin);
+
   addOrUpdateAnnotation = (annotation, previous) => {
     if (this.selectedShape?.annotation === annotation || this.selectShape?.annotation == previous)
       this.deselect();

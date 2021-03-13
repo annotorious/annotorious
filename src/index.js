@@ -107,6 +107,9 @@ export class Annotorious {
   addAnnotation = (annotation, readOnly) =>
     this._app.current.addAnnotation(new WebAnnotation(annotation, { readOnly }));
 
+  addDrawingTool = (id, plugin) =>
+    this._app.current.addDrawingTool(id, plugin);
+
   cancelSelected = () =>
     this._app.current.cancelSelected();
   
