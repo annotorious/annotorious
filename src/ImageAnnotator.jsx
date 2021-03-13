@@ -64,6 +64,13 @@ export default class ImageAnnotator extends Component  {
     const { annotation, element, skipEvent } = evt;
 
     if (annotation) {
+      // If there is another selected annotation,
+      // fire cancel before making the new selection
+      const { selectedAnnotation } = this.state;
+
+      if (selectedAnnotation && !selectedAnnotation.isEqual(annotation))
+        this.props.onCancelSelected(selectedAnnotation.clone());
+
       this.setState({ 
         selectedAnnotation: annotation,
         selectedDOMElement: element,
