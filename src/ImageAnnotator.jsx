@@ -64,22 +64,33 @@ export default class ImageAnnotator extends Component  {
     const { annotation, element, skipEvent } = evt;
 
     if (annotation) {
+      // Select action needs to run immediately (if no annotation was
+      // selected before), or after the deselect state change is completed
+      // (if another annotation was selected before)
+      const select = () => {
+        this.setState({ 
+          selectedAnnotation: annotation,
+          selectedDOMElement: element,
+          modifiedTarget: null,
+          beforeHeadlessModify: null
+        });
+  
+        if (!annotation.isSelection && !skipEvent)
+          this.props.onAnnotationSelected(annotation.clone());  
+      }
+
       // If there is another selected annotation,
       // fire cancel before making the new selection
       const { selectedAnnotation } = this.state;
 
-      if (selectedAnnotation && !selectedAnnotation.isEqual(annotation))
-        this.props.onCancelSelected(selectedAnnotation.clone());
-
-      this.setState({ 
-        selectedAnnotation: annotation,
-        selectedDOMElement: element,
-        modifiedTarget: null,
-        beforeHeadlessModify: null
-      });
-
-      if (!annotation.isSelection && !skipEvent)
-        this.props.onAnnotationSelected(annotation.clone());
+      if (selectedAnnotation && !selectedAnnotation.isEqual(annotation)) {
+        this.clearState(() => {
+          this.props.onCancelSelected(selectedAnnotation);
+          select();
+        })
+      } else {
+        select();
+      }
     } else {
       const { selectedAnnotation } = this.state; 
 
@@ -142,6 +153,8 @@ export default class ImageAnnotator extends Component  {
 
   /** Common handler for annotation CREATE or UPDATE **/
   onCreateOrUpdateAnnotation = (method, opt_callback) => (annotation, previous) => {
+    console.log(annotation);
+
     // Merge updated target if necessary
     const a = (this.state.modifiedTarget) ?
       annotation.clone({ target: this.state.modifiedTarget }) : annotation.clone();
