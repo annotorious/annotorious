@@ -64,9 +64,10 @@ export default class ImageAnnotator extends Component  {
     const { annotation, element, skipEvent } = evt;
 
     if (annotation) {
-      // Select action needs to run immediately (if no annotation was
-      // selected before), or after the deselect state change is completed
-      // (if another annotation was selected before)
+      // Select action needs to run immediately if no annotation was
+      // selected before. Otherwise, make a deselect state change first,
+      // and then select after this state change has completed. (This is
+      // keep our external event cycle clean!)      
       const select = () => {
         this.setState({ 
           selectedAnnotation: annotation,
@@ -87,7 +88,7 @@ export default class ImageAnnotator extends Component  {
         this.clearState(() => {
           this.props.onCancelSelected(selectedAnnotation);
           select();
-        })
+        });
       } else {
         select();
       }
