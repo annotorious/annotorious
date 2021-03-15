@@ -25,38 +25,39 @@ export class Annotorious {
     this._emitter = new Emitter();
 
     // Host app may supply the image as either a DOM node or ID - normalize
-    this._imageEl = (config.image.nodeType) ?
+    const imageEl = (config.image.nodeType) ?
       config.image : document.getElementById(config.image);
 
     // Wrapper div might produce unwanted margin at the bottom otherwise!
-    this._imageEl.style.display = 'block';
+    imageEl.style.display = 'block';
 
     // Store image reference in the Environment
     this._env = createEnvironment();
-    this._env.image = this._imageEl;
+    this._env.image = imageEl;
 
     setLocale(config.locale);
 
-    // We'll wrap the image in a DIV ('_wrapperEl'). The application
+    // We'll wrap the image in a DIV ('_element'). The application
     // container DIV, which holds the editor popup, will be attached
     // as a child to the same wrapper element (=a sibling to the image
     // element), so that editor and image share the same offset coordinate
     // space.
-    this._wrapperEl = document.createElement('DIV');
-    this._wrapperEl.style.position = 'relative';
-    this._wrapperEl.style.display = 'inline-block';
-    this._imageEl.parentNode.insertBefore(this._wrapperEl, this._imageEl);
-    this._wrapperEl.appendChild(this._imageEl);
+    this._element = document.createElement('DIV');
+    this._element.style.position = 'relative';
+    this._element.style.display = 'inline-block';
+
+    imageEl.parentNode.insertBefore(this._element, imageEl);
+    this._element.appendChild(imageEl);
 
     this._appContainerEl = document.createElement('DIV');
-    this._wrapperEl.appendChild(this._appContainerEl);
+    this._element.appendChild(this._appContainerEl);
 
     // A basic ImageAnnotator with just a comment and a tag widget
     ReactDOM.render(
       <ImageAnnotator
         ref={this._app}
         env={this._env}
-        wrapperEl={this._wrapperEl}
+        wrapperEl={this._element}
         config={config}
         onSelectionCreated={this.handleSelectionCreated}
         onSelectionTargetChanged={this.handleSelectionTargetChanged}
@@ -121,8 +122,8 @@ export class Annotorious {
 
   destroy = () => {
     ReactDOM.unmountComponentAtNode(this._appContainerEl);
-    this._wrapperEl.parentNode.insertBefore(this._imageEl, this._wrapperEl);
-    this._wrapperEl.parentNode.removeChild(this._wrapperEl);
+    this._element.parentNode.insertBefore(this._env.image, this._element);
+    this._element.parentNode.removeChild(this._element);
   }
 
   getAnnotations = () => {
