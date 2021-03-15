@@ -58,7 +58,7 @@ export default class AnnotationLayer extends EventEmitter {
 
       // Enable drawing
       if (!this.readOnly)
-        this.svg.addEventListener('mousedown', this.startDrawing);
+        this.svg.addEventListener('mousedown', this._onMouseDown);
     }
 
     this.currentHover = null;
@@ -78,6 +78,16 @@ export default class AnnotationLayer extends EventEmitter {
 
       this.currentHover = null;
     });
+  }
+
+  _onMouseDown = evt => {
+    if (!this.selectedShape && !this.tools.current.isDrawing) {
+      // No active selection & not drawing now? Start drawing.
+      this.tools.current.startDrawing(evt);
+    } else if (this.selectedShape !== this.currentHover) {
+      // If there is none, select the current hover
+      this.selectCurrentHover();
+    }
   }
 
   addAnnotation = annotation => {
@@ -298,16 +308,6 @@ export default class AnnotationLayer extends EventEmitter {
       this.svg.style.display = null;
     else
       this.svg.style.display = 'none';
-  }
-
-  startDrawing = evt => {
-    if (!this.selectedShape) {
-      // Only start drawing if there's no active selection
-      this.tools.current.startDrawing(evt);
-    } else if (this.selectedShape !== this.currentHover) {
-      // If there is none, select the current hover
-      this.selectCurrentHover();
-    }
   }
 
 }
