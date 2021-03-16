@@ -10,7 +10,7 @@ export default class RubberbandRectTool extends Tool {
   constructor(g, config, env) {
     // Most of the basics are handled in the Tool base class
     super(g, config, env);
-    
+
     this.rubberband = null;
   }
 
@@ -55,6 +55,10 @@ export default class RubberbandRectTool extends Tool {
 
   createEditableShape = annotation =>
     new EditableRect(annotation, this.g, this.config, this.env);
+
+  get name() {
+    return 'rect';
+  }
 
   get isDrawing() {
     return this.rubberband != null;
