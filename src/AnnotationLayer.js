@@ -38,7 +38,7 @@ export default class AnnotationLayer extends EventEmitter {
 
     // Don't attach directly, but in group
     this.g = document.createElementNS(SVG_NAMESPACE, 'g');
-    
+
     this.svg.appendChild(this.g);
     wrapperEl.appendChild(this.svg);
 
@@ -84,7 +84,7 @@ export default class AnnotationLayer extends EventEmitter {
   _onMouseDown = evt => {
     if (!this.selectedShape && !this.tools.current.isDrawing) {
       // No active selection & not drawing now? Start drawing.
-      this.tools.current.startDrawing(evt);
+      this.tools.current.start(evt);
     } else if (this.selectedShape !== this.currentHover) {
       // If there is none, select the current hover
       this.selectCurrentHover();

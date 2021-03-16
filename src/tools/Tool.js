@@ -24,16 +24,6 @@ class Tool extends EventEmitter {
     this.env = env;
   }
 
-  attachListeners = ({ mouseMove, mouseUp }) => {
-    this.svg.addEventListener('mousemove', mouseMove);    
-    document.addEventListener('mouseup', mouseUp);
-  }
-
-  detachListeners = ({ mouseMove, mouseUp}) => {
-    this.svg.removeEventListener('mousemove', mouseMove);
-    document.removeEventListener('mouseup', mouseUp);
-  }
-
   toSVG =  (x, y) => {
     const pt = this.svg.createSVGPoint();
 
@@ -42,6 +32,34 @@ class Tool extends EventEmitter {
     pt.y = y + top;
 
     return pt.matrixTransform(this.g.getScreenCTM().inverse());
+  }
+
+  attachListeners = ({ mouseMove, mouseUp }) => {
+
+    // Handle SVG conversion on behalf of tool implementations
+    this.mouseMove = evt => {
+      const { x , y } = this.toSVG(evt.layerX, evt.layerY);
+      mouseMove(x, y, evt);
+    }
+
+    this.mouseUp = evt => {
+      const { x , y } = this.toSVG(evt.layerX, evt.layerY);
+      mouseUp(x, y, evt);
+    }
+
+    this.svg.addEventListener('mousemove', this.mouseMove);    
+    document.addEventListener('mouseup', this.mouseUp);
+  }
+
+  detachListeners = () => {
+    this.svg.removeEventListener('mousemove', this.mouseMove);
+    document.removeEventListener('mouseup', this.mouseUp);
+  }
+
+  start = evt => {
+    // Handle SVG conversion on behalf of tool implementations
+    const { x , y } = this.toSVG(evt.layerX, evt.layerY);
+    this.startDrawing(x, y, evt);
   }
 
   /** 
