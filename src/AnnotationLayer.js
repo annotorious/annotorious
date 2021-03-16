@@ -38,6 +38,7 @@ export default class AnnotationLayer extends EventEmitter {
 
     // Don't attach directly, but in group
     this.g = document.createElementNS(SVG_NAMESPACE, 'g');
+    
     this.svg.appendChild(this.g);
     wrapperEl.appendChild(this.svg);
 
