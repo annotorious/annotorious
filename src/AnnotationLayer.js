@@ -1,7 +1,7 @@
 import EventEmitter from 'tiny-emitter';
 import { drawShape, shapeArea } from './selectors';
 import { SVG_NAMESPACE, addClass, removeClass } from './util/SVG';
-import DrawingTools from './tools/DrawingTools';
+import DrawingTools from './tools/ToolsRegistry';
 import { format } from './util/Formatting';
 import { getSnippet } from './util/ImageSnippet';
 import { isTouchDevice, enableTouch } from './util/Touch';

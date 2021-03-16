@@ -1,1 +1,1 @@
-export { default as DrawingTools } from './DrawingTools';
+export { default as ToolsRegistry } from './ToolsRegistry';

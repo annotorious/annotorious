@@ -3,7 +3,7 @@ import RubberbandRectTool from './rectangle/RubberbandRectTool';
 import RubberbandPolygonTool from './polygon/RubberbandPolygonTool';
 
 /** The drawing tool 'registry' **/
-class DrawingToolRegistry extends EventEmitter {
+export default class ToolRegistry extends EventEmitter {
  
   constructor(g, config, env) {
     super(); 
@@ -55,5 +55,3 @@ class DrawingToolRegistry extends EventEmitter {
   }
   
 }
-
-export default DrawingToolRegistry;
