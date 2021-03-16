@@ -101,11 +101,9 @@ export default class Tool extends EventEmitter {
     throw new Error(IMPLEMENTATION_MISSING);
   }
 
-  /**
-   * Tool implementations CAN provide this implementations
-   */
-  
-  // createEditableShape = annotation => ... 
+  createEditableShape = annotation => {
+    throw new Error(IMPLEMENTATION_MISSING);
+  } 
 
 }
 
