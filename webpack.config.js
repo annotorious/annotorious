@@ -20,6 +20,7 @@ module.exports = {
   performance: {
     hints: false
   },
+  devtool: 'source-map',
   optimization: {
     minimize: true,
     minimizer: [new TerserPlugin()],
