@@ -1,13 +1,10 @@
 import EventEmitter from 'tiny-emitter';
-import Selection from '@recogito/recogito-client-core/src/Selection';
-import WebAnnotation from '@recogito/recogito-client-core/src/WebAnnotation';
-
-const IMPLEMENTATION_MISSING = 'Implementation is missing';
+import { SVG_NAMESPACE } from '../util/SVG';
 
 /**
  * Base class that adds some convenience stuff for tool plugins.
  */
-class Tool extends EventEmitter {
+export default class Tool extends EventEmitter {
 
   constructor(g, config, env) {
     super();
@@ -112,11 +109,56 @@ class Tool extends EventEmitter {
 
 }
 
+/**
+ * Common code for drawing resize handles
+ */
+ export const drawHandle = (x, y) => {
+  const containerGroup = document.createElementNS(SVG_NAMESPACE, 'g');
+  containerGroup.setAttribute('class', 'a9s-handle');
+  containerGroup.setAttribute('transform-origin', `${x}px ${y}px`);
+
+  const group = document.createElementNS(SVG_NAMESPACE, 'g');
+  group.setAttribute('transform-origin', `${x}px ${y}px`);
+
+  const drawCircle = r => {
+    const c = document.createElementNS(SVG_NAMESPACE, 'circle');
+    c.setAttribute('cx', x);
+    c.setAttribute('cy', y);
+    c.setAttribute('r', r);
+    return c;
+  }
+
+  const inner = drawCircle(6);
+  inner.setAttribute('class', 'a9s-handle-inner')
+
+  const outer = drawCircle(7);
+  outer.setAttribute('class', 'a9s-handle-outer')
+
+  group.appendChild(outer);
+  group.appendChild(inner);
+
+  containerGroup.appendChild(group);
+  return containerGroup;
+}
+
+/**
+ * Common code for setting handle position
+ */
+export const setHandleXY = (handle, x, y) => {
+  handle.setAttribute('transform-origin', `${x}px ${y}px`);	
+  handle.firstChild.setAttribute('transform-origin', `${x}px ${y}px`);	
+
+  const inner = handle.querySelector('.a9s-handle-inner');	
+  inner.setAttribute('cx', x);	
+  inner.setAttribute('cy', y);	
+
+  const outer = handle.querySelector('.a9s-handle-outer');	
+  outer.setAttribute('cx', x);	
+  outer.setAttribute('cy', y);
+}
+
 // Just some convenience shortcuts to client-core, for quicker 
 // importing in plugins. (In a way, the intention is to make the 
 // Tool class serve as a kind of mini-SDK).
-
-Tool.Selection = Selection;
-Tool.WebAnnotation = WebAnnotation;
-
-export default Tool;
+export { default as Selection } from '@recogito/recogito-client-core/src/Selection';
+export { default as WebAnnotation } from '@recogito/recogito-client-core/src/WebAnnotation';

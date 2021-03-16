@@ -1,7 +1,7 @@
 import EventEmitter from 'tiny-emitter';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { format } from '../../util/Formatting';
-import { drawHandle, setHandleXY } from '../DrawingTools';
+import { drawHandle, setHandleXY } from '../Tool';
 import { 
   drawRect, 
   drawRectMask,
