@@ -41,7 +41,7 @@ export default class RubberbandPolygonTool extends Tool {
 
   onMouseUp = (x, y) => {
     if (this.rubberband.isCollapsed) {
-      this.emit('cancel', evt);
+      this.emit('cancel');
       this.stop();
     } else {
       this.rubberband.addPoint([ x, y ]);
@@ -65,7 +65,7 @@ export default class RubberbandPolygonTool extends Tool {
   get isDrawing() {
     return this._isDrawing;
   }
-  
+
   createEditableShape = annotation =>
     new EditablePolygon(annotation, this.g, this.config, this.env);
 

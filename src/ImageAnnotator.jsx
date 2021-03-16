@@ -154,8 +154,6 @@ export default class ImageAnnotator extends Component  {
 
   /** Common handler for annotation CREATE or UPDATE **/
   onCreateOrUpdateAnnotation = (method, opt_callback) => (annotation, previous) => {
-    console.log(annotation);
-
     // Merge updated target if necessary
     const a = (this.state.modifiedTarget) ?
       annotation.clone({ target: this.state.modifiedTarget }) : annotation.clone();
