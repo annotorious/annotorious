@@ -18,39 +18,29 @@ class DrawingToolRegistry extends EventEmitter {
     this._env = env;
 
     // Registered tool implementations
-    this._registered = {};
+    this._registered = {
+      rect: RubberbandRectTool,
+      polygon: RubberbandPolygonTool
+    };
 
-    // Current drawing tool
-    this._current = null;
-
-    this.setDefaults();
+    this.setCurrent(RubberbandRectTool);
   }
 
-  setDefaults() {
-    this.registerTool('rect', RubberbandRectTool);
-    this.registerTool('polygon', RubberbandPolygonTool);
-    this.setCurrent('rect');
-  }
-
-  registerTool = (id, impl) => {
-    this._registered[id] = impl;
-  }
+  registerTool = (name, impl) =>
+    this._registered[name] = impl;
 
   /** 
    * Sets a drawing tool by providing an implementation, or the ID
    * of a built-in toll.
    */
   setCurrent = toolOrId => {
-    if (typeof toolOrId === 'string' || toolOrId instanceof String) {
-      const Tool = this._registered[toolOrId];
-      if (Tool) {
-        this._current = new Tool(this._g, this._config, this._env);
-        this._current.on('complete', evt => this.emit('complete', evt));
-        this._current.on('cancel', evt => this.emit('cancel', evt));
-      }
-    } else {
-      this._current = toolOrId;
-    }
+    const Tool = (typeof toolOrId === 'string' || toolOrId instanceof String) ?
+      this._registered[toolOrId] :
+      toolOrId;
+
+    this._current = new Tool(this._g, this._config, this._env);
+    this._current.on('complete', evt => this.emit('complete', evt));
+    this._current.on('cancel', evt => this.emit('cancel', evt));
   }
 
   /** TODO inefficient - maybe organize this in a different way **/
