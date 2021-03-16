@@ -272,30 +272,21 @@ export default class AnnotationLayer extends EventEmitter {
     const readOnly = this.readOnly || annotation.readOnly;
 
     if (!readOnly) {
-      const toolForAnnotation = this.tools.forAnnotation(annotation);
-
-      // Remove the original shape
+      // Replace the shape with an editable version
       shape.parentNode.removeChild(shape);
 
-      if (toolForAnnotation?.supportsModify) {
-        // Replace the shape with an editable version
-        this.selectedShape = toolForAnnotation.createEditableShape(annotation);
+      const toolForAnnotation = this.tools.forAnnotation(annotation);      
+      this.selectedShape = toolForAnnotation.createEditableShape(annotation);
 
-        // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
-        this.selectedShape.element.annotation = annotation;         
-        this._attachHoverListener(this.selectedShape.element, annotation);
+      // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
+      this.selectedShape.element.annotation = annotation;         
+      this._attachHoverListener(this.selectedShape.element, annotation);
 
-        this.selectedShape.on('update', fragment => {
-          this.emit('updateTarget', this.selectedShape.element, fragment);
-        });
+      this.selectedShape.on('update', fragment => {
+        this.emit('updateTarget', this.selectedShape.element, fragment);
+      });
 
-        this.emit('select', { annotation, element: this.selectedShape.element, skipEvent });
-      } else {
-        // No editable shape - add default representation
-        this.selectedShape = this.addAnnotation(annotation);
-        addClass(this.selectedShape, 'selected');
-        this.emit('select', { annotation, element: this.selectedShape, skipEvent });  
-      }
+      this.emit('select', { annotation, element: this.selectedShape.element, skipEvent });
     } else {
       addClass(shape, 'selected');
       this.selectedShape = shape;
