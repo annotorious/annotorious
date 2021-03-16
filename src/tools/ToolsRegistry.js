@@ -2,7 +2,6 @@ import EventEmitter from 'tiny-emitter';
 import RubberbandRectTool from './rectangle/RubberbandRectTool';
 import RubberbandPolygonTool from './polygon/RubberbandPolygonTool';
 
-/** The drawing tool 'registry' **/
 export default class ToolRegistry extends EventEmitter {
  
   constructor(g, config, env) {
@@ -18,16 +17,19 @@ export default class ToolRegistry extends EventEmitter {
     this._env = env;
 
     // Registered tool implementations
-    this._registered = {
-      rect: RubberbandRectTool,
-      polygon: RubberbandPolygonTool
-    };
+    this._registered = [
+      RubberbandRectTool,
+      RubberbandPolygonTool
+    ];
 
     this.setCurrent(RubberbandRectTool);
   }
 
-  registerTool = (name, impl) =>
-    this._registered[name] = impl;
+  registerTool = impl =>
+    this._registered.push(impl);
+
+  unregisterTool = id =>
+    this._registered = this._registered.filter(impl => impl.identifier !== id);
 
   /** 
    * Sets a drawing tool by providing an implementation, or the ID
@@ -35,7 +37,7 @@ export default class ToolRegistry extends EventEmitter {
    */
   setCurrent = toolOrId => {
     const Tool = (typeof toolOrId === 'string' || toolOrId instanceof String) ?
-      this._registered[toolOrId] :
+      this._registered.find(impl => impl.identifier === toolOrId) :
       toolOrId;
 
     this._current = new Tool(this._g, this._config, this._env);
@@ -43,10 +45,15 @@ export default class ToolRegistry extends EventEmitter {
     this._current.on('cancel', evt => this.emit('cancel', evt));
   }
 
-  /** TODO inefficient - maybe organize this in a different way **/
-  forShape = svgShape => {
-    const inner = svgShape.querySelector('.a9s-inner');
-    const Tool = this._registered[inner.nodeName];
+  forAnnotation = annotation => {
+    // First target
+    const [ target, ..._ ] = annotation.targets;
+    const renderedVia = target.renderedVia?.name;
+
+    const Tool = renderedVia ?
+      this._registered.find(impl => impl.identifier === renderedVia) :
+      this._registered.find(impl => impl.supports(annotation));
+
     return Tool ? new Tool(this._g, this._config, this._env) : null;
   }
 

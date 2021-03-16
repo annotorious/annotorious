@@ -56,10 +56,6 @@ export default class RubberbandRectTool extends Tool {
   createEditableShape = annotation =>
     new EditableRect(annotation, this.g, this.config, this.env);
 
-  get name() {
-    return 'rect';
-  }
-
   get isDrawing() {
     return this.rubberband != null;
   }
@@ -68,4 +64,11 @@ export default class RubberbandRectTool extends Tool {
     return true;
   }
 
+}
+
+RubberbandRectTool.identifier = 'rect';
+
+RubberbandRectTool.supports = annotation => {
+  const fragmentSelector = annotation.selector('FragmentSelector');
+  return fragmentSelector?.conformsTo.startsWith('http://www.w3.org/TR/media-frags');
 }

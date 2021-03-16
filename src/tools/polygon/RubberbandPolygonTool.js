@@ -78,3 +78,11 @@ export default class RubberbandPolygonTool extends Tool {
   }
 
 }
+
+RubberbandPolygonTool.identifier = 'polygon';
+
+RubberbandPolygonTool.supports = annotation => {
+  const selector = annotation.selector('SvgSelector');
+  if (selector)
+    return selector.value?.match(/^<svg.*<polygon/g);
+}

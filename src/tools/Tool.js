@@ -109,6 +109,14 @@ export default class Tool extends EventEmitter {
 
 }
 
+// In addition, Tool implementations need to implement the following static methods
+
+// Tool.identifier = '...'
+
+Tool.supports = annotatation => {
+  throw new Error(IMPLEMENTATION_MISSING);
+}
+
 /**
  * Common code for drawing resize handles
  */
