@@ -85,15 +85,7 @@ export default class Tool extends EventEmitter {
    * Tool implementations MUST override these
    */
 
-  get name() {
-    throw new Error(IMPLEMENTATION_MISSING);
-  }
-
   get isDrawing() {
-    throw new Error(IMPLEMENTATION_MISSING);
-  }
-
-  get supportsModify() {
     throw new Error(IMPLEMENTATION_MISSING);
   }
 

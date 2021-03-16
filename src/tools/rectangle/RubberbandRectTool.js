@@ -60,10 +60,6 @@ export default class RubberbandRectTool extends Tool {
     return this.rubberband != null;
   }
 
-  get supportsModify() {
-    return true;
-  }
-
 }
 
 RubberbandRectTool.identifier = 'rect';
