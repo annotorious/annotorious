@@ -272,13 +272,14 @@ export default class AnnotationLayer extends EventEmitter {
     const readOnly = this.readOnly || annotation.readOnly;
 
     if (!readOnly) {
-      const toolForShape = this.tools.forAnnotation(annotation);
+      const toolForAnnotation = this.tools.forAnnotation(annotation);
 
-      if (toolForShape?.supportsModify) {
+      // Remove the original shape
+      shape.parentNode.removeChild(shape);
+
+      if (toolForAnnotation?.supportsModify) {
         // Replace the shape with an editable version
-        shape.parentNode.removeChild(shape);
-
-        this.selectedShape = toolForShape.createEditableShape(annotation);
+        this.selectedShape = toolForAnnotation.createEditableShape(annotation);
 
         // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
         this.selectedShape.element.annotation = annotation;         
@@ -290,9 +291,10 @@ export default class AnnotationLayer extends EventEmitter {
 
         this.emit('select', { annotation, element: this.selectedShape.element, skipEvent });
       } else {
-        addClass(shape, 'selected');
-        this.selectedShape = shape;
-        this.emit('select', { annotation, element: shape, skipEvent });  
+        // No editable shape - add default representation
+        this.selectedShape = this.addAnnotation(annotation);
+        addClass(this.selectedShape, 'selected');
+        this.emit('select', { annotation, element: this.selectedShape, skipEvent });  
       }
     } else {
       addClass(shape, 'selected');
