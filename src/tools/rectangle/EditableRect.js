@@ -1,4 +1,4 @@
-import EventEmitter from 'tiny-emitter';
+import EditableShape from '../EditableShape';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { format } from '../../util/Formatting';
 import { drawHandle, setHandleXY } from '../Tool';
@@ -31,17 +31,10 @@ const stretchCorners = (corner, opposite) => {
 /**
  * An editable rectangle shape.
  */
-export default class EditableRect extends EventEmitter {
+export default class EditableRect extends EditableShape {
 
   constructor(annotation, g, config, env) {
-    super();
-
-    this.annotation = annotation;
-    this.env = env;
-
-    // SVG element
-    this.svg = g.closest('svg');
-    this.g = g;
+    super(annotation, g, config, env);
 
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
@@ -105,45 +98,6 @@ export default class EditableRect extends EventEmitter {
 
     // Mouse xy offset inside the shape, if mouse pressed
     this.mouseOffset = null;
-
-    // Bit of a hack. If we are dealing with a 'real' image, we enable
-    // reponsive mode. OpenSeadragon handles scaling in a different way,
-    // so we don't need responsive mode.
-    const { image } = env;
-    if (image instanceof Element || image instanceof HTMLDocument)
-      this.enableResponsive();
-  }
-
-  /**
-   * Not really needed (could just define a this.element).
-   * But to make this more explicit: element is a field every
-   * editable shape implementation must provide
-   */
-  get element() {	
-    return this.elementGroup;	
-  }
-
-  enableResponsive = () => {
-    if (window.ResizeObserver) {
-      this.resizeObserver = new ResizeObserver(() => {
-        const svgBounds = this.svg.getBoundingClientRect();
-        const { width, height } = this.svg.viewBox.baseVal;
-
-        const scaleX = width / svgBounds.width;
-        const scaleY = height / svgBounds.height;
-        this.scaleHandles(scaleX, scaleY);
-      });
-      
-      this.resizeObserver.observe(this.svg.parentNode);
-    }
-  }
-
-  scaleHandles = (scaleOrScaleX, optScaleY) => {
-    const scaleX = scaleOrScaleX;
-    const scaleY = optScaleY || scaleOrScaleX;
-
-    this.handles.forEach(handle => 
-      handle.firstChild.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
   }
 
   /** Sets the shape size, including handle positions **/
@@ -158,24 +112,16 @@ export default class EditableRect extends EventEmitter {
     setHandleXY(bottomleft, x, y + h);
   }
 
-  /** Converts mouse coordinates to SVG coordinates **/
-  getMousePosition = evt => {
-    const pt = this.svg.createSVGPoint();
-    pt.x = evt.clientX;
-    pt.y = evt.clientY;
-    return pt.matrixTransform(this.g.getScreenCTM().inverse());
-  }
-
   onGrab = grabbedElem => evt => {
     this.grabbedElem = grabbedElem; 
-    const pos = this.getMousePosition(evt);
+    const pos = this.toSVG(evt.layerX, evt.layerY);
     const { x, y } = getRectSize(this.rectangle);
     this.mouseOffset = { x: pos.x - x, y: pos.y - y };  
   }
 
   onMouseMove = evt => {
     if (this.grabbedElem) {
-      const pos = this.getMousePosition(evt);
+      const pos = this.toSVG(evt.layerX, evt.layerY);
 
       if (this.grabbedElem === this.rectangle) {
         // x/y changes by mouse offset, w/h remains unchanged
@@ -208,13 +154,13 @@ export default class EditableRect extends EventEmitter {
     this.mouseOffset = null;
   }
 
-  destroy = () => {
-    this.containerGroup.parentNode.removeChild(this.containerGroup);
+  get element() {	
+    return this.elementGroup;	
+  }
 
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
-    
-    this.resizeObserver = null;
+  destroy() {
+    this.containerGroup.parentNode.removeChild(this.containerGroup);
+    super.destroy();
   }
 
 }

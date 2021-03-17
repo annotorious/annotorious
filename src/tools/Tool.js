@@ -1,6 +1,8 @@
 import EventEmitter from 'tiny-emitter';
 import { SVG_NAMESPACE } from '../util/SVG';
 
+const IMPLEMENTATION_MISSING = "An implementation is missing";
+
 /**
  * Base class that adds some convenience stuff for tool plugins.
  */
@@ -21,7 +23,7 @@ export default class Tool extends EventEmitter {
     this.env = env;
   }
 
-  toSVG =  (x, y) => {
+  toSVG = (x, y) => {
     const pt = this.svg.createSVGPoint();
 
     const { left, top } = this.svg.getBoundingClientRect();
