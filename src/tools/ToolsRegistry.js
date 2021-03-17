@@ -25,6 +25,9 @@ export default class ToolRegistry extends EventEmitter {
     this.setCurrent(RubberbandRectTool);
   }
 
+  listTools = () =>
+    this._registered.map(impl => impl.identifier);
+
   registerTool = impl =>
     this._registered.push(impl);
 

@@ -35,3 +35,7 @@ export const shapeArea = annotation =>
 
 export { parseRectFragment } from './RectFragment';
 
+export * from './EmbeddedSVG';
+export * from './RectFragment';
+
+
