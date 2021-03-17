@@ -297,6 +297,9 @@ export default class AnnotationLayer extends EventEmitter {
   setDrawingTool = shape =>
     this.tools.setCurrent(shape);
 
+  listDrawingTools = () =>
+    this.tools.listTools();
+
   setVisible = visible => {
     if (visible)
       this.svg.style.display = null;

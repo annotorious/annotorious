@@ -139,6 +139,9 @@ export class Annotorious {
   getSelectedImageSnippet = () =>
     this._app.current.getSelectedImageSnippet();
 
+  listDrawingTools = () =>
+    this._app.current.listDrawingTools();
+
   loadAnnotations = url => axios.get(url).then(response => {
     const annotations = response.data;
     this.setAnnotations(annotations);

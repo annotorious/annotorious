@@ -209,6 +209,9 @@ export default class ImageAnnotator extends Component  {
   getSelectedImageSnippet = () =>
     this.annotationLayer.getSelectedImageSnippet();
 
+  listDrawingTools = () =>
+    this.annotationLayer.listDrawingTools();
+
   removeAnnotation = annotation =>
     this.annotationLayer.removeAnnotation(annotation.clone());
 
