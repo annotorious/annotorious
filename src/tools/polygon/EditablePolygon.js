@@ -47,7 +47,7 @@ export default class EditablePolygon extends EditableShape {
     this.containerGroup = document.createElementNS(SVG_NAMESPACE, 'g');
 
     this.shape = drawEmbeddedSVG(annotation);
-    this.shape.setAttribute('class', `a9s-annotation editable selected`);
+    this.shape.setAttribute('class', 'a9s-annotation editable selected');
     this.shape.querySelector('.a9s-inner')
       .addEventListener('mousedown', this.onGrab(this.shape));
 
