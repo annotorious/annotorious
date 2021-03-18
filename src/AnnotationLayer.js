@@ -181,6 +181,9 @@ export default class AnnotationLayer extends EventEmitter {
     annotations.forEach(this.addAnnotation);
   }
 
+  listDrawingTools = () =>
+    this.tools.listTools();
+
   /** 
    * Forces a new ID on the annotation with the given ID. 
    * @returns the updated annotation for convenience
@@ -296,9 +299,6 @@ export default class AnnotationLayer extends EventEmitter {
 
   setDrawingTool = shape =>
     this.tools.setCurrent(shape);
-
-  listDrawingTools = () =>
-    this.tools.listTools();
 
   setVisible = visible => {
     if (visible)
