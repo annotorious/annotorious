@@ -219,16 +219,18 @@ export default class AnnotationLayer extends EventEmitter {
     annotations.forEach(this.addAnnotation);
   }
 
-  removeAnnotation = annotation => {
-    if (this.selectedShape?.annotation === annotation)
-      this.deselect();
+  removeAnnotation = annotationOrId => {
+    const toRemove = this.findShape(annotationOrId);
 
-    if (this.currentHover?.annotation === annotation)
-      this.currentHover = null;
+    if (toRemove) {
+      if (this.selectedShape?.annotation === toRemove.annotation)
+        this.deselect();
 
-    const shape = this.findShape(annotation);
-    if (shape)
-      shape.parentNode.removeChild(shape);
+      if (this.currentHover?.annotation === toRemove.annotation)
+        this.currentHover = null;
+
+      toRemove.parentNode.removeChild(toRemove);
+    }
   }
 
   /** 

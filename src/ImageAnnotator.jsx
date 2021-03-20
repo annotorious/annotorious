@@ -212,8 +212,8 @@ export default class ImageAnnotator extends Component  {
   listDrawingTools = () =>
     this.annotationLayer.listDrawingTools();
 
-  removeAnnotation = annotation =>
-    this.annotationLayer.removeAnnotation(annotation.clone());
+  removeAnnotation = annotationOrId =>
+    this.annotationLayer.removeAnnotation(annotationOrId);
 
   saveSelected = opt_callback => {
     const a = this.state.selectedAnnotation;

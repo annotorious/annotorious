@@ -105,6 +105,10 @@ export class Annotorious {
   /*  External API  */
   /******************/
 
+  // Common shorthand for handling annotationOrId args
+  _wrap = annotationOrId =>
+    annotationOrId?.type === 'Annotation' ? new WebAnnotation(annotationOrId) : annotationOrId;
+
   addAnnotation = (annotation, readOnly) =>
     this._app.current.addAnnotation(new WebAnnotation(annotation, { readOnly }));
 
@@ -154,17 +158,14 @@ export class Annotorious {
   on = (event, handler) =>
     this._emitter.on(event, handler);
 
-  removeAnnotation = annotation =>
-    this._app.current.removeAnnotation(new WebAnnotation(annotation));
+  removeAnnotation = annotationOrId =>
+    this._app.current.removeAnnotation(this._wrap(annotationOrId));
 
   saveSelected = () =>
     this._app.current.saveSelected();
 
-  selectAnnotation = annotationOrId => {
-    const arg = (annotationOrId?.type === 'Annotation') ?
-      new WebAnnotation(annotationOrId) : annotationOrId;
-
-    const selected = this._app.current.selectAnnotation(arg);
+  selectAnnotation = annotationOrId => {    
+    const selected = this._app.current.selectAnnotation(this._wrap(annotationOrId));
     return selected?.underlying;
   }
 

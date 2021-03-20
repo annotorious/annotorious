@@ -47,7 +47,6 @@
         Click the annotation to edit. Click and drag the mouse to create a new annotation.
       </p>
       <p>
-        <button id="add-body">Add Body</button>
         <button id="current-tool">RECTANGLE</button>
       </p>
       <img id="hallstatt" src="640px-Hallstatt.jpg">
@@ -69,15 +68,8 @@
           displayName: 'rainer'
         });
 
-        // Whenever a new annotation is created by the user, we want to append this body
-        var templateBody = {
-          type: 'TextualBody',
-          value: 'My Tag',
-          purpose: 'tagging'
-        };
-
-        anno.on('createSelection', function(s) {
-          console.log('createSelection');
+        anno.on('selectAnnotation', function(a) {
+          console.log('selected', a);
         });
 
         anno.on('createAnnotation', function(a) {
@@ -95,19 +87,6 @@
         anno.loadAnnotations('annotations.w3c.json');
 
         anno.setDrawingTool('rect');
-
-        var btnAddBody = document.getElementById('add-body');
-        btnAddBody.addEventListener('click', function() {
-          var selected = anno.getSelected();
-
-          selected.body = [{
-            type: 'TextualBody',
-            purpose: 'tagging',
-            value: 'Just a tag'
-          }];
-
-          anno.updateSelected(selected);
-        });
 
         var toolToggle = document.getElementById('current-tool');
         toolToggle.addEventListener('click', function() {
