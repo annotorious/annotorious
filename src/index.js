@@ -2,8 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Emitter from 'tiny-emitter';
 import axios from 'axios';
-import { WebAnnotation, Selection, createEnvironment, addPolyfills, setLocale } from '@recogito/recogito-client-core';
 import ImageAnnotator from './ImageAnnotator';
+import { 
+  Selection, 
+  WebAnnotation, 
+  addPolyfills,
+  createEnvironment, 
+  setLocale 
+} from '@recogito/recogito-client-core';
 
 import '@babel/polyfill';
 addPolyfills(); // Some extra polyfills that babel doesn't include
