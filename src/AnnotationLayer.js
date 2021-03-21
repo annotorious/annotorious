@@ -220,6 +220,12 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   removeAnnotation = annotationOrId => {
+    // Removal won't work if the annotation is currently selected - deselect!
+    const id = annotationOrId.type ? annotationOrId.id : annotationOrId;
+
+    if (this.selectedShape?.annotation.id === id)
+      this.deselect();
+
     const toRemove = this.findShape(annotationOrId);
 
     if (toRemove) {
