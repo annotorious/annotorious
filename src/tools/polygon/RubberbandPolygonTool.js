@@ -15,7 +15,7 @@ export default class RubberbandPolygonTool extends Tool {
 
   startDrawing = (x, y) => {
     this._isDrawing = true;
-
+    
     this.attachListeners({
       mouseMove: this.onMouseMove,
       mouseUp: this.onMouseUp,
@@ -49,8 +49,6 @@ export default class RubberbandPolygonTool extends Tool {
   }
 
   onDblClick = (x, y) => {
-    this.detachListeners();
-
     this._isDrawing = false;
 
     this.rubberband.addPoint([ x, y ]);

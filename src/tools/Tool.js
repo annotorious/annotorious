@@ -61,7 +61,7 @@ export default class Tool extends EventEmitter {
         dblClick(x, y, evt);
       }
 
-      this.svg.addEventListener('dblclick', this.onDblClick);
+      this.svg.addEventListener('dblclick', this.dblClick);
     }
      
   }
