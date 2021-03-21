@@ -1,10 +1,7 @@
-import * as Hammer from 'hammerjs';
-
 const SIM_EVENTS = {
   touchstart: 'mousedown',
   touchmove: 'mousemove',
-  touchend: 'mouseup',
-  press: 'dblclick'
+  touchend: 'mouseup'
 }
 
 export const isTouchDevice = () =>
@@ -13,6 +10,8 @@ export const isTouchDevice = () =>
       navigator.msMaxTouchPoints > 0;
 
 export const enableTouch = el => {
+
+  let pressAndHoldTrigger = null;
 
   const simulateEvent = (type, e) => new MouseEvent(type, {
     screenX: e.screenX,
@@ -27,26 +26,20 @@ export const enableTouch = el => {
     const simulatedEvent = simulateEvent(SIM_EVENTS[evt.type], touch);
     touch.target.dispatchEvent(simulatedEvent);
     evt.preventDefault();
-  }
 
-  const pressAndHoldHandler = evt => {
-    const { srcEvent } = evt;
-    const simulatedEvent = simulateEvent(SIM_EVENTS[evt.type], srcEvent);
-    srcEvent.target.parentNode.dispatchEvent(simulatedEvent);
-    srcEvent.preventDefault();
-  }
+    if (evt.type === 'touchstart' || evt.type === 'touchmove') {
+      pressAndHoldTrigger && clearTimeout(pressAndHoldTrigger);
 
-    // Handle double taps via hammer.js
-    const manager = new Hammer.Manager(el);
-    manager.add(new Hammer.Press({
-      time: 400
-    }));
+      pressAndHoldTrigger = setTimeout(() => {
+        const simulatedEvent = simulateEvent('dblclick', touch);
+        touch.target.dispatchEvent(simulatedEvent);
+      }, 800);
+    }
+  }
 
   el.addEventListener('touchstart', touchHandler, true);
   el.addEventListener('touchmove', touchHandler, true);
   el.addEventListener('touchend', touchHandler, true);
   el.addEventListener('touchcancel', touchHandler, true);
-
-  manager.on('press', pressAndHoldHandler);
 
 }
