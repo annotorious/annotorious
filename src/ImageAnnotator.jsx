@@ -30,7 +30,7 @@ export default class ImageAnnotator extends Component  {
 
     this.annotationLayer.on('createSelection', this.handleCreateSelection);
 
-    this.annotationLayer.on('select', this.props.config.headless ? this.handleHeadlessSelect : this.handleSelect);
+    this.annotationLayer.on('select', this.props.config.disableEditor ? this.handleHeadlessSelect : this.handleSelect);
   
     this.annotationLayer.on('updateTarget', this.handleUpdateTarget);
 
@@ -38,14 +38,14 @@ export default class ImageAnnotator extends Component  {
     this.annotationLayer.on('mouseLeaveAnnotation', this.handleMouseLeave);
 
     // In headless mode, Escape cancels editing
-    if (this.props.config.headless)
+    if (this.props.config.disableEditor)
       document.addEventListener('keyup', this.headlessCancel);
   }
 
   componentWillUnmount() {
     this.annotationLayer.destroy();
 
-    if (this.props.config.headless)
+    if (this.props.config.disableEditor)
       document.removeEventListener('keyup', this.headlessCancel);
   }
 
@@ -275,7 +275,7 @@ export default class ImageAnnotator extends Component  {
     
   render() {
     // The editor should open under normal conditions - annotation was selected, no headless mode
-    const open = this.state.selectedAnnotation && !this.props.config.headless;
+    const open = this.state.selectedAnnotation && !this.props.config.disableEditor;
 
     const readOnly = this.props.config.readOnly || this.state.selectedAnnotation?.readOnly
 

@@ -30,6 +30,9 @@ export class Annotorious {
     // Event handling via tiny-emitter
     this._emitter = new Emitter();
 
+    // TODO .headless option is deprecated!
+    config.disableEditor = config.disableEditor || config.headless;
+
     // Host app may supply the image as either a DOM node or ID - normalize
     const imageEl = (config.image.nodeType) ?
       config.image : document.getElementById(config.image);
