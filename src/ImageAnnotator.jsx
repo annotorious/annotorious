@@ -31,8 +31,6 @@ export default class ImageAnnotator extends Component  {
   componentDidMount() {
     this.annotationLayer = new AnnotationLayer(this.props);
 
-    // this.annotationLayer.on('createSelection', this.handleCreateSelection);
-
     this.annotationLayer.on('select', this.handleSelect);
   
     this.annotationLayer.on('updateTarget', this.handleUpdateTarget);
