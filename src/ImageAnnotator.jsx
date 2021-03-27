@@ -189,7 +189,7 @@ export default class ImageAnnotator extends Component  {
     if (!this.state.editorDisabled)
       this.annotationLayer.deselect();
     
-      this.props.onCancelSelected(annotation);
+    this.props.onCancelSelected(annotation);
     this.clearState(opt_callback);
   }
 
