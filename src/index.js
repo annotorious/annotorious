@@ -140,7 +140,7 @@ export class Annotorious {
   set disableEditor(disabled) {
     this._app.current.disableEditor = disabled;
   }
-
+  
   destroy = () => {
     ReactDOM.unmountComponentAtNode(this._appContainerEl);
     this._element.parentNode.insertBefore(this._env.image, this._element);
@@ -175,6 +175,14 @@ export class Annotorious {
   on = (event, handler) =>
     this._emitter.on(event, handler);
 
+  get readOnly() {
+    return this._app.current.readOnly;
+  }
+
+  set readOnly(readOnly) {
+    this._app.current.readOnly = readOnly;
+  }
+  
   removeAnnotation = annotationOrId =>
     this._app.current.removeAnnotation(this._wrap(annotationOrId));
 

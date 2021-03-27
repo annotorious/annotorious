@@ -11,7 +11,10 @@ export default class ImageAnnotator extends Component  {
     selectedDOMElement: null,
     modifiedTarget: null,
 
-    // Headless modea
+    // ReadOnly mode
+    readOnly: this.props.config.readOnly,
+
+    // Headless mode
     editorDisabled: this.props.config.disableEditor,
 
     // Records the state before any potential headless modify (done via
@@ -238,6 +241,15 @@ export default class ImageAnnotator extends Component  {
   listDrawingTools = () =>
     this.annotationLayer.listDrawingTools();
 
+  get readOnly() {
+    return this.state.readOnly;
+  }
+
+  set readOnly(readOnly) {
+    this.annotationLayer.readOnly = readOnly;
+    this.setState({ readOnly });
+  }
+
   removeAnnotation = annotationOrId =>
     this.annotationLayer.removeAnnotation(annotationOrId);
 
@@ -315,7 +327,7 @@ export default class ImageAnnotator extends Component  {
     // The editor should open under normal conditions - annotation was selected, no headless mode
     const open = this.state.selectedAnnotation && !this.state.editorDisabled;
 
-    const readOnly = this.props.config.readOnly || this.state.selectedAnnotation?.readOnly
+    const readOnly = this.state.readOnly || this.state.selectedAnnotation?.readOnly
 
     return (open && (
       <Editor
