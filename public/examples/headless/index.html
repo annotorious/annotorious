@@ -46,6 +46,7 @@
     <div id="content">    
       <p>
         <button id="current-tool">RECTANGLE</button>
+        <button id="toggle-editor">TOGGLE EDITOR</button>
       </p>
       <img id="hallstatt" src="/640px-Hallstatt.jpg">
     </div>
@@ -58,20 +59,20 @@
           disableEditor: true
         });
 
-        anno.on('createSelection', function(selection) {
+        anno.on('createSelection', async function(selection) {
           selection.body = [{
             type: 'TextualBody',
             purpose: 'tagging',
-            value: 'MyTag'
+            value: 'MyOtherTag'
           }];
 
-          anno.updateSelected(selection, true);
+          anno.updateSelected(selection);
+          // anno.saveSelected();
         });
 
         anno.on('createAnnotation', function(a) {
           console.log('created', a);
         });
-
 
         anno.on('updateAnnotation', function(annotation, previous) {
           console.log('updated', previous, 'with', annotation);
@@ -86,6 +87,11 @@
             toolToggle.innerHTML = 'RECTANGLE';
             anno.setDrawingTool('rect');
           }
+        });
+
+        var editorToggle = document.getElementById('toggle-editor');
+        editorToggle.addEventListener('click', function() {
+          anno.setDisableEditor(false);
         });
       })()
     </script>

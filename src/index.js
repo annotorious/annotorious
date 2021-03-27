@@ -187,6 +187,9 @@ export class Annotorious {
   setAuthInfo = authinfo =>
     this._env.user = authinfo;
 
+  setDisableEditor = disabled =>
+    this._app.current.setDisableEditor(disabled);
+
   setDrawingTool = shape =>
     this._app.current.setDrawingTool(shape);
 
@@ -196,17 +199,16 @@ export class Annotorious {
   setServerTime = timestamp =>
     this._env.setServerTime(timestamp);
 
-  updateSelected = (annotation, applyImmediately) => {
+  updateSelected = (annotation, saveImmediately) => {
     let updated = null;
 
-    if (annotation.type === 'Annotation') {
+    if (annotation.type === 'Annotation')
       updated = new WebAnnotation(annotation);
-    } else if (annotation.type === 'Selection') {
+    else if (annotation.type === 'Selection')
       updated = new Selection(annotation.target, annotation.body);
-    }
     
     if (updated)
-      this._app.current.updateSelected(updated, applyImmediately);
+      this._app.current.updateSelected(updated, saveImmediately);
   }
 
 }

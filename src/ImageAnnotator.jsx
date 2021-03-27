@@ -11,6 +11,9 @@ export default class ImageAnnotator extends Component  {
     selectedDOMElement: null,
     modifiedTarget: null,
 
+    // Headless modea
+    editorDisabled: this.props.config.disableEditor,
+
     // Records the state before any potential headless modify (done via
     // .updateSelected) so we can properly fire the updateAnnotation(a, previous)
     // event, and distinguish between headless Save and Cancel 
@@ -28,9 +31,9 @@ export default class ImageAnnotator extends Component  {
   componentDidMount() {
     this.annotationLayer = new AnnotationLayer(this.props);
 
-    this.annotationLayer.on('createSelection', this.handleCreateSelection);
+    // this.annotationLayer.on('createSelection', this.handleCreateSelection);
 
-    this.annotationLayer.on('select', this.props.config.disableEditor ? this.handleHeadlessSelect : this.handleSelect);
+    this.annotationLayer.on('select', this.handleSelect);
   
     this.annotationLayer.on('updateTarget', this.handleUpdateTarget);
 
@@ -45,7 +48,7 @@ export default class ImageAnnotator extends Component  {
   componentWillUnmount() {
     this.annotationLayer.destroy();
 
-    if (this.props.config.disableEditor)
+    if (this.state.editorDisabled)
       document.removeEventListener('keyup', this.headlessCancel);
   }
 
@@ -57,10 +60,13 @@ export default class ImageAnnotator extends Component  {
     }
   }
 
-  handleCreateSelection = selection =>
-    this.props.onSelectionCreated(selection.clone());
+  handleSelect = evt => {
+    this.state.editorDisabled ?
+      this.onHeadlessSelect(evt) : this.onNormalSelect(evt);
+  }
 
-  handleSelect = evt => {   
+  /** Selection when editorDisabled == false **/
+  onNormalSelect = evt => {   
     const { annotation, element, skipEvent } = evt;
 
     if (annotation) {
@@ -74,10 +80,15 @@ export default class ImageAnnotator extends Component  {
           selectedDOMElement: element,
           modifiedTarget: null,
           beforeHeadlessModify: null
+        }, () => {  
+          if (!skipEvent) {
+            if (annotation.isSelection) {
+              this.props.onSelectionCreated(annotation.clone());
+            } else {
+              this.props.onAnnotationSelected(annotation.clone());  
+            }
+          }
         });
-  
-        if (!annotation.isSelection && !skipEvent)
-          this.props.onAnnotationSelected(annotation.clone());  
       }
 
       // If there is another selected annotation,
@@ -96,26 +107,21 @@ export default class ImageAnnotator extends Component  {
       const { selectedAnnotation } = this.state; 
 
       if (selectedAnnotation)
-        this.clearState(() => this.props.onCancelSelected(selectedAnnotation));
+        this.clearState(() => { 
+          this.props.onCancelSelected(selectedAnnotation);
+        });
       else
         this.clearState();
     }
   }
 
-  handleHeadlessSelect = evt => {
+  /** Selection when editorDisabled == true **/
+  onHeadlessSelect = evt => {
     // When in headless mode, changing selection acts as 'Ok' - changes
     // to the previous annotation are stored! (In normal mode, selection
     // acts as 'Cancel'.)
-    const { beforeHeadlessModify, modifiedTarget} = this.state;
-
-    if (beforeHeadlessModify || modifiedTarget) {
-      this.saveSelected(() =>  { 
-        this.annotationLayer.selectAnnotation(evt.annotation);
-        this.handleSelect(evt);
-      });
-    } else {
-      this.handleSelect(evt);
-    }
+    this.saveSelected(() =>
+      this.onNormalSelect(evt));
   }
 
   handleUpdateTarget = (selectedDOMElement, modifiedTarget) => {
@@ -176,10 +182,10 @@ export default class ImageAnnotator extends Component  {
   }
 
   /** Cancel button on annotation editor **/
-  onCancelAnnotation = annotation => {
-    this.clearState();
+  onCancelAnnotation = (annotation, opt_callback) => {
     this.annotationLayer.deselect();
     this.props.onCancelSelected(annotation);
+    this.clearState(opt_callback);
   }
 
   /****************/               
@@ -233,9 +239,11 @@ export default class ImageAnnotator extends Component  {
           this.onCreateOrUpdateAnnotation('onAnnotationUpdated', opt_callback)(a, a);
         } else {
           console.log('No change - canceling');
-          this.onCancelAnnotation(a);
+          this.onCancelAnnotation(a, opt_callback);
         } 
       }
+    } else if (opt_callback) {
+      opt_callback();
     }
   }
 
@@ -251,31 +259,43 @@ export default class ImageAnnotator extends Component  {
   setAnnotations = annotations =>
     this.annotationLayer.init(annotations.map(a => a.clone()));
 
+  setDisableEditor = disabled => {
+    this.setState({ editorDisabled: disabled }, () => {
+      // En- or disable Esc key listener
+      if (disabled && !this.state.editorDisabled) {
+        document.addEventListener('keyup', this.headlessCancel);
+      } else if (!disabled && this.state.editorDisabled) {
+        document.removeEventListener('keyup', this.headlessCancel);
+      }
+    });
+  }
+
   setDrawingTool = shape =>
     this.annotationLayer.setDrawingTool(shape);
 
   setVisible = visible =>
     this.annotationLayer.setVisible(visible);
 
-  updateSelected = (annotation, applyImmediately) => {
-    const a = annotation.isSelection ? annotation.toAnnotation() : annotation;
-
-    if (applyImmediately) {
-      if (this.state.selectedAnnotation)
-        this.onCreateOrUpdateAnnotation('onAnnotationUpdated')(a, this.state.selectedAnnotation);
-      else
-        this.onCreateOrUpdateAnnotation('onAnnotationCreated')(a);
-    } else {
-      this.setState({ 
-        selectedAnnotation: a, // Updated annotation 
-        beforeHeadlessModify: this.state.beforeHeadlessModify || this.state.selectedAnnotation 
-      });
+  updateSelected = (annotation, saveImmediately) => {
+    if (this.state.selectedAnnotation) {
+      if (saveImmediately) {
+        if (this.state.selectedAnnotation.isSelection) {
+          this.onCreateOrUpdateAnnotation('onAnnotationCreated')(annotation);
+        } else {
+          this.onCreateOrUpdateAnnotation('onAnnotationUpdated')(annotation, this.state.selectedAnnotation);
+        }
+      } else {
+        this.setState({ 
+          selectedAnnotation: annotation, // Updated annotation 
+          beforeHeadlessModify: this.state.beforeHeadlessModify || this.state.selectedAnnotation 
+        });
+      }
     }
   }
     
   render() {
     // The editor should open under normal conditions - annotation was selected, no headless mode
-    const open = this.state.selectedAnnotation && !this.props.config.disableEditor;
+    const open = this.state.selectedAnnotation && !this.state.editorDisabled;
 
     const readOnly = this.props.config.readOnly || this.state.selectedAnnotation?.readOnly
 
