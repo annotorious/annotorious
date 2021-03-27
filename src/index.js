@@ -133,6 +133,14 @@ export class Annotorious {
   clearAuthInfo = () =>
     this._env.user = null;
 
+  get disableEditor() {
+    return this._app.current.disableEditor;
+  }
+
+  set disableEditor(disabled) {
+    this._app.current.disableEditor = disabled;
+  }
+
   destroy = () => {
     ReactDOM.unmountComponentAtNode(this._appContainerEl);
     this._element.parentNode.insertBefore(this._env.image, this._element);
@@ -186,9 +194,6 @@ export class Annotorious {
 
   setAuthInfo = authinfo =>
     this._env.user = authinfo;
-
-  setDisableEditor = disabled =>
-    this._app.current.setDisableEditor(disabled);
 
   setDrawingTool = shape =>
     this._app.current.setDrawingTool(shape);
