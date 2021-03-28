@@ -258,10 +258,6 @@ export default class ImageAnnotator extends Component  {
   removeAnnotation = annotationOrId =>
     this.annotationLayer.removeAnnotation(annotationOrId);
 
-  /** 
-   * This is a sync operation, so that the external API
-   * can safely call things in sequence.
-   */
   saveSelected = () =>
     new Promise(resolve => {
       const a = this.state.selectedAnnotation;
@@ -311,10 +307,6 @@ export default class ImageAnnotator extends Component  {
   setVisible = visible =>
     this.annotationLayer.setVisible(visible);
 
-  /** 
-   * This is a sync operation, so that the external API
-   * can safely call things in sequence.
-   */
   updateSelected = (annotation, saveImmediately) =>
     new Promise(resolve => {
       if (this.state.selectedAnnotation) {
