@@ -312,8 +312,10 @@ export default class AnnotationLayer extends EventEmitter {
     }
   }
 
-  setDrawingTool = shape =>
+  setDrawingTool = shape => {
+    this.tools.current?.stop();
     this.tools.setCurrent(shape);
+  }
 
   setVisible = visible => {
     if (visible)
