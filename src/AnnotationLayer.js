@@ -242,20 +242,23 @@ export default class AnnotationLayer extends EventEmitter {
    * Programmatic selection via the API. Should work as normal,
    * but the selectAnnotation event should not be fired to the outside.
    */
-  selectAnnotation = annotationOrId => {
+  selectAnnotation = (annotationOrId, skipEvent) => {
     // Deselect first
     if (this.selectedShape)
       this.deselect();
 
     const selected = this.findShape(annotationOrId);
 
-    // Select with 'skipEvent' flag
-    if (selected)
-      this.selectShape(selected, true);
-    else
-      this.deselect();
+    if (selected) {
+      this.selectShape(selected, skipEvent);
 
-    return selected?.annotation;
+      const element = this.selectedShape.element ? 
+        this.selectedShape.element : this.selectedShape;
+      
+      return { annotation: selected.annotation, element };
+    } else {
+      this.deselect();
+    }
   }
 
   selectCurrentHover = () => {
@@ -296,7 +299,8 @@ export default class AnnotationLayer extends EventEmitter {
         this.emit('updateTarget', this.selectedShape.element, fragment);
       });
 
-      this.emit('select', { annotation, element: this.selectedShape.element, skipEvent });
+      if (!skipEvent)
+        this.emit('select', { annotation, element: this.selectedShape.element });
     } else {
       addClass(shape, 'selected');
       this.selectedShape = shape;
