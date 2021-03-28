@@ -126,6 +126,9 @@ export default class AnnotationLayer extends EventEmitter {
     if (this.selectedShape) {
       const { annotation } = this.selectedShape;
 
+      if (annotation.isSelection)
+        this.tools.current.stop();
+
       if (this.selectedShape.destroy) {
         // Modifiable shape: destroy and re-add the annotation
         this.selectedShape.destroy();
@@ -133,6 +136,7 @@ export default class AnnotationLayer extends EventEmitter {
 
         if (!annotation.isSelection) {
           this.addAnnotation(annotation);
+          
           if (!skipRedraw)
             this.redraw(); 
         }
