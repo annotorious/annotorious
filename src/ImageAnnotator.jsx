@@ -263,7 +263,10 @@ export default class ImageAnnotator extends Component  {
 
       if (a) {
         if (a.isSelection) {
-          this.onCreateOrUpdateAnnotation('onAnnotationCreated', resolve)(a.toAnnotation(), a);
+          if (a.bodies.length > 0 || this.props.config.allowEmpty) 
+            this.onCreateOrUpdateAnnotation('onAnnotationCreated', resolve)(a.toAnnotation(), a);
+          else 
+            this.selectAnnotation();
         } else {
           // Headless update? 
           const { beforeHeadlessModify, modifiedTarget } = this.state;
