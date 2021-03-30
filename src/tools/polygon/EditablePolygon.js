@@ -91,12 +91,12 @@ export default class EditablePolygon extends EditableShape {
 
   onGrab = grabbedElem => evt => {
     this.grabbedElem = grabbedElem;
-    this.grabbedAt = this.toSVG(evt.layerX, evt.layerY);
+    this.grabbedAt = this.toSVG(evt.offsetX, evt.offsetY);
   }
 
   onMouseMove = evt => {
     if (this.grabbedElem) {
-      const pos = this.toSVG(evt.layerX, evt.layerY);
+      const pos = this.toSVG(evt.offsetX, evt.offsetY);
 
       if (this.grabbedElem === this.shape) {
         const dx = pos.x - this.grabbedAt.x;

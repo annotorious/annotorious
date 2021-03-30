@@ -114,14 +114,14 @@ export default class EditableRect extends EditableShape {
 
   onGrab = grabbedElem => evt => {
     this.grabbedElem = grabbedElem; 
-    const pos = this.toSVG(evt.layerX, evt.layerY);
+    const pos = this.toSVG(evt.offsetX, evt.offsetY);
     const { x, y } = getRectSize(this.rectangle);
     this.mouseOffset = { x: pos.x - x, y: pos.y - y };  
   }
 
   onMouseMove = evt => {
     if (this.grabbedElem) {
-      const pos = this.toSVG(evt.layerX, evt.layerY);
+      const pos = this.toSVG(evt.offsetX, evt.offsetY);
 
       if (this.grabbedElem === this.rectangle) {
         // x/y changes by mouse offset, w/h remains unchanged

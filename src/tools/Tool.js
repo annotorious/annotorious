@@ -37,7 +37,7 @@ export default class Tool extends EventEmitter {
     // Handle SVG conversion on behalf of tool implementations
     if (mouseMove) {
       this.mouseMove = evt => {
-        const { x , y } = this.toSVG(evt.layerX, evt.layerY);
+        const { x , y } = this.toSVG(evt.offsetX, evt.offsetY);
         mouseMove(x, y, evt);
       }
 
@@ -47,7 +47,7 @@ export default class Tool extends EventEmitter {
 
     if (mouseUp) {
       this.mouseUp = evt => {
-        const { x , y } = this.toSVG(evt.layerX, evt.layerY);
+        const { x , y } = this.toSVG(evt.offsetX, evt.offsetY);
         mouseUp(x, y, evt);
       }
 
@@ -57,7 +57,7 @@ export default class Tool extends EventEmitter {
 
     if (dblClick) {
       this.dblClick = evt => {
-        const { x , y } = this.toSVG(evt.layerX, evt.layerY);        
+        const { x , y } = this.toSVG(evt.offsetX, evt.offsetY);        
         dblClick(x, y, evt);
       }
 
@@ -79,7 +79,7 @@ export default class Tool extends EventEmitter {
 
   start = evt => {
     // Handle SVG conversion on behalf of tool implementations
-    const { x , y } = this.toSVG(evt.layerX, evt.layerY);
+    const { x , y } = this.toSVG(evt.offsetX, evt.offsetY);
     this.startDrawing(x, y, evt);
   }
 
