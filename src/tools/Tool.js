@@ -105,7 +105,7 @@ export default class Tool extends EventEmitter {
 
 // Tool.identifier = '...'
 
-Tool.supports = annotatation => {
+Tool.supports = annotation => {
   throw new Error(IMPLEMENTATION_MISSING);
 }
 

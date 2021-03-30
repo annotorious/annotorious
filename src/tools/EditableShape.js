@@ -18,6 +18,13 @@ export default class EditableShape extends EventEmitter {
 
     // Implementations need to override the handles list
     this.handles = [];
+
+    // Bit of a hack. If we are dealing with a 'real' image, we enable
+    // reponsive mode. OpenSeadragon handles scaling in a different way,
+    // so we don't need responsive mode.
+    const { image } = env;
+    if (image instanceof Element || image instanceof HTMLDocument)
+      this.enableResponsive();
   }
 
   enableResponsive = () => {
