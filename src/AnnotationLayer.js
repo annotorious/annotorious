@@ -308,7 +308,9 @@ export default class AnnotationLayer extends EventEmitter {
     } else {
       addClass(shape, 'selected');
       this.selectedShape = shape;
-      this.emit('select', { annotation, element: shape, skipEvent }); 
+
+      if (!skipEvent)
+        this.emit('select', { annotation, element: shape, skipEvent }); 
     }
   }
 
