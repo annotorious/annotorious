@@ -9,7 +9,7 @@ export const isTouchDevice = () =>
     navigator.maxTouchPoints > 0 ||
       navigator.msMaxTouchPoints > 0;
 
-export const enableTouch = el => {
+export const enableTouchTranslation = el => {
 
   let pressAndHoldTrigger = null;
 

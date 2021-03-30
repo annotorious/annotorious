@@ -4,7 +4,9 @@ import { SVG_NAMESPACE, addClass, removeClass } from './util/SVG';
 import DrawingTools from './tools/ToolsRegistry';
 import { format } from './util/Formatting';
 import { getSnippet } from './util/ImageSnippet';
-import { isTouchDevice, enableTouch } from './util/Touch';
+import { isTouchDevice, enableTouchTranslation } from './util/Touch';
+
+const isTouch = isTouchDevice();
 
 export default class AnnotationLayer extends EventEmitter {
 
@@ -22,9 +24,17 @@ export default class AnnotationLayer extends EventEmitter {
     // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
 
-    if (isTouchDevice()) {
+    if (isTouch) {
       this.svg.setAttribute('class', 'a9s-annotationlayer touch');
-      enableTouch(this.svg);
+
+      // Translates touch events to simulated mouse events
+      enableTouchTranslation(this.svg);
+
+      // Adds additional logic because touch doesn't have hover
+      this.svg.addEventListener('touchstart', evt => {
+        this.currentHover = null;
+        this.selectCurrentHover();
+      });
     } else {
       this.svg.setAttribute('class', 'a9s-annotationlayer');
     }
@@ -52,9 +62,7 @@ export default class AnnotationLayer extends EventEmitter {
       // Attach handlers to the drawing tool palette
       this.tools = new DrawingTools(this.g, config, env);
       this.tools.on('cancel', this.selectCurrentHover);
-      this.tools.on('complete', shape => {
-        this.selectShape(shape);
-      });
+      this.tools.on('complete', this.selectShape);
 
       // Enable drawing
       if (!this.readOnly)
@@ -78,6 +86,22 @@ export default class AnnotationLayer extends EventEmitter {
 
       this.currentHover = null;
     });
+
+    if (isTouch) {
+      elem.addEventListener('touchstart', evt => {
+        evt.stopPropagation();
+        this.currentHover = elem;
+      });
+
+      elem.addEventListener('touchend', evt => {
+        const { clientX, clientY } = evt.changedTouches[0];
+        const realTarget = document.elementFromPoint(clientX, clientY);
+        evt.stopPropagation();
+
+        if (elem.contains(realTarget))
+          this.selectCurrentHover();
+      });
+    }
   }
 
   _onMouseDown = evt => {
