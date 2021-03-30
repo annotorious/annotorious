@@ -33,9 +33,12 @@ export default class EditableShape extends EventEmitter {
         const svgBounds = this.svg.getBoundingClientRect();
         const { width, height } = this.svg.viewBox.baseVal;
 
-        const scaleX = width / svgBounds.width;
-        const scaleY = height / svgBounds.height;
-        this.scaleHandles(scaleX, scaleY);
+        const scale = Math.max(
+          width / svgBounds.width,
+          height / svgBounds.height
+        );
+
+        this.scaleHandles(scale);
       });
       
       this.resizeObserver.observe(this.svg.parentNode);
