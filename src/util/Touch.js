@@ -35,6 +35,9 @@ export const enableTouchTranslation = el => {
         touch.target.dispatchEvent(simulatedEvent);
       }, 800);
     }
+
+    if (evt.type === 'touchend')
+      pressAndHoldTrigger && clearTimeout(pressAndHoldTrigger);
   }
 
   el.addEventListener('touchstart', touchHandler, true);
