@@ -18,12 +18,15 @@ export const enableTouchTranslation = el => {
     screenY: e.screenY,
     clientX: e.clientX,
     clientY: e.clientY,
+    pageX: e.pageX,
+    pageY: e.pageY,
     bubbles: true
   });
 
   const touchHandler = evt => {
     const touch = evt.changedTouches[0];
     const simulatedEvent = simulateEvent(SIM_EVENTS[evt.type], touch);
+
     touch.target.dispatchEvent(simulatedEvent);
     evt.preventDefault();
 

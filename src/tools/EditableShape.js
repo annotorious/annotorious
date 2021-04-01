@@ -53,7 +53,12 @@ export default class EditableShape extends EventEmitter {
       handle.firstChild.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
   }
 
-  toSVG = (x, y) => {
+  toSVG = evt => {
+    const bbox = this.svg.getBoundingClientRect();
+
+    const x = evt.clientX - bbox.x;
+    const y = evt.clientY- bbox.y;
+
     const pt = this.svg.createSVGPoint();
 
     const { left, top } = this.svg.getBoundingClientRect();
