@@ -31,7 +31,7 @@ export default class AnnotationLayer extends EventEmitter {
       enableTouchTranslation(this.svg);
 
       // Adds additional logic because touch doesn't have hover
-      this.svg.addEventListener('touchstart', evt => {
+      this.svg.addEventListener('touchstart', () => {
         this.currentHover = null;
         this.selectCurrentHover();
       });
@@ -322,6 +322,11 @@ export default class AnnotationLayer extends EventEmitter {
       // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
       this.selectedShape.element.annotation = annotation;         
       this._attachHoverListener(this.selectedShape.element, annotation);
+
+      // When using mouse, currentHover will be set by mouseEnter, but
+      // that doesn't happen in touch
+      if (isTouch)
+        this.currentHover = this.selectedShape;
 
       this.selectedShape.on('update', fragment => {
         this.emit('updateTarget', this.selectedShape.element, fragment);
