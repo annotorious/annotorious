@@ -98,8 +98,10 @@ export default class AnnotationLayer extends EventEmitter {
         const realTarget = document.elementFromPoint(clientX, clientY);
         evt.stopPropagation();
 
-        if (elem.contains(realTarget))
+        if (elem.contains(realTarget)) {
+          this.currentHover = elem;
           this.selectCurrentHover();
+        }
       });
     }
   }
@@ -314,6 +316,8 @@ export default class AnnotationLayer extends EventEmitter {
 
     if (!readOnly) {
       // Replace the shape with an editable version
+      console.log('replacing', shape);
+
       shape.parentNode.removeChild(shape);
 
       const toolForAnnotation = this.tools.forAnnotation(annotation);      
