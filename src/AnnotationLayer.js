@@ -131,7 +131,7 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   addDrawingTool = plugin =>
-    this.tools.registerTool(plugin);
+    this.tools?.registerTool(plugin);
 
   addOrUpdateAnnotation = (annotation, previous) => {
     if (this.selectedShape?.annotation === annotation || this.selectShape?.annotation == previous)
@@ -153,7 +153,7 @@ export default class AnnotationLayer extends EventEmitter {
       const { annotation } = this.selectedShape;
 
       if (annotation.isSelection)
-        this.tools.current.stop();
+        this.tools?.current.stop();
 
       if (this.selectedShape.destroy) {
         // Modifiable shape: destroy and re-add the annotation
@@ -211,7 +211,7 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   listDrawingTools = () =>
-    this.tools.listTools();
+    this.tools?.listTools();
 
   /** 
    * Forces a new ID on the annotation with the given ID. 
@@ -346,8 +346,10 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   setDrawingTool = shape => {
-    this.tools.current?.stop();
-    this.tools.setCurrent(shape);
+    if (this.tools) {
+      this.tools.current?.stop();
+      this.tools.setCurrent(shape);
+    }
   }
 
   setVisible = visible => {
