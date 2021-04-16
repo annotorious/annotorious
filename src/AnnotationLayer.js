@@ -175,6 +175,7 @@ export default class AnnotationLayer extends EventEmitter {
   } 
 
   destroy = () => {
+    this.deselect();
     this.currentHover = null;
     this.svg.parentNode.removeChild(this.svg);
   }
