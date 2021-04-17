@@ -50,8 +50,6 @@ export default class EditablePolygon extends EditableShape {
     this.shape.querySelector('.a9s-inner')
       .addEventListener('mousedown', this.onGrab(this.shape));
 
-    format(this.shape, annotation, config.formatter);
-
     this.mask = new Mask(env.image, this.shape.querySelector('.a9s-inner'));
     
     this.containerGroup.appendChild(this.mask.element);
@@ -68,6 +66,8 @@ export default class EditablePolygon extends EditableShape {
 
     this.containerGroup.appendChild(this.elementGroup);
     g.appendChild(this.containerGroup);
+
+    format(this.shape, annotation, config.formatter);
 
     // The grabbed element (handle or entire shape), if any
     this.grabbedElem = null;
