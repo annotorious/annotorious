@@ -90,6 +90,14 @@ export default class EditableShape extends EventEmitter {
     outer.setAttribute('cy', y);
   }
 
+  getHandleXY = handle => {
+    const outer = handle.querySelector('.a9s-handle-outer');
+    return {
+      x: parseFloat(outer.getAttribute('cx')),
+      y: parseFloat(outer.getAttribute('cy'))
+    }
+  }
+
   scaleHandles = (scaleOrScaleX, optScaleY) => {
     const scaleX = scaleOrScaleX;
     const scaleY = optScaleY || scaleOrScaleX;

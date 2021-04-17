@@ -4,28 +4,12 @@ import { format } from '../../util/Formatting';
 import { 
   drawRect, 
   drawRectMask,
-  getCorners, 
   parseRectFragment,
   getRectSize, 
   setRectSize, 
   toRectFragment, 
   setRectMaskSize
 } from '../../selectors/RectFragment';
-
-const stretchCorners = (corner, opposite) => {
-  const x1 = corner.x;
-  const y1 = corner.y;
-
-  const x2 = opposite.x;
-  const y2 = opposite.y;
-
-  const x = Math.min(x1, x2);
-  const y = Math.min(y1, y2);
-  const w = Math.abs(x2 - x1);
-  const h = Math.abs(y2 - y1);
-
-  return { x, y, w, h };
-}
 
 /**
  * An editable rectangle shape.
@@ -99,7 +83,6 @@ export default class EditableRect extends EditableShape {
     this.mouseOffset = null;
   }
 
-  /** Sets the shape size, including handle positions **/
   setSize = (x, y, w, h) => {
     setRectSize(this.rectangle, x, y, w, h);
     setRectMaskSize(this.mask, this.env.image, x, y, w, h);
@@ -109,6 +92,33 @@ export default class EditableRect extends EditableShape {
     this.setHandleXY(topright, x + w, y);
     this.setHandleXY(bottomright, x + w, y + h);
     this.setHandleXY(bottomleft, x, y + h);
+  }
+
+  stretchCorners = (draggedHandleIdx, anchorHandle, mousePos) => {
+    const anchor = this.getHandleXY(anchorHandle);
+
+    const width = mousePos.x - anchor.x;
+    const height = mousePos.y - anchor.y;
+
+    const x = width > 0 ? anchor.x : mousePos.x;
+    const y = height > 0 ? anchor.y : mousePos.y;
+    const w = Math.abs(width);
+    const h = Math.abs(height);
+
+    setRectSize(this.rectangle, x, y, w, h);
+    setRectMaskSize(this.mask, this.env.image, x, y, w, h);
+
+    // Anchor (=opposite handle) stays in place, dragged handle moves with mouse
+    this.setHandleXY(this.handles[draggedHandleIdx], mousePos.x, mousePos.y);
+
+    // Handles left and right of the dragged handle
+    const left = this.handles[(draggedHandleIdx + 3) % 4];
+    this.setHandleXY(left, anchor.x, mousePos.y);
+
+    const right = this.handles[(draggedHandleIdx + 5) % 4];
+    this.setHandleXY(right, mousePos.x, anchor.y);
+
+    return { x, y, w, h };
   }
 
   onGrab = grabbedElem => evt => {
@@ -131,18 +141,13 @@ export default class EditableRect extends EditableShape {
         this.setSize(x, y, w, h); 
         this.emit('update', toRectFragment(x, y, w, h, this.env.image)); 
       } else {
-        // Handles
-        const corners = getCorners(this.rectangle);
-
         // Mouse position replaces one of the corner coords, depending
         // on which handle is the grabbed element
         const handleIdx = this.handles.indexOf(this.grabbedElem);
-        const oppositeCorner = handleIdx < 2 ? 
-          corners[handleIdx + 2] : corners[handleIdx - 2];
+        const oppositeHandle = handleIdx < 2 ? 
+          this.handles[handleIdx + 2] : this.handles[handleIdx - 2];
 
-        const { x, y, w, h } = stretchCorners(pos, oppositeCorner)
-
-        this.setSize(x, y, w, h); 
+        const { x, y, w, h } = this.stretchCorners(handleIdx, oppositeHandle, pos);
         this.emit('update', toRectFragment(x, y, w, h, this.env.image)); 
       }
     }
