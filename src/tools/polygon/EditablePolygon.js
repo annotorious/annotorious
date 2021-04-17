@@ -2,7 +2,6 @@ import EditableShape from '../EditableShape';
 import { drawEmbeddedSVG, toSVGTarget } from '../../selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { format } from '../../util/Formatting';
-import { drawHandle, setHandleXY } from '../Tool';
 import Mask from './PolygonMask';
 
 const getPoints = shape => {
@@ -61,7 +60,7 @@ export default class EditablePolygon extends EditableShape {
     this.elementGroup.appendChild(this.shape);
 
     this.handles = getPoints(this.shape).map(pt => {
-      const handle = drawHandle(pt.x, pt.y);
+      const handle = this.drawHandle(pt.x, pt.y);
       handle.addEventListener('mousedown', this.onGrab(handle));
       this.elementGroup.appendChild(handle);
       return handle;
@@ -118,7 +117,7 @@ export default class EditablePolygon extends EditableShape {
           (idx === handleIdx) ? pos : pt);
 
         this.setPoints(updatedPoints);
-        setHandleXY(this.handles[handleIdx], pos.x, pos.y);
+        this.setHandleXY(this.handles[handleIdx], pos.x, pos.y);
 
         this.emit('update', toSVGTarget(this.shape, this.env.image));
       }

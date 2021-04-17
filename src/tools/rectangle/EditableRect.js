@@ -1,7 +1,6 @@
 import EditableShape from '../EditableShape';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { format } from '../../util/Formatting';
-import { drawHandle, setHandleXY } from '../Tool';
 import { 
   drawRect, 
   drawRectMask,
@@ -81,7 +80,7 @@ export default class EditableRect extends EditableShape {
       [ x, y + h ]
     ].map(t => { 
       const [ x, y ] = t;
-      const handle = drawHandle(x, y);
+      const handle = this.drawHandle(x, y);
 
       handle.addEventListener('mousedown', this.onGrab(handle));
       this.elementGroup.appendChild(handle);
@@ -106,10 +105,10 @@ export default class EditableRect extends EditableShape {
     setRectMaskSize(this.mask, this.env.image, x, y, w, h);
 
     const [ topleft, topright, bottomright, bottomleft] = this.handles;
-    setHandleXY(topleft, x, y);
-    setHandleXY(topright, x + w, y);
-    setHandleXY(bottomright, x + w, y + h);
-    setHandleXY(bottomleft, x, y + h);
+    this.setHandleXY(topleft, x, y);
+    this.setHandleXY(topright, x + w, y);
+    this.setHandleXY(bottomright, x + w, y + h);
+    this.setHandleXY(bottomleft, x, y + h);
   }
 
   onGrab = grabbedElem => evt => {
