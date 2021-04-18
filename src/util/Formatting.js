@@ -1,5 +1,19 @@
 import { addClass, SVG_NAMESPACE } from './SVG';
 
+const appendFormatterEl = (formatterEl, shape) => {
+  const { x, y, width, height } = shape.getBBox();
+
+  const container = document.createElementNS(SVG_NAMESPACE, 'svg');
+  container.setAttribute('class', 'a9s-formatter-el');
+  container.setAttribute('x', x);
+  container.setAttribute('y', y);
+  container.setAttribute('width', width);
+  container.setAttribute('height', height);
+
+  container.appendChild(formatterEl);
+  shape.append(container);
+}
+
 /**
  * A formatter is a user-defined function that takes an annotation as input,
  * and returns either a string, or an object. If a string is returned, this
@@ -24,6 +38,8 @@ export const format = (shape, annotation, formatter) => {
   if (typeof format === 'string' || format instanceof String) {
     // Apply CSS class
     addClass(shape, format); 
+  } else if (format.nodeType === Node.ELEMENT_NODE) {
+    appendFormatterEl(format, shape);
   } else {
     const { className, style, element } = format;
 
@@ -33,19 +49,8 @@ export const format = (shape, annotation, formatter) => {
     if (style)
       shape.setAttribute('style', style);
 
-    if (element) {
-      const { x, y, width, height } = shape.getBBox();
-
-      const container = document.createElementNS(SVG_NAMESPACE, 'svg');
-      container.setAttribute('class', 'a9s-formatter-el');
-      container.setAttribute('x', x);
-      container.setAttribute('y', y);
-      container.setAttribute('width', width);
-      container.setAttribute('height', height);
-
-      container.appendChild(element);
-      shape.append(container);
-    }
+    if (element)
+      appendFormatterEl(element, shape);
 
     for (const key in format) {
       if (format.hasOwnProperty(key) && key.startsWith('data-')) {
