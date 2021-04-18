@@ -44,7 +44,7 @@ export class Annotorious {
     this._env = createEnvironment();
     this._env.image = imageEl;
 
-    setLocale(config.locale);
+    setLocale(config.locale, config.messages);
 
     // We'll wrap the image in a DIV ('_element'). The application
     // container DIV, which holds the editor popup, will be attached
