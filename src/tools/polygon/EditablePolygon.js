@@ -1,7 +1,7 @@
 import EditableShape from '../EditableShape';
 import { drawEmbeddedSVG, toSVGTarget } from '../../selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '../../util/SVG';
-import { format } from '../../util/Formatting';
+import { format, setFormatterElSize } from '../../util/Formatting';
 import Mask from './PolygonMask';
 
 const getPoints = shape => {
@@ -86,6 +86,9 @@ export default class EditablePolygon extends EditableShape {
     outer.setAttribute('points', str);
 
     this.mask.redraw();
+
+    const { x, y, width, height } = outer.getBBox();
+    setFormatterElSize(this.elementGroup, x, y, width, height);
   }
 
   onGrab = grabbedElem => evt => {
@@ -107,7 +110,7 @@ export default class EditablePolygon extends EditableShape {
         this.grabbedAt = pos;
 
         this.setPoints(updatedPoints);
-        updatedPoints.forEach((pt, idx) => setHandleXY(this.handles[idx], pt.x, pt.y));
+        updatedPoints.forEach((pt, idx) => this.setHandleXY(this.handles[idx], pt.x, pt.y));
         
         this.emit('update', toSVGTarget(this.shape, this.env.image));
       } else {

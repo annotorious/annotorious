@@ -1,6 +1,6 @@
 import EditableShape from '../EditableShape';
 import { SVG_NAMESPACE } from '../../util/SVG';
-import { format } from '../../util/Formatting';
+import { format, setFormatterElSize } from '../../util/Formatting';
 import { 
   drawRect, 
   drawRectMask,
@@ -86,12 +86,7 @@ export default class EditableRect extends EditableShape {
   setSize = (x, y, w, h) => {
     setRectSize(this.rectangle, x, y, w, h);
     setRectMaskSize(this.mask, this.env.image, x, y, w, h);
-
-    const formatterEl = this.elementGroup.querySelector('.a9s-formatter-el');
-    if (formatterEl) {
-      formatterEl.setAttribute('x', x);
-      formatterEl.setAttribute('y', y);
-    }
+    setFormatterElSize(this.elementGroup, x, y, w, h);
 
     const [ topleft, topright, bottomright, bottomleft] = this.handles;
     this.setHandleXY(topleft, x, y);
@@ -113,6 +108,7 @@ export default class EditableRect extends EditableShape {
 
     setRectSize(this.rectangle, x, y, w, h);
     setRectMaskSize(this.mask, this.env.image, x, y, w, h);
+    setFormatterElSize(this.elementGroup, x, y, w, h);
 
     // Anchor (=opposite handle) stays in place, dragged handle moves with mouse
     this.setHandleXY(this.handles[draggedHandleIdx], mousePos.x, mousePos.y);

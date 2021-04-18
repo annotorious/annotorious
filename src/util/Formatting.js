@@ -54,3 +54,14 @@ export const format = (shape, annotation, formatter) => {
     }
   }
 }
+
+export const setFormatterElSize = (group, x, y, w, h) => {
+  const formatterEl = group.querySelector('.a9s-formatter-el');
+
+  if (formatterEl) {
+    formatterEl.setAttribute('x', x);
+    formatterEl.setAttribute('y', y);
+    formatterEl.setAttribute('width', w);
+    formatterEl.setAttribute('height', h);
+  }
+}

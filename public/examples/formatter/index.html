@@ -42,14 +42,26 @@
 
       .a9s-annotationlayer foreignObject {
         overflow:visible;
+        pointer-events:none;
+        padding:1px;
       }
 
       .a9s-annotationlayer foreignObject div {
         display:table;
-        width:100%;
         white-space:nowrap;
-        padding:5px;
-        background-color:#fff;
+        padding:3px;
+        background-color:rgba(255, 255, 255, 0.85);
+        border-bottom-right-radius:3px;
+        font-size:14px;
+      }
+
+      .a9s-annotationlayer .a9s-outer {
+        stroke-width:0 !important;
+      }
+
+      .a9s-annotationlayer .a9s-inner {
+        stroke-width:3px !important;
+        stroke:#fff;
       }
     </style>
   </head>
@@ -65,13 +77,16 @@
       (function() {
         var formatter = function(annotation) {
 
-          var fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-          fo.setAttribute('width', '100%');
-          fo.setAttribute('height', '100%');
-          fo.innerHTML = '<div xmlns="http://www.w3.org/1999/xhtml" class="shape-label">labe asdfasdfa sfasdfasdfasdf asdfasdfasdasfasd</div>';
+          var firstTag = annotation.body.find(b => b.purpose == 'tagging');
+          if (firstTag) {
+            var fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+            fo.setAttribute('width', '100%');
+            fo.setAttribute('height', '100%');
+            fo.innerHTML = '<div xmlns="http://www.w3.org/1999/xhtml" class="shape-label">' + firstTag.value + '</div>';
 
-          return {
-            'element': fo
+            return {
+              'element': fo
+            }
           }
         }
 
