@@ -89,17 +89,6 @@ export const getRectSize = g => {
   return { x, y, w, h };
 }
 
-/** Returns corner coordinates for the given SVG group **/
-export const getCorners = g => {
-  const { x, y, w, h } = getRectSize(g);
-  return [
-    { x: x,     y: y },
-    { x: x + w, y: y },
-    { x: x + w, y: y + h },
-    { x: x,     y: y + h}
-  ];
-}
-
 /** Applies the (x, y, w, h)-values to the rects in the SVG group **/
 export const setRectSize = (g, x, y, w, h) => {
   const innerRect = g.querySelector('.a9s-inner');
