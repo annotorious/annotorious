@@ -40,11 +40,16 @@ export default class RubberbandPolygonTool extends Tool {
     this.rubberband.dragTo([ x, y ]);
 
   onMouseUp = (x, y) => {
-    if (this.rubberband.isCollapsed) {
+    const { width, height } = this.rubberband.bbox;
+
+    const minWidth = this.config.minSelectionWidth || 4;
+    const minHeight = this.config.minSelectionHeight || 4;
+
+    if (width >= minWidth || height >= minHeight) {
+      this.rubberband.addPoint([ x, y ]);
+    } else {
       this.emit('cancel');
       this.stop();
-    } else {
-      this.rubberband.addPoint([ x, y ]);
     }
   }
 
