@@ -37,9 +37,12 @@ export default class RubberbandRectTool extends Tool {
   onMouseUp = () => {
     this.detachListeners();
 
-    const { w } = this.rubberband.bbox;
+    const { w, h } = this.rubberband.bbox;
 
-    if (w > 3) {
+    const minWidth = this.config.minSelectionWidth || 4;
+    const minHeight = this.config.minSelectionHeight || 4;
+
+    if (w >= minWidth && h >= minHeight) {
       // Emit the SVG shape with selection attached    
       const { element } = this.rubberband;
       element.annotation = this.rubberband.toSelection();
