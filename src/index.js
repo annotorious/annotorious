@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Emitter from 'tiny-emitter';
-import axios from 'axios';
 import ImageAnnotator from './ImageAnnotator';
 import { 
   Selection, 
@@ -163,11 +162,11 @@ export class Annotorious {
   listDrawingTools = () =>
     this._app.current.listDrawingTools();
 
-  loadAnnotations = url => axios.get(url).then(response => {
-    const annotations = response.data;
-    this.setAnnotations(annotations);
-    return annotations;
-  });
+  loadAnnotations = url => fetch(url)
+    .then(response => response.json()).then(annotations => {
+      this.setAnnotations(annotations);
+      return annotations;
+    });
 
   off = (event, callback) =>
     this._emitter.off(event, callback);
