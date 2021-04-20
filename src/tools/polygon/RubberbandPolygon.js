@@ -43,9 +43,8 @@ export default class RubberbandPolygon {
     this.inner.setAttribute('points', attr);
   }
 
-  get bbox() {
-    return this.outer.getBBox();
-  }
+  getBoundingClientRect = () =>
+    this.outer.getBoundingClientRect();
 
   dragTo = xy => {
     // Make visible
