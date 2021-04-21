@@ -95,13 +95,15 @@ export const polygonArea = arg => {
   const points = arg.type === 'Annotation' ?
     svgFragmentToPoints(arg) : arg;
 
-  let sum = 0;
+  let area = 0;
+  let j = points.length - 1;
 
-  for (let i=0; i < points.length - 1; i++) {
-    sum += points[i][0] * points[i + 1][1] - points[i][1] * points[i + 1][0];
+  for (let i=0; i < points.length; i++) {
+    area += (points[j][0] + points[i][0]) * (points[j][1] - points[i][1]);
+    j = i;
   }
 
-  return Math.abs(0.5 * sum);
+  return Math.abs(0.5 * area);
 }
 
 /**
