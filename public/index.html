@@ -71,6 +71,10 @@
         anno.on('selectAnnotation', function(a) {
           console.log('selected', a);
         });
+        
+        anno.on('cancelSelected', function(a) {
+          console.log('cancel', a);
+        });
 
         anno.on('createAnnotation', function(a) {
           console.log('created', a);
