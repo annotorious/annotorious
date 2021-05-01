@@ -131,14 +131,21 @@ export default class EditableRect extends EditableShape {
   }
 
   onMouseMove = evt => {
+    // Shorthand
+    const constrain = (coord, max) =>
+      coord < 0 ? 0 : ( coord > max ? max : coord);
+
     if (this.grabbedElem) {
       const pos = this.getSVGPoint(evt);
 
       if (this.grabbedElem === this.rectangle) {
         // x/y changes by mouse offset, w/h remains unchanged
         const { w, h } = getRectSize(this.rectangle);
-        const x = pos.x - this.mouseOffset.x;
-        const y = pos.y - this.mouseOffset.y;
+
+        const { naturalWidth, naturalHeight } = this.env.image;
+
+        const x = constrain(pos.x - this.mouseOffset.x, naturalWidth - w);
+        const y = constrain(pos.y - this.mouseOffset.y, naturalHeight - h);
 
         this.setSize(x, y, w, h); 
         this.emit('update', toRectFragment(x, y, w, h, this.env.image)); 
