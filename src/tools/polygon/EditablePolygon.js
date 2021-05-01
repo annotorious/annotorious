@@ -17,6 +17,9 @@ const getPoints = shape => {
   return points;
 }
 
+const getBBox = shape =>
+  shape.querySelector('.a9s-inner').getBBox();
+
 /**
  * An editable rectangle shape.
  */
@@ -97,12 +100,20 @@ export default class EditablePolygon extends EditableShape {
   }
 
   onMouseMove = evt => {
+    // Shorthand
+    const constrain = (coord, delta, max) =>
+      coord + delta < 0 ? -coord : (coord + delta > max ? max - coord : delta);
+
     if (this.grabbedElem) {
       const pos = this.getSVGPoint(evt);
 
       if (this.grabbedElem === this.shape) {
-        const dx = pos.x - this.grabbedAt.x;
-        const dy = pos.y - this.grabbedAt.y;
+        const { x, y, width, height } = getBBox(this.shape);
+
+        const { naturalWidth, naturalHeight } = this.env.image;
+
+        const dx = constrain(x, pos.x - this.grabbedAt.x, naturalWidth - width);
+        const dy = constrain(y, pos.y - this.grabbedAt.y, naturalHeight - height);
 
         const updatedPoints = getPoints(this.shape).map(pt =>
           ({ x: pt.x + dx, y: pt.y + dy }));
