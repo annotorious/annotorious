@@ -219,11 +219,10 @@ export default class ImageAnnotator extends Component  {
   set disableEditor(disabled) {
     this.setState({ editorDisabled: disabled }, () => {
       // En- or disable Esc key listener
-      if (disabled && !this.state.editorDisabled) {
+      if (disabled)
         document.addEventListener('keyup', this.escapeKeyCancel);
-      } else if (!disabled && this.state.editorDisabled) {
+      else
         document.removeEventListener('keyup', this.escapeKeyCancel);
-      }
     });
   }
   
