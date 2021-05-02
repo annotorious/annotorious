@@ -131,7 +131,6 @@ export default class EditableRect extends EditableShape {
   }
 
   onMouseMove = evt => {
-    // Shorthand
     const constrain = (coord, max) =>
       coord < 0 ? 0 : ( coord > max ? max : coord);
 

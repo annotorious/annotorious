@@ -100,7 +100,6 @@ export default class EditablePolygon extends EditableShape {
   }
 
   onMouseMove = evt => {
-    // Shorthand
     const constrain = (coord, delta, max) =>
       coord + delta < 0 ? -coord : (coord + delta > max ? max - coord : delta);
 

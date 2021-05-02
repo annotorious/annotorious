@@ -14,8 +14,25 @@ const insertSVGNamespace = originalDoc => {
   return namespacedDoc.documentElement;
 }
 
-/** TODO allow only primitive types (polygon, path, circle, rect) **/
 const sanitize = doc => {
+  // Cf. https://github.com/mattkrick/sanitize-svg#readme  
+  // for the basic approach
+  const cleanEl = el => {
+    Array.from(el.attributes).forEach(attr => {
+      if (attr.name.startsWith('on'))
+        el.removeAttribute(attr.name)
+    });
+  }
+
+  // Remove script tags
+  const scripts = doc.getElementsByTagName('script');
+  Array.from(scripts).reverse().forEach(el =>
+    el.parentNode.removeChild(el));
+
+  // Remove on... attributes
+  cleanEl(doc);
+  Array.from(doc.querySelectorAll('*')).forEach(cleanEl);
+
   return doc;
 }
 
