@@ -356,10 +356,12 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   setVisible = visible => {
-    if (visible)
+    if (visible) {
       this.svg.style.display = null;
-    else
+    } else {
+      this.deselect();
       this.svg.style.display = 'none';
+    }
   }
 
 }
