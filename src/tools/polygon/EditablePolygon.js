@@ -80,7 +80,12 @@ export default class EditablePolygon extends EditableShape {
   }
 
   setPoints = (points) => {
-    const str = points.map(pt => `${pt.x},${pt.y}`).join();
+    // Not using .toFixed(1) because that will ALWAYS
+    // return one decimal, e.g. "15.0" (when we want "15")
+    const round = num => 
+      Math.round(10 * num) / 10;
+
+    const str = points.map(pt => `${round(pt.x)},${round(pt.y)}`).join(' ');
 
     const inner = this.shape.querySelector('.a9s-inner');
     inner.setAttribute('points', str);
