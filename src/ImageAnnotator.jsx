@@ -207,9 +207,10 @@ export default class ImageAnnotator extends Component  {
     this.annotationLayer.addDrawingTool(plugin);
 
   cancelSelected = () => {
-    const { selectedAnnotation } = this.state;
-    if (selectedAnnotation)
-      this.onCancelAnnotation(selectedAnnotation);
+    this.annotationLayer.deselect();
+
+    if (this.state.selectedAnnotation)
+      this.clearState();
   }
 
   get disableEditor() {
