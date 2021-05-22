@@ -1,6 +1,6 @@
 {
   "name": "@recogito/annotorious",
-  "version": "2.3.4",
+  "version": "2.4.0",
   "description": "A JavaScript image annotation library",
   "main": "dist/annotorious.min.js",
   "scripts": {
