@@ -47,9 +47,9 @@ export default class EditableRect extends EditableShape {
 
     // The 'element' = rectangles + handles
     this.elementGroup = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.elementGroup.setAttribute('class', 'a9s-annotation editable selected');
 
     this.rectangle = drawRect(x, y, w, h);
-    this.rectangle.setAttribute('class', 'a9s-annotation editable selected');
     this.rectangle.querySelector('.a9s-inner')
       .addEventListener('mousedown', this.onGrab(this.rectangle));
 
