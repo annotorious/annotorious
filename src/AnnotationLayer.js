@@ -151,9 +151,9 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   deselect = skipRedraw => {
-    this.tools?.current.stop();
-
     if (this.selectedShape) {
+      this.tools?.current.stop();
+
       const { annotation } = this.selectedShape;
 
       if (this.selectedShape.destroy) {
