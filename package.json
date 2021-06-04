@@ -4,7 +4,7 @@
   "description": "A JavaScript image annotation library",
   "main": "dist/annotorious.min.js",
   "scripts": {
-    "start": "webpack-dev-server --open --mode=development",
+    "start": "webpack serve --open --mode=development",
     "build": "webpack --mode=production",
     "test": "./node_modules/.bin/mocha --require @babel/register --recursive"
   },
