@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.10.4",
-    "@recogito/recogito-client-core": "1.1.0",
+    "@recogito/recogito-client-core": "1.2.0",
     "preact": "^10.5.13",
     "tiny-emitter": "^2.1.0"
   }
