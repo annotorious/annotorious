@@ -3,7 +3,6 @@
   "version": "2.4.1",
   "description": "A JavaScript image annotation library",
   "main": "dist/annotorious.min.js",
-  "sideEffects": false,
   "scripts": {
     "start": "webpack serve --open --mode=development",
     "build": "webpack --mode=production",
