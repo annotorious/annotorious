@@ -3,6 +3,7 @@
   "version": "2.4.1",
   "description": "A JavaScript image annotation library",
   "main": "dist/annotorious.min.js",
+  "sideEffects": false,
   "scripts": {
     "start": "webpack serve --open --mode=development",
     "build": "webpack --mode=production",
@@ -35,6 +36,7 @@
     "mocha": "^7.1.1",
     "node-sass": "^5.0.0",
     "sass-loader": "^10.2.0",
+    "terser-webpack-plugin": "^4.2.3",
     "webpack": "^4.46.0",
     "webpack-cli": "^4.7.0",
     "webpack-dev-server": "^3.11.2"
