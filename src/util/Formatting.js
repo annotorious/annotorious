@@ -10,7 +10,9 @@ const appendFormatterEl = (formatterEl, shape) => {
   container.setAttribute('width', width);
   container.setAttribute('height', height);
 
-  container.appendChild(formatterEl);
+  const g = document.createElementNS(SVG_NAMESPACE, 'g');
+  g.appendChild(formatterEl);y
+  container.appendChild(g);
   shape.append(container);
 }
 
