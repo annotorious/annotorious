@@ -67,6 +67,7 @@ export class Annotorious {
         env={this._env}
         wrapperEl={this._element}
         config={config}
+        onSelectionStarted={this.handleSelectionStarted}
         onSelectionCreated={this.handleSelectionCreated}
         onSelectionTargetChanged={this.handleSelectionTargetChanged}
         onAnnotationCreated={this.handleAnnotationCreated}
@@ -99,6 +100,9 @@ export class Annotorious {
 
   handleSelectionCreated = selection =>
     this._emitter.emit('createSelection', selection.underlying);
+
+  handleSelectionStarted = pt =>
+    this._emitter.emit('startSelection', pt);
 
   handleSelectionTargetChanged = target =>
     this._emitter.emit('changeSelectionTarget', target);

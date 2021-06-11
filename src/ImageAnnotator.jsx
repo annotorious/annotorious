@@ -34,6 +34,7 @@ export default class ImageAnnotator extends Component  {
   componentDidMount() {
     this.annotationLayer = new AnnotationLayer(this.props);
 
+    this.annotationLayer.on('startSelection', this.handleStartSelect);
     this.annotationLayer.on('select', this.handleSelect);
   
     this.annotationLayer.on('updateTarget', this.handleUpdateTarget);
@@ -59,6 +60,9 @@ export default class ImageAnnotator extends Component  {
       }
     }
   }
+
+  handleStartSelect = pt =>
+    this.props.onSelectionStarted(pt);
 
   handleSelect = evt => {
     this.state.editorDisabled ?

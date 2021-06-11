@@ -20,6 +20,11 @@ export default class Tool extends EventEmitter {
 
     this.config = config;
     this.env = env;
+
+    // We'll keep a flag set to false until
+    // the user has started moving, so we can 
+    // fire the startSelection event
+    this.started = false;
   }
 
   getSVGPoint = evt => {
@@ -42,6 +47,12 @@ export default class Tool extends EventEmitter {
     if (mouseMove) {
       this.mouseMove = evt => {
         const { x , y } = this.getSVGPoint(evt);
+
+        if (!this.started) {
+          this.emit('startSelection', { x, y });
+          this.started = true;
+        }
+    
         mouseMove(x, y, evt);
       }
 

@@ -30,12 +30,12 @@ export default class RubberbandRectTool extends Tool {
     }
   }
 
-  onMouseMove = (x, y) => {
+  onMouseMove = (x, y) =>
     this.rubberband.dragTo(x, y);
-  }
   
   onMouseUp = () => {
     this.detachListeners();
+    this.started = false;
 
     const { width, height } = this.rubberband.getBoundingClientRect();
 

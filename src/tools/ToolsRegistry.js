@@ -44,6 +44,7 @@ export default class ToolRegistry extends EventEmitter {
       toolOrId;
 
     this._current = new Tool(this._g, this._config, this._env);
+    this._current.on('startSelection', pt => this.emit('startSelection', pt));
     this._current.on('complete', evt => this.emit('complete', evt));
     this._current.on('cancel', evt => this.emit('cancel', evt));
   }

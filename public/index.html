@@ -68,8 +68,12 @@
           displayName: 'rainer'
         });
 
-        anno.on('selectAnnotation', function(a) {
-          console.log('selected', a);
+        anno.on('startSelection', function(a) {
+          console.log('start selection', a);
+        });
+
+        anno.on('selectAnnotation', function(evt) {
+          console.log('selected', evt);
         });
         
         anno.on('cancelSelected', function(a) {
