@@ -3,17 +3,19 @@ import { addClass, SVG_NAMESPACE } from './SVG';
 const appendFormatterEl = (formatterEl, shape) => {
   const { x, y, width, height } = shape.getBBox();
 
-  const container = document.createElementNS(SVG_NAMESPACE, 'svg');
-  container.setAttribute('class', 'a9s-formatter-el');
-  container.setAttribute('x', x);
-  container.setAttribute('y', y);
-  container.setAttribute('width', width);
-  container.setAttribute('height', height);
+  const svgEl = document.createElementNS(SVG_NAMESPACE, 'svg');
+  svgEl.setAttribute('class', 'a9s-formatter-el');
+  svgEl.setAttribute('x', x);
+  svgEl.setAttribute('y', y);
+  svgEl.setAttribute('width', width);
+  svgEl.setAttribute('height', height);
 
   const g = document.createElementNS(SVG_NAMESPACE, 'g');
   g.appendChild(formatterEl);y
-  container.appendChild(g);
-  shape.append(container);
+
+  svgEl.appendChild(g);
+  
+  shape.append(svgEl);
 }
 
 /**
