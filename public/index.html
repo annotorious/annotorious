@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <title>Annotorious | Basic Example</title>
     <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+    <link href="annotorious.min.css" rel="stylesheet">
+    <script type="text/javascript" src="annotorious.min.js"></script>
     <style>
       html, body {
         padding:20px;
@@ -53,7 +55,7 @@
     </div>
   </div>
     <script>
-      (function() {
+      window.onload = function() {
         anno = Annotorious.init({
           image: 'hallstatt',
           locale: 'auto',
@@ -106,7 +108,7 @@
             anno.setDrawingTool('rect');
           }
         });
-      })()
+      }
     </script>
   </body>
 </html>
