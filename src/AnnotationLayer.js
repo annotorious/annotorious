@@ -55,20 +55,13 @@ export default class AnnotationLayer extends EventEmitter {
     // Currently selected shape
     this.selectedShape = null;
 
-    if (this.readOnly) {
-      // No drawing, only select the current hover shape
-      this.svg.addEventListener('mousedown', this.selectCurrentHover);
-    } else {
-      // Attach handlers to the drawing tool palette
-      this.tools = new DrawingTools(this.g, config, env);
-      this.tools.on('startSelection', pt => this.emit('startSelection', pt));
-      this.tools.on('cancel', this.selectCurrentHover);
-      this.tools.on('complete', this.selectShape);
+    // Init the drawing tools
+    this.tools = new DrawingTools(this.g, config, env);
+    this.tools.on('startSelection', pt => this.emit('startSelection', pt));
+    this.tools.on('cancel', this.selectCurrentHover);
+    this.tools.on('complete', this.selectShape);
 
-      // Enable drawing
-      if (!this.readOnly)
-        this.svg.addEventListener('mousedown', this._onMouseDown);
-    }
+    this.svg.addEventListener('mousedown', this._onMouseDown);
 
     this.currentHover = null;
   }
@@ -108,7 +101,7 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   _onMouseDown = evt => {
-    if (!this.selectedShape && !this.tools.current.isDrawing) {
+    if (!(this.readOnly || this.selectedShape || this.tools.current.isDrawing)) {
       // No active selection & not drawing now? Start drawing.
       this.tools.current.start(evt);
     } else if (this.selectedShape !== this.currentHover) {

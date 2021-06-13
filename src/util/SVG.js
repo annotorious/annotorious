@@ -15,10 +15,12 @@ export const addClass = (el, className) => {
 
 export const removeClass = (el, className) => {
   const classNames = getClassNames(el);
+  classNames.delete(className);
+
   if (classNames.size === 0)
     el.removeAttribute('class');
   else
-    el.setAttribute('class', classNames.join(' '));
+    el.setAttribute('class', Array.from(classNames).join(' '));
 }
 
 export const hasClass = (el, className) =>
