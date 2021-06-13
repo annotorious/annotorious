@@ -50,8 +50,17 @@ export const format = (shape, annotation, formatter) => {
     if (className)
       addClass(shape, className);
 
-    if (style)
-      shape.setAttribute('style', style);
+    if (style) {
+      const outer = shape.querySelector('.a9s-outer');
+      const inner = shape.querySelector('.a9s-inner');
+
+      if (outer && inner) {
+        outer.setAttribute('style', 'display:none');
+        inner.setAttribute('style', style);
+      } else {
+        shape.setAttribute('style', style);
+      }
+    }
 
     if (element)
       appendFormatterEl(element, shape);
