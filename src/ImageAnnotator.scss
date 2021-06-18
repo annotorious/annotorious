@@ -25,7 +25,7 @@
 
 .a9s-annotation, .a9s-selection {
 
-  rect, polygon {
+  rect, path, polygon {
     fill:transparent;
     cursor:pointer;
     vector-effect:non-scaling-stroke;
@@ -45,6 +45,10 @@
     stroke:rgba(0, 0, 0, 0.7);
     stroke-width:3px;
     fill: none;
+  }
+
+  .a9s-formatter-el {
+    overflow:visible;
   }
 
 }

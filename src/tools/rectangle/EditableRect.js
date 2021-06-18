@@ -1,10 +1,9 @@
-import EventEmitter from 'tiny-emitter';
+import EditableShape from '../EditableShape';
 import { SVG_NAMESPACE } from '../../util/SVG';
-import { format } from '../../util/Formatting';
+import { format, setFormatterElSize } from '../../util/Formatting';
 import { 
   drawRect, 
   drawRectMask,
-  getCorners, 
   parseRectFragment,
   getRectSize, 
   setRectSize, 
@@ -12,70 +11,13 @@ import {
   setRectMaskSize
 } from '../../selectors/RectFragment';
 
-// draw circle point at (x, y)
-const drawHandle = (x, y) => {
-  const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-  svg.setAttribute('class', 'a9s-handle');
-  svg.setAttribute('overflow', 'visible');
-  svg.setAttribute('x', x);
-  svg.setAttribute('y', y);
-
-  const group = document.createElementNS(SVG_NAMESPACE, 'g');
-
-  const drawCircle = r => {
-    const c = document.createElementNS(SVG_NAMESPACE, 'circle');
-    c.setAttribute('cx', 0);
-    c.setAttribute('cy', 0);
-    c.setAttribute('r', r);
-    return c;
-  }
-
-  const inner = drawCircle(6);
-  inner.setAttribute('class', 'a9s-handle-inner')
-
-  const outer = drawCircle(7);
-  outer.setAttribute('class', 'a9s-handle-outer')
-
-  group.appendChild(outer);
-  group.appendChild(inner);
-
-  svg.appendChild(group);
-  return svg;
-}
-
-const setHandleXY = (handle, x, y) => {
-  handle.setAttribute('x', x);
-  handle.setAttribute('y', y);
-}
-
-const stretchCorners = (corner, opposite) => {
-  const x1 = corner.x;
-  const y1 = corner.y;
-
-  const x2 = opposite.x;
-  const y2 = opposite.y;
-
-  const x = Math.min(x1, x2);
-  const y = Math.min(y1, y2);
-  const w = Math.abs(x2 - x1);
-  const h = Math.abs(y2 - y1);
-
-  return { x, y, w, h };
-}
-
 /**
  * An editable rectangle shape.
  */
-export default class EditableRect extends EventEmitter {
+export default class EditableRect extends EditableShape {
 
   constructor(annotation, g, config, env) {
-    super();
-
-    this.annotation = annotation;
-    this.env = env;
-    // SVG element
-    this.svg = g.closest('svg');
-    this.g = g;
+    super(annotation, g, config, env);
 
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
@@ -105,24 +47,22 @@ export default class EditableRect extends EventEmitter {
 
     // The 'element' = rectangles + handles
     this.elementGroup = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.elementGroup.setAttribute('class', 'a9s-annotation editable selected');
 
     this.rectangle = drawRect(x, y, w, h);
-    this.rectangle.setAttribute('class', 'a9s-annotation editable selected');
     this.rectangle.querySelector('.a9s-inner')
       .addEventListener('mousedown', this.onGrab(this.rectangle));
-
-    format(this.rectangle, annotation, config.formatter);
 
     this.elementGroup.appendChild(this.rectangle);    
 
     this.handles = [
-      [ x, y ],
-      [ x + w, y ],
-      [ x + w, y + h ],
+      [ x, y ], 
+      [ x + w, y ], 
+      [ x + w, y + h ], 
       [ x, y + h ]
     ].map(t => { 
       const [ x, y ] = t;
-      const handle = drawHandle(x, y);
+      const handle = this.drawHandle(x, y);
 
       handle.addEventListener('mousedown', this.onGrab(handle));
       this.elementGroup.appendChild(handle);
@@ -134,104 +74,88 @@ export default class EditableRect extends EventEmitter {
 
     g.appendChild(this.containerGroup);
 
+    format(this.rectangle, annotation, config.formatter);
+
     // The grabbed element (handle or entire group), if any
     this.grabbedElem = null; 
 
     // Mouse xy offset inside the shape, if mouse pressed
     this.mouseOffset = null;
-
-    // Bit of a hack. If we are dealing with a 'real' image, we enable
-    // reponsive mode. OpenSeadragon handles scaling in a different way,
-    // so we don't need responsive mode.
-    const { image } = env;
-    if (image instanceof Element || image instanceof HTMLDocument)
-      this.enableResponsive();
   }
 
-  /**
-   * Not really needed (could just define a this.element).
-   * But to make this more explicit: element is a field every
-   * editable shape implementation must provide
-   */
-  get element() {	
-    return this.elementGroup;	
-  }
-
-  enableResponsive = () => {
-    if (window.ResizeObserver) {
-      this.resizeObserver = new ResizeObserver(() => {
-        const svgBounds = this.svg.getBoundingClientRect();
-        const { width, height } = this.svg.viewBox.baseVal;
-
-        const scaleX = width / svgBounds.width;
-        const scaleY = height / svgBounds.height;
-        this.scaleHandles(scaleX, scaleY);
-      });
-      
-      this.resizeObserver.observe(this.svg.parentNode);
-    }
-  }
-
-  scaleHandles = (scaleOrScaleX, optScaleY) => {
-    const scaleX = scaleOrScaleX;
-    const scaleY = optScaleY || scaleOrScaleX;
-
-    this.handles.forEach(handle => 
-      handle.firstChild.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
-  }
-
-  /** Sets the shape size, including handle positions **/
   setSize = (x, y, w, h) => {
     setRectSize(this.rectangle, x, y, w, h);
     setRectMaskSize(this.mask, this.env.image, x, y, w, h);
+    setFormatterElSize(this.elementGroup, x, y, w, h);
 
     const [ topleft, topright, bottomright, bottomleft] = this.handles;
-    setHandleXY(topleft, x, y);
-    setHandleXY(topright, x + w, y);
-    setHandleXY(bottomright, x + w, y + h);
-    setHandleXY(bottomleft, x, y + h);
+    this.setHandleXY(topleft, x, y);
+    this.setHandleXY(topright, x + w, y);
+    this.setHandleXY(bottomright, x + w, y + h);
+    this.setHandleXY(bottomleft, x, y + h);
   }
 
-  /** Converts mouse coordinates to SVG coordinates **/
-  getMousePosition = evt => {
-    const pt = this.svg.createSVGPoint();
-    pt.x = evt.clientX;
-    pt.y = evt.clientY;
-    return pt.matrixTransform(this.g.getScreenCTM().inverse());
+  stretchCorners = (draggedHandleIdx, anchorHandle, mousePos) => {
+    const anchor = this.getHandleXY(anchorHandle);
+
+    const width = mousePos.x - anchor.x;
+    const height = mousePos.y - anchor.y;
+
+    const x = width > 0 ? anchor.x : mousePos.x;
+    const y = height > 0 ? anchor.y : mousePos.y;
+    const w = Math.abs(width);
+    const h = Math.abs(height);
+
+    setRectSize(this.rectangle, x, y, w, h);
+    setRectMaskSize(this.mask, this.env.image, x, y, w, h);
+    setFormatterElSize(this.elementGroup, x, y, w, h);
+
+    // Anchor (=opposite handle) stays in place, dragged handle moves with mouse
+    this.setHandleXY(this.handles[draggedHandleIdx], mousePos.x, mousePos.y);
+
+    // Handles left and right of the dragged handle
+    const left = this.handles[(draggedHandleIdx + 3) % 4];
+    this.setHandleXY(left, anchor.x, mousePos.y);
+
+    const right = this.handles[(draggedHandleIdx + 5) % 4];
+    this.setHandleXY(right, mousePos.x, anchor.y);
+
+    return { x, y, w, h };
   }
 
   onGrab = grabbedElem => evt => {
     this.grabbedElem = grabbedElem; 
-    const pos = this.getMousePosition(evt);
+    const pos = this.getSVGPoint(evt);
     const { x, y } = getRectSize(this.rectangle);
-    this.mouseOffset = { x: pos.x - x, y: pos.y - y };
+    this.mouseOffset = { x: pos.x - x, y: pos.y - y };  
   }
 
   onMouseMove = evt => {
+    const constrain = (coord, max) =>
+      coord < 0 ? 0 : ( coord > max ? max : coord);
+
     if (this.grabbedElem) {
-      const pos = this.getMousePosition(evt);
+      const pos = this.getSVGPoint(evt);
 
       if (this.grabbedElem === this.rectangle) {
         // x/y changes by mouse offset, w/h remains unchanged
         const { w, h } = getRectSize(this.rectangle);
-        const x = pos.x - this.mouseOffset.x;
-        const y = pos.y - this.mouseOffset.y;
 
-        this.setSize(x, y, w, h);
+        const { naturalWidth, naturalHeight } = this.env.image;
+
+        const x = constrain(pos.x - this.mouseOffset.x, naturalWidth - w);
+        const y = constrain(pos.y - this.mouseOffset.y, naturalHeight - h);
+
+        this.setSize(x, y, w, h); 
         this.emit('update', toRectFragment(x, y, w, h, this.env.image)); 
       } else {
-        // Handles
-        const corners = getCorners(this.rectangle);
-
         // Mouse position replaces one of the corner coords, depending
         // on which handle is the grabbed element
         const handleIdx = this.handles.indexOf(this.grabbedElem);
-        const oppositeCorner = handleIdx < 2 ?
-          corners[handleIdx + 2] : corners[handleIdx - 2];
+        const oppositeHandle = handleIdx < 2 ? 
+          this.handles[handleIdx + 2] : this.handles[handleIdx - 2];
 
-        const { x, y, w, h } = stretchCorners(pos, oppositeCorner)
-
-        this.setSize(x, y, w, h); 
+        const { x, y, w, h } = this.stretchCorners(handleIdx, oppositeHandle, pos);
         this.emit('update', toRectFragment(x, y, w, h, this.env.image)); 
       }
     }
@@ -242,13 +166,13 @@ export default class EditableRect extends EventEmitter {
     this.mouseOffset = null;
   }
 
-  destroy = () => {
-    this.containerGroup.parentNode.removeChild(this.containerGroup);
+  get element() {	
+    return this.elementGroup;	
+  }
 
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
-    
-    this.resizeObserver = null;
+  destroy() {
+    this.containerGroup.parentNode.removeChild(this.containerGroup);
+    super.destroy();
   }
 
 }

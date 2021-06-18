@@ -42,7 +42,8 @@ export const drawRectMask = (imageDimensions, x, y, w, h) => {
   mask.setAttribute('fill-rule', 'evenodd');
   
   const { naturalWidth, naturalHeight } = imageDimensions;
-  mask.setAttribute('d', `M0 0 h${naturalWidth} v${naturalHeight} h-${naturalWidth} z M${x} ${y} h${w} v${h} h-${w}`);
+  mask.setAttribute('d', `M0 0 h${naturalWidth} v${naturalHeight} h-${naturalWidth} z M${x} ${y} h${w} v${h} h-${w} z`);
+
   return mask;
 }
 
@@ -60,8 +61,10 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
     parseRectFragment(arg1) : { x: arg1, y: arg2, w: arg3, h: arg4 };
 
   const g = document.createElementNS(SVG_NAMESPACE, 'g');
+
   const outerRect  = document.createElementNS(SVG_NAMESPACE, 'rect');
   const innerRect  = document.createElementNS(SVG_NAMESPACE, 'rect');
+
   innerRect.setAttribute('class', 'a9s-inner');
   setXYWH(innerRect, x, y, w, h);
 
@@ -84,17 +87,6 @@ export const getRectSize = g => {
   const h = parseFloat(outerRect.getAttribute('height'));
 
   return { x, y, w, h };
-}
-
-/** Returns corner coordinates for the given SVG group **/
-export const getCorners = g => {
-  const { x, y, w, h } = getRectSize(g);
-  return [
-    { x: x,     y: y },
-    { x: x + w, y: y },
-    { x: x + w, y: y + h },
-    { x: x,     y: y + h}
-  ];
 }
 
 /** Applies the (x, y, w, h)-values to the rects in the SVG group **/

@@ -1,10 +1,9 @@
-import EventEmitter from 'tiny-emitter';
+import EditableShape from '../EditableShape';
 import { SVG_NAMESPACE } from '../../util/SVG';
-import { format } from '../../util/Formatting';
+import { format, setFormatterElSize } from '../../util/Formatting';
 import { 
   drawCircle,
   drawCircleMask,
-  getCorners,
   parseCircleFragment,
   getCircleSize,
   setCircleSize,
@@ -12,71 +11,13 @@ import {
   setCircleMaskSize
 } from '../../selectors/CircleFragment';
 
-const drawHandle = (x, y) => {
-  const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-  svg.setAttribute('class', 'a9s-handle');
-  svg.setAttribute('overflow', 'visible');
-  svg.setAttribute('x', x);
-  svg.setAttribute('y', y);
-
-  const group = document.createElementNS(SVG_NAMESPACE, 'g');
-
-  const drawCircle = r => {
-    const c = document.createElementNS(SVG_NAMESPACE, 'circle');
-    c.setAttribute('cx', 0);
-    c.setAttribute('cy', 0);
-    c.setAttribute('r', r);
-    return c;
-  }
-
-  const inner = drawCircle(6);
-  inner.setAttribute('class', 'a9s-handle-inner')
-
-  const outer = drawCircle(7);
-  outer.setAttribute('class', 'a9s-handle-outer')
-
-  group.appendChild(outer);
-  group.appendChild(inner);
-
-  svg.appendChild(group);
-  return svg;
-}
-
-const setHandleXY = (handle, x, y) => {
-  handle.setAttribute('x', x);
-  handle.setAttribute('y', y);
-}
-
-const stretchCorners = (corner, opposite) => {
-  const x1 = corner.x;
-
-  const y1 = corner.y;
-  const x2 = opposite.x;
-
-  const y2 = opposite.y;
-  const w = Math.abs(x2 - x1);
-  const h = Math.abs(y2 - y1);
-  const cx = Math.min(x1, x2) + w/2;
-  const cy = Math.min(y1, y2) + h/2;
-  const r = Math.pow(w**2 + h**2, 0.5)/2
-
-  return { cx, cy, r};
-}
-
 /**
- * An editable rectangle shape.
+ * An editable circle shape.
  */
-export default class EditableCircle extends EventEmitter {
+export default class EditableCircle extends EditableShape {
 
   constructor(annotation, g, config, env) {
-    super();
-
-    this.annotation = annotation;
-    this.env = env;
-
-    // SVG element
-    this.svg = g.closest('svg');
-    this.g = g;
+    super(annotation, g, config, env);
 
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
@@ -88,8 +29,8 @@ export default class EditableCircle extends EventEmitter {
     // <g>
     //   <path class="a9s-selection mask"... />
     //   <g> <-- return this node as .element
-    //     <rect class="a9s-outer" ... />
-    //     <rect class="a9s-inner" ... />
+    //     <circle class="a9s-outer" ... />
+    //     <circle class="a9s-inner" ... />
     //     <g class="a9s-handle" ...> ... </g>
     //     <g class="a9s-handle" ...> ... </g>
     //     <g class="a9s-handle" ...> ... </g>
@@ -97,23 +38,22 @@ export default class EditableCircle extends EventEmitter {
     //   </g> 
     // </g>
 
-    // 'g' for the editable rect compound shape
+    // 'g' for the editable circle compound shape
     this.containerGroup = document.createElementNS(SVG_NAMESPACE, 'g');
 
     this.mask = drawCircleMask(env.image, cx, cy, r);
     this.mask.setAttribute('class', 'a9s-selection-mask');
     this.containerGroup.appendChild(this.mask);
 
-    // The 'element' = rectangles + handles
+    // The 'element' = circle + handles
     this.elementGroup = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.elementGroup.setAttribute('class', 'a9s-annotation editable selected');
+
     this.circle = drawCircle(cx, cy, r);
-    this.circle.setAttribute('class', 'a9s-annotation editable selected');
     this.circle.querySelector('.a9s-inner')
       .addEventListener('mousedown', this.onGrab(this.circle));
 
-    format(this.circle, annotation, config.formatter);
-
-    this.elementGroup.appendChild(this.circle);
+    this.elementGroup.appendChild(this.circle);    
 
     this.handles = [
       [cx, cy - r],
@@ -122,7 +62,7 @@ export default class EditableCircle extends EventEmitter {
       [cx - r, cy]
     ].map(t => { 
       const [ x, y ] = t;
-      const handle = drawHandle(x, y);
+      const handle = this.drawHandle(x, y);
 
       handle.addEventListener('mousedown', this.onGrab(handle));
       this.elementGroup.appendChild(handle);
@@ -134,104 +74,91 @@ export default class EditableCircle extends EventEmitter {
 
     g.appendChild(this.containerGroup);
 
+    format(this.circle, annotation, config.formatter);
+
     // The grabbed element (handle or entire group), if any
     this.grabbedElem = null; 
 
     // Mouse xy offset inside the shape, if mouse pressed
     this.mouseOffset = null;
-
-    // Bit of a hack. If we are dealing with a 'real' image, we enable
-    // reponsive mode. OpenSeadragon handles scaling in a different way,
-    // so we don't need responsive mode.
-    const { image } = env;
-    if (image instanceof Element || image instanceof HTMLDocument)
-      this.enableResponsive();
   }
 
-  /**
-   * Not really needed (could just define a this.element).
-   * But to make this more explicit: element is a field every
-   * editable shape implementation must provide
-   */
-  get element() {	
-    return this.elementGroup;	
-  }
-
-  enableResponsive = () => {
-    if (window.ResizeObserver) {
-      this.resizeObserver = new ResizeObserver(() => {
-        const svgBounds = this.svg.getBoundingClientRect();
-        // console.log('svgBounds', svgBounds);
-        const { width, height } = this.svg.viewBox.baseVal;
-
-        const scaleX = width / svgBounds.width;
-        const scaleY = height / svgBounds.height;
-        this.scaleHandles(scaleX, scaleY);
-      });
-      
-      this.resizeObserver.observe(this.svg.parentNode);
-    }
-  }
-
-  scaleHandles = (scaleOrScaleX, optScaleY) => {
-    const scaleX = scaleOrScaleX;
-    const scaleY = optScaleY || scaleOrScaleX;
-
-    this.handles.forEach(handle => 
-      handle.firstChild.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
-  }
-
-  /** Sets the shape size, including handle positions **/
   setSize = (cx, cy, r) => {
     setCircleSize(this.circle, cx, cy, r);
     setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
+    setFormatterElSize(this.elementGroup, cx, cy, r);
 
-    const [ top, right, bottom, left] = this.handles;
-    setHandleXY(top, cx, cy - r);
-    setHandleXY(right, cx + r, cy);
-    setHandleXY(bottom, cx, cy + r);
-    setHandleXY(left, cx - r, cy);
+    const [ topleft, topright, bottomright, bottomleft] = this.handles;
+    this.setHandleXY(topleft, cx, cy - r);
+    this.setHandleXY(topright, cx + r, cy);
+    this.setHandleXY(bottomright, cx, cy + r);
+    this.setHandleXY(bottomleft, cx - r, cy);
   }
 
-  /** Converts mouse coordinates to SVG coordinates **/
-  getMousePosition = evt => {
-    const pt = this.svg.createSVGPoint();
-    pt.x = evt.clientX;
-    pt.y = evt.clientY;
-    return pt.matrixTransform(this.g.getScreenCTM().inverse());
+  stretchCorners = (draggedHandleIdx, anchorHandle, mousePos) => {
+    const anchor = this.getHandleXY(anchorHandle);
+
+    const width = mousePos.x - anchor.x;
+    const height = mousePos.y - anchor.y;
+
+    const x = width > 0 ? anchor.x : mousePos.x;
+    const y = height > 0 ? anchor.y : mousePos.y;
+    const w = Math.abs(width);
+    const h = Math.abs(height);
+    const cx = x + w/2;
+    const cy = y + h/2;
+    const r = Math.pow(w**2 + h**2, 0.5)/2;
+
+    setCircleSize(this.circle, cx, cy, r);
+    setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
+    setFormatterElSize(this.elementGroup, cx, cy, r);
+
+    // Anchor (=opposite handle) stays in place, dragged handle moves with mouse
+    this.setHandleXY(this.handles[draggedHandleIdx], mousePos.x, mousePos.y);
+
+    // Handles left and right of the dragged handle
+    const left = this.handles[(draggedHandleIdx + 3) % 4];
+    this.setHandleXY(left, anchor.x, mousePos.y);
+
+    const right = this.handles[(draggedHandleIdx + 5) % 4];
+    this.setHandleXY(right, mousePos.x, anchor.y);
+
+    return { cx, cy, r };
   }
 
   onGrab = grabbedElem => evt => {
     this.grabbedElem = grabbedElem; 
-    const pos = this.getMousePosition(evt);
+    const pos = this.getSVGPoint(evt);
     const { cx, cy } = getCircleSize(this.circle);
-    this.mouseOffset = { x: pos.x - cx, y: pos.y - cy };
+    this.mouseOffset = { x: pos.x - cx, y: pos.y - cy };  
   }
 
   onMouseMove = evt => {
+    const constrain = (coord, max) =>
+      coord < 0 ? 0 : ( coord > max ? max : coord);
+
     if (this.grabbedElem) {
-      const pos = this.getMousePosition(evt);
+      const pos = this.getSVGPoint(evt);
 
       if (this.grabbedElem === this.circle) {
         // x/y changes by mouse offset, w/h remains unchanged
-        const { r} = getCircleSize(this.circle);
-        const cx = pos.x - this.mouseOffset.x;
-        const cy = pos.y - this.mouseOffset.y;
+        const { r } = getCircleSize(this.circle);
 
-        this.setSize(cx, cy, r);
-        this.emit('update', toCircleFragment(cx, cy, r, this.env.image));
+        const { naturalWidth, naturalHeight } = this.env.image;
+
+        const x = constrain(pos.x - this.mouseOffset.x, naturalWidth - r);
+        const y = constrain(pos.y - this.mouseOffset.y, naturalHeight - r);
+
+        this.setSize(cx, cy, r); 
+        this.emit('update', toCircleFragment(cx, cy, r, this.env.image)); 
       } else {
-        // Handles
-        const corners = getCorners(this.circle);
-
         // Mouse position replaces one of the corner coords, depending
         // on which handle is the grabbed element
         const handleIdx = this.handles.indexOf(this.grabbedElem);
-        const oppositeCorner = handleIdx < 2 ? 
-          corners[handleIdx + 2] : corners[handleIdx - 2];
-        const { cx, cy, r } = stretchCorners(pos, oppositeCorner)
+        const oppositeHandle = handleIdx < 2 ? 
+          this.handles[handleIdx + 2] : this.handles[handleIdx - 2];
 
-        this.setSize(cx, cy, r);
+        const { cx, cy, r } = this.stretchCorners(handleIdx, oppositeHandle, pos);
         this.emit('update', toCircleFragment(cx, cy, r, this.env.image));
       }
     }
@@ -242,13 +169,13 @@ export default class EditableCircle extends EventEmitter {
     this.mouseOffset = null;
   }
 
-  destroy = () => {
-    this.containerGroup.parentNode.removeChild(this.containerGroup);
+  get element() { 
+    return this.elementGroup; 
+  }
 
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
-    
-    this.resizeObserver = null;
+  destroy() {
+    this.containerGroup.parentNode.removeChild(this.containerGroup);
+    super.destroy();
   }
 
 }

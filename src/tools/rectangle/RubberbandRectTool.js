@@ -1,45 +1,25 @@
-import EventEmitter from 'tiny-emitter';
 import RubberbandRect from './RubberbandRect';
 import EditableRect from './EditableRect';
+import Tool from '../Tool';
 
 /**
  * A rubberband selector for rectangle fragments.
  */
-export default class RubberbandRectTool extends EventEmitter {
+export default class RubberbandRectTool extends Tool {
 
   constructor(g, config, env) {
-    super();
-
-    this.svg = g.closest('svg');
-    this.g = g;
-    this.config = config;
-    this.env = env;
+    // Most of the basics are handled in the Tool base class
+    super(g, config, env);
 
     this.rubberband = null;
   }
 
-  _attachListeners = () => {
-    this.svg.addEventListener('mousemove', this.onMouseMove);    
-    document.addEventListener('mouseup', this.onMouseUp);
-  }
+  startDrawing = (x, y) => {
+    this.attachListeners({
+      mouseMove: this.onMouseMove,
+      mouseUp: this.onMouseUp
+    });
 
-  _detachListeners = () => {
-    this.svg.removeEventListener('mousemove', this.onMouseMove);
-    document.removeEventListener('mouseup', this.onMouseUp);
-  }
-
-  _toSVG = (x, y) => {
-    const pt = this.svg.createSVGPoint();
-
-    const { left, top } = this.svg.getBoundingClientRect();
-    pt.x = x + left;
-    pt.y = y + top;
-    return pt.matrixTransform(this.g.getScreenCTM().inverse());
-  }
-
-  startDrawing = evt => {
-    const { x, y } = this._toSVG(evt.layerX, evt.layerY);
-    this._attachListeners();
     this.rubberband = new RubberbandRect(x, y, this.g, this.env);
   }
 
@@ -50,17 +30,19 @@ export default class RubberbandRectTool extends EventEmitter {
     }
   }
 
-  onMouseMove = evt => {
-    const { x , y } = this._toSVG(evt.layerX, evt.layerY);
+  onMouseMove = (x, y) =>
     this.rubberband.dragTo(x, y);
-  }
   
-  onMouseUp = evt => {
-    this._detachListeners();
+  onMouseUp = () => {
+    this.detachListeners();
+    this.started = false;
 
-    const { w } = this.rubberband.bbox;
+    const { width, height } = this.rubberband.getBoundingClientRect();
 
-    if (w > 3) {
+    const minWidth = this.config.minSelectionWidth || 4;
+    const minHeight = this.config.minSelectionHeight || 4;
+
+    if (width >= minWidth && height >= minHeight) {
       // Emit the SVG shape with selection attached    
       const { element } = this.rubberband;
       element.annotation = this.rubberband.toSelection();
@@ -68,21 +50,24 @@ export default class RubberbandRectTool extends EventEmitter {
       // Emit the completed shape...
       this.emit('complete', element);
     } else {
-      this.emit('cancel', evt);
+      this.emit('cancel');
     }
 
     this.stop();
   }
 
-  createEditableShape = annotation =>
-    new EditableRect(annotation, this.g, this.config, this.env);
-
   get isDrawing() {
     return this.rubberband != null;
   }
+  
+  createEditableShape = annotation =>
+    new EditableRect(annotation, this.g, this.config, this.env);
 
-  get supportsModify() {
-    return true;
-  }
+}
 
+RubberbandRectTool.identifier = 'rect';
+
+RubberbandRectTool.supports = annotation => {
+  const fragmentSelector = annotation.selector('FragmentSelector');
+  return fragmentSelector?.conformsTo.startsWith('http://www.w3.org/TR/media-frags');
 }

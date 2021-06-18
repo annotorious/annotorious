@@ -1,60 +1,34 @@
-import EventEmitter from 'tiny-emitter';
 import RubberbandPolygon from './RubberbandPolygon';
 import EditablePolygon from './EditablePolygon';
+import Tool from '../Tool';
 
 /**
  * A rubberband selector for rectangle fragments.
  */
-export default class RubberbandPolygonTool extends EventEmitter {
+export default class RubberbandPolygonTool extends Tool {
 
   constructor(g, config, env) {
-    super();
+    super(g, config, env);
 
-    this.svg = g.closest('svg');
-    this.g = g;
-    this.config = config;
-    this.env = env;
-
-    this.isDrawing = false;
-
-    this.supportsModify = true;
+    this._isDrawing = false;
   }
 
-  _attachListeners = () => {
-    this.svg.addEventListener('mousemove', this.onMouseMove);
-    this.svg.addEventListener('dblclick', this.onDblClick);
-    document.addEventListener('mouseup', this.onMouseUp);
-  }
-
-  _detachListeners = () => {
-    this.svg.removeEventListener('mousemove', this.onMouseMove);
-    this.svg.removeEventListener('dblclick', this.onDblClick);
-    document.removeEventListener('mouseup', this.onMouseUp);
-  }
-
-  _toSVG = (x, y) => {
-    const pt = this.svg.createSVGPoint();
-
-    const { left, top } = this.svg.getBoundingClientRect();
-    pt.x = x + left;
-    pt.y = y + top;
-
-    return pt.matrixTransform(this.g.getScreenCTM().inverse());
-  }
-
-  startDrawing = evt => {
-    if (!this.isDrawing) {
-      this.isDrawing = true;
-
-      const { x, y } = this._toSVG(evt.layerX, evt.layerY);
-      this._attachListeners();
-      this.rubberband = new RubberbandPolygon([ x, y ], this.g, this.env);
-    }
+  startDrawing = (x, y) => {
+    this._isDrawing = true;
+    
+    this.attachListeners({
+      mouseMove: this.onMouseMove,
+      mouseUp: this.onMouseUp,
+      dblClick: this.onDblClick
+    });
+    
+    this.rubberband = new RubberbandPolygon([ x, y ], this.g, this.env);
   }
 
   stop = () => {
-    this._detachListeners();
-    this.isDrawing = false;
+    this.detachListeners();
+    
+    this._isDrawing = false;
 
     if (this.rubberband) {
       this.rubberband.destroy();
@@ -62,29 +36,28 @@ export default class RubberbandPolygonTool extends EventEmitter {
     }
   }
 
-  onMouseMove = evt => {
-    const { x , y } = this._toSVG(evt.layerX, evt.layerY);
+  onMouseMove = (x, y) =>
     this.rubberband.dragTo([ x, y ]);
-  }
 
-  onMouseUp = evt => {
-    if (this.rubberband.isCollapsed) {
-      this.emit('cancel', evt);
-      this.stop();
-    } else {
-      const { x , y } = this._toSVG(evt.layerX, evt.layerY);
+  onMouseUp = (x, y) => {
+    const { width, height } = this.rubberband.getBoundingClientRect();
+
+    const minWidth = this.config.minSelectionWidth || 4;
+    const minHeight = this.config.minSelectionHeight || 4;
+    
+    if (width >= minWidth || height >= minHeight) {
       this.rubberband.addPoint([ x, y ]);
+    } else {
+      this.emit('cancel');
+      this.stop();
     }
   }
 
-  onDblClick = evt => {
-    this._detachListeners();
-    this.isDrawing = false;
+  onDblClick = (x, y) => {
+    this._isDrawing = false;
 
-    const { x , y } = this._toSVG(evt.layerX, evt.layerY);
     this.rubberband.addPoint([ x, y ]);
 
-    // Emit the SVG shape with selection attached
     const shape = this.rubberband.element;
     shape.annotation = this.rubberband.toSelection();
     this.emit('complete', shape);
@@ -92,7 +65,19 @@ export default class RubberbandPolygonTool extends EventEmitter {
     this.stop();
   }
 
+  get isDrawing() {
+    return this._isDrawing;
+  }
+
   createEditableShape = annotation =>
     new EditablePolygon(annotation, this.g, this.config, this.env);
 
+}
+
+RubberbandPolygonTool.identifier = 'polygon';
+
+RubberbandPolygonTool.supports = annotation => {
+  const selector = annotation.selector('SvgSelector');
+  if (selector)
+    return selector.value?.match(/^<svg.*<polygon/g);
 }
