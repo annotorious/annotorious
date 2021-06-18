@@ -98,11 +98,19 @@ export default class EditableCircle extends EditableShape {
   stretchCorners = (draggedHandleIdx, anchorHandle, mousePos) => {
     const anchor = this.getHandleXY(anchorHandle);
 
-    const width = mousePos.x - anchor.x;
-    const height = mousePos.y - anchor.y;
+    var mouseX = mousePos.x;
+    var mouseY = mousePos.y;
+    if(draggedHandleIdx == 0 || draggedHandleIdx == 2) {
+      mouseX = anchor.x;
+    } else {
+      mouseY = anchor.y;
+    }
 
-    const x = width > 0 ? anchor.x : mousePos.x;
-    const y = height > 0 ? anchor.y : mousePos.y;
+    const width = mouseX - anchor.x;
+    const height = mouseY - anchor.y;
+
+    const x = width > 0 ? anchor.x : mouseX;
+    const y = height > 0 ? anchor.y : mouseY;
     const w = Math.abs(width);
     const h = Math.abs(height);
     const cx = x + w/2;
@@ -113,15 +121,18 @@ export default class EditableCircle extends EditableShape {
     setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
     setFormatterElSize(this.elementGroup, cx, cy, r);
 
-    // Anchor (=opposite handle) stays in place, dragged handle moves with mouse
-    this.setHandleXY(this.handles[draggedHandleIdx], mousePos.x, mousePos.y);
-
-    // Handles left and right of the dragged handle
-    const left = this.handles[(draggedHandleIdx + 3) % 4];
-    this.setHandleXY(left, anchor.x, mousePos.y);
-
-    const right = this.handles[(draggedHandleIdx + 5) % 4];
-    this.setHandleXY(right, mousePos.x, anchor.y);
+    if(draggedHandleIdx != 2) {
+      this.setHandleXY(this.handles[0], cx, cy - r);
+    }
+    if(draggedHandleIdx != 3) {
+      this.setHandleXY(this.handles[1], cx + r, cy);
+    }
+    if(draggedHandleIdx != 0) {
+      this.setHandleXY(this.handles[2], cx, cy + r);
+    }
+    if(draggedHandleIdx != 1) {
+      this.setHandleXY(this.handles[3], cx - r, cy);
+    }
 
     return { cx, cy, r };
   }
