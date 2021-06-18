@@ -25,7 +25,7 @@
 
 .a9s-annotation, .a9s-selection {
 
-  rect, path, polygon {
+  rect, circle, path, polygon {
     fill:transparent;
     cursor:pointer;
     vector-effect:non-scaling-stroke;
