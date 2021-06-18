@@ -34,6 +34,7 @@
   .a9s-inner {
     stroke:#fff;
     stroke-width:1px;
+    fill: transparent;
   }
 
   .a9s-inner:hover {
@@ -43,6 +44,7 @@
   .a9s-outer {
     stroke:rgba(0, 0, 0, 0.7);
     stroke-width:3px;
+    fill: none;
   }
 
   .a9s-formatter-el {
