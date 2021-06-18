@@ -1,6 +1,6 @@
-import EventEmitter from 'tiny-emitter';
 import RubberbandCircle from './RubberbandCircle';
 import EditableCircle from './EditableCircle';
+import Tool from '../Tool';
 
 /**
  * A rubberband selector for circle fragments.
