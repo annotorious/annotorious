@@ -146,8 +146,8 @@ export default class EditableCircle extends EditableShape {
 
         const { naturalWidth, naturalHeight } = this.env.image;
 
-        const x = constrain(pos.x - this.mouseOffset.x, naturalWidth - r);
-        const y = constrain(pos.y - this.mouseOffset.y, naturalHeight - r);
+        const cx = constrain(pos.x - this.mouseOffset.x, naturalWidth - r);
+        const cy = constrain(pos.y - this.mouseOffset.y, naturalHeight - r);
 
         this.setSize(cx, cy, r); 
         this.emit('update', toCircleFragment(cx, cy, r, this.env.image)); 
