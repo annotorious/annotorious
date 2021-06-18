@@ -68,6 +68,6 @@ export default class RubberbandCircleTool extends Tool {
 RubberbandCircleTool.identifier = 'circle';
 
 RubberbandCircleTool.supports = annotation => {
-  const fragmentSelector = annotation.selector('FragmentSelector');
+  const fragmentSelector = annotation.selector('CircleFragmentSelector');
   return fragmentSelector?.conformsTo.startsWith('http://www.w3.org/TR/media-frags');
 }
