@@ -107,6 +107,7 @@ export default class EditableCircle extends EditableShape {
     const h = Math.abs(height);
     const cx = x + w/2;
     const cy = y + h/2;
+    const r = Math.pow(w**2 + h**2, 0.5)/2;
 
     setCircleSize(this.circle, cx, cy, r);
     setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
