@@ -98,7 +98,7 @@ export const setCircleSize = (g, cx, cy, r) => {
  * Shorthand to get the area (rectangle w x h) from the 
  * annotation's fragment selector. 
  */
-export const circleArcea = annotation => {
+export const circleArea = annotation => {
   const {r} = parseCircleFragment(annotation);
   return 3.1415*r*r;
 }

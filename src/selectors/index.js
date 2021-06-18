@@ -1,6 +1,6 @@
 import { drawRect, rectArea } from './RectFragment';
 import { drawEmbeddedSVG, polygonArea } from './EmbeddedSVG';
-import {drawCircle, circleArcea} from "./CircleFragment";
+import {drawCircle, circleArea } from "./CircleFragment";
 
 // Drawing functions per selector type
 const drawFn = {
@@ -12,7 +12,7 @@ const drawFn = {
 // Area computation functions per selector type
 const areaFn = {
   'FragmentSelector': rectArea,
-  'CircleFragmentSelector': circleArcea,
+  'CircleFragmentSelector': circleArea,
   'SvgSelector': polygonArea
 }
 
