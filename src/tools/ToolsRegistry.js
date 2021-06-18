@@ -1,5 +1,6 @@
 import EventEmitter from 'tiny-emitter';
 import RubberbandRectTool from './rectangle/RubberbandRectTool';
+import RubberbandCircleTool from './polygon/RubberbandCircleTool';
 import RubberbandPolygonTool from './polygon/RubberbandPolygonTool';
 
 export default class ToolRegistry extends EventEmitter {
@@ -19,6 +20,7 @@ export default class ToolRegistry extends EventEmitter {
     // Registered tool implementations
     this._registered = [
       RubberbandRectTool,
+      RubberbandCircleTool,
       RubberbandPolygonTool
     ];
 
