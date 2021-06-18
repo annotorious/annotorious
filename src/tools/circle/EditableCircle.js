@@ -86,7 +86,7 @@ export default class EditableCircle extends EditableShape {
   setSize = (cx, cy, r) => {
     setCircleSize(this.circle, cx, cy, r);
     setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
-    setFormatterElSize(this.elementGroup, cx, cy, r);
+    setFormatterElSize(this.elementGroup, cx, cy, r, r);
 
     const [ topleft, topright, bottomright, bottomleft] = this.handles;
     this.setHandleXY(topleft, cx, cy - r);
@@ -119,7 +119,7 @@ export default class EditableCircle extends EditableShape {
 
     setCircleSize(this.circle, cx, cy, r);
     setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
-    setFormatterElSize(this.elementGroup, cx, cy, r);
+    setFormatterElSize(this.elementGroup, cx, cy, r, r);
 
     if(draggedHandleIdx != 2) {
       this.setHandleXY(this.handles[0], cx, cy - r);
