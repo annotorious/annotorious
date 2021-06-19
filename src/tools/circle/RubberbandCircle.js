@@ -53,8 +53,8 @@ export default class RubberbandCircle {
 
     const r = Math.max(1, Math.pow(w ** 2 + h ** 2, 0.5) / 2); // Negative values
 
-    // setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
     setCircleSize(this.circle, cx, cy, r);
+    this.mask.redraw();
   }
 
   getBoundingClientRect = () => 
