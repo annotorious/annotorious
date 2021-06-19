@@ -8,7 +8,7 @@ const setXYR = (shape, x, y, r) => {
 }
 
 /** 
- * Draws an SVG rectangle, either from an annotation, or an
+ * Draws an SVG circle, either from an annotation, or an
  * (cx, cy, r)-tuple.
  */
 export const drawCircle = (cx, cy, r) => {
