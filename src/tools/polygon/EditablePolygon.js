@@ -21,7 +21,7 @@ const getBBox = shape =>
   shape.querySelector('.a9s-inner').getBBox();
 
 /**
- * An editable rectangle shape.
+ * An editable polygon shape.
  */
 export default class EditablePolygon extends EditableShape {
 
