@@ -31,7 +31,7 @@ export default class RubberbandCircle {
     // the user actually moves the mouse
     this.group.style.display = 'none';
 
-    this.group.appendChild(this.mask);
+    this.group.appendChild(this.mask.element);
     this.group.appendChild(this.circle);
 
     g.appendChild(this.group);
