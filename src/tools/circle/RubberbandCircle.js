@@ -16,11 +16,10 @@ export default class RubberbandCircle {
 
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
 
-    // this.mask = drawCircleMask(env.image, anchorX, anchorY, 2);
-    // this.mask.setAttribute('class', 'a9s-selection-mask');
-
     this.circle = drawCircle(anchorX, anchorY, 2);
     this.circle.setAttribute('class', 'a9s-selection');
+
+    this.mask = new Mask(env.image, this.inner);
 
     // We make the selection transparent to 
     // pointer events because it would interfere with the 
@@ -31,7 +30,7 @@ export default class RubberbandCircle {
     // the user actually moves the mouse
     this.group.style.display = 'none';
 
-    // this.group.appendChild(this.mask);
+    this.group.appendChild(this.mask);
     this.group.appendChild(this.circle);
 
     g.appendChild(this.group);
