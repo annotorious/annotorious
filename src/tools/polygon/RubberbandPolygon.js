@@ -34,8 +34,6 @@ export default class RubberbandPolygon {
     this.group.appendChild(this.mask.element);
     this.group.appendChild(this.polygon);
 
-    this.isCollapsed = true;
-
     g.appendChild(this.group);
   }
 
@@ -45,13 +43,15 @@ export default class RubberbandPolygon {
     this.inner.setAttribute('points', attr);
   }
 
+  getBoundingClientRect = () =>
+    this.outer.getBoundingClientRect();
+
   dragTo = xy => {
     // Make visible
     this.group.style.display = null;
 
-    this.isCollapsed = false;
-
     const rubberband = [ ...this.points, xy ];
+    
     this.setPoints(rubberband);
     this.mask.redraw();
   }

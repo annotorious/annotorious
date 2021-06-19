@@ -14,12 +14,29 @@ const insertSVGNamespace = originalDoc => {
   return namespacedDoc.documentElement;
 }
 
-/** TODO allow only primitive types (polygon, path, circle, rect) **/
 const sanitize = doc => {
+  // Cf. https://github.com/mattkrick/sanitize-svg#readme  
+  // for the basic approach
+  const cleanEl = el => {
+    Array.from(el.attributes).forEach(attr => {
+      if (attr.name.startsWith('on'))
+        el.removeAttribute(attr.name)
+    });
+  }
+
+  // Remove script tags
+  const scripts = doc.getElementsByTagName('script');
+  Array.from(scripts).reverse().forEach(el =>
+    el.parentNode.removeChild(el));
+
+  // Remove on... attributes
+  cleanEl(doc);
+  Array.from(doc.querySelectorAll('*')).forEach(cleanEl);
+
   return doc;
 }
 
-const parseSVGFragment = annotation => {
+export const svgFragmentToShape = annotation => {
   const selector = annotation.selector('SvgSelector');
   if (selector) {
     const parser = new DOMParser();
@@ -40,8 +57,19 @@ const parseSVGFragment = annotation => {
   }
 }
 
+export const svgFragmentToPoints = annotation => {
+  const svgShape = svgFragmentToShape(annotation);
+  
+  return svgShape.getAttribute('points')
+    .split(' ') // Split x/y tuples
+    .map(xy => xy.split(',').map(str => parseFloat(str.trim())));
+}
+
 export const drawEmbeddedSVG = annotation => {
-  const shape = parseSVGFragment(annotation);
+  const shape = svgFragmentToShape(annotation);
+
+  // Hack
+  svgFragmentToPoints(annotation);
 
   // Because we're nitpicky, we don't just draw the shape,
   // but duplicate it, so we can have inner and an outer lines
@@ -74,4 +102,47 @@ export const toSVGTarget = (shape, image) => {
       value: `<svg>${serialized}</svg>`
     }
   }
+}
+
+/**
+ * Computes the area of the given polygon (or polygon annotation)
+ * @param {Array<Points> | WebAnnotation} arg 
+ */
+export const polygonArea = arg => {
+  const points = arg.type === 'Annotation' ?
+    svgFragmentToPoints(arg) : arg;
+
+  let area = 0;
+  let j = points.length - 1;
+
+  for (let i=0; i < points.length; i++) {
+    area += (points[j][0] + points[i][0]) * (points[j][1] - points[i][1]);
+    j = i;
+  }
+
+  return Math.abs(0.5 * area);
+}
+
+/**
+ * Computes the bounding box of the given polygon (or polygon annotation)
+ * @param {Array<Points> | WebAnnotation} arg 
+ */
+export const polygonBounds = arg => {
+  const points = arg.type === 'Annotation' ?
+    svgFragmentToPoints(arg) : arg;
+
+  const x = points.map(xy => xy[0]);
+  const y = points.map(xy => xy[1]);
+
+  const minX = Math.min(...x);
+  const maxX = Math.max(...x);
+  const minY = Math.min(...y);
+  const maxY = Math.max(...y);
+
+  return {
+    x: minX,
+    y: minY,
+    w: maxX - minX,
+    h: maxY - minY
+  };
 }

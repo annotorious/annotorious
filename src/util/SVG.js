@@ -1,22 +1,27 @@
 export const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
+const getClassNames = el => {
+  const attr = el.getAttribute('class');
+  return attr ? new Set(attr.split(' ')) : new Set();
+}
+
 // IE11 doesn't support adding/removing classes to SVG elements except 
 // via .setAttribute
 export const addClass = (el, className) => {
-  const classNames = new Set(el.getAttribute('class').split(' '));
+  const classNames = getClassNames(el);
   classNames.add(className);
   el.setAttribute('class', Array.from(classNames).join(' '));
 }
 
 export const removeClass = (el, className) => {
-  const classNames = el.getAttribute('class').split(' ').filter(c => c !== className);
-  el.setAttribute('class', classNames.join(' '));
+  const classNames = getClassNames(el);
+  classNames.delete(className);
+
+  if (classNames.size === 0)
+    el.removeAttribute('class');
+  else
+    el.setAttribute('class', Array.from(classNames).join(' '));
 }
 
-export const hasClass = (el, className) => {
-  const classAttr = el.getAttribute('class');
-  if (classAttr) {
-    const classNames = new Set(classAttr.split(' '));
-    return classNames.has(className);
-  }
-}
+export const hasClass = (el, className) =>
+  getClassNames(el).has(className);

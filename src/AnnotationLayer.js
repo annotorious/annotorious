@@ -1,9 +1,12 @@
 import EventEmitter from 'tiny-emitter';
 import { drawShape, shapeArea } from './selectors';
 import { SVG_NAMESPACE, addClass, removeClass } from './util/SVG';
-import DrawingTools from './tools/DrawingTools';
+import DrawingTools from './tools/ToolsRegistry';
 import { format } from './util/Formatting';
 import { getSnippet } from './util/ImageSnippet';
+import { isTouchDevice, enableTouchTranslation } from './util/Touch';
+
+const isTouch = isTouchDevice();
 
 export default class AnnotationLayer extends EventEmitter {
 
@@ -11,18 +14,30 @@ export default class AnnotationLayer extends EventEmitter {
     super();
 
     const { wrapperEl, config, env } = props;
-    console.log('env', env);
     
     this.imageEl = env.image;
     this.readOnly = config.readOnly;
-    this.headless = config.headless;
     this.formatter = config.formatter;
 
     const { naturalWidth, naturalHeight } = this.imageEl;
 
     // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-    this.svg.setAttribute('class', 'a9s-annotationlayer');
+
+    if (isTouch) {
+      this.svg.setAttribute('class', 'a9s-annotationlayer touch');
+
+      // Translates touch events to simulated mouse events
+      enableTouchTranslation(this.svg);
+
+      // Adds additional logic because touch doesn't have hover
+      this.svg.addEventListener('touchstart', () => {
+        this.currentHover = null;
+        this.selectCurrentHover();
+      });
+    } else {
+      this.svg.setAttribute('class', 'a9s-annotationlayer');
+    }
 
     if (naturalWidth == 0 && naturalHeight == 0) {
       this.imageEl.onload = () =>
@@ -33,28 +48,20 @@ export default class AnnotationLayer extends EventEmitter {
 
     // Don't attach directly, but in group
     this.g = document.createElementNS(SVG_NAMESPACE, 'g');
+
     this.svg.appendChild(this.g);
     wrapperEl.appendChild(this.svg);
 
     // Currently selected shape
     this.selectedShape = null;
 
-    if (this.readOnly) {
-      // No drawing, only select the current hover shape
-      this.svg.addEventListener('mousedown', this.selectCurrentHover);
-    } else {
-      // Attach handlers to the drawing tool palette
-      this.tools = new DrawingTools(this.g, config, env);
-      this.tools.on('cancel', this.selectCurrentHover);
-      this.tools.on('complete', shape => {
-        this.selectShape(shape);
-        this.emit('createSelection', shape.annotation);
-      });
+    // Init the drawing tools
+    this.tools = new DrawingTools(this.g, config, env);
+    this.tools.on('startSelection', pt => this.emit('startSelection', pt));
+    this.tools.on('cancel', this.selectCurrentHover);
+    this.tools.on('complete', this.selectShape);
 
-      // Enable drawing
-      if (!this.readOnly)
-        this.svg.addEventListener('mousedown', this.startDrawing);
-    }
+    this.svg.addEventListener('mousedown', this._onMouseDown);
 
     this.currentHover = null;
   }
@@ -73,21 +80,54 @@ export default class AnnotationLayer extends EventEmitter {
 
       this.currentHover = null;
     });
+
+    if (isTouch) {
+      elem.addEventListener('touchstart', evt => {
+        evt.stopPropagation();
+        this.currentHover = elem;
+      });
+
+      elem.addEventListener('touchend', evt => {
+        const { clientX, clientY } = evt.changedTouches[0];
+        const realTarget = document.elementFromPoint(clientX, clientY);
+        evt.stopPropagation();
+
+        if (elem.contains(realTarget)) {
+          this.currentHover = elem;
+          this.selectCurrentHover();
+        }
+      });
+    }
+  }
+
+  _onMouseDown = evt => {
+    if (!(this.readOnly || this.selectedShape || this.tools.current.isDrawing)) {
+      // No active selection & not drawing now? Start drawing.
+      this.tools.current.start(evt);
+    } else if (this.selectedShape !== this.currentHover) {
+      // If there is none, select the current hover
+      this.selectCurrentHover();
+    }
   }
 
   addAnnotation = annotation => {
     const g = drawShape(annotation);
     
-    g.setAttribute('class', 'a9s-annotation');
-    format(g, annotation, this.formatter);
-    
+    g.setAttribute('class', 'a9s-annotation');    
     g.setAttribute('data-id', annotation.id);
+    
     g.annotation = annotation;
+
     this._attachHoverListener(g, annotation);
-  
     this.g.appendChild(g);
+
+    format(g, annotation, this.formatter);
+
     return g;
   }
+
+  addDrawingTool = plugin =>
+    this.tools?.registerTool(plugin);
 
   addOrUpdateAnnotation = (annotation, previous) => {
     if (this.selectedShape?.annotation === annotation || this.selectShape?.annotation == previous)
@@ -106,6 +146,8 @@ export default class AnnotationLayer extends EventEmitter {
 
   deselect = skipRedraw => {
     if (this.selectedShape) {
+      this.tools?.current.stop();
+
       const { annotation } = this.selectedShape;
 
       if (this.selectedShape.destroy) {
@@ -115,6 +157,7 @@ export default class AnnotationLayer extends EventEmitter {
 
         if (!annotation.isSelection) {
           this.addAnnotation(annotation);
+          
           if (!skipRedraw)
             this.redraw(); 
         }
@@ -127,6 +170,7 @@ export default class AnnotationLayer extends EventEmitter {
   } 
 
   destroy = () => {
+    this.deselect();
     this.currentHover = null;
     this.svg.parentNode.removeChild(this.svg);
   }
@@ -158,9 +202,20 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   init = annotations => {
+    // Clear existing
+    this.deselect();
+    this.currentHover = null;
+
+    const shapes = Array.from(this.g.querySelectorAll('.a9s-annotation'));
+    shapes.forEach(s => this.g.removeChild(s));
+
+    // Add
     annotations.sort((a, b) => shapeArea(b) - shapeArea(a));
     annotations.forEach(this.addAnnotation);
   }
+
+  listDrawingTools = () =>
+    this.tools?.listTools();
 
   /** 
    * Forces a new ID on the annotation with the given ID. 
@@ -197,36 +252,47 @@ export default class AnnotationLayer extends EventEmitter {
     annotations.forEach(this.addAnnotation);
   }
 
-  removeAnnotation = annotation => {
-    if (this.selectedShape?.annotation === annotation)
+  removeAnnotation = annotationOrId => {
+    // Removal won't work if the annotation is currently selected - deselect!
+    const id = annotationOrId.type ? annotationOrId.id : annotationOrId;
+
+    if (this.selectedShape?.annotation.id === id)
       this.deselect();
 
-    if (this.currentHover?.annotation === annotation)
-      this.currentHover = null;
+    const toRemove = this.findShape(annotationOrId);
 
-    const shape = this.findShape(annotation);
-    if (shape)
-      shape.parentNode.removeChild(shape);
+    if (toRemove) {
+      if (this.selectedShape?.annotation === toRemove.annotation)
+        this.deselect();
+
+      if (this.currentHover?.annotation === toRemove.annotation)
+        this.currentHover = null;
+
+      toRemove.parentNode.removeChild(toRemove);
+    }
   }
 
   /** 
    * Programmatic selection via the API. Should work as normal,
    * but the selectAnnotation event should not be fired to the outside.
    */
-  selectAnnotation = annotationOrId => {
+  selectAnnotation = (annotationOrId, skipEvent) => {
     // Deselect first
     if (this.selectedShape)
       this.deselect();
 
     const selected = this.findShape(annotationOrId);
 
-    // Select with 'skipEvent' flag
-    if (selected)
-      this.selectShape(selected, true);
-    else
-      this.deselect();
+    if (selected) {
+      this.selectShape(selected, skipEvent);
 
-    return selected?.annotation;
+      const element = this.selectedShape.element ? 
+        this.selectedShape.element : this.selectedShape;
+      
+      return { annotation: selected.annotation, element };
+    } else {
+      this.deselect();
+    }
   }
 
   selectCurrentHover = () => {
@@ -253,52 +319,49 @@ export default class AnnotationLayer extends EventEmitter {
     const readOnly = this.readOnly || annotation.readOnly;
 
     if (!readOnly) {
-      const toolForShape = this.tools.forShape(shape);
+      // Replace the shape with an editable version
+      shape.parentNode.removeChild(shape);
 
-      if (toolForShape?.supportsModify) {
-        // Replace the shape with an editable version
-        shape.parentNode.removeChild(shape);
+      const toolForAnnotation = this.tools.forAnnotation(annotation);      
+      this.selectedShape = toolForAnnotation.createEditableShape(annotation);
 
-        this.selectedShape = toolForShape.createEditableShape(annotation);
+      // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
+      this.selectedShape.element.annotation = annotation;         
+      this._attachHoverListener(this.selectedShape.element, annotation);
 
-        // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
-        this.selectedShape.element.annotation = annotation;         
-        this._attachHoverListener(this.selectedShape.element, annotation);
+      // When using mouse, currentHover will be set by mouseEnter, but
+      // that doesn't happen in touch
+      if (isTouch)
+        this.currentHover = this.selectedShape;
 
-        this.selectedShape.on('update', fragment => {
-          this.emit('updateTarget', this.selectedShape.element, fragment);
-        });
+      this.selectedShape.on('update', fragment => {
+        this.emit('updateTarget', this.selectedShape.element, fragment);
+      });
 
-        this.emit('select', { annotation, element: this.selectedShape.element, skipEvent });
-      } else {
-        addClass(shape, 'selected');
-        this.selectedShape = shape;
-        this.emit('select', { annotation, element: shape, skipEvent });  
-      }
+      if (!skipEvent)
+        this.emit('select', { annotation, element: this.selectedShape.element });
     } else {
       addClass(shape, 'selected');
       this.selectedShape = shape;
-      this.emit('select', { annotation, element: shape, skipEvent }); 
+
+      if (!skipEvent)
+        this.emit('select', { annotation, element: shape, skipEvent }); 
     }
   }
 
-  setDrawingTool = shape =>
-    this.tools.setCurrent(shape);
-
-  setVisible = visible => {
-    if (visible)
-      this.svg.style.display = null;
-    else
-      this.svg.style.display = 'none';
+  setDrawingTool = shape => {
+    if (this.tools) {
+      this.tools.current?.stop();
+      this.tools.setCurrent(shape);
+    }
   }
 
-  startDrawing = evt => {
-    if (!this.selectedShape) {
-      // Only start drawing if there's no active selection
-      this.tools.current.startDrawing(evt);
-    } else if (this.selectedShape !== this.currentHover) {
-      // If there is none, select the current hover
-      this.selectCurrentHover();
+  setVisible = visible => {
+    if (visible) {
+      this.svg.style.display = null;
+    } else {
+      this.deselect();
+      this.svg.style.display = 'none';
     }
   }
 

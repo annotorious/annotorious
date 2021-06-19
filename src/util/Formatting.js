@@ -1,4 +1,22 @@
-import { addClass } from './SVG';
+import { addClass, SVG_NAMESPACE } from './SVG';
+
+const appendFormatterEl = (formatterEl, shape) => {
+  const { x, y, width, height } = shape.getBBox();
+
+  const svgEl = document.createElementNS(SVG_NAMESPACE, 'svg');
+  svgEl.setAttribute('class', 'a9s-formatter-el');
+  svgEl.setAttribute('x', x);
+  svgEl.setAttribute('y', y);
+  svgEl.setAttribute('width', width);
+  svgEl.setAttribute('height', height);
+
+  const g = document.createElementNS(SVG_NAMESPACE, 'g');
+  g.appendChild(formatterEl);y
+
+  svgEl.appendChild(g);
+  
+  shape.append(svgEl);
+}
 
 /**
  * A formatter is a user-defined function that takes an annotation as input,
@@ -10,33 +28,58 @@ import { addClass } from './SVG';
  * - 'data-*' added as data attributes
  * - 'style' a list of CSS styles (in the form of a string) 
  */
-export const format = (element, annotation, formatter) => {
+export const format = (shape, annotation, formatter) => {
   // The formatter can be undefined
   if (!formatter)
-    return element;
+    return shape;
 
   const format = formatter(annotation);
 
   // The formatter is allowed to return null
   if (!format)
-    return element;
+    return shape;
 
   if (typeof format === 'string' || format instanceof String) {
     // Apply CSS class
-    addClass(element, format); 
+    addClass(shape, format); 
+  } else if (format.nodeType === Node.ELEMENT_NODE) {
+    appendFormatterEl(format, shape);
   } else {
-    const { className, style } = format;
+    const { className, style, element } = format;
 
     if (className)
-      addClass(element, className);
+      addClass(shape, className);
 
-    if (style)
-      element.setAttribute('style', style);
+    if (style) {
+      const outer = shape.querySelector('.a9s-outer');
+      const inner = shape.querySelector('.a9s-inner');
+
+      if (outer && inner) {
+        outer.setAttribute('style', 'display:none');
+        inner.setAttribute('style', style);
+      } else {
+        shape.setAttribute('style', style);
+      }
+    }
+
+    if (element)
+      appendFormatterEl(element, shape);
 
     for (const key in format) {
       if (format.hasOwnProperty(key) && key.startsWith('data-')) {
-        element.setAttribute(key, format[key]);
+        shape.setAttribute(key, format[key]);
       }
     }
+  }
+}
+
+export const setFormatterElSize = (group, x, y, w, h) => {
+  const formatterEl = group.querySelector('.a9s-formatter-el');
+
+  if (formatterEl) {
+    formatterEl.setAttribute('x', x);
+    formatterEl.setAttribute('y', y);
+    formatterEl.setAttribute('width', w);
+    formatterEl.setAttribute('height', h);
   }
 }

@@ -54,7 +54,7 @@ export const setCircleMaskSize = (mask, imageDimensions, x, y, r) => {
 
 /** 
  * Draws an SVG rectangle, either from an annotation, or an
- * (x, y, w, h)-tuple.
+ * (cx, cy, r)-tuple.
  */
 //TODO dependent on parseCircleFragment
 export const drawCircle = (arg1, arg2, arg3) => {
@@ -77,7 +77,7 @@ export const drawCircle = (arg1, arg2, arg3) => {
   return g;
 }
 
-/** Gets the (x, y, w, h)-values from the attributes of the SVG group **/
+/** Gets the (cx, cy, r)-values from the attributes of the SVG group **/
 export const getCircleSize = g => {
   const outerCircle = g.querySelector('.a9s-outer');
   const cx = parseFloat(outerCircle.getAttribute('cx'));
@@ -86,19 +86,7 @@ export const getCircleSize = g => {
   return { cx, cy, r};
 }
 
-/** Returns corner coordinates for the given SVG group **/
-//TODO
-export const getCorners = g => {
-  const { cx, cy, r} = getCircleSize(g);
-  return [
-    { x: cx,     y: cy -r},
-    { x: cx + r,     y: cy },
-    { x: cx,     y: cy + r},
-    { x: cx - r,     y: cy }
-  ];
-}
-
-/** Applies the (x, y, w, h)-values to the rects in the SVG group **/
+/** Applies the (cx, cy, r)-values to the rects in the SVG group **/
 export const setCircleSize = (g, cx, cy, r) => {
   const innerCircle = g.querySelector('.a9s-inner');
   const outerCircle = g.querySelector('.a9s-outer');
@@ -110,7 +98,7 @@ export const setCircleSize = (g, cx, cy, r) => {
  * Shorthand to get the area (rectangle w x h) from the 
  * annotation's fragment selector. 
  */
-export const circleArcea = annotation => {
+export const circleArea = annotation => {
   const {r} = parseCircleFragment(annotation);
   return 3.1415*r*r;
 }

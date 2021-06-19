@@ -1,45 +1,8 @@
-import EventEmitter from 'tiny-emitter';
+import EditableShape from '../EditableShape';
 import { drawEmbeddedSVG, toSVGTarget } from '../../selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '../../util/SVG';
-import { format } from '../../util/Formatting';
+import { format, setFormatterElSize } from '../../util/Formatting';
 import Mask from './PolygonMask';
-
-// TODO redundancy with EditableRect
-const drawHandle = (x, y) => {
-  const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-  svg.setAttribute('class', 'a9s-handle');
-  svg.setAttribute('overflow', 'visible');
-  svg.setAttribute('x', x);
-  svg.setAttribute('y', y);
-
-  const group = document.createElementNS(SVG_NAMESPACE, 'g');
-
-  const drawCircle = r => {
-    const c = document.createElementNS(SVG_NAMESPACE, 'circle');
-    c.setAttribute('cx', 0);
-    c.setAttribute('cy', 0);
-    c.setAttribute('r', r);
-    return c;
-  }
-
-  const inner = drawCircle(6);
-  inner.setAttribute('class', 'a9s-handle-inner')
-
-  const outer = drawCircle(7);
-  outer.setAttribute('class', 'a9s-handle-outer')
-
-  group.appendChild(outer);
-  group.appendChild(inner);
-
-  svg.appendChild(group);
-  return svg;
-}
-
-// TODO redundancy with EditableCircle
-const setHandleXY = (handle, x, y) => {
-  handle.setAttribute('x', x);
-  handle.setAttribute('y', y);
-}
 
 const getPoints = shape => {
   // Could just be Array.from(shape.querySelector('.inner').points) but...
@@ -54,20 +17,16 @@ const getPoints = shape => {
   return points;
 }
 
+const getBBox = shape =>
+  shape.querySelector('.a9s-inner').getBBox();
+
 /**
  * An editable rectangle shape.
  */
-export default class EditablePolygon extends EventEmitter {
+export default class EditablePolygon extends EditableShape {
 
   constructor(annotation, g, config, env) {
-    super();
-
-    this.annotation = annotation;
-
-    this.env = env;
-
-    // SVG element
-    this.svg = g.closest('svg');
+    super(annotation, g, config, env);
 
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
@@ -90,21 +49,19 @@ export default class EditablePolygon extends EventEmitter {
     this.containerGroup = document.createElementNS(SVG_NAMESPACE, 'g');
 
     this.shape = drawEmbeddedSVG(annotation);
-    this.shape.setAttribute('class', `a9s-annotation editable selected`);
     this.shape.querySelector('.a9s-inner')
       .addEventListener('mousedown', this.onGrab(this.shape));
-
-    format(this.shape, annotation, config.formatter);
 
     this.mask = new Mask(env.image, this.shape.querySelector('.a9s-inner'));
     
     this.containerGroup.appendChild(this.mask.element);
 
     this.elementGroup = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.elementGroup.setAttribute('class', 'a9s-annotation editable selected');
     this.elementGroup.appendChild(this.shape);
 
     this.handles = getPoints(this.shape).map(pt => {
-      const handle = drawHandle(pt.x, pt.y);
+      const handle = this.drawHandle(pt.x, pt.y);
       handle.addEventListener('mousedown', this.onGrab(handle));
       this.elementGroup.appendChild(handle);
       return handle;
@@ -113,50 +70,22 @@ export default class EditablePolygon extends EventEmitter {
     this.containerGroup.appendChild(this.elementGroup);
     g.appendChild(this.containerGroup);
 
+    format(this.shape, annotation, config.formatter);
+
     // The grabbed element (handle or entire shape), if any
     this.grabbedElem = null;
 
     // Mouse grab point
     this.grabbedAt = null;
-
-    // Bit of a hack. If we are dealing with a 'real' image, we enable
-    // reponsive mode. OpenSeadragon handles scaling in a different way,
-    // so we don't need responsive mode.
-    const { image } = env;
-    if (image instanceof Element || image instanceof HTMLDocument)
-      this.enableResponsive();
-  }
-
-  get element() {
-    return this.elementGroup;
-  }
-
-  enableResponsive = () => {
-    if (window.ResizeObserver) {
-      this.resizeObserver = new ResizeObserver(() => {
-        const svgBounds = this.svg.getBoundingClientRect();
-        const { width, height } = this.svg.viewBox.baseVal;
-
-        const scaleX = width / svgBounds.width;
-        const scaleY = height / svgBounds.height;
-
-        this.scaleHandles(scaleX, scaleY);
-      });
-
-      this.resizeObserver.observe(this.svg.parentNode);
-    }
-  }
-
-  scaleHandles = (scaleOrScaleX, optScaleY) => {
-    const scaleX = scaleOrScaleX;
-    const scaleY = optScaleY || scaleOrScaleX;
-
-    this.handles.forEach(handle => 
-      handle.firstChild.setAttribute('transform', `scale(${scaleX}, ${scaleY})`));
   }
 
   setPoints = (points) => {
-    const str = points.map(pt => `${pt.x},${pt.y}`).join();
+    // Not using .toFixed(1) because that will ALWAYS
+    // return one decimal, e.g. "15.0" (when we want "15")
+    const round = num => 
+      Math.round(10 * num) / 10;
+
+    const str = points.map(pt => `${round(pt.x)},${round(pt.y)}`).join(' ');
 
     const inner = this.shape.querySelector('.a9s-inner');
     inner.setAttribute('points', str);
@@ -165,32 +94,30 @@ export default class EditablePolygon extends EventEmitter {
     outer.setAttribute('points', str);
 
     this.mask.redraw();
-  }
 
-  /**
-   * Converts mouse coordinates to SVG coordinates
-   *
-   * TODO redundant with EditableCircle
-   */
-  getMousePosition = evt => {
-    const pt = this.svg.createSVGPoint();
-    pt.x = evt.clientX;
-    pt.y = evt.clientY;
-    return pt.matrixTransform(this.containerGroup.getScreenCTM().inverse());
+    const { x, y, width, height } = outer.getBBox();
+    setFormatterElSize(this.elementGroup, x, y, width, height);
   }
 
   onGrab = grabbedElem => evt => {
     this.grabbedElem = grabbedElem;
-    this.grabbedAt = this.getMousePosition(evt);
+    this.grabbedAt = this.getSVGPoint(evt);
   }
 
   onMouseMove = evt => {
+    const constrain = (coord, delta, max) =>
+      coord + delta < 0 ? -coord : (coord + delta > max ? max - coord : delta);
+
     if (this.grabbedElem) {
-      const pos = this.getMousePosition(evt);
+      const pos = this.getSVGPoint(evt);
 
       if (this.grabbedElem === this.shape) {
-        const dx = pos.x - this.grabbedAt.x;
-        const dy = pos.y - this.grabbedAt.y;
+        const { x, y, width, height } = getBBox(this.shape);
+
+        const { naturalWidth, naturalHeight } = this.env.image;
+
+        const dx = constrain(x, pos.x - this.grabbedAt.x, naturalWidth - width);
+        const dy = constrain(y, pos.y - this.grabbedAt.y, naturalHeight - height);
 
         const updatedPoints = getPoints(this.shape).map(pt =>
           ({ x: pt.x + dx, y: pt.y + dy }));
@@ -198,7 +125,7 @@ export default class EditablePolygon extends EventEmitter {
         this.grabbedAt = pos;
 
         this.setPoints(updatedPoints);
-        updatedPoints.forEach((pt, idx) => setHandleXY(this.handles[idx], pt.x, pt.y));
+        updatedPoints.forEach((pt, idx) => this.setHandleXY(this.handles[idx], pt.x, pt.y));
         
         this.emit('update', toSVGTarget(this.shape, this.env.image));
       } else {
@@ -208,7 +135,7 @@ export default class EditablePolygon extends EventEmitter {
           (idx === handleIdx) ? pos : pt);
 
         this.setPoints(updatedPoints);
-        setHandleXY(this.handles[handleIdx], pos.x, pos.y);
+        this.setHandleXY(this.handles[handleIdx], pos.x, pos.y);
 
         this.emit('update', toSVGTarget(this.shape, this.env.image));
       }
@@ -220,13 +147,13 @@ export default class EditablePolygon extends EventEmitter {
     this.grabbedAt = null;
   }
 
+  get element() {
+    return this.elementGroup;
+  }
+
   destroy = () => {
     this.containerGroup.parentNode.removeChild(this.containerGroup);
-
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
-
-    this.resizeObserver = null;
+    super.destroy();
   }
 
 }
