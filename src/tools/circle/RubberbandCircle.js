@@ -2,6 +2,7 @@ import { Selection } from '@recogito/recogito-client-core';
 import { toSVGTarget } from '../../selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { drawCircle, setCircleSize } from './Circle';
+import Mask from './CircleMask';
 
 /**
  * A 'rubberband' selection tool for creating a circle by
