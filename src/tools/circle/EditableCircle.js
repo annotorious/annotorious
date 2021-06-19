@@ -93,15 +93,18 @@ export default class EditableCircle extends EditableShape {
 
     var mouseX = mousePos.x;
     var mouseY = mousePos.y;
-
+    var width = 0;
+    var height = 0;
+    var r;
     if (draggedHandleIdx == 0 || draggedHandleIdx == 2) {
       mouseX = anchor.x;
+      height = mouseY - anchor.y;
+      r = Math.abs(height) / 2;
     } else {
       mouseY = anchor.y;
+      width = mouseX - anchor.x;
+      r = Math.abs(width) / 2;
     }
-
-    const width = mouseX - anchor.x;
-    const height = mouseY - anchor.y;
 
     const x = width > 0 ? anchor.x : mouseX;
     const y = height > 0 ? anchor.y : mouseY;
@@ -109,26 +112,33 @@ export default class EditableCircle extends EditableShape {
     const h = Math.abs(height);
     const cx = x + w/2;
     const cy = y + h/2;
-    const r = Math.pow(w**2 + h**2, 0.5)/2;
 
     setCircleSize(this.circle, cx, cy, r);
     // setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
     setFormatterElSize(this.elementGroup, cx, cy, r, r);
 
-    if (draggedHandleIdx != 2) {
-      this.setHandleXY(this.handles[0], cx, cy - r);
-    }
-
-    if (draggedHandleIdx != 3) {
+    if (draggedHandleIdx == 0 || draggedHandleIdx == 2) {
+      var idx1 = 0;
+      var idx2 = 2;
+      if(draggedHandleIdx == 0 && height > 0 || draggedHandleIdx == 2 && height < 0) {
+        idx1 = 2;
+        idx2 = 0;
+      }
+      this.setHandleXY(this.handles[idx1], cx, cy - r);
+      this.setHandleXY(this.handles[idx2], cx, cy + r);
       this.setHandleXY(this.handles[1], cx + r, cy);
-    }
-
-    if (draggedHandleIdx != 0) {
-      this.setHandleXY(this.handles[2], cx, cy + r);
-    }
-
-    if (draggedHandleIdx != 1) {
       this.setHandleXY(this.handles[3], cx - r, cy);
+    } else {
+      var idx1 = 3;
+      var idx2 = 1;
+      if (draggedHandleIdx == 1 && width > 0 || draggedHandleIdx == 3 && width < 0) {
+        idx1 = 1;
+        idx2 = 3;
+      }
+      this.setHandleXY(this.handles[idx1], cx + r, cy);
+      this.setHandleXY(this.handles[idx2], cx - r, cy);
+      this.setHandleXY(this.handles[0], cx, cy - r);
+      this.setHandleXY(this.handles[2], cx, cy + r);
     }
   }
 
