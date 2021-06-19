@@ -1,19 +1,16 @@
 import { drawRect, rectArea } from './RectFragment';
-import { drawEmbeddedSVG, polygonArea } from './EmbeddedSVG';
-import {drawCircle, circleArea } from "./CircleFragment";
+import { drawEmbeddedSVG, svgArea } from './EmbeddedSVG';
 
 // Drawing functions per selector type
 const drawFn = {
   'FragmentSelector': drawRect,
-  'CircleFragmentSelector': drawCircle,
   'SvgSelector': drawEmbeddedSVG
 };
 
 // Area computation functions per selector type
 const areaFn = {
   'FragmentSelector': rectArea,
-  'CircleFragmentSelector': circleArea,
-  'SvgSelector': polygonArea
+  'SvgSelector': svgArea
 }
 
 // Helper to get the first selector from an annotation
@@ -33,7 +30,6 @@ const getFirstSelector = annotation => {
 export const drawShape = annotation =>
   drawFn[getFirstSelector(annotation).type](annotation);
 
-
 export const shapeArea = annotation =>
   areaFn[getFirstSelector(annotation).type](annotation);
 
@@ -41,6 +37,5 @@ export { parseRectFragment } from './RectFragment';
 
 export * from './EmbeddedSVG';
 export * from './RectFragment';
-export * from './CircleFragment';
 
 

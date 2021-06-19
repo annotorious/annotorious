@@ -1,15 +1,8 @@
 import EditableShape from '../EditableShape';
+import { drawEmbeddedSVG, toSVGTarget } from '../../selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { format, setFormatterElSize } from '../../util/Formatting';
-import { 
-  drawCircle,
-  drawCircleMask,
-  parseCircleFragment,
-  getCircleSize,
-  setCircleSize,
-  toCircleFragment,
-  setCircleMaskSize
-} from '../../selectors/CircleFragment';
+import { getCircleSize, setCircleSize } from './Circle';
 
 /**
  * An editable circle shape.
@@ -21,8 +14,6 @@ export default class EditableCircle extends EditableShape {
 
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
-
-    const { cx, cy, r } = parseCircleFragment(annotation);
 
     // SVG markup for this class looks like this:
     // 
@@ -41,25 +32,27 @@ export default class EditableCircle extends EditableShape {
     // 'g' for the editable circle compound shape
     this.containerGroup = document.createElementNS(SVG_NAMESPACE, 'g');
 
-    this.mask = drawCircleMask(env.image, cx, cy, r);
-    this.mask.setAttribute('class', 'a9s-selection-mask');
-    this.containerGroup.appendChild(this.mask);
+    // this.mask = drawCircleMask(env.image, cx, cy, r);
+    // this.mask.setAttribute('class', 'a9s-selection-mask');
+    // this.containerGroup.appendChild(this.mask);
 
     // The 'element' = circle + handles
     this.elementGroup = document.createElementNS(SVG_NAMESPACE, 'g');
     this.elementGroup.setAttribute('class', 'a9s-annotation editable selected');
 
-    this.circle = drawCircle(cx, cy, r);
+    this.circle = drawEmbeddedSVG(annotation);
     this.circle.querySelector('.a9s-inner')
       .addEventListener('mousedown', this.onGrab(this.circle));
 
     this.elementGroup.appendChild(this.circle);    
 
+    const { cx, cy, r } = getCircleSize(this.circle);
+
     this.handles = [
-      [cx, cy - r],
-      [cx + r, cy],
-      [cx, cy + r],
-      [cx - r, cy]
+      [ cx, cy - r ],
+      [ cx + r, cy ],
+      [ cx, cy + r ],
+      [ cx - r, cy ]
     ].map(t => { 
       const [ x, y ] = t;
       const handle = this.drawHandle(x, y);
@@ -85,7 +78,7 @@ export default class EditableCircle extends EditableShape {
 
   setSize = (cx, cy, r) => {
     setCircleSize(this.circle, cx, cy, r);
-    setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
+    // setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
     setFormatterElSize(this.elementGroup, cx, cy, r, r);
 
     const [ topleft, topright, bottomright, bottomleft] = this.handles;
@@ -100,7 +93,8 @@ export default class EditableCircle extends EditableShape {
 
     var mouseX = mousePos.x;
     var mouseY = mousePos.y;
-    if(draggedHandleIdx == 0 || draggedHandleIdx == 2) {
+
+    if (draggedHandleIdx == 0 || draggedHandleIdx == 2) {
       mouseX = anchor.x;
     } else {
       mouseY = anchor.y;
@@ -118,29 +112,32 @@ export default class EditableCircle extends EditableShape {
     const r = Math.pow(w**2 + h**2, 0.5)/2;
 
     setCircleSize(this.circle, cx, cy, r);
-    setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
+    // setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
     setFormatterElSize(this.elementGroup, cx, cy, r, r);
 
-    if(draggedHandleIdx != 2) {
+    if (draggedHandleIdx != 2) {
       this.setHandleXY(this.handles[0], cx, cy - r);
     }
-    if(draggedHandleIdx != 3) {
+
+    if (draggedHandleIdx != 3) {
       this.setHandleXY(this.handles[1], cx + r, cy);
     }
-    if(draggedHandleIdx != 0) {
+
+    if (draggedHandleIdx != 0) {
       this.setHandleXY(this.handles[2], cx, cy + r);
     }
-    if(draggedHandleIdx != 1) {
+
+    if (draggedHandleIdx != 1) {
       this.setHandleXY(this.handles[3], cx - r, cy);
     }
-
-    return { cx, cy, r };
   }
 
   onGrab = grabbedElem => evt => {
     this.grabbedElem = grabbedElem; 
+    
     const pos = this.getSVGPoint(evt);
     const { cx, cy } = getCircleSize(this.circle);
+    
     this.mouseOffset = { x: pos.x - cx, y: pos.y - cy };  
   }
 
@@ -152,7 +149,6 @@ export default class EditableCircle extends EditableShape {
       const pos = this.getSVGPoint(evt);
 
       if (this.grabbedElem === this.circle) {
-        // x/y changes by mouse offset, w/h remains unchanged
         const { r } = getCircleSize(this.circle);
 
         const { naturalWidth, naturalHeight } = this.env.image;
@@ -161,7 +157,7 @@ export default class EditableCircle extends EditableShape {
         const cy = constrain(pos.y - this.mouseOffset.y, naturalHeight - r);
 
         this.setSize(cx, cy, r); 
-        this.emit('update', toCircleFragment(cx, cy, r, this.env.image)); 
+        this.emit('update', toSVGTarget(this.circle, this.env.image)); 
       } else {
         // Mouse position replaces one of the corner coords, depending
         // on which handle is the grabbed element
@@ -169,13 +165,13 @@ export default class EditableCircle extends EditableShape {
         const oppositeHandle = handleIdx < 2 ? 
           this.handles[handleIdx + 2] : this.handles[handleIdx - 2];
 
-        const { cx, cy, r } = this.stretchCorners(handleIdx, oppositeHandle, pos);
-        this.emit('update', toCircleFragment(cx, cy, r, this.env.image));
+        this.stretchCorners(handleIdx, oppositeHandle, pos);
+        this.emit('update', toSVGTarget(this.circle, this.env.image));
       }
     }
   }
 
-  onMouseUp = evt => {
+  onMouseUp = () => {
     this.grabbedElem = null;
     this.mouseOffset = null;
   }

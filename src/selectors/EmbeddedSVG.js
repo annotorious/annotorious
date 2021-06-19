@@ -57,19 +57,8 @@ export const svgFragmentToShape = annotation => {
   }
 }
 
-export const svgFragmentToPoints = annotation => {
-  const svgShape = svgFragmentToShape(annotation);
-  
-  return svgShape.getAttribute('points')
-    .split(' ') // Split x/y tuples
-    .map(xy => xy.split(',').map(str => parseFloat(str.trim())));
-}
-
 export const drawEmbeddedSVG = annotation => {
   const shape = svgFragmentToShape(annotation);
-
-  // Hack
-  svgFragmentToPoints(annotation);
 
   // Because we're nitpicky, we don't just draw the shape,
   // but duplicate it, so we can have inner and an outer lines
@@ -104,13 +93,22 @@ export const toSVGTarget = (shape, image) => {
   }
 }
 
-/**
- * Computes the area of the given polygon (or polygon annotation)
- * @param {Array<Points> | WebAnnotation} arg 
- */
-export const polygonArea = arg => {
-  const points = arg.type === 'Annotation' ?
-    svgFragmentToPoints(arg) : arg;
+export const svgArea = annotation => {
+  const shape = svgFragmentToShape(annotation);
+  const nodeName = shape.nodeName.toLowerCase();
+
+  if (nodeName === 'polygon') 
+    return polygonArea(shape);
+  else if (nodeName === 'circle')
+    return circleArea(shape);
+  else
+    throw `Unsupported SVG shape type: ${nodeName}`;
+}
+
+const polygonArea = polygon => {
+  const points = polygon.getAttribute('points')
+    .split(' ') // Split x/y tuples
+    .map(xy => xy.split(',').map(str => parseFloat(str.trim())));
 
   let area = 0;
   let j = points.length - 1;
@@ -123,26 +121,7 @@ export const polygonArea = arg => {
   return Math.abs(0.5 * area);
 }
 
-/**
- * Computes the bounding box of the given polygon (or polygon annotation)
- * @param {Array<Points> | WebAnnotation} arg 
- */
-export const polygonBounds = arg => {
-  const points = arg.type === 'Annotation' ?
-    svgFragmentToPoints(arg) : arg;
-
-  const x = points.map(xy => xy[0]);
-  const y = points.map(xy => xy[1]);
-
-  const minX = Math.min(...x);
-  const maxX = Math.max(...x);
-  const minY = Math.min(...y);
-  const maxY = Math.max(...y);
-
-  return {
-    x: minX,
-    y: minY,
-    w: maxX - minX,
-    h: maxY - minY
-  };
+const circleArea = circle => {
+  const r = circle.getAttribute('r');
+  return r * r * Math.PI;
 }

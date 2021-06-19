@@ -3,12 +3,11 @@ import EditableCircle from './EditableCircle';
 import Tool from '../Tool';
 
 /**
- * A rubberband selector for circle fragments.
+ * A rubberband selector for circle selections.
  */
 export default class RubberbandCircleTool extends Tool {
 
   constructor(g, config, env) {
-    // Most of the basics are handled in the Tool base class
     super(g, config, env);
 
     this.rubberband = null;
@@ -68,6 +67,7 @@ export default class RubberbandCircleTool extends Tool {
 RubberbandCircleTool.identifier = 'circle';
 
 RubberbandCircleTool.supports = annotation => {
-  const fragmentSelector = annotation.selector('CircleFragmentSelector');
-  return fragmentSelector?.conformsTo.startsWith('http://www.w3.org/TR/media-frags');
+  const selector = annotation.selector('SvgSelector');
+  if (selector)
+    return selector.value?.match(/^<svg.*<circle/g);
 }
