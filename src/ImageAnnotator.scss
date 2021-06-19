@@ -25,7 +25,7 @@
 
 .a9s-annotation, .a9s-selection {
 
-  rect, path, polygon {
+  rect, circle, path, polygon {
     fill:transparent;
     cursor:pointer;
     vector-effect:non-scaling-stroke;
@@ -34,6 +34,7 @@
   .a9s-inner {
     stroke:#fff;
     stroke-width:1px;
+    fill: transparent;
   }
 
   .a9s-inner:hover {
@@ -43,6 +44,7 @@
   .a9s-outer {
     stroke:rgba(0, 0, 0, 0.7);
     stroke-width:3px;
+    fill: none;
   }
 
   .a9s-formatter-el {
