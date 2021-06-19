@@ -20,7 +20,7 @@ export default class RubberbandCircle {
     this.circle = drawCircle(anchorX, anchorY, 2);
     this.circle.setAttribute('class', 'a9s-selection');
 
-    this.mask = new Mask(env.image, this.inner);
+    this.mask = new Mask(env.image, this.circle);
 
     // We make the selection transparent to 
     // pointer events because it would interfere with the 
