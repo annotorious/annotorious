@@ -117,25 +117,25 @@ export default class EditableCircle extends EditableShape {
     setFormatterElSize(this.elementGroup, cx, cy, r, r);
 
     if (draggedHandleIdx == 0 || draggedHandleIdx == 2) {
-      var idx1 = 0;
+      var idx0 = 0;
       var idx2 = 2;
       if(draggedHandleIdx == 0 && height > 0 || draggedHandleIdx == 2 && height < 0) {
-        idx1 = 2;
+        idx0 = 2;
         idx2 = 0;
       }
-      this.setHandleXY(this.handles[idx1], cx, cy - r);
+      this.setHandleXY(this.handles[idx0], cx, cy - r);
       this.setHandleXY(this.handles[idx2], cx, cy + r);
       this.setHandleXY(this.handles[1], cx + r, cy);
       this.setHandleXY(this.handles[3], cx - r, cy);
     } else {
-      var idx1 = 3;
-      var idx2 = 1;
+      var idx3 = 3;
+      var idx1 = 1;
       if (draggedHandleIdx == 1 && width > 0 || draggedHandleIdx == 3 && width < 0) {
-        idx1 = 1;
-        idx2 = 3;
+        idx3 = 1;
+        idx1 = 3;
       }
-      this.setHandleXY(this.handles[idx1], cx + r, cy);
-      this.setHandleXY(this.handles[idx2], cx - r, cy);
+      this.setHandleXY(this.handles[idx3], cx + r, cy);
+      this.setHandleXY(this.handles[idx1], cx - r, cy);
       this.setHandleXY(this.handles[0], cx, cy - r);
       this.setHandleXY(this.handles[2], cx, cy + r);
     }
