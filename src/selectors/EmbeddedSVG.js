@@ -101,6 +101,8 @@ export const svgArea = annotation => {
     return polygonArea(shape);
   else if (nodeName === 'circle')
     return circleArea(shape);
+  else if (nodeName === 'ellipse')
+    return ellipseArea(shape);
   else
     throw `Unsupported SVG shape type: ${nodeName}`;
 }
@@ -124,4 +126,10 @@ const polygonArea = polygon => {
 const circleArea = circle => {
   const r = circle.getAttribute('r');
   return r * r * Math.PI;
+}
+
+const ellipseArea = ellipse => {
+  const rx = ellipse.getAttribute('rx');
+  const ry = ellipse.getAttribute('ry');
+  return rx * ry * Math.PI;
 }
