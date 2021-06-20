@@ -138,7 +138,7 @@ const ellipseArea = ellipse => {
 
 //TODO check if this actually works properly (to some extent)
 const pathArea = path => {
-  const pointList = path.querySelector('.a9s-inner').getAttribute('d').split('L');
+  const pointList = path.getAttribute('d').split('L');
   let area = 0;
 
   if(pointList.length > 1) {
