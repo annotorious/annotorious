@@ -2,6 +2,7 @@ import { Selection } from '@recogito/recogito-client-core';
 import { toSVGTarget } from '../../selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { drawCircle, setCircleSize } from './Circle';
+import Mask from './CircleMask';
 
 /**
  * A 'rubberband' selection tool for creating a circle by
@@ -16,11 +17,10 @@ export default class RubberbandCircle {
 
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
 
-    // this.mask = drawCircleMask(env.image, anchorX, anchorY, 2);
-    // this.mask.setAttribute('class', 'a9s-selection-mask');
-
     this.circle = drawCircle(anchorX, anchorY, 2);
     this.circle.setAttribute('class', 'a9s-selection');
+
+    this.mask = new Mask(env.image, this.circle);
 
     // We make the selection transparent to 
     // pointer events because it would interfere with the 
@@ -31,7 +31,7 @@ export default class RubberbandCircle {
     // the user actually moves the mouse
     this.group.style.display = 'none';
 
-    // this.group.appendChild(this.mask);
+    this.group.appendChild(this.mask.element);
     this.group.appendChild(this.circle);
 
     g.appendChild(this.group);
@@ -53,8 +53,8 @@ export default class RubberbandCircle {
 
     const r = Math.max(1, Math.pow(w ** 2 + h ** 2, 0.5) / 2); // Negative values
 
-    // setCircleMaskSize(this.mask, this.env.image, cx, cy, r);
     setCircleSize(this.circle, cx, cy, r);
+    this.mask.redraw();
   }
 
   getBoundingClientRect = () => 
