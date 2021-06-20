@@ -103,6 +103,8 @@ export const svgArea = annotation => {
     return circleArea(shape);
   else if (nodeName === 'ellipse')
     return ellipseArea(shape);
+  else if (nodeName == 'path')
+    return pathArea(shape);
   else
     throw `Unsupported SVG shape type: ${nodeName}`;
 }
@@ -132,4 +134,26 @@ const ellipseArea = ellipse => {
   const rx = ellipse.getAttribute('rx');
   const ry = ellipse.getAttribute('ry');
   return rx * ry * Math.PI;
+}
+
+//TODO check if this actually works properly (to some extent)
+const pathArea = path => {
+  const pointList = shape.querySelector('.a9s-inner').getAttribute('d').split('L');
+  let area = 0;
+
+  if(pointList.length > 1) {
+    let lastPoint = pointList[pointList.length - 1].trim().split(' ');
+
+    let point = pointList[0].substring(1).trim().split(' ');
+    area += (lastPoint[0] + point[0]) * (lastPoint[1] - point[1]);
+    lastPoint = point;
+
+    for (let i = 1; i < pointList.length; i++) {
+      point = pointList[i].trim().split(' ');
+      area += (lastPoint[0] + point[0]) * (lastPoint[1] - point[1]);
+      lastPoint = point;
+    }
+  }
+
+  return Math.abs(0.5 * area);
 }
