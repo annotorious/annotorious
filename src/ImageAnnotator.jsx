@@ -342,12 +342,14 @@ export default class ImageAnnotator extends Component  {
 
     return (open && (
       <Editor
+        detachable
         wrapperEl={this.props.wrapperEl}
         annotation={this.state.selectedAnnotation}
         modifiedTarget={this.state.modifiedTarget}
         selectedElement={this.state.selectedDOMElement}
         readOnly={readOnly}
-        config={this.props.config}
+        allowEmpty={this.props.config.allowEmpty}
+        widgets={this.props.config.widgets}
         env={this.props.env}
         onAnnotationCreated={this.onCreateOrUpdateAnnotation('onAnnotationCreated')}
         onAnnotationUpdated={this.onCreateOrUpdateAnnotation('onAnnotationUpdated')}
