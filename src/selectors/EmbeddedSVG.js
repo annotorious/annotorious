@@ -103,6 +103,8 @@ export const svgArea = annotation => {
     return circleArea(shape);
   else if (nodeName === 'ellipse')
     return ellipseArea(shape);
+  else if (nodeName == 'path')
+    return pathArea(shape);
   else
     throw `Unsupported SVG shape type: ${nodeName}`;
 }
@@ -132,4 +134,33 @@ const ellipseArea = ellipse => {
   const rx = ellipse.getAttribute('rx');
   const ry = ellipse.getAttribute('ry');
   return rx * ry * Math.PI;
+}
+
+const pathArea = path => {
+  const pointList = path.getAttribute('d').split('L');
+  let area = 0;
+
+  if(pointList.length > 1) {
+    var point = pointList[pointList.length - 1].trim().split(' ');
+    let lastX = parseFloat(point[0]);
+    let lastY = parseFloat(point[1]);
+
+    point = pointList[0].substring(1).trim().split(' ');
+    let x = parseFloat(point[0]);
+    let y = parseFloat(point[1]);
+    area += (lastX + x) * (lastY - y);
+    lastX = x;
+    lastY = y;
+
+    for (let i = 1; i < pointList.length; i++) {
+      point = pointList[i].trim().split(' ');
+      x = parseFloat(point[0]);
+      y = parseFloat(point[1]);
+      area += (lastX + x) * (lastY - y);
+      lastX = x;
+      lastY = y;
+    }
+  }
+
+  return Math.abs(0.5 * area);
 }

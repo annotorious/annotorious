@@ -3,7 +3,7 @@ import EditablePolygon from './EditablePolygon';
 import Tool from '../Tool';
 
 /**
- * A rubberband selector for rectangle fragments.
+ * A rubberband selector for polygon fragments.
  */
 export default class RubberbandPolygonTool extends Tool {
 
