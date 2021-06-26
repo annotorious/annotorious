@@ -24,7 +24,7 @@ export default class Crosshair {
   
       const pt = this.svg.createSVGPoint();
   
-      const { left, top } = layerGroup.getBoundingClientRect();
+      const { left, top } = this.svg.getBoundingClientRect();
       pt.x = x + left;
       pt.y = y + top;
   
