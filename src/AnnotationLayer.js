@@ -2,7 +2,7 @@ import EventEmitter from 'tiny-emitter';
 import { drawShape, shapeArea } from './selectors';
 import { SVG_NAMESPACE, addClass, removeClass } from './util/SVG';
 import DrawingTools from './tools/ToolsRegistry';
-import Crosshairs from './Crosshairs';
+import Crosshair from './Crosshair';
 import { format } from './util/Formatting';
 import { getSnippet } from './util/ImageSnippet';
 import { isTouchDevice, enableTouchTranslation } from './util/Touch';
@@ -53,9 +53,9 @@ export default class AnnotationLayer extends EventEmitter {
     this.svg.appendChild(this.g);
     wrapperEl.appendChild(this.svg);
 
-    if (config.crosshairs) {
-      this.crosshairs = new Crosshairs(this.g, naturalWidth, naturalHeight);
-      addClass(this.svg, 'has-crosshairs');
+    if (config.crosshair) {
+      this.crosshair = new Crosshair(this.g, naturalWidth, naturalHeight);
+      addClass(this.svg, 'has-crosshair');
     }
 
     // Currently selected shape

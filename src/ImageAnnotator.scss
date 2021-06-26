@@ -17,10 +17,10 @@
           user-select:none;
 }
 
-.a9s-annotationlayer.has-crosshairs {
+.a9s-annotationlayer.has-crosshair {
   cursor:none;
 
-  .a9s-crosshairs line {
+  .a9s-crosshair line {
     stroke-width:1px;
     stroke:rgba(0, 0, 0, 0.5);
     vector-effect:non-scaling-stroke;

@@ -1,12 +1,12 @@
 import { SVG_NAMESPACE } from './util/SVG';
 
-export default class Crosshairs {
+export default class Crosshair {
 
   constructor(layerGroup, width, height) {
     this.svg = layerGroup.closest('svg');
 
     this.g = document.createElementNS(SVG_NAMESPACE, 'g');
-    this.g.setAttribute('class', 'a9s-crosshairs');
+    this.g.setAttribute('class', 'a9s-crosshair');
 
     const h = document.createElementNS(SVG_NAMESPACE, 'line');
     const v = document.createElementNS(SVG_NAMESPACE, 'line');
