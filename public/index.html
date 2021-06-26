@@ -74,10 +74,18 @@
           console.log('start selection', a);
         });
 
-        anno.on('selectAnnotation', function(evt) {
-          console.log('selected', evt);
+        anno.on('selectAnnotation', function(a, shape) {
+          console.log('selected', a, shape);
         });
-        
+
+        anno.on('mouseEnterAnnotation', function(a, shape) {
+          console.log('enter', shape);
+        });
+
+        anno.on('mouseLeaveAnnotation', function(a, shape) {
+          console.log('leave', shape);
+        });
+
         anno.on('cancelSelected', function(a) {
           console.log('cancel', a);
         });
