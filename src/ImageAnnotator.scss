@@ -17,6 +17,21 @@
           user-select:none;
 }
 
+.a9s-annotationlayer.has-crosshairs {
+  cursor:none;
+
+  .a9s-crosshairs line {
+    stroke-width:1px;
+    stroke:rgba(0, 0, 0, 0.5);
+    vector-effect:non-scaling-stroke;
+  }
+
+  .a9s-annotation *, .a9sselection * {
+    cursor:none;
+  }
+
+}
+
 .a9s-selection-mask {
   stroke:none;
   fill:transparent;
