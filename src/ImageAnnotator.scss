@@ -25,6 +25,7 @@
     stroke:rgba(0, 0, 0, 0.5);
     pointer-events:none;
     vector-effect:non-scaling-stroke;
+    shape-rendering:crispEdges;
   }
 
   .a9s-annotation *, .a9sselection * {
