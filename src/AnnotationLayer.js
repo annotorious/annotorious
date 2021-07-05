@@ -15,7 +15,7 @@ export default class AnnotationLayer extends EventEmitter {
     super();
 
     const { wrapperEl, config, env } = props;
-    
+
     this.imageEl = env.image;
     this.readOnly = config.readOnly;
     this.formatter = config.formatter;
@@ -84,7 +84,7 @@ export default class AnnotationLayer extends EventEmitter {
 
     elem.addEventListener('mouseleave', () => {
       if (!this.selectedShape && !this.tools?.current.isDrawing) {
-        if (this.currentHover === elem) 
+        if (this.currentHover === elem)
           this.emit('mouseLeaveAnnotation', annotation, elem);
 
         this.currentHover = null;
@@ -122,10 +122,10 @@ export default class AnnotationLayer extends EventEmitter {
 
   addAnnotation = annotation => {
     const g = drawShape(annotation);
-    
-    g.setAttribute('class', 'a9s-annotation');    
+
+    g.setAttribute('class', 'a9s-annotation');
     g.setAttribute('data-id', annotation.id);
-    
+
     g.annotation = annotation;
 
     this._attachHoverListener(g, annotation);
@@ -142,12 +142,12 @@ export default class AnnotationLayer extends EventEmitter {
   addOrUpdateAnnotation = (annotation, previous) => {
     if (this.selectedShape?.annotation === annotation || this.selectShape?.annotation == previous)
       this.deselect();
-  
+
     if (previous)
       this.removeAnnotation(previous);
-    
+
     this.removeAnnotation(annotation);
-    
+
     this.addAnnotation(annotation);
 
     // Make sure rendering order is large-to-small
@@ -167,9 +167,9 @@ export default class AnnotationLayer extends EventEmitter {
 
         if (!annotation.isSelection) {
           this.addAnnotation(annotation);
-          
+
           if (!skipRedraw)
-            this.redraw(); 
+            this.redraw();
         }
       } else {
         // Not modifiable - just clear
@@ -177,7 +177,7 @@ export default class AnnotationLayer extends EventEmitter {
         this.selectedShape = null;
       }
     }
-  } 
+  }
 
   destroy = () => {
     this.deselect();
@@ -203,12 +203,12 @@ export default class AnnotationLayer extends EventEmitter {
       return { annotation, element };
     }
   }
-    
+
   getSelectedImageSnippet = () => {
     if (this.selectedShape) {
       const element = this.selectedShape.element || this.selectedShape;
       return getSnippet(this.imageEl, element);
-    }  
+    }
   }
 
   init = annotations => {
@@ -227,8 +227,8 @@ export default class AnnotationLayer extends EventEmitter {
   listDrawingTools = () =>
     this.tools?.listTools();
 
-  /** 
-   * Forces a new ID on the annotation with the given ID. 
+  /**
+   * Forces a new ID on the annotation with the given ID.
    * @returns the updated annotation for convenience
    */
   overrideId = (originalId, forcedId) => {
@@ -282,7 +282,7 @@ export default class AnnotationLayer extends EventEmitter {
     }
   }
 
-  /** 
+  /**
    * Programmatic selection via the API. Should work as normal,
    * but the selectAnnotation event should not be fired to the outside.
    */
@@ -296,9 +296,9 @@ export default class AnnotationLayer extends EventEmitter {
     if (selected) {
       this.selectShape(selected, skipEvent);
 
-      const element = this.selectedShape.element ? 
+      const element = this.selectedShape.element ?
         this.selectedShape.element : this.selectedShape;
-      
+
       return { annotation: selected.annotation, element };
     } else {
       this.deselect();
@@ -318,12 +318,12 @@ export default class AnnotationLayer extends EventEmitter {
     // Don't re-select
     if (this.selectedShape?.annotation === shape?.annotation)
       return;
-    
+
     // If another shape is currently selected, deselect first
     if (this.selectedShape && this.selectedShape.annotation !== shape.annotation) {
       this.deselect(true);
     }
-    
+
     const { annotation } = shape;
 
     const readOnly = this.readOnly || annotation.readOnly;
@@ -332,11 +332,11 @@ export default class AnnotationLayer extends EventEmitter {
       // Replace the shape with an editable version
       shape.parentNode.removeChild(shape);
 
-      const toolForAnnotation = this.tools.forAnnotation(annotation);      
+      const toolForAnnotation = this.tools.forAnnotation(annotation);
       this.selectedShape = toolForAnnotation.createEditableShape(annotation);
 
       // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
-      this.selectedShape.element.annotation = annotation;         
+      this.selectedShape.element.annotation = annotation;
       this._attachHoverListener(this.selectedShape.element, annotation);
 
       // When using mouse, currentHover will be set by mouseEnter, but
@@ -345,7 +345,8 @@ export default class AnnotationLayer extends EventEmitter {
         this.currentHover = this.selectedShape;
 
       this.selectedShape.on('update', fragment => {
-        this.emit('updateTarget', this.selectedShape.element, fragment);
+        if (this.selectedShape)
+          this.emit('updateTarget', this.selectedShape.element, fragment);
       });
 
       if (!skipEvent)
@@ -355,7 +356,7 @@ export default class AnnotationLayer extends EventEmitter {
       this.selectedShape = shape;
 
       if (!skipEvent)
-        this.emit('select', { annotation, element: shape, skipEvent }); 
+        this.emit('select', { annotation, element: shape, skipEvent });
     }
   }
 
