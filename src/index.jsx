@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Emitter from 'tiny-emitter';
 import ImageAnnotator from './ImageAnnotator';
-import { 
-  Selection, 
-  WebAnnotation, 
-  createEnvironment, 
-  setLocale 
+import {
+  Selection,
+  WebAnnotation,
+  createEnvironment,
+  setLocale
 } from '@recogito/recogito-client-core';
 
 import '@recogito/recogito-client-core/themes/default';
@@ -125,8 +125,8 @@ export class Annotorious {
 
   cancelSelected = () =>
     this._app.current.cancelSelected();
-  
-  clearAnnotations = () => 
+
+  clearAnnotations = () =>
     this.setAnnotations([]);
 
   clearAuthInfo = () =>
@@ -139,7 +139,7 @@ export class Annotorious {
   set disableEditor(disabled) {
     this._app.current.disableEditor = disabled;
   }
-  
+
   destroy = () => {
     ReactDOM.unmountComponentAtNode(this._appContainerEl);
     this._element.parentNode.insertBefore(this._env.image, this._element);
@@ -181,14 +181,14 @@ export class Annotorious {
   set readOnly(readOnly) {
     this._app.current.readOnly = readOnly;
   }
-  
+
   removeAnnotation = annotationOrId =>
     this._app.current.removeAnnotation(this._wrap(annotationOrId));
 
   saveSelected = () =>
     this._app.current.saveSelected();
 
-  selectAnnotation = annotationOrId => {    
+  selectAnnotation = annotationOrId => {
     const selected = this._app.current.selectAnnotation(this._wrap(annotationOrId));
     return selected?.underlying;
   }
@@ -205,6 +205,9 @@ export class Annotorious {
   setDrawingTool = shape =>
     this._app.current.setDrawingTool(shape);
 
+  setWidgets = widgets =>
+    this._app.current.setWidgets(widgets);
+
   setVisible = visible =>
     this._app.current.setVisible(visible);
 
@@ -218,7 +221,7 @@ export class Annotorious {
       updated = new WebAnnotation(annotation);
     else if (annotation.type === 'Selection')
       updated = new Selection(annotation.target, annotation.body);
-    
+
     if (updated)
       this._app.current.updateSelected(updated, saveImmediately);
   }
