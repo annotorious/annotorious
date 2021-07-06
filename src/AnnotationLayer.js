@@ -74,7 +74,7 @@ export default class AnnotationLayer extends EventEmitter {
 
   _attachHoverListener = (elem, annotation) => {
     elem.addEventListener('mouseenter', () => {
-      if (!this.selectedShape && !this.tools?.current.isDrawing) {
+      if (!this.tools?.current.isDrawing) {
         if (this.currentHover !== elem)
           this.emit('mouseEnterAnnotation', annotation, elem);
 
@@ -83,8 +83,8 @@ export default class AnnotationLayer extends EventEmitter {
     });
 
     elem.addEventListener('mouseleave', () => {
-      if (!this.selectedShape && !this.tools?.current.isDrawing) {
-        if (this.currentHover === elem)
+      if (!this.tools?.current.isDrawing) {
+        if (this.currentHover === elem) 
           this.emit('mouseLeaveAnnotation', annotation, elem);
 
         this.currentHover = null;
