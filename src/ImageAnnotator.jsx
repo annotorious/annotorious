@@ -312,15 +312,15 @@ export default class ImageAnnotator extends Component  {
   setDrawingTool = shape =>
     this.annotationLayer.setDrawingTool(shape);
 
-  setWidgets = widgets =>
-    this.setState({widgets: widgets});
-
   setVisible = visible => {
     this.annotationLayer.setVisible(visible);
 
-  if (!visible)
+    if (!visible)
       this.clearState();
   }
+
+  setWidgets = widgets =>
+    this.setState({ widgets: widgets });
 
   updateSelected = (annotation, saveImmediately) =>
     new Promise(resolve => {

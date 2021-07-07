@@ -205,14 +205,14 @@ export class Annotorious {
   setDrawingTool = shape =>
     this._app.current.setDrawingTool(shape);
 
-  setWidgets = widgets =>
-    this._app.current.setWidgets(widgets);
+  setServerTime = timestamp =>
+    this._env.setServerTime(timestamp);
 
   setVisible = visible =>
     this._app.current.setVisible(visible);
 
-  setServerTime = timestamp =>
-    this._env.setServerTime(timestamp);
+  setWidgets = widgets =>
+    this._app.current.setWidgets(widgets);
 
   updateSelected = (annotation, saveImmediately) => {
     let updated = null;
