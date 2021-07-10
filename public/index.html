@@ -96,6 +96,10 @@
           console.log('updated', previous, 'with', annotation);
         });
 
+        anno.on('clickAnnotation', function(annotation, shape) {
+          console.log('clicked', annotation, shape);
+        });
+
         anno.on('deleteAnnotation', function(annotation) {
           console.log('deleted', annotation);
         });

@@ -316,8 +316,10 @@ export default class AnnotationLayer extends EventEmitter {
 
   selectShape = (shape, skipEvent) => {
     // Don't re-select
-    if (this.selectedShape?.annotation === shape?.annotation)
+    if (this.selectedShape?.annotation === shape?.annotation) {
+      this.emit('clickAnnotation', shape.annotation, shape);
       return;
+    }
 
     // If another shape is currently selected, deselect first
     if (this.selectedShape && this.selectedShape.annotation !== shape.annotation) {
@@ -358,6 +360,8 @@ export default class AnnotationLayer extends EventEmitter {
       if (!skipEvent)
         this.emit('select', { annotation, element: shape, skipEvent });
     }
+
+    this.emit('clickAnnotation', annotation, shape);
   }
 
   setDrawingTool = shape => {
