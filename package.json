@@ -8,7 +8,7 @@
     "build": "webpack --mode=production",
     "build-polyfills": "webpack --mode=production --config webpack.polyfills.js",
     "vite-build": "vite build && mv ./dist/annotorious.umd.js ./dist/annotorious.min.js && mv ./dist/annotorious.umd.js.map ./dist/annotorious.min.js.map && mv ./dist/style.css ./dist/annotorious.min.css",
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha --require @babel/register --recursive"
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha --require esm --require @babel/register --recursive"
   },
   "repository": {
     "type": "git",
@@ -33,6 +33,7 @@
     "@preact/preset-vite": "^2.1.0",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.2.4",
+    "esm": "^3.2.25",
     "glob-parent": ">=5.1.2",
     "html-webpack-plugin": "^4.5.2",
     "mini-css-extract-plugin": "^1.6.0",
