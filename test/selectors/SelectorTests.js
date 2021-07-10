@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { polygonArea } from '../../src/selectors';
+import { svgArea } from '../../src/selectors/EmbeddedSVG';
 
 const POINTS = [
   [172,210],
@@ -10,7 +10,7 @@ const POINTS = [
 
 describe('polygonArea', function() {
   it('should return a non-zero value for the test point array', () => {
-    const area = polygonArea(POINTS);
+    const area = svgArea(POINTS);
     assert(area > 0);
   });
 });

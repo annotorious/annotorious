@@ -324,7 +324,7 @@ export default class AnnotationLayer extends EventEmitter {
 
   selectShape = (shape, skipEvent) => {
     // Don't re-select
-    if (this.selectedShape?.annotation === shape?.annotation) {
+    if (this.selectedShape?.annotation === shape.annotation) {
       this.emit('clickAnnotation', shape.annotation, shape);
       return;
     }
