@@ -239,6 +239,19 @@ export default class ImageAnnotator extends Component  {
     });
   }
 
+  get disableSelect() {
+    return this.annotationLayer.disableSelect;
+  }
+
+  set disableSelect(disable) {
+    this.annotationLayer.disableSelect = disable;
+
+    if (disable) {
+      this.annotationLayer.deselect();
+      this.clearState();
+    }
+  }
+
   getAnnotations = () =>
     this.annotationLayer.getAnnotations().map(a => a.clone());
 

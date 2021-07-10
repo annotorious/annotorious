@@ -17,8 +17,11 @@ export default class AnnotationLayer extends EventEmitter {
     const { wrapperEl, config, env } = props;
 
     this.imageEl = env.image;
+
     this.readOnly = config.readOnly;
     this.formatter = config.formatter;
+
+    this.disableSelect = false;
 
     const { naturalWidth, naturalHeight } = this.imageEl;
 
@@ -307,7 +310,12 @@ export default class AnnotationLayer extends EventEmitter {
 
   selectCurrentHover = () => {
     if (this.currentHover) {
-      this.selectShape(this.currentHover);
+      if (this.disableSelect) {
+        // Click only - no select
+        this.emit('clickAnnotation', this.currentHover.annotation, this.currentHover);
+      } else {
+        this.selectShape(this.currentHover);
+      }
     } else {
       this.deselect();
       this.emit('select', { skipEvent: true });

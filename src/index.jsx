@@ -144,6 +144,14 @@ export class Annotorious {
     this._app.current.disableEditor = disabled;
   }
 
+  get disableSelect() {
+    return this._app.current.disableSelect;
+  }
+
+  set disableSelect(select) {
+    this._app.current.disableSelect = select;
+  }
+
   destroy = () => {
     ReactDOM.unmountComponentAtNode(this._appContainerEl);
     this._element.parentNode.insertBefore(this._env.image, this._element);
