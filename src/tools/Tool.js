@@ -38,16 +38,18 @@ export default class Tool extends EventEmitter {
 
       const x = evt.clientX - bbox.x;
       const y = evt.clientY - bbox.y;
-
+  
       const { left, top } = this.svg.getBoundingClientRect();
       pt.x = x + left;
       pt.y = y + top;
+  
+      return pt.matrixTransform(this.g.getScreenCTM().inverse());
     } else {    
       pt.x = evt.offsetX;
       pt.y = evt.offsetY;
+      
+      return pt.matrixTransform(this.g.getCTM().inverse());
     }
-
-    return pt.matrixTransform(this.g.getCTM().inverse());
   }
 
   attachListeners = ({ mouseMove, mouseUp, dblClick }) => {
