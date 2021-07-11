@@ -1,5 +1,5 @@
 import EventEmitter from 'tiny-emitter';
-import { isTouchDevice } from './util/Touch';
+import { isTouchDevice } from '../util/Touch';
 
 const IMPLEMENTATION_MISSING = "An implementation is missing";
 
