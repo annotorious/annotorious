@@ -1,5 +1,3 @@
-const TerserPlugin = require('terser-webpack-plugin');
-
 module.exports = {
   entry: './src/polyfills/index.js',
   output: {
@@ -9,8 +7,7 @@ module.exports = {
     hints: false
   },
   optimization: {
-    minimize: true,
-    minimizer: [new TerserPlugin()]
+    minimize: true
   },
   resolve: {
     extensions: ['.js']
