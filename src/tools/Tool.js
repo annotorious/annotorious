@@ -1,6 +1,9 @@
 import EventEmitter from 'tiny-emitter';
+import { isTouchDevice } from './util/Touch';
 
 const IMPLEMENTATION_MISSING = "An implementation is missing";
+
+const isTouch = isTouchDevice();
 
 /**
  * Base class that adds some convenience stuff for tool plugins.
@@ -28,27 +31,27 @@ export default class Tool extends EventEmitter {
   }
 
   getSVGPoint = evt => {
-    /*
-    const bbox = this.svg.getBoundingClientRect();
+    if (isTouch) {
+      const bbox = this.svg.getBoundingClientRect();
 
-    const x = evt.clientX - bbox.x;
-    const y = evt.clientY - bbox.y;
+      const x = evt.clientX - bbox.x;
+      const y = evt.clientY - bbox.y;
 
-    const pt = this.svg.createSVGPoint();
+      const pt = this.svg.createSVGPoint();
 
-    const { left, top } = this.svg.getBoundingClientRect();
-    pt.x = x + left;
-    pt.y = y + top;
+      const { left, top } = this.svg.getBoundingClientRect();
+      pt.x = x + left;
+      pt.y = y + top;
 
-    return pt.matrixTransform(this.g.getScreenCTM().inverse());
-    */
+      return pt.matrixTransform(this.g.getScreenCTM().inverse());
+    } else {
+      const pt = this.svg.createSVGPoint();
     
-    const pt = this.svg.createSVGPoint();
-   
-    pt.x = evt.offsetX;
-    pt.y = evt.offsetY;
-   
-    return pt.matrixTransform(this.g.getCTM().inverse());
+      pt.x = evt.offsetX;
+      pt.y = evt.offsetY;
+    
+      return pt.matrixTransform(this.g.getCTM().inverse());
+    }
   }
 
   attachListeners = ({ mouseMove, mouseUp, dblClick }) => {
