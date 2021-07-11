@@ -186,6 +186,9 @@ export class Annotorious {
   on = (event, handler) =>
     this._emitter.on(event, handler);
 
+  once = (event, handler) =>
+    this._emitter.once(event, handler);
+
   get readOnly() {
     return this._app.current.readOnly;
   }
