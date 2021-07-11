@@ -31,27 +31,23 @@ export default class Tool extends EventEmitter {
   }
 
   getSVGPoint = evt => {
+    const pt = this.svg.createSVGPoint();
+
     if (isTouch) {
       const bbox = this.svg.getBoundingClientRect();
 
       const x = evt.clientX - bbox.x;
       const y = evt.clientY - bbox.y;
 
-      const pt = this.svg.createSVGPoint();
-
       const { left, top } = this.svg.getBoundingClientRect();
       pt.x = x + left;
       pt.y = y + top;
-
-      return pt.matrixTransform(this.g.getScreenCTM().inverse());
-    } else {
-      const pt = this.svg.createSVGPoint();
-    
+    } else {    
       pt.x = evt.offsetX;
       pt.y = evt.offsetY;
-    
-      return pt.matrixTransform(this.g.getCTM().inverse());
     }
+
+    return pt.matrixTransform(this.g.getCTM().inverse());
   }
 
   attachListeners = ({ mouseMove, mouseUp, dblClick }) => {
