@@ -325,7 +325,9 @@ export default class AnnotationLayer extends EventEmitter {
   selectShape = (shape, skipEvent) => {
     // Don't re-select
     if (this.selectedShape?.annotation === shape.annotation) {
-      this.emit('clickAnnotation', shape.annotation, shape);
+      if (!skipEvent)
+        this.emit('clickAnnotation', shape.annotation, shape);
+  
       return;
     }
 
@@ -369,7 +371,8 @@ export default class AnnotationLayer extends EventEmitter {
         this.emit('select', { annotation, element: shape, skipEvent });
     }
 
-    this.emit('clickAnnotation', annotation, shape);
+    if (!skipEvent)
+      this.emit('clickAnnotation', annotation, shape);
   }
 
   setDrawingTool = shape => {

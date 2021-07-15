@@ -74,9 +74,9 @@ export default class ImageAnnotator extends Component  {
   handleStartSelect = pt =>
     this.props.onSelectionStarted(pt);
 
-  handleSelect = evt => {
+  handleSelect = (evt, skipEvent) => {
     this.state.editorDisabled ?
-      this.onHeadlessSelect(evt) : this.onNormalSelect(evt);
+      this.onHeadlessSelect(evt, skipEvent) : this.onNormalSelect(evt, skipEvent);
   }
 
   /** Selection when editorDisabled == false **/
@@ -130,12 +130,12 @@ export default class ImageAnnotator extends Component  {
   }
 
   /** Selection when editorDisabled == true **/
-  onHeadlessSelect = evt => {
+  onHeadlessSelect = (evt, skipEvent) => {
     // When in headless mode, changing selection acts as 'Ok' - changes
     // to the previous annotation are stored! (In normal mode, selection
     // acts as 'Cancel'.)
     this.saveSelected().then(() => {
-      this.onNormalSelect(evt);
+      this.onNormalSelect(evt, skipEvent);
 
       const { annotation } = evt;
 
@@ -313,7 +313,7 @@ export default class ImageAnnotator extends Component  {
     const selected = this.annotationLayer.selectAnnotation(arg, true);
 
     if (selected) {
-      this.handleSelect(selected);
+      this.handleSelect(selected, true);
       return selected.annotation.clone();
     } else {
       this.clearState(); // Deselect
