@@ -75,7 +75,7 @@ export default class AnnotationLayer extends EventEmitter {
     this.currentHover = null;
   }
 
-  _attachHoverListener = (elem, annotation) => {
+  _attachMouseListeners = (elem, annotation) => {
     elem.addEventListener('mouseenter', () => {
       if (!this.tools?.current.isDrawing) {
         if (this.currentHover !== elem)
@@ -131,7 +131,7 @@ export default class AnnotationLayer extends EventEmitter {
 
     g.annotation = annotation;
 
-    this._attachHoverListener(g, annotation);
+    this._attachMouseListeners(g, annotation);
     this.g.appendChild(g);
 
     format(g, annotation, this.formatter);
@@ -349,7 +349,7 @@ export default class AnnotationLayer extends EventEmitter {
 
       // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
       this.selectedShape.element.annotation = annotation;
-      this._attachHoverListener(this.selectedShape.element, annotation);
+      this._attachMouseListeners(this.selectedShape.element, annotation);
 
       // When using mouse, currentHover will be set by mouseEnter, but
       // that doesn't happen in touch
