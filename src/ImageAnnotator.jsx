@@ -334,7 +334,7 @@ export default class ImageAnnotator extends Component  {
   }
 
   setWidgets = widgets =>
-    this.setState({ widgets: widgets });
+    this.setState({ widgets });
 
   updateSelected = (annotation, saveImmediately) =>
     new Promise(resolve => {
