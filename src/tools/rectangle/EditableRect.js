@@ -1,13 +1,13 @@
 import EditableShape from '../EditableShape';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { format, setFormatterElSize } from '../../util/Formatting';
-import { 
-  drawRect, 
+import {
+  drawRect,
   drawRectMask,
   parseRectFragment,
-  getRectSize, 
-  setRectSize, 
-  toRectFragment, 
+  getRectSize,
+  setRectSize,
+  toRectFragment,
   setRectMaskSize
 } from '../../selectors/RectFragment';
 
@@ -25,7 +25,7 @@ export default class EditableRect extends EditableShape {
     const { x, y, w, h } = parseRectFragment(annotation);
 
     // SVG markup for this class looks like this:
-    // 
+    //
     // <g>
     //   <path class="a9s-selection mask"... />
     //   <g> <-- return this node as .element
@@ -35,7 +35,7 @@ export default class EditableRect extends EditableShape {
     //     <g class="a9s-handle" ...> ... </g>
     //     <g class="a9s-handle" ...> ... </g>
     //     <g class="a9s-handle" ...> ... </g>
-    //   </g> 
+    //   </g>
     // </g>
 
     // 'g' for the editable rect compound shape
@@ -53,14 +53,14 @@ export default class EditableRect extends EditableShape {
     this.rectangle.querySelector('.a9s-inner')
       .addEventListener('mousedown', this.onGrab(this.rectangle));
 
-    this.elementGroup.appendChild(this.rectangle);    
+    this.elementGroup.appendChild(this.rectangle);
 
     this.handles = [
-      [ x, y ], 
-      [ x + w, y ], 
-      [ x + w, y + h ], 
+      [ x, y ],
+      [ x + w, y ],
+      [ x + w, y + h ],
       [ x, y + h ]
-    ].map(t => { 
+    ].map(t => {
       const [ x, y ] = t;
       const handle = this.drawHandle(x, y);
 
@@ -77,7 +77,7 @@ export default class EditableRect extends EditableShape {
     format(this.rectangle, annotation, config.formatter);
 
     // The grabbed element (handle or entire group), if any
-    this.grabbedElem = null; 
+    this.grabbedElem = null;
 
     // Mouse xy offset inside the shape, if mouse pressed
     this.mouseOffset = null;
@@ -124,13 +124,15 @@ export default class EditableRect extends EditableShape {
   }
 
   onGrab = grabbedElem => evt => {
-    this.grabbedElem = grabbedElem; 
+    if (evt.button !== 0) return;  // left click
+    this.grabbedElem = grabbedElem;
     const pos = this.getSVGPoint(evt);
     const { x, y } = getRectSize(this.rectangle);
-    this.mouseOffset = { x: pos.x - x, y: pos.y - y };  
+    this.mouseOffset = { x: pos.x - x, y: pos.y - y };
   }
 
   onMouseMove = evt => {
+    if (evt.button !== 0) return;  // left click
     const constrain = (coord, max) =>
       coord < 0 ? 0 : ( coord > max ? max : coord);
 
@@ -146,17 +148,17 @@ export default class EditableRect extends EditableShape {
         const x = constrain(pos.x - this.mouseOffset.x, naturalWidth - w);
         const y = constrain(pos.y - this.mouseOffset.y, naturalHeight - h);
 
-        this.setSize(x, y, w, h); 
-        this.emit('update', toRectFragment(x, y, w, h, this.env.image)); 
+        this.setSize(x, y, w, h);
+        this.emit('update', toRectFragment(x, y, w, h, this.env.image));
       } else {
         // Mouse position replaces one of the corner coords, depending
         // on which handle is the grabbed element
         const handleIdx = this.handles.indexOf(this.grabbedElem);
-        const oppositeHandle = handleIdx < 2 ? 
+        const oppositeHandle = handleIdx < 2 ?
           this.handles[handleIdx + 2] : this.handles[handleIdx - 2];
 
         const { x, y, w, h } = this.stretchCorners(handleIdx, oppositeHandle, pos);
-        this.emit('update', toRectFragment(x, y, w, h, this.env.image)); 
+        this.emit('update', toRectFragment(x, y, w, h, this.env.image));
       }
     }
   }
@@ -166,8 +168,8 @@ export default class EditableRect extends EditableShape {
     this.mouseOffset = null;
   }
 
-  get element() {	
-    return this.elementGroup;	
+  get element() {
+    return this.elementGroup;
   }
 
   destroy() {

@@ -32,7 +32,7 @@ export default class EditablePolygon extends EditableShape {
     this.svg.addEventListener('mouseup', this.onMouseUp);
 
     // SVG markup for this class looks like this:
-    // 
+    //
     // <g>
     //   <path class="a9s-selection mask"... />
     //   <g> <-- return this node as .element
@@ -42,7 +42,7 @@ export default class EditablePolygon extends EditableShape {
     //     <g class="a9s-handle" ...> ... </g>
     //     <g class="a9s-handle" ...> ... </g>
     //     ...
-    //   </g> 
+    //   </g>
     // </g>
 
     // 'g' for the editable polygon compound shape
@@ -53,7 +53,7 @@ export default class EditablePolygon extends EditableShape {
       .addEventListener('mousedown', this.onGrab(this.shape));
 
     this.mask = new Mask(env.image, this.shape.querySelector('.a9s-inner'));
-    
+
     this.containerGroup.appendChild(this.mask.element);
 
     this.elementGroup = document.createElementNS(SVG_NAMESPACE, 'g');
@@ -82,7 +82,7 @@ export default class EditablePolygon extends EditableShape {
   setPoints = (points) => {
     // Not using .toFixed(1) because that will ALWAYS
     // return one decimal, e.g. "15.0" (when we want "15")
-    const round = num => 
+    const round = num =>
       Math.round(10 * num) / 10;
 
     const str = points.map(pt => `${round(pt.x)},${round(pt.y)}`).join(' ');
@@ -100,6 +100,7 @@ export default class EditablePolygon extends EditableShape {
   }
 
   onGrab = grabbedElem => evt => {
+    if (evt.button !== 0) return;  // left click
     this.grabbedElem = grabbedElem;
     this.grabbedAt = this.getSVGPoint(evt);
   }
@@ -126,7 +127,7 @@ export default class EditablePolygon extends EditableShape {
 
         this.setPoints(updatedPoints);
         updatedPoints.forEach((pt, idx) => this.setHandleXY(this.handles[idx], pt.x, pt.y));
-        
+
         this.emit('update', toSVGTarget(this.shape, this.env.image));
       } else {
         const handleIdx = this.handles.indexOf(this.grabbedElem);
