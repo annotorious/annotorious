@@ -245,11 +245,6 @@ export default class ImageAnnotator extends Component  {
 
   set disableSelect(disable) {
     this.annotationLayer.disableSelect = disable;
-
-    if (disable) {
-      this.annotationLayer.deselect();
-      this.clearState();
-    }
   }
 
   getAnnotations = () =>
