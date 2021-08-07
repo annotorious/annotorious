@@ -75,19 +75,19 @@
         });
 
         anno.on('selectAnnotation', function(a, shape) {
-          console.log('selected', a, shape);
+          console.log('selected');
         });
 
         anno.on('mouseEnterAnnotation', function(a, shape) {
-          console.log('enter', shape);
+          console.log('enter');
         });
 
         anno.on('mouseLeaveAnnotation', function(a, shape) {
-          console.log('leave', shape);
+          console.log('leave');
         });
 
         anno.on('cancelSelected', function(a) {
-          console.log('cancel', a);
+          console.log('cancel');
         });
 
         anno.on('createAnnotation', function(a) {
@@ -99,7 +99,7 @@
         });
 
         anno.on('clickAnnotation', function(annotation, shape) {
-          console.log('clicked', annotation, shape);
+          console.log('clicked');
         });
 
         anno.on('deleteAnnotation', function(annotation) {
