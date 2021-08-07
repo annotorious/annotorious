@@ -6,28 +6,18 @@ const IMPLEMENTATION_MISSING = "An implementation is missing";
 const isTouch = isTouchDevice();
 
 /**
- * Base class that adds some convenience stuff for tool plugins.
+ * A commmon base class for Tools and EditableShapes
  */
-export default class Tool extends EventEmitter {
+export class ToolLike extends EventEmitter {
 
   constructor(g, config, env) {
     super();
 
-    // Annotationlayer SVG element
     this.svg = g.closest('svg');
 
-    // SVG group holding all the a9s contents.
-    // In AnnotoriousOSD, this is the element the
-    // transoform gets applied to.
     this.g = g;
-
     this.config = config;
     this.env = env;
-
-    // We'll keep a flag set to false until
-    // the user has started moving, so we can
-    // fire the startSelection event
-    this.started = false;
   }
 
   getSVGPoint = evt => {
@@ -50,6 +40,22 @@ export default class Tool extends EventEmitter {
 
       return pt.matrixTransform(this.g.getCTM().inverse());
     }
+  }
+
+}
+
+/**
+ * Base class that adds some convenience stuff for tool plugins.
+ */
+export default class Tool extends ToolLike {
+
+  constructor(g, config, env) {
+    super(g, config, env);
+
+    // We'll keep a flag set to false until
+    // the user has started moving, so we can
+    // fire the startSelection event
+    this.started = false;
   }
 
   attachListeners = ({ mouseMove, mouseUp, dblClick }) => {

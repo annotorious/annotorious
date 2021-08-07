@@ -1,9 +1,9 @@
-import Tool from './Tool';
+import { ToolLike } from './Tool';
 import { SVG_NAMESPACE } from '../util/SVG';
 
 const IMPLEMENTATION_MISSING = "An implementation is missing";
 
-export default class EditableShape extends Tool {
+export default class EditableShape extends ToolLike {
 
   constructor(annotation, g, config, env) {
     super(g, config, env);
