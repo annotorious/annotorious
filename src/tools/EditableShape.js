@@ -1,21 +1,14 @@
-import EventEmitter from 'tiny-emitter';
+import Tool from './Tool';
 import { SVG_NAMESPACE } from '../util/SVG';
 
 const IMPLEMENTATION_MISSING = "An implementation is missing";
 
-export default class EditableShape extends EventEmitter {
+export default class EditableShape extends Tool {
 
   constructor(annotation, g, config, env) {
-    super();
+    super(g, config, env);
 
     this.annotation = annotation;
-
-    this.g = g;
-
-    this.config = config;
-    this.env = env;
-
-    this.svg = g.closest('svg');
 
     // Implementations need to override the handles list
     this.handles = [];
@@ -41,7 +34,7 @@ export default class EditableShape extends EventEmitter {
 
         this.scaleHandles(scale);
       });
-      
+
       this.resizeObserver.observe(this.svg.parentNode);
     }
   }
@@ -76,12 +69,12 @@ export default class EditableShape extends EventEmitter {
   }
 
   setHandleXY = (handle, x, y) => {
-    const inner = handle.querySelector('.a9s-handle-inner');	
-    inner.setAttribute('cx', x);	
-    inner.setAttribute('cy', y);	
+    const inner = handle.querySelector('.a9s-handle-inner');
+    inner.setAttribute('cx', x);
+    inner.setAttribute('cy', y);
 
-    const outer = handle.querySelector('.a9s-handle-outer');	
-    outer.setAttribute('cx', x);	
+    const outer = handle.querySelector('.a9s-handle-outer');
+    outer.setAttribute('cx', x);
     outer.setAttribute('cy', y);
   }
 
@@ -105,23 +98,8 @@ export default class EditableShape extends EventEmitter {
     });
   }
 
-  getSVGPoint = evt => {
-    const bbox = this.svg.getBoundingClientRect();
-
-    const x = evt.clientX - bbox.x;
-    const y = evt.clientY- bbox.y;
-
-    const pt = this.svg.createSVGPoint();
-
-    const { left, top } = this.svg.getBoundingClientRect();
-    pt.x = x + left;
-    pt.y = y + top;
-
-    return pt.matrixTransform(this.g.getScreenCTM().inverse());
-  }
-
   // Implementations MUST override theis method
-  get element() {	
+  get element() {
     throw new Error(IMPLEMENTATION_MISSING);
   }
 
@@ -129,7 +107,7 @@ export default class EditableShape extends EventEmitter {
   destroy() {
     if (this.resizeObserver)
       this.resizeObserver.disconnect();
-    
+
     this.resizeObserver = null;
   }
 

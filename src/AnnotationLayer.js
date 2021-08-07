@@ -87,7 +87,7 @@ export default class AnnotationLayer extends EventEmitter {
 
     elem.addEventListener('mouseleave', () => {
       if (!this.tools?.current.isDrawing) {
-        if (this.currentHover === elem) 
+        if (this.currentHover === elem)
           this.emit('mouseLeaveAnnotation', annotation, elem);
 
         this.currentHover = null;
@@ -114,6 +114,7 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   _onMouseDown = evt => {
+    if (evt.button !== 0) return;  // left click
     if (!(this.readOnly || this.selectedShape || this.tools.current.isDrawing)) {
       // No active selection & not drawing now? Start drawing.
       this.tools.current.start(evt);
