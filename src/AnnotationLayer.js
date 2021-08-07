@@ -323,13 +323,12 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   selectShape = (shape, skipEvent) => {
-    // Don't re-select
-    if (this.selectedShape?.annotation === shape.annotation) {
-      if (!skipEvent)
-        this.emit('clickAnnotation', shape.annotation, shape);
+    if (!skipEvent && !shape.annotation.isSelection)
+      this.emit('clickAnnotation', shape.annotation, shape);
   
+    // Don't re-select
+    if (this.selectedShape?.annotation === shape.annotation)
       return;
-    }
 
     // If another shape is currently selected, deselect first
     if (this.selectedShape && this.selectedShape.annotation !== shape.annotation) {
@@ -349,7 +348,10 @@ export default class AnnotationLayer extends EventEmitter {
 
       // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
       this.selectedShape.element.annotation = annotation;
-      this._attachMouseListeners(this.selectedShape.element, annotation);
+      
+      // If we attach immediately 'mouseEnter' will fire when the editable shape
+      // is added to the DOM !
+      setTimeout(() => this._attachMouseListeners(this.selectedShape.element, annotation), 1);
 
       // When using mouse, currentHover will be set by mouseEnter, but
       // that doesn't happen in touch
@@ -370,9 +372,6 @@ export default class AnnotationLayer extends EventEmitter {
       if (!skipEvent)
         this.emit('select', { annotation, element: shape, skipEvent });
     }
-
-    if (!skipEvent)
-      this.emit('clickAnnotation', annotation, shape);
   }
 
   setDrawingTool = shape => {
