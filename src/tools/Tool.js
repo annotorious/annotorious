@@ -1,5 +1,6 @@
 import EventEmitter from 'tiny-emitter';
 import { isTouchDevice } from '../util/Touch';
+import { SVG_NAMESPACE } from '../util/SVG';
 
 const IMPLEMENTATION_MISSING = "An implementation is missing";
 
@@ -40,6 +41,35 @@ export class ToolLike extends EventEmitter {
 
       return pt.matrixTransform(this.g.getCTM().inverse());
     }
+  }
+
+  drawHandle = (x, y) => {
+    const containerGroup = document.createElementNS(SVG_NAMESPACE, 'g');
+    containerGroup.setAttribute('class', 'a9s-handle');
+
+    const group = document.createElementNS(SVG_NAMESPACE, 'g');
+
+    const drawCircle = r => {
+      const c = document.createElementNS(SVG_NAMESPACE, 'circle');
+      c.setAttribute('cx', x);
+      c.setAttribute('cy', y);
+      c.setAttribute('r', r);
+      return c;
+    }
+
+    const radius = this.config.handleRadius || 6;
+
+    const inner = drawCircle(radius);
+    inner.setAttribute('class', 'a9s-handle-inner')
+
+    const outer = drawCircle(radius + 1);
+    outer.setAttribute('class', 'a9s-handle-outer')
+
+    group.appendChild(outer);
+    group.appendChild(inner);
+
+    containerGroup.appendChild(group);
+    return containerGroup;
   }
 
 }
