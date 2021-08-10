@@ -91,7 +91,7 @@ export class ToolLike extends EventEmitter {
   }
 
   scaleHandles = scale => {
-    this.handles.forEach(handle => {
+    this.handles?.forEach(handle => {
       const inner = handle.querySelector('.a9s-handle-inner');
       const outer = handle.querySelector('.a9s-handle-outer');
 
