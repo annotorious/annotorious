@@ -38,36 +38,6 @@ export default class EditableShape extends ToolLike {
     }
   }
 
-  setHandleXY = (handle, x, y) => {
-    const inner = handle.querySelector('.a9s-handle-inner');
-    inner.setAttribute('cx', x);
-    inner.setAttribute('cy', y);
-
-    const outer = handle.querySelector('.a9s-handle-outer');
-    outer.setAttribute('cx', x);
-    outer.setAttribute('cy', y);
-  }
-
-  getHandleXY = handle => {
-    const outer = handle.querySelector('.a9s-handle-outer');
-    return {
-      x: parseFloat(outer.getAttribute('cx')),
-      y: parseFloat(outer.getAttribute('cy'))
-    }
-  }
-
-  scaleHandles = scale => {
-    this.handles.forEach(handle => {
-      const inner = handle.querySelector('.a9s-handle-inner');
-      const outer = handle.querySelector('.a9s-handle-outer');
-
-      const radius = scale * (this.config.handleRadius || 6);
-
-      inner.setAttribute('r', radius);
-      outer.setAttribute('r', radius);
-    });
-  }
-
   // Implementations MUST override theis method
   get element() {
     throw new Error(IMPLEMENTATION_MISSING);
