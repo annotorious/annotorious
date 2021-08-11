@@ -169,10 +169,10 @@ export default class Tool extends ToolLike {
       this.svg.removeEventListener('dblclick', this.dblClick);
   }
 
-  start = (evt, initialScale) => {
+  start = evt => {
     // Handle SVG conversion on behalf of tool implementations
     const { x , y } = this.getSVGPoint(evt);
-    this.startDrawing(x, y, evt, initialScale);
+    this.startDrawing(x, y, evt);
   }
 
   /**
