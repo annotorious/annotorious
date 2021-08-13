@@ -149,6 +149,7 @@ export default class EditableRect extends EditableShape {
         const y = constrain(pos.y - this.mouseOffset.y, naturalHeight - h);
 
         this.setSize(x, y, w, h);
+
         this.emit('update', toRectFragment(x, y, w, h, this.env.image));
       } else {
         // Mouse position replaces one of the corner coords, depending
