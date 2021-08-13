@@ -1,5 +1,5 @@
 import EditableShape from '../EditableShape';
-import { drawEmbeddedSVG, toSVGTarget } from '../../selectors/EmbeddedSVG';
+import { drawEmbeddedSVG, svgFragmentToShape, toSVGTarget } from '../../selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '../../util/SVG';
 import { format, setFormatterElSize } from '../../util/Formatting';
 import Mask from './PolygonMask';
@@ -150,6 +150,16 @@ export default class EditablePolygon extends EditableShape {
 
   get element() {
     return this.elementGroup;
+  }
+
+  update = annotation => {
+    const points = svgFragmentToShape(annotation)
+      .getAttribute('points')
+      .split(' ') // Split x/y tuples
+      .map(xy => xy.split(',').map(str => parseFloat(str.trim())));
+    
+    this.setPoints(points);
+    points.forEach((pt, idx) => this.setHandleXY(this.handles[idx], pt.x, pt.y));
   }
 
   destroy = () => {

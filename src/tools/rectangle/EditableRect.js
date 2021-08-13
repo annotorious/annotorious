@@ -172,6 +172,11 @@ export default class EditableRect extends EditableShape {
     return this.elementGroup;
   }
 
+  update = annotation => {
+    const { x, y, w, h } = parseRectFragment(annotation);
+    this.setSize(x, y, w, h);
+  }
+
   destroy() {
     this.containerGroup.parentNode.removeChild(this.containerGroup);
     super.destroy();
