@@ -152,7 +152,7 @@ export default class EditablePolygon extends EditableShape {
     return this.elementGroup;
   }
 
-  update = annotation => {
+  updateState = annotation => {
     const points = svgFragmentToShape(annotation)
       .getAttribute('points')
       .split(' ') // Split x/y tuples

@@ -172,7 +172,7 @@ export default class EditableRect extends EditableShape {
     return this.elementGroup;
   }
 
-  update = annotation => {
+  updateState = annotation => {
     const { x, y, w, h } = parseRectFragment(annotation);
     this.setSize(x, y, w, h);
   }
