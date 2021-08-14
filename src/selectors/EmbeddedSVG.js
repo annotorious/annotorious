@@ -85,7 +85,7 @@ export const toSVGTarget = (shape, image) => {
   serialized = serialized.replace(` xmlns="${SVG_NAMESPACE}"`, '');
 
   return {
-    source: image.src,
+    source: image?.src,
     selector: {
       type: "SvgSelector",
       value: `<svg>${serialized}</svg>`
