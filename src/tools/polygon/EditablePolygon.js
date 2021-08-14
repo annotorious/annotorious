@@ -156,7 +156,10 @@ export default class EditablePolygon extends EditableShape {
     const points = svgFragmentToShape(annotation)
       .getAttribute('points')
       .split(' ') // Split x/y tuples
-      .map(xy => xy.split(',').map(str => parseFloat(str.trim())));
+      .map(xy => { 
+        const [ x, y ] = xy.split(',').map(str => parseFloat(str.trim()));
+        return { x, y };
+      });
     
     this.setPoints(points);
     points.forEach((pt, idx) => this.setHandleXY(this.handles[idx], pt.x, pt.y));
