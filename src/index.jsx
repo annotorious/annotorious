@@ -226,9 +226,6 @@ export class Annotorious {
   setVisible = visible =>
     this._app.current.setVisible(visible);
 
-  setWidgets = widgets =>
-    this._app.current.setWidgets(widgets);
-
   updateSelected = (annotation, saveImmediately) => {
     let updated = null;
 
@@ -239,6 +236,14 @@ export class Annotorious {
 
     if (updated)
       this._app.current.updateSelected(updated, saveImmediately);
+  }
+
+  get widgets() {
+    return this._app.current.widgets;
+  }
+
+  set widgets(widgets) {
+    this._app.current.widgets = widgets;
   }
 
 }
