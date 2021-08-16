@@ -21,7 +21,7 @@ export default class AnnotationLayer extends EventEmitter {
     this.readOnly = config.readOnly;
     this.formatter = config.formatter;
 
-    this.disableSelect = false;
+    this.disableSelect = config.disableSelect;
 
     const { naturalWidth, naturalHeight } = this.imageEl;
 
