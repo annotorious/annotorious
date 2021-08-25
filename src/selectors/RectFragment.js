@@ -12,15 +12,17 @@ export const parseRectFragment = annotation => {
     const { value } = selector;
     const format = value.includes(':') ? value.substring(value.indexOf('=') + 1, value.indexOf(':')) : 'pixel';
 
-    const coords = value.includes(':') ? value.substring(value.indexOf(':') + 1) : value.substring(value.indexOf('=') + 1); 
-    const [ x, y, w, h ] = coords.split(',').map(parseFloat)
+    const coords = value.includes(':') ? value.substring(value.indexOf(':') + 1) : value.substring(value.indexOf('=') + 1);
+    const [x, y, w, h] = coords.split(',').map(parseFloat)
 
     return { x, y, w, h, format };
   }
 }
 
-/** Serializes a (x, y, w, h)-tuple as Media Fragment selector **/
-export const toRectFragment = (x, y, w, h, image) => ({
+/** Serializes a (x, y, w, h)-tuple as Media Fragment selector
+ * using pixel coordinates 
+ */
+export const toPixelRectFragment = (x, y, w, h, image) => ({
   source: image?.src,
   selector: {
     type: "FragmentSelector",
@@ -29,18 +31,33 @@ export const toRectFragment = (x, y, w, h, image) => ({
   }
 });
 
+/** Serializes a (x, y, w, h)-tuple as Media Fragment selector 
+ * using relative coordinates 
+ */
+export const toPercentRectFragment = (x, y, w, h, image) => ({
+  source: image?.src,
+  selector: {
+    type: "FragmentSelector",
+    conformsTo: "http://www.w3.org/TR/media-frags/",
+    value: `xywh=percent:${Math.round(x / image.naturalWidth * 100)},
+      ${Math.round(y / image.naturalHeight * 100)},
+      ${Math.round(w / image.naturalWidth * 100)},
+      ${Math.round(h / image.naturalHeight * 100)}`
+  }
+});
+
 /** Shorthand to apply the given (x, y, w, h) to the SVG shape **/
 const setXYWH = (shape, x, y, w, h) => {
   shape.setAttribute('x', x);
   shape.setAttribute('y', y);
   shape.setAttribute('width', w);
-  shape.setAttribute('height',  h);
+  shape.setAttribute('height', h);
 }
 
 export const drawRectMask = (imageDimensions, x, y, w, h) => {
   const mask = document.createElementNS(SVG_NAMESPACE, 'path');
   mask.setAttribute('fill-rule', 'evenodd');
-  
+
   const { naturalWidth, naturalHeight } = imageDimensions;
   mask.setAttribute('d', `M0 0 h${naturalWidth} v${naturalHeight} h-${naturalWidth} z M${x} ${y} h${w} v${h} h-${w} z`);
 
@@ -62,8 +79,8 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
 
   const g = document.createElementNS(SVG_NAMESPACE, 'g');
 
-  const outerRect  = document.createElementNS(SVG_NAMESPACE, 'rect');
-  const innerRect  = document.createElementNS(SVG_NAMESPACE, 'rect');
+  const outerRect = document.createElementNS(SVG_NAMESPACE, 'rect');
+  const innerRect = document.createElementNS(SVG_NAMESPACE, 'rect');
 
   innerRect.setAttribute('class', 'a9s-inner');
   setXYWH(innerRect, x, y, w, h);
@@ -80,7 +97,7 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
 /** Gets the (x, y, w, h)-values from the attributes of the SVG group **/
 export const getRectSize = g => {
   const outerRect = g.querySelector('.a9s-outer');
-  
+
   const x = parseFloat(outerRect.getAttribute('x'));
   const y = parseFloat(outerRect.getAttribute('y'));
   const w = parseFloat(outerRect.getAttribute('width'));
