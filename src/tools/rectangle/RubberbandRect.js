@@ -76,7 +76,7 @@ export default class RubberbandRect {
 
   toSelection = () => {
     const { x, y, w, h } = this.bbox;
-    this.env.fragmentCoordinates === 'pixel' ? coordinateMode = toPixelRectFragment : coordinateMode = toPercentRectFragment;
+    this.env.relativeCoordinates === false ? coordinateMode = toPixelRectFragment : coordinateMode = toPercentRectFragment;
     return new Selection(coordinateMode(x, y, w, h, this.env.image));
   }
 
