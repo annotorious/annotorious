@@ -40,7 +40,7 @@ export class Annotorious {
     this._env.image = imageEl;
 
     // Image coordinate mode to use
-    this._env.fragmentCoordinates = config.fragmentCoordinates
+    this._env.fragmentCoordinates = config.fragmentCoordinates;
 
     setLocale(config.locale, config.messages);
 

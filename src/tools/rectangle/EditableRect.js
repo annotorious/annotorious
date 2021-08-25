@@ -139,7 +139,7 @@ export default class EditableRect extends EditableShape {
 
     if (this.grabbedElem) {
       const pos = this.getSVGPoint(evt);
-      const coordinateMode = this.env.fragmentCoordinates === 'pixel' ? toPixelRectFragment : toPercentRectFragment
+      const coordinateMode = this.env.fragmentCoordinates === 'pixel' ? toPixelRectFragment : toPercentRectFragment;
 
       if (this.grabbedElem === this.rectangle) {
         // x/y changes by mouse offset, w/h remains unchanged
