@@ -16,8 +16,6 @@ export const parseRectFragment = (annotation, image) => {
 
     let [x, y, w, h] = coords.split(',').map(parseFloat);
 
-    console.log(image);
-    
     if (format.toLowerCase() === 'percent') {
       x = x * image.naturalWidth / 100;
       y = y * image.naturalHeight / 100;
@@ -93,9 +91,9 @@ export const setRectMaskSize = (mask, imageDimensions, x, y, w, h) => {
  * Draws an SVG rectangle, either from an annotation, or an
  * (x, y, w, h)-tuple.
  */
-export const drawRect = (arg1, arg2, arg3, arg4, image) => {
+export const drawRect = (arg1, arg2, arg3, arg4) => {
   const { x, y, w, h } = arg1.type === 'Annotation' || arg1.type === 'Selection' ?
-    parseRectFragment(arg1, image) : { x: arg1, y: arg2, w: arg3, h: arg4 };
+    parseRectFragment(arg1, arg2) : { x: arg1, y: arg2, w: arg3, h: arg4 };
 
   const g = document.createElementNS(SVG_NAMESPACE, 'g');
 
@@ -139,9 +137,8 @@ export const setRectSize = (g, x, y, w, h) => {
  * Shorthand to get the area (rectangle w x h) from the 
  * annotation's fragment selector. 
  */
-export const rectArea = annotation => {
-  console.log('area');
-  const { w, h } = parseRectFragment(annotation);
+export const rectArea = (annotation, image) => {
+  const { w, h } = parseRectFragment(annotation, image);
   return w * h;
 }
 

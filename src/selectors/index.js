@@ -27,11 +27,11 @@ const getFirstSelector = annotation => {
  * - MediaFragment
  * - SVG (with embedded SVG shape)
  */
-export const drawShape = annotation =>
-  drawFn[getFirstSelector(annotation).type](annotation);
+export const drawShape = (annotation, image) =>
+  drawFn[getFirstSelector(annotation).type](annotation, image);
 
-export const shapeArea = annotation =>
-  areaFn[getFirstSelector(annotation).type](annotation);
+export const shapeArea = (annotation, image) =>
+  areaFn[getFirstSelector(annotation).type](annotation, image);
 
 export { parseRectFragment } from './RectFragment';
 

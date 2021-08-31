@@ -125,7 +125,7 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   addAnnotation = annotation => {
-    const g = drawShape(annotation);
+    const g = drawShape(annotation, this.imageEl);
 
     g.setAttribute('class', 'a9s-annotation');
     g.setAttribute('data-id', annotation.id);
@@ -257,7 +257,7 @@ export default class AnnotationLayer extends EventEmitter {
     const shapes = Array.from(this.g.querySelectorAll('.a9s-annotation'));
 
     const annotations = shapes.map(s => s.annotation);
-    annotations.sort((a, b) => shapeArea(b) - shapeArea(a));
+    annotations.sort((a, b) => shapeArea(b, this.imageEl) - shapeArea(a, this.imageEl));
 
     // Clear the SVG element
     shapes.forEach(s => this.g.removeChild(s));
