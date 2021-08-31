@@ -7,7 +7,8 @@ import {
   parseRectFragment,
   getRectSize,
   setRectSize,
-  toRectFragment,
+  toPixelRectFragment,
+  toPercentRectFragment,
   setRectMaskSize
 } from '../../selectors/RectFragment';
 
@@ -56,12 +57,12 @@ export default class EditableRect extends EditableShape {
     this.elementGroup.appendChild(this.rectangle);
 
     this.handles = [
-      [ x, y ],
-      [ x + w, y ],
-      [ x + w, y + h ],
-      [ x, y + h ]
+      [x, y],
+      [x + w, y],
+      [x + w, y + h],
+      [x, y + h]
     ].map(t => {
-      const [ x, y ] = t;
+      const [x, y] = t;
       const handle = this.drawHandle(x, y);
 
       handle.addEventListener('mousedown', this.onGrab(handle));
@@ -88,7 +89,7 @@ export default class EditableRect extends EditableShape {
     setRectMaskSize(this.mask, this.env.image, x, y, w, h);
     setFormatterElSize(this.elementGroup, x, y, w, h);
 
-    const [ topleft, topright, bottomright, bottomleft] = this.handles;
+    const [topleft, topright, bottomright, bottomleft] = this.handles;
     this.setHandleXY(topleft, x, y);
     this.setHandleXY(topright, x + w, y);
     this.setHandleXY(bottomright, x + w, y + h);
@@ -134,10 +135,11 @@ export default class EditableRect extends EditableShape {
   onMouseMove = evt => {
     if (evt.button !== 0) return;  // left click
     const constrain = (coord, max) =>
-      coord < 0 ? 0 : ( coord > max ? max : coord);
+      coord < 0 ? 0 : (coord > max ? max : coord);
 
     if (this.grabbedElem) {
       const pos = this.getSVGPoint(evt);
+      const coordinateMode = this.env.relativeCoordinates === false ? toPixelRectFragment : toPercentRectFragment;
 
       if (this.grabbedElem === this.rectangle) {
         // x/y changes by mouse offset, w/h remains unchanged
@@ -149,7 +151,7 @@ export default class EditableRect extends EditableShape {
         const y = constrain(pos.y - this.mouseOffset.y, naturalHeight - h);
 
         this.setSize(x, y, w, h);
-        this.emit('update', toRectFragment(x, y, w, h, this.env.image));
+        this.emit('update', coordinateMode(x, y, w, h, this.env.image));
       } else {
         // Mouse position replaces one of the corner coords, depending
         // on which handle is the grabbed element
@@ -158,7 +160,7 @@ export default class EditableRect extends EditableShape {
           this.handles[handleIdx + 2] : this.handles[handleIdx - 2];
 
         const { x, y, w, h } = this.stretchCorners(handleIdx, oppositeHandle, pos);
-        this.emit('update', toRectFragment(x, y, w, h, this.env.image));
+        this.emit('update', coordinateMode(x, y, w, h, this.env.image));
       }
     }
   }

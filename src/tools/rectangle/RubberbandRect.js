@@ -1,11 +1,12 @@
 import { Selection } from '@recogito/recogito-client-core';
 import { SVG_NAMESPACE } from '../../util/SVG';
-import { 
-  drawRect, 
+import {
+  drawRect,
   drawRectMask,
-  setRectSize, 
+  setRectSize,
   setRectMaskSize,
-  toRectFragment 
+  toPixelRectFragment,
+  toPercentRectFragment
 } from '../../selectors/RectFragment';
 
 /**
@@ -15,13 +16,13 @@ import {
 export default class RubberbandRect {
 
   constructor(anchorX, anchorY, g, env) {
-    this.anchor = [ anchorX, anchorY ];
-    this.opposite = [ anchorX, anchorY ];
+    this.anchor = [anchorX, anchorY];
+    this.opposite = [anchorX, anchorY];
 
     this.env = env;
 
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
-    
+
     this.mask = drawRectMask(env.image, anchorX, anchorY, 2, 2);
     this.mask.setAttribute('class', 'a9s-selection-mask');
 
@@ -51,7 +52,7 @@ export default class RubberbandRect {
       x: w > 0 ? this.anchor[0] : this.opposite[0],
       y: h > 0 ? this.anchor[1] : this.opposite[1],
       w: Math.max(1, Math.abs(w)), // Negative values
-      h: Math.max(1, Math.abs(h)) 
+      h: Math.max(1, Math.abs(h))
     };
   }
 
@@ -63,19 +64,20 @@ export default class RubberbandRect {
     // Make visible
     this.group.style.display = null;
 
-    this.opposite = [ oppositeX, oppositeY ];
+    this.opposite = [oppositeX, oppositeY];
     const { x, y, w, h } = this.bbox;
 
     setRectMaskSize(this.mask, this.env.image, x, y, w, h);
     setRectSize(this.rect, x, y, w, h);
   }
 
-  getBoundingClientRect = () => 
+  getBoundingClientRect = () =>
     this.rect.getBoundingClientRect();
 
   toSelection = () => {
     const { x, y, w, h } = this.bbox;
-    return new Selection(toRectFragment(x, y, w, h, this.env.image));
+    this.env.relativeCoordinates === false ? coordinateMode = toPixelRectFragment : coordinateMode = toPercentRectFragment;
+    return new Selection(coordinateMode(x, y, w, h, this.env.image));
   }
 
   destroy = () => {
