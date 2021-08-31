@@ -6,23 +6,33 @@ import { SVG_NAMESPACE } from '../util/SVG';
  * implementation can only deal with well-formed xywh=pixel
  * fragments. 
  */
-export const parseRectFragment = annotation => {
+export const parseRectFragment = (annotation, image) => {
   const selector = annotation.selector('FragmentSelector');
   if (selector?.conformsTo.startsWith('http://www.w3.org/TR/media-frags')) {
     const { value } = selector;
     const format = value.includes(':') ? value.substring(value.indexOf('=') + 1, value.indexOf(':')) : 'pixel';
 
     const coords = value.includes(':') ? value.substring(value.indexOf(':') + 1) : value.substring(value.indexOf('=') + 1);
-    const [x, y, w, h] = coords.split(',').map(parseFloat)
 
-    return { x, y, w, h, format };
+    let [x, y, w, h] = coords.split(',').map(parseFloat);
+
+    console.log(image);
+    
+    if (format.toLowerCase() === 'percent') {
+      x = x * image.naturalWidth / 100;
+      y = y * image.naturalHeight / 100;
+      w = w * image.naturalWidth / 100 ;
+      h = h * image.naturalHeight / 100;
+    }
+
+    return { x, y, w, h };
   }
 }
 
 /** Serializes a (x, y, w, h)-tuple as Media Fragment selector
  * using pixel coordinates 
  */
-export const toPixelRectFragment = (x, y, w, h, image) => ({
+const toPixelRectFragment = (x, y, w, h, image) => ({
   source: image?.src,
   selector: {
     type: "FragmentSelector",
@@ -31,20 +41,30 @@ export const toPixelRectFragment = (x, y, w, h, image) => ({
   }
 });
 
-/** Serializes a (x, y, w, h)-tuple as Media Fragment selector 
- * using relative coordinates 
+/** 
+ * Serializes a (x, y, w, h)-tuple as Media Fragment selector 
+ * using percent coordinates 
  */
-export const toPercentRectFragment = (x, y, w, h, image) => ({
-  source: image?.src,
-  selector: {
-    type: "FragmentSelector",
-    conformsTo: "http://www.w3.org/TR/media-frags/",
-    value: `xywh=percent:${Math.round(x / image.naturalWidth * 100)},
-      ${Math.round(y / image.naturalHeight * 100)},
-      ${Math.round(w / image.naturalWidth * 100)},
-      ${Math.round(h / image.naturalHeight * 100)}`
+const toPercentRectFragment = (x, y, w, h, image) => {
+  const px = x / image.naturalWidth * 100;
+  const py = y / image.naturalHeight * 100;
+  const pw = w / image.naturalWidth * 100;
+  const ph = h / image.naturalHeight * 100;
+
+  return {
+    source: image.src,
+    selector: {
+      type: "FragmentSelector",
+      conformsTo: "http://www.w3.org/TR/media-frags/",
+      value: `xywh=percent:${px},${py},${pw},${ph}`
+    }
   }
-});
+}
+
+export const toRectFragment = (x, y, w, h, image, fragmentUnit) =>
+  fragmentUnit?.toLowerCase() === 'percent' ?
+    toPercentRectFragment(x, y, w, h, image) :
+    toPixelRectFragment(x, y, w, h, image);
 
 /** Shorthand to apply the given (x, y, w, h) to the SVG shape **/
 const setXYWH = (shape, x, y, w, h) => {
@@ -73,9 +93,9 @@ export const setRectMaskSize = (mask, imageDimensions, x, y, w, h) => {
  * Draws an SVG rectangle, either from an annotation, or an
  * (x, y, w, h)-tuple.
  */
-export const drawRect = (arg1, arg2, arg3, arg4) => {
+export const drawRect = (arg1, arg2, arg3, arg4, image) => {
   const { x, y, w, h } = arg1.type === 'Annotation' || arg1.type === 'Selection' ?
-    parseRectFragment(arg1) : { x: arg1, y: arg2, w: arg3, h: arg4 };
+    parseRectFragment(arg1, image) : { x: arg1, y: arg2, w: arg3, h: arg4 };
 
   const g = document.createElementNS(SVG_NAMESPACE, 'g');
 
@@ -120,6 +140,7 @@ export const setRectSize = (g, x, y, w, h) => {
  * annotation's fragment selector. 
  */
 export const rectArea = annotation => {
+  console.log('area');
   const { w, h } = parseRectFragment(annotation);
   return w * h;
 }

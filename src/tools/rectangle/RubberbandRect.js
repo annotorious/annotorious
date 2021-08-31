@@ -5,8 +5,7 @@ import {
   drawRectMask,
   setRectSize,
   setRectMaskSize,
-  toPixelRectFragment,
-  toPercentRectFragment
+  toRectFragment
 } from '../../selectors/RectFragment';
 
 /**
@@ -15,10 +14,11 @@ import {
  */
 export default class RubberbandRect {
 
-  constructor(anchorX, anchorY, g, env) {
+  constructor(anchorX, anchorY, g, config, env) {
     this.anchor = [anchorX, anchorY];
     this.opposite = [anchorX, anchorY];
 
+    this.config = config;
     this.env = env;
 
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
@@ -76,8 +76,7 @@ export default class RubberbandRect {
 
   toSelection = () => {
     const { x, y, w, h } = this.bbox;
-    this.env.relativeCoordinates === false ? coordinateMode = toPixelRectFragment : coordinateMode = toPercentRectFragment;
-    return new Selection(coordinateMode(x, y, w, h, this.env.image));
+    return new Selection(toRectFragment(x, y, w, h, this.env.image, this.config.fragmentUnit));
   }
 
   destroy = () => {

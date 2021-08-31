@@ -7,8 +7,7 @@ import {
   parseRectFragment,
   getRectSize,
   setRectSize,
-  toPixelRectFragment,
-  toPercentRectFragment,
+  toRectFragment,
   setRectMaskSize
 } from '../../selectors/RectFragment';
 
@@ -23,7 +22,7 @@ export default class EditableRect extends EditableShape {
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
 
-    const { x, y, w, h } = parseRectFragment(annotation);
+    const { x, y, w, h } = parseRectFragment(annotation, env.image);
 
     // SVG markup for this class looks like this:
     //
@@ -139,7 +138,6 @@ export default class EditableRect extends EditableShape {
 
     if (this.grabbedElem) {
       const pos = this.getSVGPoint(evt);
-      const coordinateMode = this.env.relativeCoordinates === false ? toPixelRectFragment : toPercentRectFragment;
 
       if (this.grabbedElem === this.rectangle) {
         // x/y changes by mouse offset, w/h remains unchanged
@@ -151,7 +149,7 @@ export default class EditableRect extends EditableShape {
         const y = constrain(pos.y - this.mouseOffset.y, naturalHeight - h);
 
         this.setSize(x, y, w, h);
-        this.emit('update', coordinateMode(x, y, w, h, this.env.image));
+        this.emit('update', toRectFragment(x, y, w, h, this.env.image, this.config.fragmentUnit));
       } else {
         // Mouse position replaces one of the corner coords, depending
         // on which handle is the grabbed element
@@ -160,7 +158,7 @@ export default class EditableRect extends EditableShape {
           this.handles[handleIdx + 2] : this.handles[handleIdx - 2];
 
         const { x, y, w, h } = this.stretchCorners(handleIdx, oppositeHandle, pos);
-        this.emit('update', coordinateMode(x, y, w, h, this.env.image));
+        this.emit('update', toRectFragment(x, y, w, h, this.env.image, this.config.fragmentUnit));
       }
     }
   }
@@ -175,7 +173,7 @@ export default class EditableRect extends EditableShape {
   }
 
   updateState = annotation => {
-    const { x, y, w, h } = parseRectFragment(annotation);
+    const { x, y, w, h } = parseRectFragment(annotation, this.env.image);
     this.setSize(x, y, w, h);
   }
 
