@@ -6,24 +6,30 @@ import './ImageAnnotator.scss';
 
 export default class ImageAnnotator extends Component  {
 
-  state = {
-    selectedAnnotation: null,
-    selectedDOMElement: null,
-    modifiedTarget: null,
+  constructor(props) {
+    super(props);
 
-    // ReadOnly mode
-    readOnly: this.props.config.readOnly,
+    this.state = {
+      selectedAnnotation: null,
+      selectedDOMElement: null,
+      modifiedTarget: null,
 
-    // Headless mode
-    editorDisabled: this.props.config.disableEditor,
+      // ReadOnly mode
+      readOnly: this.props.config.readOnly,
 
-    // Widgets
-    widgets: this.props.config.widgets,
+      // Headless mode
+      editorDisabled: this.props.config.disableEditor,
 
-    // Records the state before any potential headless modify (done via
-    // .updateSelected) so we can properly fire the updateAnnotation(a, previous)
-    // event, and distinguish between headless Save and Cancel
-    beforeHeadlessModify: null
+      // Widgets
+      widgets: this.props.config.widgets,
+
+      // Records the state before any potential headless modify (done via
+      // .updateSelected) so we can properly fire the updateAnnotation(a, previous)
+      // event, and distinguish between headless Save and Cancel
+      beforeHeadlessModify: null
+    }
+
+    this._editor = React.createRef();
   }
 
   /** Shorthand **/
@@ -257,8 +263,8 @@ export default class ImageAnnotator extends Component  {
     this.annotationLayer.getAnnotations().map(a => a.clone());
 
   getSelected = () => {
-    const selected = this.annotationLayer.getSelected();
-    return selected ? selected.annotation.clone() : null;
+    if (this.state.selectedAnnotation)
+      return this._editor.current?.getCurrentAnnotation();
   }
 
   getSelectedImageSnippet = () =>
@@ -368,6 +374,7 @@ export default class ImageAnnotator extends Component  {
 
     return (open && (
       <Editor
+        ref={this._editor}
         detachable
         wrapperEl={this.props.wrapperEl}
         annotation={this.state.selectedAnnotation}
