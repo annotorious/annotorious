@@ -2,24 +2,24 @@ import { SVG_NAMESPACE } from '../util/SVG';
 
 /** 
  * Parses a W3C Web Annotation FragmentSelector conforming
- * to the Media Fragments spec. This (currently) naive 
- * implementation can only deal with well-formed xywh=pixel
- * fragments. 
+ * to the Media Fragments spec. Supports (well-formed) xywh=pixel
+ * and xywh=percent fragments. 
  */
 export const parseRectFragment = (annotation, image) => {
   const selector = annotation.selector('FragmentSelector');
+
   if (selector?.conformsTo.startsWith('http://www.w3.org/TR/media-frags')) {
     const { value } = selector;
+  
     const format = value.includes(':') ? value.substring(value.indexOf('=') + 1, value.indexOf(':')) : 'pixel';
-
     const coords = value.includes(':') ? value.substring(value.indexOf(':') + 1) : value.substring(value.indexOf('=') + 1);
 
-    let [x, y, w, h] = coords.split(',').map(parseFloat);
+    let [ x, y, w, h ] = coords.split(',').map(parseFloat);
 
     if (format.toLowerCase() === 'percent') {
-      x = x * image.naturalWidth / 100;
+      x = x * image.naturalWidth  / 100;
       y = y * image.naturalHeight / 100;
-      w = w * image.naturalWidth / 100 ;
+      w = w * image.naturalWidth  / 100;
       h = h * image.naturalHeight / 100;
     }
 
@@ -27,8 +27,9 @@ export const parseRectFragment = (annotation, image) => {
   }
 }
 
-/** Serializes a (x, y, w, h)-tuple as Media Fragment selector
- * using pixel coordinates 
+/** 
+ * Serializes a (x, y, w, h)-tuple as Media Fragment selector
+ * using pixel coordinates.
  */
 const toPixelRectFragment = (x, y, w, h, image) => ({
   source: image?.src,
@@ -41,12 +42,12 @@ const toPixelRectFragment = (x, y, w, h, image) => ({
 
 /** 
  * Serializes a (x, y, w, h)-tuple as Media Fragment selector 
- * using percent coordinates 
+ * using percent coordinates.
  */
 const toPercentRectFragment = (x, y, w, h, image) => {
-  const px = x / image.naturalWidth * 100;
+  const px = x / image.naturalWidth  * 100;
   const py = y / image.naturalHeight * 100;
-  const pw = w / image.naturalWidth * 100;
+  const pw = w / image.naturalWidth  * 100;
   const ph = h / image.naturalHeight * 100;
 
   return {
