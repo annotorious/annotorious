@@ -216,7 +216,7 @@ export default class AnnotationLayer extends EventEmitter {
     shapes.forEach(s => this.g.removeChild(s));
 
     // Add
-    annotations.sort((a, b) => shapeArea(b) - shapeArea(a));
+    annotations.sort((a, b) => shapeArea(b, this.imageEl) - shapeArea(a, this.imageEl));
     annotations.forEach(this.addAnnotation);
   }
 
