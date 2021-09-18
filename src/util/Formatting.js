@@ -1,14 +1,29 @@
 import { addClass, SVG_NAMESPACE } from './SVG';
 
+const isFirefox = /firefox/i.test(navigator.userAgent);
+
+const formatSvgEl = (svgEl, x, y, w, h) => {
+  svgEl.setAttribute('width', w);
+  svgEl.setAttribute('height', h);
+
+  // Argh - Firefox produces broken SVG bounds for nested SVG
+  if (isFirefox) {
+    svgEl.setAttribute('x', 0);
+    svgEl.setAttribute('y', 0);
+    svgEl.setAttribute('transform', `translate(${x}, ${y})`);  
+  } else {
+    svgEl.setAttribute('x', x);
+    svgEl.setAttribute('y', y);
+  }
+}
+
 const appendFormatterEl = (formatterEl, shape) => {
   const { x, y, width, height } = shape.getBBox();
 
   const svgEl = document.createElementNS(SVG_NAMESPACE, 'svg');
   svgEl.setAttribute('class', 'a9s-formatter-el');
-  svgEl.setAttribute('x', x);
-  svgEl.setAttribute('y', y);
-  svgEl.setAttribute('width', width);
-  svgEl.setAttribute('height', height);
+
+  formatSvgEl(svgEl, x, y, width, height);
 
   const g = document.createElementNS(SVG_NAMESPACE, 'g');
   g.appendChild(formatterEl);y
@@ -75,11 +90,6 @@ export const format = (shape, annotation, formatter) => {
 
 export const setFormatterElSize = (group, x, y, w, h) => {
   const formatterEl = group.querySelector('.a9s-formatter-el');
-
-  if (formatterEl) {
-    formatterEl.setAttribute('x', x);
-    formatterEl.setAttribute('y', y);
-    formatterEl.setAttribute('width', w);
-    formatterEl.setAttribute('height', h);
-  }
+  if (formatterEl)
+    formatSvgEl(formatterEl, x, y, w, h);
 }
