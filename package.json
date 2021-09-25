@@ -7,7 +7,7 @@
     "start": "webpack serve --open --mode=development",
     "build": "webpack --mode=production",
     "build-polyfills": "webpack --mode=production --config webpack.polyfills.js",
-    "vite-build": "vite build && mv ./dist/annotorious.umd.js ./dist/annotorious.min.js && mv ./dist/annotorious.umd.js.map ./dist/annotorious.min.js.map && mv ./dist/style.css ./dist/annotorious.min.css"
+    "vite-build": "vite build && mv ./dist/annotorious.umd.js ./dist/annotorious.min.js && mv ./dist/style.css ./dist/annotorious.min.css"
   },
   "repository": {
     "type": "git",
