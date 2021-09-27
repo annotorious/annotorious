@@ -73,6 +73,13 @@ const setXYWH = (shape, x, y, w, h) => {
   shape.setAttribute('height', h);
 }
 
+
+const setPointXY = (shape, x, y) => {
+  shape.setAttribute('cx', x);
+  shape.setAttribute('cy', y);
+  shape.setAttribute('r', 7); // TODO make configurable
+}
+
 export const drawRectMask = (imageDimensions, x, y, w, h) => {
   const mask = document.createElementNS(SVG_NAMESPACE, 'path');
   mask.setAttribute('fill-rule', 'evenodd');
@@ -98,40 +105,72 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
 
   const g = document.createElementNS(SVG_NAMESPACE, 'g');
 
-  const outerRect = document.createElementNS(SVG_NAMESPACE, 'rect');
-  const innerRect = document.createElementNS(SVG_NAMESPACE, 'rect');
+  if (w === 0 && h === 0) {
+    // Edge case: rect is actually a point
+    const pointGroup = document.createElementNS(SVG_NAMESPACE, 'g');
+    pointGroup.setAttribute('class', 'a9s-point');
 
-  innerRect.setAttribute('class', 'a9s-inner');
-  setXYWH(innerRect, x, y, w, h);
+    const outerPoint  = document.createElementNS(SVG_NAMESPACE, 'circle');
+    const innerPoint  = document.createElementNS(SVG_NAMESPACE, 'circle');
 
-  outerRect.setAttribute('class', 'a9s-outer');
-  setXYWH(outerRect, x, y, w, h);
+    innerPoint.setAttribute('class', 'a9s-inner');
+    setPointXY(innerPoint, x, y);
 
-  g.appendChild(outerRect);
-  g.appendChild(innerRect);
+    outerPoint.setAttribute('class', 'a9s-outer');
+    setPointXY(outerPoint, x, y);
+
+    pointGroup.appendChild(outerPoint);
+    pointGroup.appendChild(innerPoint);  
+    
+    g.appendChild(pointGroup);
+  } else {
+    const outerRect = document.createElementNS(SVG_NAMESPACE, 'rect');
+    const innerRect = document.createElementNS(SVG_NAMESPACE, 'rect');
+
+    innerRect.setAttribute('class', 'a9s-inner');
+    setXYWH(innerRect, x, y, w, h);
+
+    outerRect.setAttribute('class', 'a9s-outer');
+    setXYWH(outerRect, x, y, w, h);
+
+    g.appendChild(outerRect);
+    g.appendChild(innerRect);
+  }
 
   return g;
 }
 
 /** Gets the (x, y, w, h)-values from the attributes of the SVG group **/
 export const getRectSize = g => {
-  const outerRect = g.querySelector('.a9s-outer');
+  const outer = g.querySelector('.a9s-outer');
 
-  const x = parseFloat(outerRect.getAttribute('x'));
-  const y = parseFloat(outerRect.getAttribute('y'));
-  const w = parseFloat(outerRect.getAttribute('width'));
-  const h = parseFloat(outerRect.getAttribute('height'));
+  if (outer.nodeName === 'rect') {
+    const x = parseFloat(outer.getAttribute('x'));
+    const y = parseFloat(outer.getAttribute('y'));
+    const w = parseFloat(outer.getAttribute('width'));
+    const h = parseFloat(outer.getAttribute('height'));
 
-  return { x, y, w, h };
+    return { x, y, w, h };
+  } else {
+    const x = parseFloat(outer.getAttribute('cx'));
+    const y = parseFloat(outer.getAttribute('cy'));
+
+    return { x, y, w: 0, h: 0 };
+  }
 }
 
 /** Applies the (x, y, w, h)-values to the rects in the SVG group **/
 export const setRectSize = (g, x, y, w, h) => {
-  const innerRect = g.querySelector('.a9s-inner');
-  const outerRect = g.querySelector('.a9s-outer');
+  const inner = g.querySelector('.a9s-inner');
+  const outer = g.querySelector('.a9s-outer');
 
-  setXYWH(innerRect, x, y, w, h);
-  setXYWH(outerRect, x, y, w, h);
+  if (outer.nodeName === 'rect') {
+    setXYWH(inner, x, y, w, h);
+    setXYWH(outer, x, y, w, h);  
+  } else {
+    setPointXY(inner, x, y);
+    setPointXY(outer, x, y);
+  }
 }
 
 /** 
