@@ -23,6 +23,7 @@
     "url": "https://github.com/recogito/annotorious/issues"
   },
   "homepage": "https://recogito.github.io/annotorious",
+  "funding": "https://github.com/sponsors/rsimon",
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.14.5",
     "@babel/preset-env": "^7.14.7",
@@ -40,7 +41,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "@recogito/recogito-client-core": "1.4.6",
+    "@recogito/recogito-client-core": "1.4.7",
     "preact": "^10.5.13",
     "tiny-emitter": "^2.1.0"
   }
