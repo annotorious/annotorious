@@ -263,8 +263,11 @@ export default class ImageAnnotator extends Component  {
     this.annotationLayer.getAnnotations().map(a => a.clone());
 
   getSelected = () => {
-    if (this.state.selectedAnnotation)
-      return this._editor.current?.getCurrentAnnotation();
+    if (this.state.selectedAnnotation) {
+      return this.state.editorDisabled ?
+        this.state.selectedAnnotation :
+        this._editor.current?.getCurrentAnnotation();
+    }
   }
 
   getSelectedImageSnippet = () =>
