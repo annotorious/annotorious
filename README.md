@@ -4,7 +4,7 @@
 </p>
 
 A JavaScript image annotation library. Add drawing, commenting and labeling functionality to images
-in Web pages with just a few lines of code. See the [project website](https://recogito.github.io/annotorious/)
+in Web pages with just a few lines of code. Weighs less than 300kB. See the [project website](https://recogito.github.io/annotorious/)
 for details and live demos.
 
 <img width="620" src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
