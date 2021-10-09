@@ -94,7 +94,7 @@ export default class ImageAnnotator extends Component  {
       // selected before. Otherwise, make a deselect state change first,
       // and then select after this state change has completed. (This is
       // keep our external event cycle clean!)
-      const select = () => {
+      const select = opt_callback => {
         this.setState({
           selectedAnnotation: annotation,
           selectedDOMElement: element,
@@ -108,6 +108,8 @@ export default class ImageAnnotator extends Component  {
               this.props.onAnnotationSelected(annotation.clone(), element);
             }
           }
+
+          opt_callback && opt_callback();
         });
       }
 
@@ -117,8 +119,9 @@ export default class ImageAnnotator extends Component  {
 
       if (selectedAnnotation && !selectedAnnotation.isEqual(annotation)) {
         this.clearState(() => {
-          this.props.onCancelSelected(selectedAnnotation);
-          select();
+          this.props.onCancelSelected(selectedAnnotation.clone());
+          select(() =>
+            this.props.onChangeSelected(annotation.clone(), selectedAnnotation.clone()));
         });
       } else {
         select();

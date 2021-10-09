@@ -70,24 +70,16 @@
           displayName: 'rainer'
         });
 
-        anno.on('startSelection', function(a) {
-          console.log('start selection', a);
-        });
-
         anno.on('selectAnnotation', function(a, shape) {
           console.log('selected');
         });
 
-        anno.on('mouseEnterAnnotation', function(a, shape) {
-          console.log('enter');
-        });
-
-        anno.on('mouseLeaveAnnotation', function(a, shape) {
-          console.log('leave');
-        });
-
         anno.on('cancelSelected', function(a) {
           console.log('cancel');
+        });
+
+        anno.on('changeSelected', function(selected, previous) {
+          console.log('changed from', previous, 'to', selected);
         });
 
         anno.on('createAnnotation', function(a) {
