@@ -56,12 +56,14 @@ module.exports = {
     ]
   },
   devServer: {
-    contentBase: resolveAppPath('public'),
     compress: true,
     hot: true,
     host: process.env.HOST || 'localhost',
     port: 3000,
-    publicPath: '/'
+    static: {
+      directory: resolveAppPath('public'),
+      publicPath: '/'
+    }
   },
   plugins: [
     new HtmlWebpackPlugin ({
