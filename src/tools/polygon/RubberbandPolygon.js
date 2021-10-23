@@ -9,6 +9,8 @@ export default class RubberbandPolygon {
     this.points = [ anchor ];
     this.env = env;
 
+    this.mousepos = anchor;
+
     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
     
     this.polygon = document.createElementNS(SVG_NAMESPACE, 'g');
@@ -50,19 +52,22 @@ export default class RubberbandPolygon {
     // Make visible
     this.group.style.display = null;
 
+    this.mousepos = xy;
+
     const rubberband = [ ...this.points, xy ];
     
     this.setPoints(rubberband);
     this.mask.redraw();
   }
 
-  addPoint = xy => {
+  addPoint = () => {
     // Don't add a new point if distance < 2 pixels
+    const [x, y] = this.mousepos;
     const lastCorner = this.points[this.points.length - 1];
-    const dist = Math.pow(xy[0] - lastCorner[0], 2) + Math.pow(xy[1] - lastCorner[1], 2);
+    const dist = Math.pow(x - lastCorner[0], 2) + Math.pow(y - lastCorner[1], 2);
     
     if (dist > 4) {
-      this.points = [ ...this.points, xy ];
+      this.points = [ ...this.points, this.mousepos];
       this.setPoints(this.points);   
       this.mask.redraw();
     }

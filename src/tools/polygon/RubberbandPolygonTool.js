@@ -39,24 +39,22 @@ export default class RubberbandPolygonTool extends Tool {
   onMouseMove = (x, y) =>
     this.rubberband.dragTo([ x, y ]);
 
-  onMouseUp = (x, y) => {
+  onMouseUp = () => {
     const { width, height } = this.rubberband.getBoundingClientRect();
 
     const minWidth = this.config.minSelectionWidth || 4;
     const minHeight = this.config.minSelectionHeight || 4;
     
     if (width >= minWidth || height >= minHeight) {
-      this.rubberband.addPoint([ x, y ]);
+      this.rubberband.addPoint();
     } else {
       this.emit('cancel');
       this.stop();
     }
   }
 
-  onDblClick = (x, y) => {
+  onDblClick = () => {
     this._isDrawing = false;
-
-    this.rubberband.addPoint([ x, y ]);
 
     const shape = this.rubberband.element;
     shape.annotation = this.rubberband.toSelection();

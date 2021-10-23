@@ -153,7 +153,7 @@ export default class Tool extends ToolLike {
         dblClick(x, y, evt);
       }
 
-      this.svg.addEventListener('dblclick', this.dblClick);
+      document.addEventListener('dblclick', this.dblClick);
     }
 
   }
@@ -166,7 +166,7 @@ export default class Tool extends ToolLike {
       document.removeEventListener('mouseup', this.mouseUp);
 
     if (this.dblClick)
-      this.svg.removeEventListener('dblclick', this.dblClick);
+      document.removeEventListener('dblclick', this.dblClick);
   }
 
   start = evt => {
