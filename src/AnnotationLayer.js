@@ -389,4 +389,8 @@ export default class AnnotationLayer extends EventEmitter {
     }
   }
 
+  stopDrawing = () => {
+    this.tools?.current?.stop();
+  }
+
 }
