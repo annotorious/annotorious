@@ -77,7 +77,7 @@ export default class AnnotationLayer extends EventEmitter {
 
   _attachMouseListeners = (elem, annotation) => {
     elem.addEventListener('mouseenter', () => {
-      if (!this.tools?.current.isDrawing) {
+      if (!this.tools?.current?.isDrawing) {
         if (this.currentHover !== elem)
           this.emit('mouseEnterAnnotation', annotation, elem);
 
@@ -86,7 +86,7 @@ export default class AnnotationLayer extends EventEmitter {
     });
 
     elem.addEventListener('mouseleave', () => {
-      if (!this.tools?.current.isDrawing) {
+      if (!this.tools?.current?.isDrawing) {
         if (this.currentHover === elem)
           this.emit('mouseLeaveAnnotation', annotation, elem);
 
@@ -114,12 +114,13 @@ export default class AnnotationLayer extends EventEmitter {
   }
 
   _onMouseDown = evt => {
-    if (evt.button !== 0) return;  // left click
+    if (evt.button !== 0) return;  // Left click
+
     if (!(this.readOnly || this.selectedShape || this.tools.current.isDrawing)) {
       // No active selection & not drawing now? Start drawing.
       this.tools.current.start(evt);
-    } else if (this.selectedShape !== this.currentHover) {
-      // If there is none, select the current hover
+    } else if (!this.tools?.current?.isDrawing && this.selectedShape !== this.currentHover) {
+      // Not drawing and another shape was clicked? Select.
       this.selectCurrentHover();
     }
   }
