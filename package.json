@@ -6,6 +6,7 @@
   "scripts": {
     "start": "webpack serve --open --mode=development",
     "build": "webpack --mode=production",
+    "prepare": "./build.sh",
     "build-polyfills": "webpack --mode=production --config webpack.polyfills.js",
     "vite-build": "vite build && mv ./dist/annotorious.umd.js ./dist/annotorious.min.js && mv ./dist/style.css ./dist/annotorious.min.css"
   },
