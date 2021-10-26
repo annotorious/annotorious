@@ -334,37 +334,39 @@ export default class AnnotationLayer extends EventEmitter {
     const readOnly = this.readOnly || annotation.readOnly;
 
     if (!readOnly) {
-      // Replace the shape with an editable version
-      shape.parentNode.removeChild(shape);
-
       const toolForAnnotation = this.tools.forAnnotation(annotation);
-      this.selectedShape = toolForAnnotation.createEditableShape(annotation);
 
-      // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
-      this.selectedShape.element.annotation = annotation;
-      
-      // If we attach immediately 'mouseEnter' will fire when the editable shape
-      // is added to the DOM !
-      setTimeout(() => {
-        if (this.selectedShape) {
+      // Replace the shape with an editable version
+      if (toolForAnnotation) {
+        shape.parentNode.removeChild(shape);
+        this.selectedShape = toolForAnnotation.createEditableShape(annotation);
+
+        // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
+        this.selectedShape.element.annotation = annotation;
+
+        this.selectedShape.on('update', fragment => {
+          if (this.selectedShape)
+            this.emit('updateTarget', this.selectedShape.element, fragment);
+        });
+
+        // If we attach immediately 'mouseEnter' will fire when the editable shape
+        // is added to the DOM!
+        setTimeout(() => {
           // Can be undefined in headless mode, when saving immediately
           this.currentHover = this.selectedShape.element;
           this._attachMouseListeners(this.selectedShape.element, annotation);
-        }
-      }, 1);
+        }, 1);
+      } else {
+        this.selectedShape = shape;
+      }
 
       // When using mouse, currentHover will be set by mouseEnter, but
       // that doesn't happen in touch
       if (isTouch)
         this.currentHover = this.selectedShape;
 
-      this.selectedShape.on('update', fragment => {
-        if (this.selectedShape)
-          this.emit('updateTarget', this.selectedShape.element, fragment);
-      });
-
       if (!skipEvent)
-        this.emit('select', { annotation, element: this.selectedShape.element });
+        this.emit('select', { annotation, element: this.selectedShape.element || this.selectedShape });
     } else {
       addClass(shape, 'selected');
       this.selectedShape = shape;
