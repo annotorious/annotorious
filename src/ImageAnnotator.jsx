@@ -257,6 +257,9 @@ export default class ImageAnnotator extends Component  {
     this.annotationLayer.disableSelect = disable;
   }
 
+  getAnnotationById = annotationId =>
+    this.annotationLayer.findShape(annotationId)?.annotation;
+
   getAnnotations = () =>
     this.annotationLayer.getAnnotations().map(a => a.clone());
 

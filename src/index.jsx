@@ -162,6 +162,11 @@ export class Annotorious {
     this._element.parentNode.removeChild(this._element);
   }
 
+  getAnnotationById = annotationId => {
+    const a = this._app.current.getAnnotationById(annotationId);
+    return a?.underlying;
+  }
+
   getAnnotations = () => {
     const annotations = this._app.current.getAnnotations();
     return annotations.map(a => a.underlying);
