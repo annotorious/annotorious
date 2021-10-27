@@ -8,34 +8,6 @@ export default class EditableShape extends ToolLike {
     super(g, config, env);
 
     this.annotation = annotation;
-
-    // Implementations need to override the handles list
-    this.handles = [];
-
-    // Bit of a hack. If we are dealing with a 'real' image, we enable
-    // reponsive mode. OpenSeadragon handles scaling in a different way,
-    // so we don't need responsive mode.
-    const { image } = env;
-    if (image instanceof Element || image instanceof HTMLDocument)
-      this.enableResponsive();
-  }
-
-  enableResponsive = () => {
-    if (window.ResizeObserver) {
-      this.resizeObserver = new ResizeObserver(() => {
-        const svgBounds = this.svg.getBoundingClientRect();
-        const { width, height } = this.svg.viewBox.baseVal;
-
-        const scale = Math.max(
-          width / svgBounds.width,
-          height / svgBounds.height
-        );
-
-        this.scaleHandles(scale);
-      });
-
-      this.resizeObserver.observe(this.svg.parentNode);
-    }
   }
   
   /**
@@ -63,17 +35,6 @@ export default class EditableShape extends ToolLike {
    */
   updateState = annotation => {
     throw new Error(IMPLEMENTATION_MISSING);
-  }
-
-  /**
-   * Implementations MAY extend this (calling super),
-   * to destroy SVG elements, mask, etc.
-   */
-  destroy() {
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
-
-    this.resizeObserver = null;
   }
 
 }

@@ -79,6 +79,9 @@ export default class EditablePolygon extends EditableShape {
     this.grabbedAt = null;
   }
 
+  onScaleChanged = () => 
+    this.handles.map(this.scaleHandle);
+
   setPoints = (points) => {
     // Not using .toFixed(1) because that will ALWAYS
     // return one decimal, e.g. "15.0" (when we want "15")

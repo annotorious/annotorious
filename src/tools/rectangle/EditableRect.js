@@ -83,6 +83,9 @@ export default class EditableRect extends EditableShape {
     this.mouseOffset = null;
   }
 
+  onScaleChanged = () => 
+    this.handles.map(this.scaleHandle);
+
   setSize = (x, y, w, h) => {
     setRectSize(this.rectangle, x, y, w, h);
     setRectMaskSize(this.mask, this.env.image, x, y, w, h);

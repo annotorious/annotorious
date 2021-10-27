@@ -19,6 +19,46 @@ export class ToolLike extends EventEmitter {
     this.g = g;
     this.config = config;
     this.env = env;
+
+    // Default image scale
+    this.scale = 1;
+
+    // Bit of a hack. If we are dealing with a 'real' image, we enable
+    // reponsive mode. OpenSeadragon handles scaling in a different way,
+    // so we don't need responsive mode.
+    const { image } = env;
+    if (image instanceof Element || image instanceof HTMLDocument)
+      this.enableResponsive();
+  }
+
+  /**
+   * Implementations MAY extend this (calling super),
+   * to destroy SVG elements, mask, etc.
+   */
+  destroy() {
+    if (this.resizeObserver)
+      this.resizeObserver.disconnect();
+
+    this.resizeObserver = null;
+  }
+
+  enableResponsive = () => {
+    if (window.ResizeObserver) {
+      this.resizeObserver = new ResizeObserver(() => {
+        const svgBounds = this.svg.getBoundingClientRect();
+        const { width, height } = this.svg.viewBox.baseVal;
+
+        this.scale = Math.max(
+          width / svgBounds.width,
+          height / svgBounds.height
+        );
+
+        if (this.onScaleChanged)
+          this.onScaleChanged(this.scale);
+      });
+
+      this.resizeObserver.observe(this.svg.parentNode);
+    }
   }
 
   getSVGPoint = evt => {
@@ -42,6 +82,10 @@ export class ToolLike extends EventEmitter {
       return pt.matrixTransform(this.g.getCTM().inverse());
     }
   }
+
+  /*********************************/
+  /*  Helpers for drawing handles  */
+  /*********************************/
 
   drawHandle = (x, y) => {
     const containerGroup = document.createElementNS(SVG_NAMESPACE, 'g');
@@ -90,16 +134,14 @@ export class ToolLike extends EventEmitter {
     }
   }
 
-  scaleHandles = scale => {
-    this.handles?.forEach(handle => {
-      const inner = handle.querySelector('.a9s-handle-inner');
-      const outer = handle.querySelector('.a9s-handle-outer');
+  scaleHandle = handle => {
+    const inner = handle.querySelector('.a9s-handle-inner');
+    const outer = handle.querySelector('.a9s-handle-outer');
 
-      const radius = scale * (this.config.handleRadius || 6);
+    const radius = this.scale * (this.config.handleRadius || 6);
 
-      inner.setAttribute('r', radius);
-      outer.setAttribute('r', radius);
-    });
+    inner.setAttribute('r', radius);
+    outer.setAttribute('r', radius);
   }
 
 }
