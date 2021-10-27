@@ -147,6 +147,14 @@ export default class ImageAnnotator extends Component  {
     // acts as 'Cancel'.)
     this.saveSelected().then(() => {
       this.onNormalSelect(evt, skipEvent);
+
+      // saveSelected will have deselected - we need to re-select
+      const { annotation } = evt;
+
+      if (annotation && !annotation.isSelection) {
+        const selection = this.annotationLayer.selectAnnotation(evt.annotation, true);
+        this.setState({ selectedDOMElement: selection.element });
+      }
     });
   }
 
