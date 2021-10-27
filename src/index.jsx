@@ -209,6 +209,9 @@ export class Annotorious {
   removeAnnotation = annotationOrId =>
     this._app.current.removeAnnotation(this._wrap(annotationOrId));
 
+  removeDrawingTool = id =>
+    this._app.current.removeDrawingTool(id);
+
   saveSelected = () =>
     this._app.current.saveSelected();
 

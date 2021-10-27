@@ -28,8 +28,14 @@ export default class ToolRegistry extends EventEmitter {
   listTools = () =>
     this._registered.map(impl => impl.identifier);
 
-  registerTool = impl =>
+  registerTool = impl => {
+    // If there's a tool with the same ID, replace
+    const id = impl.identifier;
+    if (this.listTools().includes(id))
+      this.unregisterTool(id);
+
     this._registered.push(impl);
+  }
 
   unregisterTool = id =>
     this._registered = this._registered.filter(impl => impl.identifier !== id);

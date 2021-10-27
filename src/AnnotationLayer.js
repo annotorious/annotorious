@@ -279,6 +279,9 @@ export default class AnnotationLayer extends EventEmitter {
     }
   }
 
+  removeDrawingTool = id =>
+    this.tools?.unregisterTool(id);
+
   /**
    * Programmatic selection via the API. Should work as normal,
    * but the selectAnnotation event should not be fired to the outside.
