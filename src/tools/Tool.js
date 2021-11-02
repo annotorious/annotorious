@@ -211,10 +211,14 @@ export default class Tool extends ToolLike {
       document.removeEventListener('dblclick', this.dblClick);
   }
 
-  start = evt => {
+  /**
+   * If startOnSingleClick is true, the tool starts on single click
+   * as well as drag. If false, starting strictly requires drag!
+   */
+  start = (evt, startOnSingleClick) => {
     // Handle SVG conversion on behalf of tool implementations
     const { x , y } = this.getSVGPoint(evt);
-    this.startDrawing(x, y, evt);
+    this.startDrawing(x, y, startOnSingleClick, evt);
   }
 
   /**

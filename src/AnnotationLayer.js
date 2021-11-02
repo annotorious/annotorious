@@ -22,6 +22,7 @@ export default class AnnotationLayer extends EventEmitter {
     this.formatter = config.formatter;
 
     this.disableSelect = config.disableSelect;
+    this.drawOnSingleClick = config.drawOnSingleClick; 
 
     const { naturalWidth, naturalHeight } = this.imageEl;
 
@@ -118,7 +119,7 @@ export default class AnnotationLayer extends EventEmitter {
 
     if (!(this.readOnly || this.selectedShape || this.tools.current.isDrawing)) {
       // No active selection & not drawing now? Start drawing.
-      this.tools.current.start(evt);
+      this.tools.current.start(evt, this.drawOnSingleClick && !this.currentHover);
     } else if (!this.tools?.current?.isDrawing && this.selectedShape !== this.currentHover) {
       // Not drawing and another shape was clicked? Select.
       this.selectCurrentHover();

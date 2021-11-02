@@ -11,11 +11,13 @@ export default class RubberbandPolygonTool extends Tool {
     super(g, config, env);
 
     this._isDrawing = false;
+    this._startOnSingleClick = false;
   }
 
-  startDrawing = (x, y) => {
+  startDrawing = (x, y, startOnSingleClick) => {
     this._isDrawing = true;
-    
+    this._startOnSingleClick = startOnSingleClick;
+
     this.attachListeners({
       mouseMove: this.onMouseMove,
       mouseUp: this.onMouseUp,
@@ -47,7 +49,7 @@ export default class RubberbandPolygonTool extends Tool {
     
     if (width >= minWidth || height >= minHeight) {
       this.rubberband.addPoint();
-    } else {
+    } else if (!this._startOnSingleClick) {
       this.emit('cancel');
       this.stop();
     }
