@@ -357,8 +357,10 @@ export default class AnnotationLayer extends EventEmitter {
         // is added to the DOM!
         setTimeout(() => {
           // Can be undefined in headless mode, when saving immediately
-          this.currentHover = this.selectedShape.element;
-          this._attachMouseListeners(this.selectedShape.element, annotation);
+          if (this.selectedShape) {
+            this.currentHover = this.selectedShape.element;
+            this._attachMouseListeners(this.selectedShape.element, annotation);
+          }
         }, 1);
       } else {
         this.selectedShape = shape;

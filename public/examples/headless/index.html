@@ -86,6 +86,14 @@
           console.log('updated', previous, 'with', annotation);
         });
 
+        anno.on('mouseEnterAnnotation', function(a) {
+          console.log('enter');
+        });
+
+        anno.on('mouseLeaveAnnotation', function(a) {
+          console.log('leave');
+        });
+
         var toolToggle = document.getElementById('current-tool');
         toolToggle.addEventListener('click', function() {
           if (toolToggle.innerHTML == 'RECTANGLE') {
