@@ -65,29 +65,30 @@
     fill: none;
   }
 
-  .a9s-point {
-    
-    .a9s-inner {
-      display:none;
-    }
-
-    .a9s-outer {
-      stroke:rgba(90, 90, 90, 1);
-      stroke-width:1.5px;
-      fill:rgba(255, 255, 255, 0.5);
-    }
-
-    .a9s-outer:hover {
-      fill:#fff000;
-    }
-
-  }
-
   .a9s-formatter-el {
     overflow:visible;
   }
 
 }
+
+.a9s-annotation.a9s-point {
+    
+  .a9s-inner {
+    display:none;
+  }
+
+  .a9s-outer {
+    stroke:rgba(90, 90, 90, 1);
+    stroke-width:1.5px;
+    fill:rgba(255, 255, 255, 0.5);
+  }
+
+  .a9s-outer:hover {
+    fill:#fff000;
+  }
+
+}
+
 
 .a9s-annotation.selected .a9s-inner, .a9s-selection .a9s-inner {
   stroke:#fff000;

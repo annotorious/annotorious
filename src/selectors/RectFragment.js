@@ -1,4 +1,4 @@
-import { SVG_NAMESPACE } from '../util/SVG';
+import { SVG_NAMESPACE, addClass } from '../util/SVG';
 
 /** 
  * Parses a W3C Web Annotation FragmentSelector conforming
@@ -107,9 +107,9 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
 
   if (w === 0 && h === 0) {
     // Edge case: rect is actually a point
-    const pointGroup = document.createElementNS(SVG_NAMESPACE, 'g');
-    pointGroup.setAttribute('class', 'a9s-point a9s-non-scaling');
-    pointGroup.setAttribute('transform-origin', `${x} ${y}`);
+    addClass(g, 'a9s-point');
+    addClass(g, 'a9s-non-scaling');
+    g.setAttribute('transform-origin', `${x} ${y}`);
 
     const outerPoint  = document.createElementNS(SVG_NAMESPACE, 'circle');
     const innerPoint  = document.createElementNS(SVG_NAMESPACE, 'circle');
@@ -120,10 +120,8 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
     outerPoint.setAttribute('class', 'a9s-outer');
     setPointXY(outerPoint, x, y);
 
-    pointGroup.appendChild(outerPoint);
-    pointGroup.appendChild(innerPoint);  
-    
-    g.appendChild(pointGroup);
+    g.appendChild(outerPoint);
+    g.appendChild(innerPoint);  
   } else {
     const outerRect = document.createElementNS(SVG_NAMESPACE, 'rect');
     const innerRect = document.createElementNS(SVG_NAMESPACE, 'rect');

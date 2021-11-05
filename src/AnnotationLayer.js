@@ -1,6 +1,6 @@
 import EventEmitter from 'tiny-emitter';
 import { drawShape, shapeArea } from './selectors';
-import { SVG_NAMESPACE, addClass, removeClass, hasClass } from './util/SVG';
+import { SVG_NAMESPACE, addClass, hasClass, removeClass } from './util/SVG';
 import DrawingTools from './tools/ToolsRegistry';
 import Crosshair from './Crosshair';
 import { format } from './util/Formatting';
@@ -144,7 +144,7 @@ export default class AnnotationLayer extends EventEmitter {
   addAnnotation = annotation => {
     const g = drawShape(annotation, this.imageEl);
 
-    g.setAttribute('class', 'a9s-annotation');
+    addClass(g, 'a9s-annotation');
     g.setAttribute('data-id', annotation.id);
 
     g.annotation = annotation;
