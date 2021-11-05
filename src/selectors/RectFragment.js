@@ -108,7 +108,8 @@ export const drawRect = (arg1, arg2, arg3, arg4) => {
   if (w === 0 && h === 0) {
     // Edge case: rect is actually a point
     const pointGroup = document.createElementNS(SVG_NAMESPACE, 'g');
-    pointGroup.setAttribute('class', 'a9s-point');
+    pointGroup.setAttribute('class', 'a9s-point a9s-non-scaling');
+    pointGroup.setAttribute('transform-origin', `${x} ${y}`);
 
     const outerPoint  = document.createElementNS(SVG_NAMESPACE, 'circle');
     const innerPoint  = document.createElementNS(SVG_NAMESPACE, 'circle');

@@ -1,6 +1,6 @@
 import EventEmitter from 'tiny-emitter';
 import { drawShape, shapeArea } from './selectors';
-import { SVG_NAMESPACE, addClass, removeClass } from './util/SVG';
+import { SVG_NAMESPACE, addClass, removeClass, hasClass } from './util/SVG';
 import DrawingTools from './tools/ToolsRegistry';
 import Crosshair from './Crosshair';
 import { format } from './util/Formatting';
@@ -74,6 +74,14 @@ export default class AnnotationLayer extends EventEmitter {
     this.svg.addEventListener('mousedown', this._onMouseDown);
 
     this.currentHover = null;
+
+    // Counter-scale non-scaling annotations on image resize
+    if (window.ResizeObserver) {
+      this.resizeObserver = new ResizeObserver(() =>
+        this._refreshNonScalingAnnotations());
+
+      this.resizeObserver.observe(this.svg.parentNode);
+    }
   }
 
   _attachMouseListeners = (elem, annotation) => {
@@ -126,6 +134,13 @@ export default class AnnotationLayer extends EventEmitter {
     }
   }
 
+  _refreshNonScalingAnnotations = () => {
+    const scale = this.getCurrentScale();
+    Array.from(this.svg.querySelectorAll('.a9s-non-scaling')).forEach(shape => {
+      shape.setAttribute('transform', `scale(${scale})`);
+    });
+  }
+
   addAnnotation = annotation => {
     const g = drawShape(annotation, this.imageEl);
 
@@ -154,7 +169,11 @@ export default class AnnotationLayer extends EventEmitter {
 
     this.removeAnnotation(annotation);
 
-    this.addAnnotation(annotation);
+    const shape = this.addAnnotation(annotation);
+    
+    // Counter-scale non-scaling annotations
+    if (hasClass(shape, 'a9s-non-scaling'))
+      shape.setAttribute('transform', `scale(${this.getCurrentScale()})`);
 
     // Make sure rendering order is large-to-small
     this.redraw();
@@ -202,6 +221,16 @@ export default class AnnotationLayer extends EventEmitter {
     return shapes.map(s => s.annotation);
   }
 
+  getCurrentScale = () => {
+    const svgBounds = this.svg.getBoundingClientRect();
+    const { width, height } = this.svg.viewBox.baseVal;
+
+    return Math.max(
+      width / svgBounds.width,
+      height / svgBounds.height
+    );
+  }
+
   getSelectedImageSnippet = () => {
     if (this.selectedShape) {
       const element = this.selectedShape.element || this.selectedShape;
@@ -220,6 +249,9 @@ export default class AnnotationLayer extends EventEmitter {
     // Add
     annotations.sort((a, b) => shapeArea(b, this.imageEl) - shapeArea(a, this.imageEl));
     annotations.forEach(this.addAnnotation);
+
+    // Counter-scale non-scaling annotations
+    this._refreshNonScalingAnnotations();
   }
 
   listDrawingTools = () =>
