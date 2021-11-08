@@ -47,7 +47,14 @@ export default class AnnotationLayer extends EventEmitter {
     if (!naturalWidth && !naturalHeight) {
       // Might be because a) the image has not loaded yet, or b) because it's not 
       // an image element (but maybe a CANVAS etc.)! Allow for both possibilities.
-      this.svg.setAttribute('viewBox', `0 0 ${this.imageEl.width} ${this.imageEl.height}`);
+      const { width, height } = this.imageEl;
+      this.svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+      // Plus: monkey-patch the element (won't work for images)
+      if(this.imageEl.nodeName.toLowerCase() !== 'img') {
+        this.imageEl.naturalWidth = width;
+        this.imageEl.naturalHeight = height;
+      }
 
       this.imageEl.onload = () =>
         this.svg.setAttribute('viewBox', `0 0 ${this.imageEl.naturalWidth} ${this.imageEl.naturalHeight}`);
