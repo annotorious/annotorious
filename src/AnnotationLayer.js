@@ -44,7 +44,7 @@ export default class AnnotationLayer extends EventEmitter {
 
     const { naturalWidth, naturalHeight } = this.imageEl;
 
-    if (naturalWidth == 0 && naturalHeight == 0) {
+    if (!naturalWidth && !naturalHeight) {
       // Might be because a) the image has not loaded yet, or b) because it's not 
       // an image element (but maybe a CANVAS etc.)! Allow for both possibilities.
       this.svg.setAttribute('viewBox', `0 0 ${this.imageEl.width} ${this.imageEl.height}`);
