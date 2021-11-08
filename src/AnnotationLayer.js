@@ -24,8 +24,6 @@ export default class AnnotationLayer extends EventEmitter {
     this.disableSelect = config.disableSelect;
     this.drawOnSingleClick = config.drawOnSingleClick; 
 
-    const { naturalWidth, naturalHeight } = this.imageEl;
-
     // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
 
@@ -44,7 +42,13 @@ export default class AnnotationLayer extends EventEmitter {
       this.svg.setAttribute('class', 'a9s-annotationlayer');
     }
 
+    const { naturalWidth, naturalHeight } = this.imageEl;
+
     if (naturalWidth == 0 && naturalHeight == 0) {
+      // Might be because a) the image has not loaded yet, or b) because it's not 
+      // an image element (but maybe a CANVAS etc.)! Allow for both possibilities.
+      this.svg.setAttribute('viewBox', `0 0 ${this.imageEl.width} ${this.imageEl.height}`);
+
       this.imageEl.onload = () =>
         this.svg.setAttribute('viewBox', `0 0 ${this.imageEl.naturalWidth} ${this.imageEl.naturalHeight}`);
     } else {
