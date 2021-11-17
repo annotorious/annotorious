@@ -147,6 +147,12 @@ export default class AnnotationLayer extends EventEmitter {
 
   _refreshNonScalingAnnotations = () => {
     const scale = this.getCurrentScale();
+    
+    // This happens after .destroy(), when this.svg still exists,
+    // but has 0x0 size!
+    if (scale === Infinity)
+      return;
+
     Array.from(this.svg.querySelectorAll('.a9s-non-scaling')).forEach(shape => {
       shape.setAttribute('transform', `scale(${scale})`);
     });
