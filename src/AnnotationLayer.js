@@ -86,10 +86,15 @@ export default class AnnotationLayer extends EventEmitter {
 
     this.currentHover = null;
 
-    // Counter-scale non-scaling annotations on image resize
+    // On image resize...
     if (window.ResizeObserver) {
-      this.resizeObserver = new ResizeObserver(() =>
-        this._refreshNonScalingAnnotations());
+      this.resizeObserver = new ResizeObserver(() => {
+        // counter-scale non-scaling annotations
+        this._refreshNonScalingAnnotations();
+
+        // resize formatter elements (shape labels et al)
+        this._scaleFormatterElements();
+      });
 
       this.resizeObserver.observe(this.svg.parentNode);
     }
@@ -158,6 +163,20 @@ export default class AnnotationLayer extends EventEmitter {
     });
   }
 
+  _scaleFormatterElements = opt_shape => {
+    const scale = this.getCurrentScale();
+
+    if (opt_shape) {
+      const el = opt_shape.querySelector('.a9s-formatter-el');
+      if (el)
+        el.firstChild.setAttribute('transform', `scale(${scale})`);
+    } else {
+      const elements = Array.from(this.g.querySelectorAll('.a9s-formatter-el'));
+      elements.forEach(el =>
+        el.firstChild.setAttribute('transform', `scale(${scale})`));
+    }
+  }
+
   addAnnotation = annotation => {
     const g = drawShape(annotation, this.imageEl);
 
@@ -170,6 +189,7 @@ export default class AnnotationLayer extends EventEmitter {
     this.g.appendChild(g);
 
     format(g, annotation, this.formatter);
+    this._scaleFormatterElements(g);
 
     return g;
   }
@@ -396,6 +416,8 @@ export default class AnnotationLayer extends EventEmitter {
 
         // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
         this.selectedShape.element.annotation = annotation;
+        
+        this._scaleFormatterElements(this.selectedShape.element);
 
         this.selectedShape.on('update', fragment => {
           if (this.selectedShape)
