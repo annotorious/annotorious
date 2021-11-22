@@ -34,7 +34,7 @@ export default class ToolRegistry extends EventEmitter {
     if (this.listTools().includes(id))
       this.unregisterTool(id);
 
-    this._registered.push(impl);
+    this._registered.unshift(impl);
   }
 
   unregisterTool = id =>
