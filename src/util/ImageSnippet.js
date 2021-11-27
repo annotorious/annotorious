@@ -4,8 +4,8 @@ export const getSnippet = (image, element) => {
   // Annotation shape could be the element itself or a 
   // child (in case of editable shapes, the element would be 
   // the group with shape + handles)
-  const shape = hasClass(element, '.a9s-annotation') ? 
-    element : element.querySelector('.a9s-annotation');
+  const shape = hasClass(element, 'a9s-annotation') ? 
+    element : element.querySelector('a9s-annotation');
 
   const kx = image.naturalWidth / image.width; 
   const ky = image.naturalHeight / image.height; 
