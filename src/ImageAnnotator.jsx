@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import AnnotationLayer from './AnnotationLayer';
 import { Editor } from '@recogito/recogito-client-core';
+import { getSnippet } from './util/ImageSnippet';
 
 import './ImageAnnotator.scss';
 
@@ -270,6 +271,11 @@ export default class ImageAnnotator extends Component  {
 
   getAnnotations = () =>
     this.annotationLayer.getAnnotations().map(a => a.clone());
+
+  getImageSnippetById = annotationId => {
+    const selectedShape = this.annotationLayer.findShape(annotationId);
+    return getSnippet(this.props.env.image, selectedShape);
+  }
 
   getSelected = () => {
     if (this.state.selectedAnnotation) {

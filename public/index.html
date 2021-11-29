@@ -83,8 +83,10 @@
           console.log('changed from', previous, 'to', selected);
         });
 
-        anno.on('createAnnotation', function(a) {
-          console.log('created', a);
+        anno.on('createAnnotation', function (annotation) {
+          const { snippet, transform } = anno.getImageSnippetById(annotation.id);
+          console.log(snippet.toDataURL('image/jpeg'));
+          console.log('created', annotation);
         });
 
         anno.on('updateAnnotation', function(annotation, previous) {
