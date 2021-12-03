@@ -84,8 +84,6 @@
         });
 
         anno.on('createAnnotation', function (annotation) {
-          const { snippet, transform } = anno.getImageSnippetById(annotation.id);
-          console.log(snippet.toDataURL('image/jpeg'));
           console.log('created', annotation);
         });
 

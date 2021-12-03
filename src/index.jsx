@@ -172,9 +172,8 @@ export class Annotorious {
     return annotations.map(a => a.underlying);
   }
 
-  getImageSnippetById = annotationId => {
-    return this._app.current.getImageSnippetById(annotationId);
-  }
+  getImageSnippetById = annotationId =>
+    this._app.current.getImageSnippetById(annotationId);
 
   getSelected = () => {
     const selected = this._app.current.getSelected();

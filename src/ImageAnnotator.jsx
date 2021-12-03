@@ -273,8 +273,9 @@ export default class ImageAnnotator extends Component  {
     this.annotationLayer.getAnnotations().map(a => a.clone());
 
   getImageSnippetById = annotationId => {
-    const selectedShape = this.annotationLayer.findShape(annotationId);
-    return getSnippet(this.props.env.image, selectedShape);
+    const shape = this.annotationLayer.findShape(annotationId);
+    if (shape)
+      return getSnippet(this.props.env.image, shape);
   }
 
   getSelected = () => {
