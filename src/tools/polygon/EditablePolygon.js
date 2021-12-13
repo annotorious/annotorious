@@ -58,6 +58,7 @@ export default class EditablePolygon extends EditableShape {
 
     this.elementGroup = document.createElementNS(SVG_NAMESPACE, 'g');
     this.elementGroup.setAttribute('class', 'a9s-annotation editable selected');
+    this.elementGroup.setAttribute('data-id', annotation.id);
     this.elementGroup.appendChild(this.shape);
 
     this.handles = getPoints(this.shape).map(pt => {
