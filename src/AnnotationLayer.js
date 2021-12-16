@@ -198,8 +198,10 @@ export default class AnnotationLayer extends EventEmitter {
     this.tools?.registerTool(plugin);
 
   addOrUpdateAnnotation = (annotation, previous) => {
-    if (this.selectedShape?.annotation === annotation || this.selectShape?.annotation == previous)
+    if (this.selectedShape && (this.selectedShape.annotation.isEqual(annotation) || this.selectedShape.annotation.isEqual(previous))) {
       this.deselect();
+      this.emit('select', {});
+    }
 
     if (previous)
       this.removeAnnotation(previous);
@@ -317,7 +319,7 @@ export default class AnnotationLayer extends EventEmitter {
    * size, so that larger ones don't occlude smaller ones.
    */
   redraw = () => {
-    const shapes = Array.from(this.g.querySelectorAll('.a9s-annotation'));
+    const shapes = Array.from(this.g.querySelectorAll('.a9s-annotation:not(.selected)'));
 
     const annotations = shapes.map(s => s.annotation);
     annotations.sort((a, b) => shapeArea(b, this.imageEl) - shapeArea(a, this.imageEl));
