@@ -233,7 +233,7 @@ export default class Tool extends ToolLike {
     throw new Error(IMPLEMENTATION_MISSING);
   }
 
-  createEditableShape = annotation => {
+  createEditableShape = (annotation, formatters) => {
     throw new Error(IMPLEMENTATION_MISSING);
   }
 

@@ -43,47 +43,68 @@ const appendFormatterEl = (formatterEl, shape) => {
  * - 'data-*' added as data attributes
  * - 'style' a list of CSS styles (in the form of a string) 
  */
-export const format = (shape, annotation, formatter) => {
+export const format = (shape, annotation, formatters) => {
   // The formatter can be undefined
-  if (!formatter)
+  if (!formatters)
     return shape;
 
-  const format = formatter(annotation);
+  // Merge outputs from all formatter functions into one object
+  const format = formatters.reduce((merged, fn) => {
+    const format = fn(annotation);
 
-  // The formatter is allowed to return null
-  if (!format)
-    return shape;
+    if (!format)
+      return merged;
 
-  if (typeof format === 'string' || format instanceof String) {
-    // Apply CSS class
-    addClass(shape, format); 
-  } else if (format.nodeType === Node.ELEMENT_NODE) {
-    appendFormatterEl(format, shape);
-  } else {
-    const { className, style, element } = format;
+    if (typeof format === 'string' || format instanceof String) {
+      merged.className = merged.className ? `${merged.className} ${format}` : format; 
+    } else if (format.nodeType === Node.ELEMENT_NODE) {
+      merged.elements = merged.elements ? [...merged.elements, format] : [format];
+    } else {
+      const { className, style, element } = format;
 
-    if (className)
-      addClass(shape, className);
+      if (className)
+        merged.className = merged.className ? `${merged.className} ${className}` : className;
 
-    if (style) {
-      const outer = shape.querySelector('.a9s-outer');
-      const inner = shape.querySelector('.a9s-inner');
+      if (style)
+        merged.style = merged.style ? `${merged.style} ${style}` : style;
 
-      if (outer && inner) {
-        outer.setAttribute('style', 'display:none');
-        inner.setAttribute('style', style);
-      } else {
-        shape.setAttribute('style', style);
+      if (element)
+        merged.elements = merged.elements ? [...merged.elements, element] : [element];
+    }
+
+    // Copy data attributes
+    for (const key in format) {
+      if (format.hasOwnProperty(key) && key.startsWith('data-')) {
+        merged[key] = format[key];
       }
     }
 
-    if (element)
-      appendFormatterEl(element, shape);
+    return merged;
+  }, {});
 
-    for (const key in format) {
-      if (format.hasOwnProperty(key) && key.startsWith('data-')) {
-        shape.setAttribute(key, format[key]);
-      }
+  const { className, style, elements } = format;
+
+  if (className)
+    addClass(shape, className);
+
+  if (style) {
+    const outer = shape.querySelector('.a9s-outer');
+    const inner = shape.querySelector('.a9s-inner');
+
+    if (outer && inner) {
+      outer.setAttribute('style', 'display:none');
+      inner.setAttribute('style', style);
+    } else {
+      shape.setAttribute('style', style);
+    }
+  }
+
+  if (elements)
+    elements.forEach(el => appendFormatterEl(el, shape));
+
+  for (const key in format) {
+    if (format.hasOwnProperty(key) && key.startsWith('data-')) {
+      shape.setAttribute(key, format[key]);
     }
   }
 }

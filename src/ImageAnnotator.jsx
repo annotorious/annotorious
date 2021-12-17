@@ -266,6 +266,14 @@ export default class ImageAnnotator extends Component  {
     this.annotationLayer.disableSelect = disable;
   }
 
+  get formatters() {
+    return this.annotationLayer.formatters;
+  }
+
+  set formatters(formatters) {
+    this.annotationLayer.formatters = formatters;
+  }
+
   getAnnotationById = annotationId =>
     this.annotationLayer.findShape(annotationId)?.annotation;
 

@@ -69,8 +69,8 @@ export default class RubberbandPolygonTool extends Tool {
     return this._isDrawing;
   }
 
-  createEditableShape = annotation =>
-    new EditablePolygon(annotation, this.g, this.config, this.env);
+  createEditableShape = (annotation, formatters) =>
+    new EditablePolygon(annotation, this.g, {...this.config, formatters}, this.env);
 
 }
 

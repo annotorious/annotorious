@@ -161,7 +161,20 @@ export class Annotorious {
     this._element.parentNode.insertBefore(this._env.image, this._element);
     this._element.parentNode.removeChild(this._element);
   }
+  
+  get formatters() {
+    return this._app.current.formatters;
+  }
 
+  set formatters(arg) {
+    if (arg) {
+      const formatters = Array.isArray(arg) ? arg : [ arg ];
+      this._app.current.formatters = formatters; 
+    } else {
+      this._app.current.formatters = null;
+    }
+  }
+  
   getAnnotationById = annotationId => {
     const a = this._app.current.getAnnotationById(annotationId);
     return a?.underlying;

@@ -75,7 +75,7 @@ export default class EditableRect extends EditableShape {
 
     g.appendChild(this.containerGroup);
 
-    format(this.rectangle, annotation, config.formatter);
+    format(this.rectangle, annotation, config.formatters);
 
     // The grabbed element (handle or entire group), if any
     this.grabbedElem = null;

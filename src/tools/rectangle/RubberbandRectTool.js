@@ -60,8 +60,8 @@ export default class RubberbandRectTool extends Tool {
     return this.rubberband != null;
   }
   
-  createEditableShape = annotation =>
-    new EditableRect(annotation, this.g, this.config, this.env);
+  createEditableShape = (annotation, formatters) =>
+    new EditableRect(annotation, this.g, {...this.config, formatters}, this.env);
 
 }
 

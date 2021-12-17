@@ -19,8 +19,13 @@ export default class AnnotationLayer extends EventEmitter {
     this.imageEl = env.image;
 
     this.readOnly = config.readOnly;
-    this.formatter = config.formatter;
 
+    // Deprecate the old 'formatter' option 
+    if (config.formatter)
+      this.formatters = [ config.formatter ];
+    else if (config.formatters)
+      this.formatters = Array.isArray(config.formatters) ? config.formatters : [ config.formatters ];
+    
     this.disableSelect = config.disableSelect;
     this.drawOnSingleClick = config.drawOnSingleClick; 
 
@@ -188,7 +193,7 @@ export default class AnnotationLayer extends EventEmitter {
     this._attachMouseListeners(g, annotation);
     this.g.appendChild(g);
 
-    format(g, annotation, this.formatter);
+    format(g, annotation, this.formatters);
     this._scaleFormatterElements(g);
 
     return g;
@@ -414,7 +419,7 @@ export default class AnnotationLayer extends EventEmitter {
       // Replace the shape with an editable version
       if (toolForAnnotation) {
         shape.parentNode.removeChild(shape);
-        this.selectedShape = toolForAnnotation.createEditableShape(annotation);
+        this.selectedShape = toolForAnnotation.createEditableShape(annotation, this.formatters);
 
         // Yikes... hack to make the tool act like SVG annotation shapes - needs redesign
         this.selectedShape.element.annotation = annotation;
