@@ -61,8 +61,8 @@ export default class AnnotationLayer extends EventEmitter {
         this.imageEl.naturalHeight = height;
       }
 
-      this.imageEl.onload = () =>
-        this.svg.setAttribute('viewBox', `0 0 ${this.imageEl.naturalWidth} ${this.imageEl.naturalHeight}`);
+      this.imageEl.addEventListener('load', () =>
+        this.svg.setAttribute('viewBox', `0 0 ${this.imageEl.naturalWidth} ${this.imageEl.naturalHeight}`));
     } else {
       this.svg.setAttribute('viewBox', `0 0 ${naturalWidth} ${naturalHeight}`);
     }
@@ -141,6 +141,17 @@ export default class AnnotationLayer extends EventEmitter {
         }
       });
     }
+  }
+
+  /**
+   * Helper - executes immediately if the image is loaded,
+   * or defers to image.onload if not
+   */
+  _lazy = fn => { 
+    if (this.imageEl.naturalWidth)
+     fn();
+    else 
+      this.imageEl.addEventListener('load', () => fn());
   }
 
   _onMouseDown = evt => {
@@ -291,8 +302,10 @@ export default class AnnotationLayer extends EventEmitter {
     shapes.forEach(s => this.g.removeChild(s));
 
     // Add
-    annotations.sort((a, b) => shapeArea(b, this.imageEl) - shapeArea(a, this.imageEl));
-    annotations.forEach(this.addAnnotation);
+    this._lazy(() => {
+      annotations.sort((a, b) => shapeArea(b, this.imageEl) - shapeArea(a, this.imageEl));
+      annotations.forEach(this.addAnnotation);
+    });
 
     // Counter-scale non-scaling annotations
     this._refreshNonScalingAnnotations();
