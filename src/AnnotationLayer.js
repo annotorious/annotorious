@@ -61,8 +61,10 @@ export default class AnnotationLayer extends EventEmitter {
         this.imageEl.naturalHeight = height;
       }
 
-      this.imageEl.addEventListener('load', () =>
-        this.svg.setAttribute('viewBox', `0 0 ${this.imageEl.naturalWidth} ${this.imageEl.naturalHeight}`));
+      this.imageEl.addEventListener('load', () => {
+        this.emit('load', this.imageEl.src);
+        this.svg.setAttribute('viewBox', `0 0 ${this.imageEl.naturalWidth} ${this.imageEl.naturalHeight}`)
+      });
     } else {
       this.svg.setAttribute('viewBox', `0 0 ${naturalWidth} ${naturalHeight}`);
     }

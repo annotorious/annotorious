@@ -73,6 +73,7 @@ export class Annotorious {
         onCancelSelected={this.handleCancelSelected}
         onChangeSelected={this.handleChangeSelected}
         onClickAnnotation={this.handleClickAnnotation}
+        onLoad={this.handleLoad}
         onMouseEnterAnnotation={this.handleMouseEnterAnnotation}
         onMouseLeaveAnnotation={this.handleMouseLeaveAnnotation} />, this._appContainerEl);
   }
@@ -101,6 +102,9 @@ export class Annotorious {
 
   handleClickAnnotation = (annotation, elem) =>
     this._emitter.emit('clickAnnotation', annotation.underlying, elem);
+
+  handleLoad = src =>
+    this._emitter.emit('load', src);
 
   handleSelectionCreated = selection =>
     this._emitter.emit('createSelection', selection.underlying);

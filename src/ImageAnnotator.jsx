@@ -49,9 +49,10 @@ export default class ImageAnnotator extends Component  {
 
     this.annotationLayer.on('updateTarget', this.handleUpdateTarget);
 
+    this.forwardEvent('clickAnnotation','onClickAnnotation');
+    this.forwardEvent('load', 'onLoad');
     this.forwardEvent('mouseEnterAnnotation', 'onMouseEnterAnnotation');
     this.forwardEvent('mouseLeaveAnnotation','onMouseLeaveAnnotation');
-    this.forwardEvent('clickAnnotation','onClickAnnotation');
   
     // Escape cancels editing
     document.addEventListener('keyup', this.escapeKeyCancel);
