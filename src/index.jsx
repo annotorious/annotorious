@@ -163,7 +163,7 @@ export class Annotorious {
   }
   
   get formatters() {
-    return this._app.current.formatters;
+    return this._app.current.formatters || [];
   }
 
   set formatters(arg) {
