@@ -44,13 +44,14 @@ export default class ImageAnnotator extends Component  {
   componentDidMount() {
     this.annotationLayer = new AnnotationLayer(this.props);
 
+    this.annotationLayer.on('load', this.props.onLoad);
+
     this.annotationLayer.on('startSelection', this.handleStartSelect);
     this.annotationLayer.on('select', this.handleSelect);
 
     this.annotationLayer.on('updateTarget', this.handleUpdateTarget);
 
     this.forwardEvent('clickAnnotation','onClickAnnotation');
-    this.forwardEvent('load', 'onLoad');
     this.forwardEvent('mouseEnterAnnotation', 'onMouseEnterAnnotation');
     this.forwardEvent('mouseLeaveAnnotation','onMouseLeaveAnnotation');
   
