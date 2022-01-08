@@ -322,7 +322,10 @@ export default class ImageAnnotator extends Component  {
       const a = this.state.selectedAnnotation;
 
       if (a) {
-        if (a.isSelection) {
+        if (this._editor.current) {
+          this._editor.current.onOk();
+          resolve();
+        } else if (a.isSelection) {
           if (a.bodies.length > 0 || this.props.config.allowEmpty) {
             this.onCreateOrUpdateAnnotation('onAnnotationCreated', resolve)(a);
           } else {
@@ -339,8 +342,6 @@ export default class ImageAnnotator extends Component  {
           } else if (modifiedTarget) {
             // Target was modified, but otherwise no change
             this.onCreateOrUpdateAnnotation('onAnnotationUpdated', resolve)(a, a);
-          } else {
-            this.onCancelAnnotation(a, resolve);
           }
         }
       } else {
