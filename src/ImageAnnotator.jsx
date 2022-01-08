@@ -342,6 +342,8 @@ export default class ImageAnnotator extends Component  {
           } else if (modifiedTarget) {
             // Target was modified, but otherwise no change
             this.onCreateOrUpdateAnnotation('onAnnotationUpdated', resolve)(a, a);
+          } else {
+            this.onCancelAnnotation(a, resolve);
           }
         }
       } else {
