@@ -1,5 +1,5 @@
 import { SVG_NAMESPACE } from '../util/SVG';
-import * as turf from '@turf/turf'
+import Flatten from 'flatten-js';
 
 /** Helper that forces an un-namespaced node to SVG **/
 const insertSVGNamespace = originalDoc => {
@@ -170,45 +170,25 @@ const ellipseArea = ellipse => {
 
 const pathArea = path => {
   if (path.getAttribute('d').toUpperCase().includes("Z")){
-    console.log("starting area for multipolygones");
-    var multiPolygon = path.getAttribute('d')
-    var polygons =multiPolygon.split('M');
-    var allcoords = []
-    var multiPolygonArea = 0
-    polygons.forEach(function (polygon, index) {
-      if (polygon.length>0){
-        let coords = []
-        polygon=polygon.replace(/ Z/g,"Z")
-        polygon=polygon.replace(/Z /g,"Z")
-        polygon=polygon.replace(/Z/g,"")
-        polygon=polygon.replace(/L /g,"L")
-        polygon=polygon.replace(/ L/g,"L")
-        var coordsString = polygon.split("L")
-        coordsString.forEach(function(coord, index){
-          coords.push([parseFloat(coord.split(",")[0]).toFixed(2).toString(),parseFloat(coord.split(",")[1]).toFixed(2).toString()]);
-        });
-        if (coords[0] !== coords[coords.length - 1]){
-          coords.push(coords[0])
+    let {point, Polygon} = Flatten;
+    var multiPolygon = new Polygon()
+    var polygon = []
+    for (var points of path.animatedPathSegList){
+      if(points.x){
+        if (points.pathSegType === 2){
+          if (polygon.length>0){
+            multiPolygon.addFace(polygon)
+          }
+          polygon = [point(points.x,points.y)]
+        } else {
+          polygon.push(point(points.x,points.y))
         }
-        // console.log("coords",coords);
-        allcoords.push(coords)
+      } else {
+        multiPolygon.addFace(polygon)
       }
-      let area = 0;
-      var polygon = 0
-      try {
-        polygon = turf.polygon(allcoords);
-        area = turf.area(polygon);
-      }
-      catch (e) {
-        console.log("Annotation:", arg, "is no polygon. Set area zero.");
-      }
-      // console.log("area for :",arg,"is:",area);
-      multiPolygonArea += area
-    
-    });
-    return multiPolygonArea
+    }
+    return multiPolygon.area()
   } else {
-    console.log("starting area for lines");
     const pointList = path.getAttribute('d').split('L');
     let area = 0;
   
