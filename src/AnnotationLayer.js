@@ -184,6 +184,9 @@ export default class AnnotationLayer extends EventEmitter {
   _scaleFormatterElements = opt_shape => {
     const scale = this.getCurrentScale();
 
+    if (scale === Infinity)
+      return;
+
     if (opt_shape) {
       const el = opt_shape.querySelector('.a9s-formatter-el');
       if (el)
