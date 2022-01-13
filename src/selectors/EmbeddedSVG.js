@@ -113,7 +113,10 @@ const polygonArea = polygon => {
   const points = polygon.getAttribute('points')
     .split(' ') // Split x/y tuples
     .map(xy => xy.split(',').map(str => parseFloat(str.trim())));
+  return getAreaOfPoints(points)
+}
 
+const getAreaOfPoints = points =>{
   let area = 0;
   let j = points.length - 1;
 
@@ -135,7 +138,32 @@ const ellipseArea = ellipse => {
   const ry = ellipse.getAttribute('ry');
   return rx * ry * Math.PI;
 }
-
+function pointInsidePoygon(point, vs) {
+  // Algorithm checks, if point is in Polygon
+  // algorithm based on
+  // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
+  
+  var x = point[0], y = point[1];
+  
+  var inside = false;
+  for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+      var xi = vs[i][0], yi = vs[i][1];
+      var xj = vs[j][0], yj = vs[j][1];
+      
+      var intersect = ((yi > y) != (yj > y))
+          && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+  }
+  
+  return inside;
+};
+function ishole(polygon1, polygon2){
+  // Algorithm checks, if polygon1 is in polygon2
+  for (var point of polygon1){
+    if (!pointInsidePoygon(point, polygon2)) return false
+  }
+  return true
+}
 const pathArea = path => {
   const pointList = path.getAttribute('d').split('L');
   let area = 0;
