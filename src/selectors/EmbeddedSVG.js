@@ -109,14 +109,7 @@ export const svgArea = annotation => {
     throw `Unsupported SVG shape type: ${nodeName}`;
 }
 
-const polygonArea = polygon => {
-  const points = polygon.getAttribute('points')
-    .split(' ') // Split x/y tuples
-    .map(xy => xy.split(',').map(str => parseFloat(str.trim())));
-  return getAreaOfPoints(points)
-}
-
-const getAreaOfPoints = points =>{
+export const getAreaOfPoints = points =>{
   let area = 0;
   let j = points.length - 1;
 
@@ -128,17 +121,7 @@ const getAreaOfPoints = points =>{
   return Math.abs(0.5 * area);
 }
 
-const circleArea = circle => {
-  const r = circle.getAttribute('r');
-  return r * r * Math.PI;
-}
-
-const ellipseArea = ellipse => {
-  const rx = ellipse.getAttribute('rx');
-  const ry = ellipse.getAttribute('ry');
-  return rx * ry * Math.PI;
-}
-function pointInsidePoygon(point, vs) {
+export const pointInsidePoygon = (point, vs) => {
   // Algorithm checks, if point is in Polygon
   // algorithm based on
   // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
@@ -157,13 +140,33 @@ function pointInsidePoygon(point, vs) {
   
   return inside;
 };
-function ishole(polygon1, polygon2){
+
+const isHole = (polygon1, polygon2) => {
   // Algorithm checks, if polygon1 is in polygon2
   for (var point of polygon1){
     if (!pointInsidePoygon(point, polygon2)) return false
   }
-  return true
+  return true;
 }
+
+const polygonArea = polygon => {
+  const points = polygon.getAttribute('points')
+    .split(' ') // Split x/y tuples
+    .map(xy => xy.split(',').map(str => parseFloat(str.trim())));
+  return getAreaOfPoints(points)
+}
+
+const circleArea = circle => {
+  const r = circle.getAttribute('r');
+  return r * r * Math.PI;
+}
+
+const ellipseArea = ellipse => {
+  const rx = ellipse.getAttribute('rx');
+  const ry = ellipse.getAttribute('ry');
+  return rx * ry * Math.PI;
+}
+
 const pathArea = path => {
   const pointList = path.getAttribute('d').split('L');
   let area = 0;
