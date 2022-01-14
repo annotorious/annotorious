@@ -166,32 +166,96 @@ const ellipseArea = ellipse => {
   const ry = ellipse.getAttribute('ry');
   return rx * ry * Math.PI;
 }
-
+function pointInsidePoygon(point, vs) {
+  // Algorithm checks, if point is in Polygon
+  // algorithm based on
+  // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
+  
+  var x = point[0], y = point[1];
+  
+  var inside = false;
+  for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+      var xi = vs[i][0], yi = vs[i][1];
+      var xj = vs[j][0], yj = vs[j][1];
+      
+      var intersect = ((yi > y) != (yj > y))
+          && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+  }
+  
+  return inside;
+};
+function ishole(polygon1, polygon2){
+  // Algorithm checks, if polygon1 is in polygon2
+  for (var point of polygon1){
+    if (!pointInsidePoygon(point, polygon2)) return false
+  }
+  return true
+}
 const pathArea = path => {
-  const pointList = path.getAttribute('d').split('L');
-  let area = 0;
-
-  if(pointList.length > 1) {
-    var point = pointList[pointList.length - 1].trim().split(' ');
-    let lastX = parseFloat(point[0]);
-    let lastY = parseFloat(point[1]);
-
-    point = pointList[0].substring(1).trim().split(' ');
-    let x = parseFloat(point[0]);
-    let y = parseFloat(point[1]);
-    area += (lastX + x) * (lastY - y);
-    lastX = x;
-    lastY = y;
-
-    for (let i = 1; i < pointList.length; i++) {
-      point = pointList[i].trim().split(' ');
-      x = parseFloat(point[0]);
-      y = parseFloat(point[1]);
+  if (path.getAttribute('d').toUpperCase().includes("Z")){
+    var multiPolygon = []
+    var polygon = []
+    for (var points of path.animatedPathSegList){
+      if(points.x){
+        if (points.pathSegType === 2){
+          if (polygon.length>0){
+            multiPolygon.push(polygon)
+          }
+          polygon = [[points.x,points.y]]
+        } else {
+          polygon.push([points.x,points.y])
+        }
+      } else {
+        multiPolygon.push(polygon)
+      }
+    }
+    if (multiPolygon.length > 1){
+      var area = 0
+      for (let poly1 of multiPolygon) {
+        for (let poly2 of multiPolygon) {
+          if (poly1 !== poly2) {
+            if (ishole(poly1, poly2)) {
+              area -= getAreaOfPoints(poly1)
+            } else {
+              area += getAreaOfPoints(poly1)
+            }
+          }
+        }
+      }
+      return area
+    } else if (multiPolygon.length === 1){
+      return getAreaOfPoints(multiPolygon[0])
+    } else {
+      return 0
+    }
+  } else {
+    const pointList = path.getAttribute('d').split('L');
+    let area = 0;
+  
+    if(pointList.length > 1) {
+      var point = pointList[pointList.length - 1].trim().split(' ');
+      let lastX = parseFloat(point[0]);
+      let lastY = parseFloat(point[1]);
+  
+      point = pointList[0].substring(1).trim().split(' ');
+      let x = parseFloat(point[0]);
+      let y = parseFloat(point[1]);
       area += (lastX + x) * (lastY - y);
       lastX = x;
       lastY = y;
+  
+      for (let i = 1; i < pointList.length; i++) {
+        point = pointList[i].trim().split(' ');
+        x = parseFloat(point[0]);
+        y = parseFloat(point[1]);
+        area += (lastX + x) * (lastY - y);
+        lastX = x;
+        lastY = y;
+      }
     }
+  
+    return Math.abs(0.5 * area);
   }
 
-  return Math.abs(0.5 * area);
 }
