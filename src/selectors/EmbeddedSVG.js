@@ -166,32 +166,7 @@ const ellipseArea = ellipse => {
   const ry = ellipse.getAttribute('ry');
   return rx * ry * Math.PI;
 }
-function pointInsidePoygon(point, vs) {
-  // Algorithm checks, if point is in Polygon
-  // algorithm based on
-  // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
-  
-  var x = point[0], y = point[1];
-  
-  var inside = false;
-  for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-      var xi = vs[i][0], yi = vs[i][1];
-      var xj = vs[j][0], yj = vs[j][1];
-      
-      var intersect = ((yi > y) != (yj > y))
-          && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-      if (intersect) inside = !inside;
-  }
-  
-  return inside;
-};
-function ishole(polygon1, polygon2){
-  // Algorithm checks, if polygon1 is in polygon2
-  for (var point of polygon1){
-    if (!pointInsidePoygon(point, polygon2)) return false
-  }
-  return true
-}
+
 const pathArea = path => {
   if (path.getAttribute('d').toUpperCase().includes("Z")){
     var multiPolygon = []
@@ -215,7 +190,7 @@ const pathArea = path => {
       for (let poly1 of multiPolygon) {
         for (let poly2 of multiPolygon) {
           if (poly1 !== poly2) {
-            if (ishole(poly1, poly2)) {
+            if (isHole(poly1, poly2)) {
               area -= getAreaOfPoints(poly1)
             } else {
               area += getAreaOfPoints(poly1)
