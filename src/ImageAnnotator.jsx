@@ -81,8 +81,13 @@ export default class ImageAnnotator extends Component  {
       }
     } else if (evt.which === 46) { // Delete
       const { selectedAnnotation } = this.state;
-      if (selectedAnnotation)
-        this.onDeleteAnnotation(selectedAnnotation);
+      if (selectedAnnotation) {
+        if (selectedAnnotation.isSelection) {
+          this.onCancelAnnotation(selectedAnnotation);
+        } else {
+          this.onDeleteAnnotation(selectedAnnotation);
+        }
+      }
     }
   }
 
