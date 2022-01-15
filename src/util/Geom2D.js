@@ -10,6 +10,30 @@ export const polygonArea = points => {
   return Math.abs(0.5 * area);
 }
 
+export const pointInCircle = (point, cx, cy, r) => {
+  const dx = point[0] - cx;
+  const dy = point[1] - cy;
+
+  const d = Math.sqrt(dx * dx + dy * dy);
+  return d <= r;
+}
+
+// Cf. https://github.com/w8r/point-in-ellipse
+export const pointInEllipse = (point, cx, cy, rx, ry, rotation) => {
+  const rot = rotation || 0;
+
+  const cos = Math.cos(rot);
+  const sin = Math.sin(rot);
+
+  const dx  = point[0] - cx;
+  const dy  = point[1] - cy;
+
+  const tdx = cos * dx + sin * dy;
+  const tdy = sin * dx - cos * dy;
+
+  return (tdx * tdx) / (rx * rx) + (tdy * tdy) / (ry * ry) <= 1;
+}
+
 export const pointInPolygon = (xy, points) => {
   // Algorithm checks, if xy is in Polygon
   // algorithm based on

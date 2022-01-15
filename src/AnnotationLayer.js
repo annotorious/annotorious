@@ -69,7 +69,7 @@ export default class AnnotationLayer extends EventEmitter {
       this.svg.setAttribute('viewBox', `0 0 ${naturalWidth} ${naturalHeight}`);
     }
 
-    // Don't attach directly, but in group
+    // Don't attach directly, but in a group
     this.g = document.createElementNS(SVG_NAMESPACE, 'g');
 
     this.svg.appendChild(this.g);
@@ -80,10 +80,8 @@ export default class AnnotationLayer extends EventEmitter {
       addClass(this.svg, 'has-crosshair');
     }
 
-    // Currently selected shape
     this.selectedShape = null;
 
-    // Init the drawing tools
     this.tools = new DrawingTools(this.g, config, env);
     this.tools.on('startSelection', pt => this.emit('startSelection', pt));
     this.tools.on('cancel', this.selectCurrentHover);
@@ -96,10 +94,10 @@ export default class AnnotationLayer extends EventEmitter {
     // On image resize...
     if (window.ResizeObserver) {
       this.resizeObserver = new ResizeObserver(() => {
-        // counter-scale non-scaling annotations
+        // ...counter-scale non-scaling annotations...
         this._refreshNonScalingAnnotations();
 
-        // resize formatter elements (shape labels et al)
+        // ...and resize formatter elements (shape labels etc.)
         this._scaleFormatterElements();
       });
 
@@ -270,7 +268,6 @@ export default class AnnotationLayer extends EventEmitter {
     this.svg.parentNode.removeChild(this.svg);
   }
 
-  /** Finds the shape matching the given annotation or Id **/
   findShape = annotationOrId => {
     const id = annotationOrId?.id ? annotationOrId.id : annotationOrId;
     return this.g.querySelector(`.a9s-annotation[data-id="${id}"]`);
