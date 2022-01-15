@@ -56,7 +56,7 @@ export default class ImageAnnotator extends Component  {
     this.forwardEvent('mouseLeaveAnnotation','onMouseLeaveAnnotation');
   
     // Escape cancels editing
-    document.addEventListener('keyup', this.escapeKeyCancel);
+    document.addEventListener('keyup', this.onKeyUp);
   }
 
   forwardEvent = (from, to) => {
@@ -67,10 +67,10 @@ export default class ImageAnnotator extends Component  {
 
   componentWillUnmount() {
     this.annotationLayer.destroy();
-    document.removeEventListener('keyup', this.escapeKeyCancel);
+    document.removeEventListener('keyup', this.onKeyUp);
   }
 
-  escapeKeyCancel = evt => {
+  onKeyUp = evt => {
     if (evt.which === 27) { // Escape
       this.annotationLayer.stopDrawing();
       
@@ -79,6 +79,10 @@ export default class ImageAnnotator extends Component  {
         this.cancelSelected();
         this.props.onCancelSelected(selectedAnnotation);
       }
+    } else if (evt.which === 46) { // Delete
+      const { selectedAnnotation } = this.state;
+      if (selectedAnnotation)
+        this.onDeleteAnnotation(selectedAnnotation);
     }
   }
 
@@ -251,13 +255,7 @@ export default class ImageAnnotator extends Component  {
   }
 
   set disableEditor(disabled) {
-    this.setState({ editorDisabled: disabled }, () => {
-      // En- or disable Esc key listener
-      if (disabled)
-        document.addEventListener('keyup', this.escapeKeyCancel);
-      else
-        document.removeEventListener('keyup', this.escapeKeyCancel);
-    });
+    this.setState({ editorDisabled: disabled });
   }
 
   get disableSelect() {
