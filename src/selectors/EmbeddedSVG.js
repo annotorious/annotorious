@@ -150,8 +150,8 @@ const svgPathArea = path => {
       // Uppercase ops are absolute coords -> transform
       const isUppercase = op === op.toUpperCase();
 
-      const x = isUppercase ? x : x + points[points.length - 1][0];
-      const y = isUppercase ? y : y + points[points.length - 1][0];
+      const x = isUppercase ? xy[0] : xy[0] + points[points.length - 1][0];
+      const y = isUppercase ? xy[1] : xy[1] + points[points.length - 1][1];
 
       points.push([x, y]);
     }
