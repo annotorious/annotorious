@@ -1,4 +1,5 @@
 import { SVG_NAMESPACE } from '../util/SVG';
+import { polygonArea, polygonInPolygon } from '../util/Geom2D';
 
 /** Helper that forces an un-namespaced node to SVG **/
 const insertSVGNamespace = originalDoc => {
@@ -98,139 +99,86 @@ export const svgArea = annotation => {
   const nodeName = shape.nodeName.toLowerCase();
 
   if (nodeName === 'polygon') 
-    return polygonArea(shape);
+    return svgPolygonArea(shape);
   else if (nodeName === 'circle')
-    return circleArea(shape);
+    return svgCircleArea(shape);
   else if (nodeName === 'ellipse')
-    return ellipseArea(shape);
+    return svgEllipseArea(shape);
   else if (nodeName == 'path')
-    return pathArea(shape);
+    return svgPathArea(shape);
   else
     throw `Unsupported SVG shape type: ${nodeName}`;
 }
 
-export const getAreaOfPoints = points =>{
-  let area = 0;
-  let j = points.length - 1;
-
-  for (let i=0; i < points.length; i++) {
-    area += (points[j][0] + points[i][0]) * (points[j][1] - points[i][1]);
-    j = i;
-  }
-
-  return Math.abs(0.5 * area);
-}
-
-export const pointInsidePoygon = (point, vs) => {
-  // Algorithm checks, if point is in Polygon
-  // algorithm based on
-  // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
-  
-  var x = point[0], y = point[1];
-  
-  var inside = false;
-  for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-      var xi = vs[i][0], yi = vs[i][1];
-      var xj = vs[j][0], yj = vs[j][1];
-      
-      var intersect = ((yi > y) != (yj > y))
-          && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-      if (intersect) inside = !inside;
-  }
-  
-  return inside;
-};
-
-const isHole = (polygon1, polygon2) => {
-  // Algorithm checks, if polygon1 is in polygon2
-  for (var point of polygon1){
-    if (!pointInsidePoygon(point, polygon2)) return false
-  }
-  return true;
-}
-
-const polygonArea = polygon => {
+const svgPolygonArea = polygon => {
   const points = polygon.getAttribute('points')
     .split(' ') // Split x/y tuples
     .map(xy => xy.split(',').map(str => parseFloat(str.trim())));
-  return getAreaOfPoints(points)
+  return polygonArea(points)
 }
 
-const circleArea = circle => {
+const svgCircleArea = circle => {
   const r = circle.getAttribute('r');
   return r * r * Math.PI;
 }
 
-const ellipseArea = ellipse => {
+const svgEllipseArea = ellipse => {
   const rx = ellipse.getAttribute('rx');
   const ry = ellipse.getAttribute('ry');
   return rx * ry * Math.PI;
 }
 
-const pathArea = path => {
-  if (path.getAttribute('d').toUpperCase().includes("Z")){
-    var multiPolygon = []
-    var polygon = []
-    for (var points of path.animatedPathSegList){
-      if(points.x){
-        if (points.pathSegType === 2){
-          if (polygon.length>0){
-            multiPolygon.push(polygon)
-          }
-          polygon = [[points.x,points.y]]
-        } else {
-          polygon.push([points.x,points.y])
-        }
-      } else {
-        multiPolygon.push(polygon)
-      }
-    }
-    if (multiPolygon.length > 1){
-      var area = 0
-      for (let poly1 of multiPolygon) {
-        for (let poly2 of multiPolygon) {
-          if (poly1 !== poly2) {
-            if (isHole(poly1, poly2)) {
-              area -= getAreaOfPoints(poly1)
-            } else {
-              area += getAreaOfPoints(poly1)
-            }
-          }
-        }
-      }
-      return area
-    } else if (multiPolygon.length === 1){
-      return getAreaOfPoints(multiPolygon[0])
+const svgPathArea = path => {
+  const commands = path.getAttribute('d')
+    .split(/(?=M|m|L|l|H|h|V|v|Z|z)/g)
+    .map(str => str.trim());
+
+  const polygons = [];
+
+  let points = [];
+
+  for (let cmd of commands) {
+    const op = cmd.substring(0, 1);
+
+    if (op.toLowerCase() === 'z') {
+      polygons.push([...points]);
+      points = [];
     } else {
-      return 0
+      const xy = cmd.substring(1).split(' ')
+        .map(str => parseFloat(str.trim()));
+  
+      // Uppercase ops are absolute coords -> transform
+      const isUppercase = op === op.toUpperCase();
+
+      const x = isUppercase ? x : x + points[points.length - 1][0];
+      const y = isUppercase ? y : y + points[points.length - 1][0];
+
+      points.push([x, y]);
     }
+  }
+
+  if (points.length > 0) // Unclosed path - close for area computation
+    polygons.push([...points]); 
+
+  if (polygons.length == 1) {
+    return polygonArea(points);
   } else {
-    const pointList = path.getAttribute('d').split('L');
-    let area = 0;
-  
-    if(pointList.length > 1) {
-      var point = pointList[pointList.length - 1].trim().split(' ');
-      let lastX = parseFloat(point[0]);
-      let lastY = parseFloat(point[1]);
-  
-      point = pointList[0].substring(1).trim().split(' ');
-      let x = parseFloat(point[0]);
-      let y = parseFloat(point[1]);
-      area += (lastX + x) * (lastY - y);
-      lastX = x;
-      lastY = y;
-  
-      for (let i = 1; i < pointList.length; i++) {
-        point = pointList[i].trim().split(' ');
-        x = parseFloat(point[0]);
-        y = parseFloat(point[1]);
-        area += (lastX + x) * (lastY - y);
-        lastX = x;
-        lastY = y;
-      }
+    // Helper to check if a polygon is a hole
+    const isHole = p => polygons.find(other => {
+      if (p !== other)
+        return polygonInPolygon(p, other); 
+    })
+
+    let area = 0
+
+    for (let poly of polygons) {
+      if (isHole(poly))
+        area -= polygonArea(poly);
+      else 
+        area += polygonArea(poly);
     }
-  
-    return Math.abs(0.5 * area);
+
+    return area;
   }
 
 }
