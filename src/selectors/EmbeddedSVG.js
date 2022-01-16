@@ -1,5 +1,5 @@
 import { SVG_NAMESPACE } from '../util/SVG';
-import { polygonArea, polygonInPolygon } from '../util/Geom2D';
+import { polygonArea, polygonInPolygon, svgPathToPolygons } from '../util/Geom2D';
 
 /** Helper that forces an un-namespaced node to SVG **/
 const insertSVGNamespace = originalDoc => {
@@ -129,39 +129,10 @@ const svgEllipseArea = ellipse => {
 }
 
 const svgPathArea = path => {
-  const commands = path.getAttribute('d')
-    .split(/(?=M|m|L|l|H|h|V|v|Z|z)/g)
-    .map(str => str.trim());
-
-  const polygons = [];
-
-  let points = [];
-
-  for (let cmd of commands) {
-    const op = cmd.substring(0, 1);
-
-    if (op.toLowerCase() === 'z') {
-      polygons.push([...points]);
-      points = [];
-    } else {
-      const xy = cmd.substring(1).split(' ')
-        .map(str => parseFloat(str.trim()));
-  
-      // Uppercase ops are absolute coords -> transform
-      const isUppercase = op === op.toUpperCase();
-
-      const x = isUppercase ? xy[0] : xy[0] + points[points.length - 1][0];
-      const y = isUppercase ? xy[1] : xy[1] + points[points.length - 1][1];
-
-      points.push([x, y]);
-    }
-  }
-
-  if (points.length > 0) // Unclosed path - close for area computation
-    polygons.push([...points]); 
+  const polygons = svgPathToPolygons(path);
 
   if (polygons.length == 1) {
-    return polygonArea(points);
+    return polygonArea(polygons[0]);
   } else {
     // Helper to check if a polygon is a hole
     const isHole = p => polygons.find(other => {
@@ -180,5 +151,4 @@ const svgPathArea = path => {
 
     return area;
   }
-
 }
