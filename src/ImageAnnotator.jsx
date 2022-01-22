@@ -277,6 +277,7 @@ export default class ImageAnnotator extends Component  {
 
   set formatters(formatters) {
     this.annotationLayer.formatters = formatters;
+    this.annotationLayer.redraw();
   }
 
   getAnnotationById = annotationId =>
