@@ -112,8 +112,10 @@ export const svgArea = annotation => {
 
 const svgPolygonArea = polygon => {
   const points = polygon.getAttribute('points')
+    .trim()
     .split(' ') // Split x/y tuples
     .map(xy => xy.split(',').map(str => parseFloat(str.trim())));
+
   return polygonArea(points)
 }
 
