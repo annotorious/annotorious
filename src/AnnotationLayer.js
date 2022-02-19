@@ -449,6 +449,13 @@ export default class AnnotationLayer extends EventEmitter {
         setTimeout(() => {
           if (this.selectedShape)
             this._attachMouseListeners(this.selectedShape.element, annotation);
+
+          // Bit of a hack...
+          // We need to make the selection the current hover manually (because 
+          // 'mouseEnter' won't have fired. But ONLY if the selection was not
+          // done programmatically (which was the case for 'skipEvent')
+          if (!skipEvent)
+            this.currentHover = this.selectedShape.element;
         }, 1);
       } else {
         this.selectedShape = shape;
