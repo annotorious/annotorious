@@ -18,21 +18,21 @@
           user-select:none;
 }
 
-.a9s-annotationlayer.has-crosshair {
-  cursor:none;
+.a9s-annotationlayer.no-cursor {
+  cursor:none !important;
 
-  .a9s-crosshair line {
-    stroke-width:1px;
-    stroke:rgba(0, 0, 0, 0.5);
-    pointer-events:none;
-    vector-effect:non-scaling-stroke;
-    shape-rendering:crispEdges;
+  * {
+    cursor:none !important;
   }
 
-  .a9s-annotation *, .a9sselection * {
-    cursor:none;
-  }
+}
 
+.a9s-crosshair line {
+  stroke-width:1px;
+  stroke:rgba(0, 0, 0, 0.5);
+  pointer-events:none;
+  vector-effect:non-scaling-stroke;
+  shape-rendering:crispEdges;
 }
 
 .a9s-selection-mask {
@@ -98,7 +98,7 @@
 
   .a9s-inner {
     stroke:#fff000;
-    cursor:move;
+    cursor:move !important;
   }
 
   .a9s-inner:hover {
