@@ -117,9 +117,7 @@ export default class AnnotationLayer extends EventEmitter {
 
     elem.addEventListener('mouseleave', () => {
       if (!this.tools?.current?.isDrawing) {
-        if (this.currentHover === elem)
-          this.emit('mouseLeaveAnnotation', annotation, elem);
-
+        this.emit('mouseLeaveAnnotation', annotation, elem);
         this.currentHover = null;
       }
     });
@@ -449,20 +447,12 @@ export default class AnnotationLayer extends EventEmitter {
         // If we attach immediately 'mouseEnter' will fire when the editable shape
         // is added to the DOM!
         setTimeout(() => {
-          // Can be undefined in headless mode, when saving immediately
-          if (this.selectedShape) {
-            this.currentHover = this.selectedShape.element;
+          if (this.selectedShape)
             this._attachMouseListeners(this.selectedShape.element, annotation);
-          }
         }, 1);
       } else {
         this.selectedShape = shape;
       }
-
-      // When using mouse, currentHover will be set by mouseEnter, but
-      // that doesn't happen in touch
-      if (isTouch)
-        this.currentHover = this.selectedShape;
 
       if (!skipEvent)
         this.emit('select', { annotation, element: this.selectedShape.element || this.selectedShape });

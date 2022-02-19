@@ -38,7 +38,7 @@
       p.caption a {
         color:#3f3f3f;
       }
-    </style>http://localhost:3000/640px-Hallstatt.jpghttp://localhost:3000/640px-Hallstatt.jpg
+    </style>
   </head>
   <body>
     <div id="content">    
@@ -92,11 +92,19 @@
         });
 
         anno.on('clickAnnotation', function(annotation, shape) {
-          console.log('clicked');
+          console.log('clicked', annotation);
         });
 
         anno.on('deleteAnnotation', function(annotation) {
           console.log('deleted', annotation);
+        });
+
+        anno.on('mouseEnterAnnotation', function(annotation) {
+          console.log('enter', annotation);
+        });
+        
+        anno.on('mouseLeaveAnnotation', function(annotation) {
+          console.log('leave', annotation);
         });
         
         anno.loadAnnotations('annotations.w3c.json');
