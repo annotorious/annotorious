@@ -1,10 +1,5 @@
-import { hasClass } from './SVG';
-
 export const getSnippet = (image, element) => {
-  const annotation_element = hasClass(element, 'a9s-annotation') ?
-    element : element.querySelector('a9s-annotation');
-
-  const shape = annotation_element.querySelector('rect.a9s-outer');
+  const shape = element.querySelector('.a9s-outer');
 
   const kx = image.naturalWidth / image.width;
   const ky = image.naturalHeight / image.height;
