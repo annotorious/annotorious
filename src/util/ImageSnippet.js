@@ -1,15 +1,20 @@
+import { hasClass } from './SVG';
+
 export const getSnippet = (image, element) => {
-  const shape = element.querySelector('.a9s-outer');
+  const shape = hasClass(element, '.a9s-annotation') ? 
+    element : element.closest('.a9s-annotation');
+
+  const outer = shape.querySelector('.a9s-outer');
 
   const kx = image.naturalWidth / image.width;
   const ky = image.naturalHeight / image.height;
 
   const imageBounds = image.getBoundingClientRect();
-  const shapeBounds = shape.getBoundingClientRect();
+  const outerBounds = outer.getBoundingClientRect();
 
-  const x = shapeBounds.x - imageBounds.x;
-  const y = shapeBounds.y - imageBounds.y;
-  const { width, height } = shapeBounds;
+  const x = outerBounds.x - imageBounds.x;
+  const y = outerBounds.y - imageBounds.y;
+  const { width, height } = outerBounds;
 
   // Cut out the image snippet as in-memory canvas element
   const snippet = document.createElement('CANVAS');
