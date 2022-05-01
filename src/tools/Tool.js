@@ -98,6 +98,7 @@ export class ToolLike extends EventEmitter {
       c.setAttribute('cx', x);
       c.setAttribute('cy', y);
       c.setAttribute('r', r);
+      c.setAttribute('transform-origin', `${x} ${y}`);
       return c;
     }
 
@@ -120,10 +121,12 @@ export class ToolLike extends EventEmitter {
     const inner = handle.querySelector('.a9s-handle-inner');
     inner.setAttribute('cx', x);
     inner.setAttribute('cy', y);
+    inner.setAttribute('transform-origin', `${x} ${y}`);
 
     const outer = handle.querySelector('.a9s-handle-outer');
     outer.setAttribute('cx', x);
     outer.setAttribute('cy', y);
+    outer.setAttribute('transform-origin', `${x} ${y}`);
   }
 
   getHandleXY = handle => {
