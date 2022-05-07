@@ -31,6 +31,7 @@ export default class AnnotationLayer extends EventEmitter {
 
     // Annotation layer SVG element
     this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
+    this.svg.setAttribute('tabindex', 0);
 
     if (isTouch) {
       this.svg.setAttribute('class', 'a9s-annotationlayer touch');
