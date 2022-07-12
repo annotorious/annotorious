@@ -106,6 +106,8 @@ export const svgArea = annotation => {
     return svgEllipseArea(shape);
   else if (nodeName == 'path')
     return svgPathArea(shape);
+  else if (nodeName == 'line')
+    return 0;
   else
     throw `Unsupported SVG shape type: ${nodeName}`;
 }
