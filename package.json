@@ -24,7 +24,7 @@
     "url": "https://github.com/recogito/annotorious/issues"
   },
   "homepage": "https://recogito.github.io/annotorious",
-  "funding": "https://github.com/sponsors/rsimon",
+  "funding": "https://www.patreon.com/rainersimon",
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.14.5",
     "@babel/preset-env": "^7.14.7",
