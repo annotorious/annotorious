@@ -315,8 +315,11 @@ export default class ImageAnnotator extends Component  {
     this.setState({ readOnly });
   }
 
-  removeAnnotation = annotationOrId =>
+  removeAnnotation = annotationOrId => {
     this.annotationLayer.removeAnnotation(annotationOrId);
+    if (this.state.selectedAnnotation)
+      this.setState({ selectedAnnotation: null });
+  }
 
   removeDrawingTool = id =>
     this.annotationLayer.removeDrawingTool(id);
