@@ -1,6 +1,6 @@
 {
   "name": "@recogito/annotorious",
-  "version": "2.7.8",
+  "version": "2.7.9",
   "description": "A JavaScript image annotation library",
   "main": "dist/annotorious.min.js",
   "scripts": {
@@ -24,7 +24,10 @@
     "url": "https://github.com/recogito/annotorious/issues"
   },
   "homepage": "https://recogito.github.io/annotorious",
-  "funding": "https://github.com/sponsors/rsimon",
+  "funding": {
+    "type" : "patreon",
+    "url" : "https://www.patreon.com/rainersimon"
+  },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.14.5",
     "@babel/preset-env": "^7.14.7",
@@ -42,7 +45,7 @@
     "webpack-dev-server": "^4.3.1"
   },
   "dependencies": {
-    "@recogito/recogito-client-core": "1.7.4",
+    "@recogito/recogito-client-core": "1.7.7",
     "preact": "^10.5.13",
     "tiny-emitter": "^2.1.0"
   }
