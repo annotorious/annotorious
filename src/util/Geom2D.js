@@ -102,6 +102,29 @@ export const polygonInPolygon = (polygonA, polygonB) => {
   return true;
 }
 
+/** 
+ * Hit test: checks if this point is inside the line.
+ * @param {Array} xy the point [x, y]
+ * @param number x1 line start x
+ * @param number y1 line start y
+ * @param number x2 line end x
+ * @param number y2 line end y
+ * @param number buffer around the line
+ * @returns {boolean}
+ */
+export const pointInLine = (xy, x1, y1, x2, y2, buffer) => {
+  const x = xy[0];
+  const y = xy[1];
+
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const d = Math.sqrt(dx * dx + dy * dy);
+  const cross = Math.abs((x - x1) * dy - (y - y1) * dx);
+  const dist = cross / d;
+
+  return dist <= buffer;
+}
+
 /**
  * A utility helper that parses an SVG path into 
  * a list of polygons.
