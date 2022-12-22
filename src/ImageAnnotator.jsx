@@ -187,10 +187,10 @@ export default class ImageAnnotator extends Component  {
     // Force the editor to close first, otherwise there's a risk of orphaned annotation
     if (this.state.selectedAnnotation) {
       this.clearState(() => {
-        return this.annotationLayer.overrideId(id, forcedId);
+        this.annotationLayer.overrideId(id, forcedId);
       });
     } else {
-      return this.annotationLayer.overrideId(id, forcedId);
+      this.annotationLayer.overrideId(id, forcedId);
     }
   }
 
