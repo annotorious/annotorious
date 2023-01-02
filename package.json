@@ -35,7 +35,7 @@
     "@preact/preset-vite": "^2.1.0",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.2.6",
-    "html-webpack-plugin": "^4.5.2",
+    "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^1.6.0",
     "sass": "^1.35.2",
     "sass-loader": "^10.2.0",
