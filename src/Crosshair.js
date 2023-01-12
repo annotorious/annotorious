@@ -31,7 +31,7 @@ export default class Crosshair {
       return pt.matrixTransform(layerGroup.getScreenCTM().inverse());
     }
 
-    this.svg.addEventListener('mousemove', evt => {
+    this.svg.addEventListener('pointermove', evt => {
       const { x, y } = getSVGPoint(evt);
 
       h.setAttribute('x1', 0);

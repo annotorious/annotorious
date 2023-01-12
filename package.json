@@ -25,8 +25,8 @@
   },
   "homepage": "https://recogito.github.io/annotorious",
   "funding": {
-    "type" : "patreon",
-    "url" : "https://www.patreon.com/rainersimon"
+    "type": "patreon",
+    "url": "https://www.patreon.com/rainersimon"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.14.5",
