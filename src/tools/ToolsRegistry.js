@@ -45,6 +45,9 @@ export default class ToolRegistry extends EventEmitter {
    * of a built-in toll.
    */
   setCurrent = toolOrId => {
+    if (this._current)
+      this._current.destroy();
+      
     const Tool = (typeof toolOrId === 'string' || toolOrId instanceof String) ?
       this._registered.find(impl => impl.identifier === toolOrId) :
       toolOrId;
