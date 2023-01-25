@@ -3,11 +3,11 @@
   <br/><br/>
 </p>
 
+[![](https://data.jsdelivr.com/v1/package/npm/@recogito/annotorious/badge)](https://www.jsdelivr.com/package/npm/@recogito/annotorious)
+
 A JavaScript image annotation library. Add drawing, commenting and labeling functionality to images
 in Web pages with just a few lines of code. Weighs less than 300kB. See the [project website](https://recogito.github.io/annotorious/)
 for details and live demos.
-
-[![](https://data.jsdelivr.com/v1/package/npm/@recogito/annotorious/badge)](https://www.jsdelivr.com/package/npm/@recogito/annotorious)
 
 <img width="620" src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
 
