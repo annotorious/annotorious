@@ -56,7 +56,8 @@
         var anno = Annotorious.init({
           image: 'hallstatt',
           locale: 'auto',
-          disableEditor: true
+          disableEditor: true,
+          disableDeleteKey: true
         });
 
         anno.on('createSelection', async function(selection) {
