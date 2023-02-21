@@ -11,6 +11,9 @@ import {
   setRectMaskSize
 } from '../../selectors/RectFragment';
 
+const CORNER = 'corner';
+const EDGE = 'edge';
+
 /**
  * An editable rectangle shape.
  */
@@ -56,16 +59,28 @@ export default class EditableRect extends EditableShape {
 
     this.elementGroup.appendChild(this.rectangle);
 
+    this.enableEdgeControls = config.enableEdgeControls;
+
+    const edgeHandles = this.enableEdgeControls
+    ? [
+        [x + w / 2, y, EDGE],
+        [x + w, y + h / 2, EDGE],
+        [x + w / 2, y + h, EDGE],
+        [x, y + h / 2, EDGE],
+      ]
+    : [];
+
     this.handles = [
-      [x, y],
-      [x + w, y],
-      [x + w, y + h],
-      [x, y + h]
+      [x, y, CORNER],
+      [x + w, y, CORNER],
+      [x + w, y + h, CORNER],
+      [x, y + h, CORNER],
+      ...edgeHandles,
     ].map(t => {
-      const [x, y] = t;
+      const [x, y, type] = t;
       const handle = this.drawHandle(x, y);
 
-      handle.addEventListener('mousedown', this.onGrab(handle));
+      handle.addEventListener('mousedown', this.onGrab(handle, type));
       this.elementGroup.appendChild(handle);
 
       return handle;
@@ -79,6 +94,9 @@ export default class EditableRect extends EditableShape {
 
     // The grabbed element (handle or entire group), if any
     this.grabbedElem = null;
+    
+    // Type of the grabbed element, either 'corner' or 'edge'
+    this.grabbedType = null;
 
     // Mouse xy offset inside the shape, if mouse pressed
     this.mouseOffset = null;
@@ -92,11 +110,28 @@ export default class EditableRect extends EditableShape {
     setRectMaskSize(this.mask, this.env.image, x, y, w, h);
     setFormatterElSize(this.elementGroup, x, y, w, h);
 
-    const [topleft, topright, bottomright, bottomleft] = this.handles;
+    const [
+      topleft,
+      topright,
+      bottomright,
+      bottomleft,
+      topEdge,
+      rightEdge,
+      bottomEdge,
+      leftEdge
+    ] = this.handles;
+
     this.setHandleXY(topleft, x, y);
     this.setHandleXY(topright, x + w, y);
     this.setHandleXY(bottomright, x + w, y + h);
     this.setHandleXY(bottomleft, x, y + h);
+
+    if (this.enableEdgeControls) {
+      this.setHandleXY(topEdge, x + w / 2, y);
+      this.setHandleXY(rightEdge, x + w, y + h / 2);
+      this.setHandleXY(bottomEdge, x + w / 2, y + h);
+      this.setHandleXY(leftEdge, x, y + h / 2);
+    }
   }
 
   stretchCorners = (draggedHandleIdx, anchorHandle, mousePos) => {
@@ -110,26 +145,33 @@ export default class EditableRect extends EditableShape {
     const w = Math.abs(width);
     const h = Math.abs(height);
 
-    setRectSize(this.rectangle, x, y, w, h);
-    setRectMaskSize(this.mask, this.env.image, x, y, w, h);
-    setFormatterElSize(this.elementGroup, x, y, w, h);
-
-    // Anchor (=opposite handle) stays in place, dragged handle moves with mouse
-    this.setHandleXY(this.handles[draggedHandleIdx], mousePos.x, mousePos.y);
-
-    // Handles left and right of the dragged handle
-    const left = this.handles[(draggedHandleIdx + 3) % 4];
-    this.setHandleXY(left, anchor.x, mousePos.y);
-
-    const right = this.handles[(draggedHandleIdx + 5) % 4];
-    this.setHandleXY(right, mousePos.x, anchor.y);
+    this.setSize(x, y, w, h);
 
     return { x, y, w, h };
   }
 
-  onGrab = grabbedElem => evt => {
+  stretchEdge = (handleIdx, oppositeHandle, mousePos) => {
+    const anchor = this.getHandleXY(oppositeHandle);
+    const currentRectDims = getRectSize(this.rectangle);
+    const isHeightAdjustment = handleIdx % 2 === 0;
+
+    const width = isHeightAdjustment ? currentRectDims.w : mousePos.x - anchor.x;
+    const height = isHeightAdjustment ? mousePos.y - anchor.y : currentRectDims.h;
+
+    const x = isHeightAdjustment ? currentRectDims.x : (width > 0 ? anchor.x : mousePos.x);
+    const y = isHeightAdjustment ? (height > 0 ? anchor.y : mousePos.y) : currentRectDims.y;
+    const w = Math.abs(width);
+    const h = Math.abs(height);
+
+    this.setSize(x, y, w, h);
+
+    return { x, y, w, h };
+  };
+
+  onGrab = (grabbedElem, type) => evt => {
     if (evt.button !== 0) return;  // left click
     this.grabbedElem = grabbedElem;
+    this.grabbedType = type;
     const pos = this.getSVGPoint(evt);
     const { x, y } = getRectSize(this.rectangle);
     this.mouseOffset = { x: pos.x - x, y: pos.y - y };
@@ -158,10 +200,13 @@ export default class EditableRect extends EditableShape {
         // Mouse position replaces one of the corner coords, depending
         // on which handle is the grabbed element
         const handleIdx = this.handles.indexOf(this.grabbedElem);
-        const oppositeHandle = handleIdx < 2 ?
-          this.handles[handleIdx + 2] : this.handles[handleIdx - 2];
+        const oppositeHandle = this.handles[handleIdx ^ 2];
 
-        const { x, y, w, h } = this.stretchCorners(handleIdx, oppositeHandle, pos);
+        const { x, y, w, h } = 
+          this.grabbedType === CORNER
+          ? this.stretchCorners(handleIdx, oppositeHandle, pos)
+          : this.stretchEdge(handleIdx, oppositeHandle, pos);
+
         this.emit('update', toRectFragment(x, y, w, h, this.env.image, this.config.fragmentUnit));
       }
     }
@@ -169,6 +214,7 @@ export default class EditableRect extends EditableShape {
 
   onMouseUp = evt => {
     this.grabbedElem = null;
+    this.grabbedType = null;
     this.mouseOffset = null;
   }
 
