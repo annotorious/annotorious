@@ -47,8 +47,13 @@ export class Annotorious {
     // element), so that editor and image share the same offset coordinate
     // space.
     this._element = document.createElement('DIV');
-    this._element.style.position = 'relative';
-    this._element.style.display = 'inline-block';
+
+    if(config.containerClassName){
+      this._element.setAttribute('class', config.containerClassName);
+    } else {
+      this._element.style.position = 'relative';
+      this._element.style.display = 'inline-block';
+    }
 
     imageEl.parentNode.insertBefore(this._element, imageEl);
     this._element.appendChild(imageEl);
