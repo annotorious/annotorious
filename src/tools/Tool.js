@@ -220,8 +220,14 @@ export default class Tool extends ToolLike {
    */
   start = (evt, startOnSingleClick) => {
     // Handle SVG conversion on behalf of tool implementations
-    const { x , y } = this.getSVGPoint(evt);
-    this.startDrawing(x, y, startOnSingleClick, evt);
+    const { x, y } = this.getSVGPoint(evt);
+    
+    // Constrain the initial coordinates (x, y) to be within the image bounds
+    const { naturalWidth, naturalHeight } = this.env.image;
+    const startX = x < 0 ? 0 : (x > naturalWidth ? naturalWidth : x);
+    const startY = y < 0 ? 0 : (y > naturalHeight ? naturalHeight : y);
+    
+    this.startDrawing(startX, startY, startOnSingleClick, evt);
   }
 
   /**
