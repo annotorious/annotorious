@@ -30,8 +30,14 @@ export default class RubberbandRectTool extends Tool {
     }
   }
 
-  onMouseMove = (x, y) =>
-    this.rubberband.dragTo(x, y);
+  onMouseMove = (x, y) => {
+    // Constrain the initial coordinates (x, y) to be within the image bounds
+    const { naturalWidth, naturalHeight } = this.env.image;
+    const constrainX = Math.min(Math.max(x, 0), naturalWidth);
+    const constrainY = Math.min(Math.max(y, 0), naturalHeight);
+
+    this.rubberband.dragTo(constrainX, constrainY);
+  }
   
   onMouseUp = () => {
     this.detachListeners();
