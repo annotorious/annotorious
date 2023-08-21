@@ -6,7 +6,7 @@
 [![](https://data.jsdelivr.com/v1/package/npm/@recogito/annotorious/badge)](https://www.jsdelivr.com/package/npm/@recogito/annotorious)
 
 A JavaScript image annotation library. Add drawing, commenting and labeling functionality to images
-in Web pages with just a few lines of code. Weighs less than 300kB. See the [project website](https://recogito.github.io/annotorious/)
+in Web pages with just a few lines of code. Weighs less than 300kB. See the [project website](https://annotorious.github.io/)
 for details and live demos.
 
 <img width="620" src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
@@ -23,7 +23,7 @@ import '@recogito/annotorious/dist/annotorious.min.css';
 const anno = new Annotorious({ image: 'hallstatt' }); // image element or ID
 ```
 
-Otherwise download the [latest release](https://github.com/recogito/annotorious/releases/latest)
+Otherwise download the [latest release](https://github.com/annotorious/annotorious/releases/latest)
 and include it in your web page.
 
 ```html
@@ -50,7 +50,7 @@ and include it in your web page.
   <script type="text/javascript" src="annotorious.min.js"></script>
 </body>
 ```
-Full documentation is [on the project website](https://recogito.github.io/annotorious/). Questions? Feedack? Feature requests? Join the 
+Full documentation is [on the project website](https://annotorious.github.io/). Questions? Feedack? Feature requests? Join the 
 [Annotorious chat on Gitter](https://gitter.im/recogito/annotorious).
 
 [![Join the chat at https://gitter.im/recogito/annotorious](https://badges.gitter.im/recogito/annotorious.svg)](https://gitter.im/recogito/annotorious?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
