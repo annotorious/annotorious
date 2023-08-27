@@ -66,3 +66,7 @@ breaks something, don't complain to us :-)
 ![NHS Wales Logo](logos/NHSWalesCavLogo.png) &nbsp; [![MicroPasts Logo](logos/MicroPasts.png)](https://crowdsourced.micropasts.org/)
 
 Using Annotorious? [Let us know!](https://gitter.im/recogito/annotorious)
+
+## Contributing
+
+Contributions to both the code and documentation are welcome! More details can be found in the [Hacker's Guide](https://annotorious.github.io/guides/hackers-guide/) on the project website.
