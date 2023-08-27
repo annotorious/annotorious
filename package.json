@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/recogito/annotorious.git"
+    "url": "git+https://github.com/annotorious/annotorious.git"
   },
   "keywords": [
     "Annotation",
@@ -20,9 +20,9 @@
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/recogito/annotorious/issues"
+    "url": "https://github.com/annotorious/annotorious/issues"
   },
-  "homepage": "https://recogito.github.io/annotorious",
+  "homepage": "https://annotorious.github.io/",
   "funding": {
     "type": "patreon",
     "url": "https://www.patreon.com/rainersimon"
