@@ -448,7 +448,7 @@ export default class AnnotationLayer extends EventEmitter {
         // If we attach immediately 'mouseEnter' will fire when the editable shape
         // is added to the DOM!
         setTimeout(() => {
-          if (this.selectedShape)
+          if (this.selectedShape != null)
             this._attachMouseListeners(this.selectedShape.element, annotation);
 
           // Bit of a hack...
