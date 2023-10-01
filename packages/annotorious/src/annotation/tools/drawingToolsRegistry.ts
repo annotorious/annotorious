@@ -1,0 +1,14 @@
+import type { SvelteComponent } from 'svelte';
+import { RubberbandRectangle } from './rectangle';
+import { RubberbandPolygon } from './polygon';
+
+export type DrawingTool = 'rectangle' | 'polygon' | string;
+
+const REGISTERED = new Map<DrawingTool, typeof SvelteComponent>([
+  ['rectangle', RubberbandRectangle],
+  ['polygon', RubberbandPolygon]
+]);
+
+export const listTools = () => [...REGISTERED.keys()];
+
+export const getTool = (name: string) => REGISTERED.get(name);

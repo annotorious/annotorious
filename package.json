@@ -1,51 +1,22 @@
 {
-  "name": "@recogito/annotorious",
-  "version": "2.7.13",
-  "description": "A JavaScript image annotation library",
-  "main": "dist/annotorious.min.js",
-  "scripts": {
-    "start": "webpack serve --open --mode=development",
-    "build": "webpack --mode=production",
-    "build-polyfills": "webpack --mode=production --config webpack.polyfills.js",
-    "vite-build": "vite build && mv ./dist/annotorious.umd.js ./dist/annotorious.min.js && mv ./dist/style.css ./dist/annotorious.min.css"
-  },
+  "name": "@annotorious/monorepo",
+  "version": "3.0.0-rc.1",
+  "description": "Annotorious v3 monorep",
+  "author": "Rainer Simon",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/annotorious/annotorious.git"
+    "url": "https://github.com/recogito/annotorious.git"
   },
-  "keywords": [
-    "Annotation",
-    "ImageAnnotation"
-  ],
-  "author": "Rainer Simon",
   "license": "BSD-3-Clause",
-  "bugs": {
-    "url": "https://github.com/annotorious/annotorious/issues"
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces"
   },
-  "homepage": "https://annotorious.github.io/",
-  "funding": {
-    "type": "patreon",
-    "url": "https://www.patreon.com/rainersimon"
-  },
-  "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.14.5",
-    "@babel/preset-env": "^7.14.7",
-    "@babel/preset-react": "^7.14.5",
-    "@preact/preset-vite": "^2.1.0",
-    "babel-loader": "^8.2.2",
-    "css-loader": "^5.2.6",
-    "html-webpack-plugin": "^4.5.2",
-    "mini-css-extract-plugin": "^1.6.0",
-    "sass": "^1.35.2",
-    "sass-loader": "^10.2.0",
-    "vite": "^2.3.7",
-    "webpack": "^5.58.1",
-    "webpack-cli": "^4.9.0",
-    "webpack-dev-server": "^4.3.1"
-  },
-  "dependencies": {
-    "@recogito/recogito-client-core": "1.7.8",
-    "preact": "^10.5.13",
-    "tiny-emitter": "^2.1.0"
-  }
+  "workspaces": [
+    "./packages/annotorious-core",
+    "./packages/annotorious",
+    "./packages/annotorious-openseadragon",
+    "./packages/annotorious-react",
+    "./packages/annotorious-svelte"
+  ]
 }

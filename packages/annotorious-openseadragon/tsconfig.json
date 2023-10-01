@@ -1,0 +1,24 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "checkJs": true,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "ignoreDeprecations": "5.0",
+    "importsNotUsedAsValues": "error",
+    "incremental": false,
+    "isolatedModules": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "outDir": "./dist",
+    "resolveJsonModule": true,
+    "skipLibCheck": false,
+    "sourceMap": true,
+    "target": "ESNext"
+  },
+  "include": ["./src/**/*", "./test/**/*"],
+  "exclude": ["./node_modules", "./dist"]
+}

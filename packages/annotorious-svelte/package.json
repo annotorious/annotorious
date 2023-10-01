@@ -1,0 +1,32 @@
+{
+  "name": "@annotorious/svelte",
+  "version": "3.0.0-rc.1",
+  "description": "Annotorious Svelte bindings",
+  "author": "Rainer Simon",
+  "license": "BSD-3-Clause",
+  "homepage": "https://annotorious.github.io",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "tsc && vite build",
+    "test": "echo 'Skipping tests in @annotorious/svelte package'"
+  },
+  "main": "./dist/annotorious-svelte.umd.js",
+  "module": "./dist/annotorious-svelte.es.js",
+  "types": "./src/index.ts",
+  "svelte": "./src/index.ts",
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^2.4.6",
+    "@tsconfig/svelte": "^3.0.0",
+    "@types/openseadragon": "^3.0.7",
+    "svelte": "^3.59.2",
+    "svelte-check": "^3.5.2",
+    "tslib": "^2.6.2",
+    "typescript": "^4.9.5",
+    "vite": "^4.4.9"
+  },
+  "peerDependencies": {
+    "openseadragon": "^3.0.0 || ^4.0.0"
+  },
+  "sideEffects": false
+}

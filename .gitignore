@@ -1,3 +1,5 @@
-dist/
-node_modules/
+.vscode
+dist
+node_modules
+**/config.json
 .DS_Store

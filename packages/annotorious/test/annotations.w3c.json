@@ -1,0 +1,44 @@
+[
+  { 
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "id": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+    "type": "Annotation",
+    "body": [{
+      "type": "TextualBody",
+      "value": "It's Hallstatt in Upper Austria"
+    }, {
+      "type": "TextualBody",
+      "purpose": "tagging",
+      "value": "Hallstatt"
+    }, {
+      "type": "TextualBody",
+      "purpose": "tagging",
+      "value": "Upper Austria"
+    }],
+    "target": {
+      "selector": [{
+        "type": "FragmentSelector",
+        "conformsTo": "http://www.w3.org/TR/media-frags/",
+        "value": "xywh=pixel:273,171,123,94"
+      }]
+    }
+  }, { 
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "id": "#218d01ff-f077-4cc3-992d-1c81c426e51b",
+    "type": "Annotation",
+    "body": [{
+      "type": "TextualBody",
+      "value": "Evangelische Pfarrkirche Hallstatt"
+    }, {
+      "type": "TextualBody",
+      "purpose": "tagging",
+      "value": "Church"
+    }],
+    "target": {
+      "selector": [{
+        "type": "SvgSelector",
+        "value": "<svg><polygon points='172,160 199,15 223,6 239,132 244,173 285,179 313,208 313,251 218,306 170,290 172,160'></polygon></svg>"
+      }]
+    }
+  }
+]

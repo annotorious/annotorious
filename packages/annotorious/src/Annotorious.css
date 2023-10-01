@@ -1,0 +1,67 @@
+/** 
+ * Essential common styles only. Everything else
+ * is contained in extra 'theme' stylesheets.
+ */
+.a9s-annotationlayer {
+  box-sizing: border-box;
+  height: 100%;
+  left: 0;
+  outline: none;
+  position: absolute;
+  top: 0;
+  touch-action: none;
+  width: 100%;
+}
+
+.a9s-annotationlayer rect, 
+.a9s-annotationlayer polygon {
+  fill: transparent;
+  shape-rendering: geometricPrecision;
+  vector-effect: non-scaling-stroke;
+}
+
+.a9s-edge-handle {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 6px;
+}
+
+.a9s-shape-handle {
+  cursor: move;
+}
+
+.a9s-corner-handle {
+  cursor: move;
+}
+
+.a9s-edge-handle-top {
+  cursor: n-resize;
+}
+
+.a9s-edge-handle-right {
+  cursor: e-resize;
+}
+
+.a9s-edge-handle-bottom {
+  cursor: s-resize;
+}
+
+.a9s-edge-handle-left {
+  cursor: w-resize;
+}
+
+.a9s-corner-handle.a9s-corner-handle-topleft {
+  cursor: nw-resize;
+}
+
+.a9s-corner-handle.a9s-corner-handle-topright {
+  cursor: ne-resize;
+}
+
+.a9s-corner-handle.a9s-corner-handle-bottomright {
+  cursor: se-resize; 
+}
+
+.a9s-corner-handle.a9s-corner-handle-bottomleft {
+  cursor: sw-resize;
+}

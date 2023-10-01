@@ -1,0 +1,42 @@
+{
+  "name": "@annotorious/core",
+  "version": "3.0.0-rc.1",
+  "description": "Annotorious core types and functions",
+  "author": "Rainer Simon",
+  "license": "BSD-3-Clause",
+  "homepage": "https://annotorious.github.io",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/annotorious/annotorious.git"
+  },
+  "bugs": {
+    "url": "https://github.com/annotorious/annotorious/issues"
+  },
+  "scripts": {
+    "build": "echo 'Skipping build in @annotorious/core package'",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src"
+  ],
+  "devDependencies": {
+    "@tsconfig/svelte": "^3.0.0",
+    "@types/deep-equal": "^1.0.2",
+    "@types/uuid": "^9.0.4",
+    "svelte": "^3.59.2",
+    "typescript": "^4.9.5",
+    "vite": "^4.4.9",
+    "vite-plugin-dts": "^3.6.0",
+    "vitest": "^0.34.6"
+  },
+  "dependencies": {
+    "dequal": "^2.0.3",
+    "nanoevents": "^8.0.0",
+    "nanoid": "^5.0.1",
+    "uuid": "^9.0.1"
+  }
+}

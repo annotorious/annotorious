@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Annotorious 3.0.0-alpha</title>
+    <script type='module' src='./index.ts'></script>
+    <style>
+      html, body, #openseadragon {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .openseadragon-canvas {
+        outline: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="openseadragon">
+      <div class="buttons" style="position:absolute; top: 10px; right: 10px; z-index: 1;">
+        <button id="draw">Start Drawing</button>
+        <button id="formatter">Clear Formatter</button>
+      </div>
+    </div>
+
+    <script type='module'>
+      import { OpenSeadragon, createOSDAnnotator, W3CImageFormat } from './index.ts';
+
+      window.onload = function() {
+        var viewer = OpenSeadragon({
+          id: 'openseadragon',
+          prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@3.1/build/openseadragon/images/', 
+          crossOriginPolicy: 'Anonymous',
+          gestureSettingsMouse: {
+            clickToZoom: false
+          },
+          gestureSettingsTouch: {
+            pinchRotate: true
+          },
+          tileSources: {
+            '@context' : 'http://iiif.io/api/image/2/context.json',
+            protocol : 'http://iiif.io/api/image',
+            width : 7808,
+            height : 5941,
+            sizes : [
+              { width : 244, height : 185 },
+              { width : 488, height : 371 },
+              { width : 976, height : 742 }
+            ],
+            tiles : [
+              { width : 256, height : 256, scaleFactors : [ 1, 2, 4, 8, 16, 32 ] }
+            ],
+            '@id' : 'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c',
+            profile : [
+              'http://iiif.io/api/image/2/level2.json',
+              { formats : [ 'jpg', 'png', 'webp' ],
+                qualities : ['native','color','gray','bitonal'],
+                supports : ['regionByPct','regionSquare','sizeByForcedWh','sizeByWh','sizeAboveFull','sizeUpscaling','rotationBy90s','mirroring'],
+                maxWidth : 1000,
+                maxHeight : 1000
+              }
+            ]
+          }
+        });
+
+        var anno = createOSDAnnotator(viewer, {
+          adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c')
+        });
+
+        // A dummy formatter that cycles through these colors
+        var colors = [
+          0x1a73e8,
+          0xe81a1e,
+          0x34e81a,
+          0xa1570c
+        ];
+
+        var counter = -1;
+
+        anno.setFormatter(annotation => {
+          counter = counter + 1;
+          return {
+            fill: colors[counter % colors.length],
+            fillOpacity: 0.25
+          };
+        });
+
+        fetch('annotations.json').then((response) => response.json())
+          .then(annotations =>
+            anno.setAnnotations(annotations));
+
+        const trigger = document.getElementById('draw');
+        trigger.addEventListener('click', function() {
+          const enabled = trigger.dataset.enabled;
+
+          if (enabled) {
+            anno.stopDrawing();
+            delete trigger.dataset.enabled;
+            trigger.innerHTML = 'Start Drawing';
+          } else {
+            anno.startDrawing('rectangle', true);
+            trigger.dataset.enabled = 'true';
+            trigger.innerHTML = 'Stop Drawing';
+          }
+        });
+
+        const formatter = document.getElementById('formatter');
+        formatter.addEventListener('click', function() {
+          anno.setFormatter();
+        });
+
+        anno.on('createAnnotation', a => console.log('created', a));
+        anno.on('deleteAnnotation', a => console.log('deleted', a));
+        anno.on('selectionChanged', selected => console.log('selection', selected));
+        anno.on('updateAnnotation', (a, previous) => console.log('updated', previous, 'with', a));
+      }
+    </script>
+  </body>
+</html>

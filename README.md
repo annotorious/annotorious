@@ -1,72 +1,77 @@
-<p align="center">
-  <img width="345" src="https://raw.githubusercontent.com/recogito/annotorious/master/annotorious-logo-white-small.png" />
-  <br/><br/>
-</p>
+![Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious](/splash-image.jpg "Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious")
 
-[![](https://data.jsdelivr.com/v1/package/npm/@recogito/annotorious/badge)](https://www.jsdelivr.com/package/npm/@recogito/annotorious)
+# Annotorious 3
 
-A JavaScript image annotation library. Add drawing, commenting and labeling functionality to images
-in Web pages with just a few lines of code. Weighs less than 300kB. See the [project website](https://annotorious.github.io/)
-for details and live demos.
+Add image annotation functionality to any Web page with a few lines of JavaScript. 🚀 Easy to integrate
+🎨 fully customizable 🪶 weighs less than 100kB.
 
-<img width="620" src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
+> __This repository is work in progress.__ We are building the next major release of Annotorious. If you are
+> looking for the most recent official release, [visit the main project homepage](https://annotorious.github.io).
 
-## Installing
+## Getting Started
 
-If you use npm, `npm install @recogito/annotorious` and 
+Install from npm.
 
-```javascript
-import { Annotorious } from '@recogito/annotorious';
-
-import '@recogito/annotorious/dist/annotorious.min.css';
-
-const anno = new Annotorious({ image: 'hallstatt' }); // image element or ID
+```sh
+npm install --save @annotorious/annotorious
 ```
 
-Otherwise download the [latest release](https://github.com/annotorious/annotorious/releases/latest)
-and include it in your web page.
+Import CSS style and initialize Annotorious.
 
-```html
-<link rel="stylesheet" href="annotorious.min.css">
-<script src="annotorious.min.js"></script>
+```js
+import { Annotorious } from '@annotorious/annotorious';
+
+import '@annotorious/annotorious/dist/annotorious.css';
+
+// Image element ID or DOM element
+const anno = Annotorious('sample-image');
+
+// Load annotations in W3C Web Annotation format
+anno.loadAnnotations('./annotations.w3c.json');
+       
+// Attach listeners to handle annotation events
+anno.on('createAnnotation', function(annotation) {
+  console.log('created', annotation);
+});
 ```
 
-## Using
+[Full API documentation](docs/api.md)
 
-```html
-<body>
-  <div id="content">
-    <img id="hallstatt" src="640px-Hallstatt.jpg">
-  </div>
-  <script>
-    (function() {
-      var anno = Annotorious.init({
-        image: 'hallstatt'
-      });
+## Using with React
 
-      anno.loadAnnotations('annotations.w3c.json');
-    })()
-  </script>
-  <script type="text/javascript" src="annotorious.min.js"></script>
-</body>
+Install Annotorious React binding.
+
+```sh
+npm install --save @annotorious/react
 ```
-Full documentation is [on the project website](https://annotorious.github.io/). Questions? Feedack? Feature requests? Join the 
-[Annotorious chat on Gitter](https://gitter.im/recogito/annotorious).
 
-[![Join the chat at https://gitter.im/recogito/annotorious](https://badges.gitter.im/recogito/annotorious.svg)](https://gitter.im/recogito/annotorious?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+Import Annotorious CSS style and wrap your image with the `ImageAnnotator` component to make it annotatable. 
 
-## License
+```jsx
+import { Annotorious, ImageAnnotator } from '@annotorious/react';
 
-[BSD 3-Clause](LICENSE) (= feel free to use this code in whatever way
-you wish. But keep the attribution/license file, and if this code
-breaks something, don't complain to us :-)
+import '@annotorious/annotorious/dist/annotorious.css';
 
-## Who's Using Annotorious
+export function AnnotatableImage() => {
 
-![NHS Wales Logo](logos/NHSWalesCavLogo.png) &nbsp; [![MicroPasts Logo](logos/MicroPasts.png)](https://crowdsourced.micropasts.org/)
+  return (
+    <Annotorious>
+      <ImageAnnotator>
+        <img src="my-image.jpg" alt="Example" />
+      </ImageAnnotator>
+    </Annotorious>
+  )
 
-Using Annotorious? [Let us know!](https://gitter.im/recogito/annotorious)
+}
+```
+
+[Full React API documentation](docs/react.md)
 
 ## Contributing
 
-Contributions to both the code and documentation are welcome! More details can be found in the [Hacker's Guide](https://annotorious.github.io/guides/hackers-guide/) on the project website.
+Want to help make Annotorious better? There are many ways to get involved - including some that require little
+or no coding experience!
+
+Check the list of current [open issues](https://github.com/annotorious/annotorious-v3/issues), in particular those with the [help wanted](https://github.com/annotorious/annotorious-v3/issues?q=is%3Aissue+is%3Aopen+label%3A"help+wanted") or [hacktoberfest](https://github.com/annotorious/annotorious-v3/issues?q=is%3Aissue+is%3Aopen+label%3Ahacktoberfest) tags. See the [Contribution Guide](contributing.md) to learn more.
+
+
