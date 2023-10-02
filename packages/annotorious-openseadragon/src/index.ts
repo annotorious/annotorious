@@ -49,7 +49,9 @@ export type {
   ImageAnnotation,
   ImageAnnotatorState,
   Polygon,
-  Rectangle
+  Rectangle,
+  Shape,
+  ShapeType
 } from '@annotorious/annotorious';
 
 import {   
