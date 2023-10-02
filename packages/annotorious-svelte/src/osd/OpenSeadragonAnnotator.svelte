@@ -1,32 +1,35 @@
 <script lang="ts">
-  import { SvelteAnnotatorState, toSvelteStore } from '@annotorious/core';
+  import { getContext, setContext } from 'svelte';
+  import { SvelteAnnotator, SvelteAnnotatorState, toSvelteStore } from '@annotorious/core';
   import { createOSDAnnotator, ImageAnnotation } from '@annotorious/openseadragon';
-  import { setContext } from 'svelte';
   import type OpenSeadragon from 'openseadragon';
 
   /** props **/
   export let viewer: OpenSeadragon.Viewer;
   export let opts = {};
+  export let anno: SvelteAnnotator<ImageAnnotation> = undefined;
 
   $: init(viewer);
 
   const init = (viewer: OpenSeadragon.Viewer) => {
     if (viewer) {
-      const anno = createOSDAnnotator(viewer, opts);
+      const annotator = createOSDAnnotator(viewer, opts);
 
       // Wrap the store for Svelte reactivity
-      const svelteStore = toSvelteStore(anno.state.store);
+      const svelteStore = toSvelteStore(annotator.state.store);
 
       const shim = {
-        ...anno,
+        ...annotator,
         state: {
-          ...anno.state,
+          ...annotator.state,
           store: svelteStore
         } as SvelteAnnotatorState<ImageAnnotation>
-      }
+      } as SvelteAnnotator<ImageAnnotation>
 
       setContext('anno', shim);
       setContext('viewer', viewer);
+
+      anno = shim;
     }
   }
 </script>

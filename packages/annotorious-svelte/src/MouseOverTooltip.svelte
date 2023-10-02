@@ -13,24 +13,38 @@
 
   let left: number;
 
+  let show = true;
+
   $: hovered = $hover ? store.getAnnotation($hover) : undefined;
   
   onMount(() => {
+    const onPointerEnter = () => {
+      show = true;
+    }
+
     const onPointerMove = (event: PointerEvent) => {
       const { offsetX, offsetY } = event;
       left = offsetX;
       top = offsetY;
     }
 
+    const onPointerLeave = () => {
+      show = false;
+    }
+
+    container.addEventListener('pointerenter', onPointerEnter);
     container.addEventListener('pointermove', onPointerMove);
+    container.addEventListener('pointerleave', onPointerLeave);
 
     return () => {
+      container.removeEventListener('pointerenter', onPointerEnter);
       container.removeEventListener('pointermove', onPointerMove);
+      container.removeEventListener('pointerleave', onPointerLeave);
     }
   });
 </script>
 
-{#if $hover}
+{#if $hover && show}
   <div 
     class="a9s-tooltip" 
     style={`left:${left}px; top:${top}px;`}>

@@ -1,0 +1,54 @@
+[{ 
+  "@context": "http://www.w3.org/ns/anno.jsonld",
+  "id": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+  "type": "Annotation",
+  "body": [{
+    "type": "TextualBody",
+    "value": "A comment..."
+  }],
+  "target": {
+    "selector": {
+      "type": "FragmentSelector",
+      "conformsTo": "http://www.w3.org/TR/media-frags/",
+      "value": "xywh=pixel:2000,1200,400,370"
+    }
+  }
+},{ 
+  "@context": "http://www.w3.org/ns/anno.jsonld",
+  "id": "#a99b22d0-6106-4872-9435-c78b5e89fede",
+  "type": "Annotation",
+  "body": [{
+    "type": "TextualBody",
+    "value": "Another comment..."
+  }],
+  "target": {
+    "selector": {
+      "type": "FragmentSelector",
+      "conformsTo": "http://www.w3.org/TR/media-frags/",
+      "value": "xywh=pixel:4000,2200,500,270"
+    }
+  }
+}, {
+  "@context": "http://www.w3.org/ns/anno.jsonld",
+  "id": "#9df313be-4ded-4d0f-b7f6-f6b1a19e733b",
+  "type": "Annotation",
+  "body": [
+    {
+      "type": "TextualBody",
+      "value": "A comment...",
+      "purpose": "commenting",
+      "creator": {
+        "id": "http://www.example.com/rainer",
+        "name": "rainer"
+      },
+      "created": "2021-08-14T08:13:12.514Z",
+      "modified": "2021-08-14T08:13:12.557Z"
+    }
+  ],
+  "target": {
+    "selector": {
+      "type": "SvgSelector",
+      "value": "<svg><polygon points=\"447,213 560,140 563,259\"></polygon></svg>"
+    }
+  }
+}]
