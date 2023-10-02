@@ -2,14 +2,12 @@
   import { onMount } from 'svelte';
   import { draggable } from '@neodrag/svelte';
   import OpenSeadragon from 'openseadragon';
-  import type { StoreChangeEvent } from '@annotorious/core';
-  import type { ImageAnnotation, ImageAnnotationStore } from '@annotorious/annotorious';
+  import type { Selection, StoreChangeEvent, SvelteAnnotatorState } from '@annotorious/core';
+  import type { ImageAnnotation } from '@annotorious/annotorious';
 
-  export let store: ImageAnnotationStore;
+  export let state: SvelteAnnotatorState<ImageAnnotation>;
 
   export let viewer: OpenSeadragon.Viewer;
-
-  const { selection } = store; 
 
   let left: number;
 
@@ -18,6 +16,10 @@
   let dragged = false;
 
   let storeObserver: (event: StoreChangeEvent<ImageAnnotation>) => void;
+
+  const { selection, store } = state; 
+
+  const isSelected = (selection: Selection) => selection.selected?.length > 0;
 
   const onDragStart = () => {
     dragged = true;
@@ -34,9 +36,9 @@
     if (storeObserver)
       store.unobserve(storeObserver);
 
-    if ($selection) {
-      console.log('resetting selection');
+    if (isSelected($selection)) {
       dragged = false;
+
       setPosition($selection);
 
       storeObserver = (event: StoreChangeEvent<ImageAnnotation>) => {
@@ -44,15 +46,14 @@
           setPosition($selection);
       }
 
-      store.observe(storeObserver, { annotations: $selection });
-    } else {
-      console.log('deselect');
+      store.observe(storeObserver, { annotations: $selection.selected.map(s => s.id) });
     }
   }
 
-  const setPosition = (selection: string[]) => {
+  const setPosition = (selection: Selection) => {
     // Note: this demo popup only supports a single selection
-    const annotation = store.getAnnotation(selection[0]);
+    const selectedId = selection.selected[0].id;
+    const annotation = store.getAnnotation(selectedId);
 
     const { minX, minY, maxX, maxY } = annotation.target.selector.geometry.bounds;
 
@@ -68,7 +69,7 @@
 
   onMount(() => {
     const onUpdateViewport = () => {
-      if ($selection && !dragged)
+      if (isSelected($selection) && !dragged)
         setPosition($selection);
     }
 
@@ -86,9 +87,7 @@
     use:draggable={{ position: { x: left, y: top }}}
     on:neodrag:start={onDragStart}
     on:neodrag:end={onDragEnd}>
-
-    {$selection.join(', ')}
-
+    {$selection.selected.map(s => s.id).join(', ')}
   </div>
 {/if}
 

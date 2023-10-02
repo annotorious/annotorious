@@ -1,8 +1,8 @@
 <script lang="ts">
+  import { SvelteAnnotatorState, toSvelteStore } from '@annotorious/core';
   import { createOSDAnnotator, ImageAnnotation } from '@annotorious/openseadragon';
   import { setContext } from 'svelte';
   import type OpenSeadragon from 'openseadragon';
-  import { SvelteAnnotatorState, toSvelteStore } from './SvelteStore';
 
   /** props **/
   export let viewer: OpenSeadragon.Viewer;
