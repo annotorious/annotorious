@@ -11,7 +11,7 @@ const drawRectangle = (rectangle: Rectangle, style?: DrawingStyle) => {
   const { x, y, w, h } = rectangle.geometry;
 
   const fill = style?.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
-  const alpha = style?.fillOpacity || DEFAULT_ALPHA;
+  const alpha = style.fillOpacity === undefined ? DEFAULT_ALPHA : style.fillOpacity;
 
   const rect = new PIXI.Graphics();
   rect.beginFill(0xffffff, alpha);
@@ -27,7 +27,7 @@ const drawPolygon = (polygon: Polygon, style?: DrawingStyle) => {
   const flattend = polygon.geometry.points.reduce((flat, xy) => ([...flat, ...xy]), []);   
 
   const fill = style?.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
-  const alpha = style?.fillOpacity || DEFAULT_ALPHA;
+  const alpha = style.fillOpacity === undefined ? DEFAULT_ALPHA : style.fillOpacity;
 
   const poly = new PIXI.Graphics();
   poly.beginFill(fill, alpha);
