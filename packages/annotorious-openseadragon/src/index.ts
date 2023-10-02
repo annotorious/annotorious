@@ -50,12 +50,13 @@ export type {
   ImageAnnotatorState,
   Polygon,
   Rectangle,
-  Shape,
-  ShapeType
+  Shape
 } from '@annotorious/annotorious';
 
 import {   
+  ShapeType as _ShapeType,
   W3CImageFormat as _W3CImageFormat
 } from '@annotorious/annotorious';
 
+export const ShapeType = _ShapeType;
 export const W3CImageFormat = _W3CImageFormat;
