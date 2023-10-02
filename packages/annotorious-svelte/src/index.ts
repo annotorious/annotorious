@@ -1,4 +1,5 @@
-export * from './openseadragon';
+export * from './osd';
+
 export { default as MouseOverTooltip } from './MouseOverTooltip.svelte';
 
 // Re-export essentials from @annotorious/core
