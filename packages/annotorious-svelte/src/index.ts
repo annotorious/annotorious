@@ -1,4 +1,5 @@
-export { default as OpenSeadragonAnnotator } from './OpenSeadragonAnnotator.svelte';
+export * from './openseadragon';
+export * from './MouseOverTooltip.svelte';
 
 // Re-export essentials from @annotorious/core
 export type {
