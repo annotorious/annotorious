@@ -38,4 +38,4 @@
   });
 </script>
 
-<slot transform={layerTransform} scale={scale}/>
+<slot transform={layerTransform} scale={scale} />

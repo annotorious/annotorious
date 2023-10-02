@@ -35,7 +35,7 @@
     class="a9s-tooltip" 
     style={`left:${left}px; top:${top}px;`}>
 
-    <slot />
+    <slot hovered={hovered} />
 
   </div>
 {/if}
