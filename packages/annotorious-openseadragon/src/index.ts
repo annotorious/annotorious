@@ -47,7 +47,9 @@ export const createBody = _createBody;
 export type {
   ImageAnnotator,
   ImageAnnotation,
-  ImageAnnotatorState
+  ImageAnnotatorState,
+  Polygon,
+  Rectangle
 } from '@annotorious/annotorious';
 
 import {   
