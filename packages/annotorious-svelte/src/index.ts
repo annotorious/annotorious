@@ -1,5 +1,5 @@
 export * from './openseadragon';
-export * from './MouseOverTooltip.svelte';
+export { default as MouseOverTooltip } from './MouseOverTooltip.svelte';
 
 // Re-export essentials from @annotorious/core
 export type {
