@@ -47,16 +47,9 @@
 {#if $hover && show}
   <div 
     class="a9s-tooltip" 
-    style={`left:${left}px; top:${top}px;`}>
+    style={`left:${left}px; top:${top}px; position: absolute;`}>
 
     <slot hovered={hovered} />
 
   </div>
 {/if}
-
-<style>
-  .a9s-tooltip {
-    pointer-events: none;
-    position: absolute;
-  }
-</style>
