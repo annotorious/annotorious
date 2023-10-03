@@ -133,7 +133,7 @@ export const useSelection = <T extends Annotation>() => {
 
 export const useAnnotatorUser = () => {
   const { anno } = useContext(AnnotoriousContext);
-  return anno.getUser();
+  return anno?.getUser();
 }
 
 const _useViewportState = <T extends Annotation>() => {
