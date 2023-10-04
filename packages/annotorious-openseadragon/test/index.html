@@ -112,6 +112,7 @@
           anno.setFormatter();
         });
 
+        anno.on('clickAnnotation', a => console.log('clicked', a));
         anno.on('createAnnotation', a => console.log('created', a));
         anno.on('deleteAnnotation', a => console.log('deleted', a));
         anno.on('selectionChanged', selected => console.log('selection', selected));
