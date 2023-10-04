@@ -2,6 +2,8 @@ import type { Annotation } from '../model';
 
 export interface LifecycleEvents<T extends unknown = Annotation> {
 
+  clickAnnotation: (annotation: T) => void;
+
   createAnnotation: (annotation: T) => void;
 
   deleteAnnotation: (annotation: T) => void;
