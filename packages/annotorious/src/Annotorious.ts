@@ -1,6 +1,6 @@
 import type { SvelteComponent } from 'svelte';
 import type { Annotator, Formatter, User } from '@annotorious/core';
-import { createAnonymousGuest, createLifecyleObserver, Origin, parseAll } from '@annotorious/core';
+import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver, Origin, parseAll } from '@annotorious/core';
 import { SVGAnnotationLayer } from './annotation';
 import { getTool, type DrawingTool } from './annotation/tools';
 import type { SVGAnnotationLayerPointerEvent } from './annotation';
@@ -72,63 +72,10 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   /*      External API     */
   /******++++++*************/
 
-  const addAnnotation = (annotation: E) => {
-    if (opts.adapter) {
-      const { parsed, error } = opts.adapter.parse(annotation);
-      if (parsed) {
-        store.addAnnotation(parsed, Origin.REMOTE);
-      } else {
-        console.error(error);
-      }
-    } else {
-      store.addAnnotation(annotation as ImageAnnotation, Origin.REMOTE);
-    }
-  }
-
-  const getAnnotationById = (id: string): E | undefined => {
-    const annotation = store.getAnnotation(id);
-    return (opts.adapter && annotation) ?
-      opts.adapter.serialize(annotation) as E : annotation as E | undefined;
-  }
-
-  const getAnnotations = () =>
-    (opts.adapter ? store.all().map(opts.adapter.serialize) : store.all()) as E[];
+  // Most of the external API functions are covered in the base annotator
+  const base = createBaseAnnotator<ImageAnnotation, E>(store);
 
   const getUser = () => currentUser;
-
-  const loadAnnotations = (url: string) =>
-    fetch(url)
-      .then((response) => response.json())
-      .then((annotations) => {
-        setAnnotations(annotations);
-        return annotations;
-      });
-
-  const removeAnnotation = (arg: E | string): E => {
-    if (typeof arg === 'string') {
-      const annotation = store.getAnnotation(arg);
-      store.deleteAnnotation(arg);
-
-      return opts.adapter ? opts.adapter.serialize(annotation) : annotation as E;
-    } else {
-      const annotation = opts.adapter ? opts.adapter.parse(arg).parsed : (arg as ImageAnnotation);
-      store.deleteAnnotation(annotation);
-      return arg;
-    }
-  }
-
-  const setAnnotations = (annotations: E[]) => {
-    if (opts.adapter) {
-      const { parsed, failed } = parseAll(opts.adapter)(annotations);
-
-      if (failed.length > 0)
-        console.warn(`Discarded ${failed.length} invalid annotations`, failed);
-
-      store.bulkAddAnnotation(parsed, true, Origin.REMOTE);
-    } else {
-      store.bulkAddAnnotation(annotations as ImageAnnotation[], true, Origin.REMOTE);
-    }
-  }
 
   const setDrawingTool = (tool: DrawingTool) => {
     const t = getTool(tool) as typeof SvelteComponent;
@@ -152,34 +99,15 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     // annotationLayer.$set({ user });
   }
 
-  const updateAnnotation = (updated: E): E => {
-    if (opts.adapter) {
-      const crosswalked = opts.adapter.parse(updated).parsed;
-      const previous = opts.adapter.serialize(store.getAnnotation(crosswalked.id));
-      store.updateAnnotation(crosswalked);
-      return previous;
-    } else {
-      const previous = store.getAnnotation((updated as ImageAnnotation).id);
-      store.updateAnnotation(updated as ImageAnnotation);
-      return previous as E;
-    }
-  }
-
   return {
-    addAnnotation,
-    getAnnotationById,
-    getAnnotations,
+    ...base,
     getUser,
-    loadAnnotations,
-    removeAnnotation,
     on: lifecycle.on,
     off: lifecycle.off,
-    setAnnotations,
     setDrawingTool,
     setFormatter, 
     setSelected,
     setUser,
-    updateAnnotation,
     state
   }
 

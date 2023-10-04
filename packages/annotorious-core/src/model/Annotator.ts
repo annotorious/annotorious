@@ -57,7 +57,7 @@ export interface AnnotatorState<A extends Annotation> {
 
 }
 
-export const baseAnnotator = <I extends Annotation, E extends unknown>(
+export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
   store: Store<I>, 
   adapter?: FormatAdapter<I, E>
 ) => {
