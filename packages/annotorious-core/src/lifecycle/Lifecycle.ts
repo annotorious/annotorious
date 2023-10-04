@@ -40,7 +40,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
     }
   }
 
-  const emit = (event: keyof LifecycleEvents<E>, arg0: I | I[], arg1: I | PointerEvent = null) => {
+  const emit = (event: keyof LifecycleEvents<E>, arg0: I | I[], arg1?: I | PointerEvent) => {
     if (observers.has(event)) {
       setTimeout(() => {
         observers.get(event).forEach(callback => { 
@@ -48,7 +48,8 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
             const serialized0 = Array.isArray(arg0) ? 
               arg0.map(a => adapter.serialize(a)) : adapter.serialize(arg0);
             
-            const serialized1: E = (arg1 && !(arg1 instanceof PointerEvent)) && adapter.serialize(arg1);
+            const serialized1: E | PointerEvent | undefined =
+              arg1 ? arg1 instanceof PointerEvent ? arg1 : adapter.serialize(arg1) : undefined;
 
             callback(serialized0 as E & E[], serialized1); 
           } else {
