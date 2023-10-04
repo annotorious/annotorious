@@ -14,7 +14,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
   viewportState?: ViewportState,
   adapter?: FormatAdapter<I, E>
 ) => {
-  const observers = new Map<string, LifecycleEvents<E>[keyof LifecycleEvents<E>][]>();
+  const observers: Map<keyof LifecycleEvents, Function[]> = new Map();
 
   // The currently selected annotations, in the state when they were selected 
   let initialSelection: I[] = [];
@@ -23,7 +23,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
 
   let idleTimeout: ReturnType<typeof setTimeout>;
 
-  const on = <T extends keyof LifecycleEvents<E>>(event: T, callback: LifecycleEvents<E>[T]) => {
+  const on = <T extends keyof LifecycleEvents>(event: T, callback: LifecycleEvents<E>[T]) => {
     if (observers.has(event)) {
       observers.get(event).push(callback);
     } else {
@@ -40,7 +40,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
     }
   }
 
-  const emit = (event: keyof LifecycleEvents<E>, arg0: I | I[], arg1: I = null) => {
+  const emit = (event: keyof LifecycleEvents<E>, arg0: I | I[], arg1: I | PointerEvent = null) => {
     if (observers.has(event)) {
       setTimeout(() => {
         observers.get(event).forEach(callback => { 
@@ -48,7 +48,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
             const serialized0 = Array.isArray(arg0) ? 
               arg0.map(a => adapter.serialize(a)) : adapter.serialize(arg0);
             
-            const serialized1 = arg1 && adapter.serialize(arg1);
+            const serialized1: E = (arg1 && !(arg1 instanceof PointerEvent)) && adapter.serialize(arg1);
 
             callback(serialized0 as E & E[], serialized1); 
           } else {

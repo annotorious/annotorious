@@ -72,10 +72,10 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
       selection.clear();
   });
 
-  viewer.element.addEventListener('pointerdown', () => {
+  viewer.element.addEventListener('pointerdown', (event: PointerEvent) => {
     if (hover.current) {
       const hovered = store.getAnnotation(hover.current);
-      lifecycle.emit('clickAnnotation', hovered);
+      lifecycle.emit('clickAnnotation', hovered, event);
     }
   });
   

@@ -2,7 +2,7 @@ import type { Annotation } from '../model';
 
 export interface LifecycleEvents<T extends unknown = Annotation> {
 
-  clickAnnotation: (annotation: T) => void;
+  clickAnnotation: (annotation: T, originalEvent: PointerEvent) => void;
 
   createAnnotation: (annotation: T) => void;
 
