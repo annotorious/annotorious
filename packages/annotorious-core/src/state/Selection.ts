@@ -26,7 +26,7 @@ const EMPTY: Selection = { selected: [] };
 
 export const createSelectionState = <T extends Annotation>(
   store: Store<T>,
-  selectAction: PointerSelectAction | ((a: Annotation) => PointerSelectAction)
+  selectAction: PointerSelectAction | ((a: Annotation) => PointerSelectAction) = PointerSelectAction.EDIT
 ) => {
   const { subscribe, set } = writable<Selection>(EMPTY);
 

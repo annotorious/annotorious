@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Annotation, diffAnnotations } from '../../src';
+import { type Annotation, diffAnnotations } from '../../src';
 
 const created = new Date();
 

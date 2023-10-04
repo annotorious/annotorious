@@ -34,7 +34,7 @@ describe('createSelectionState', () => {
   describe('clickSelect', () => {
 
     it('should set the selection to an array containing the clicked annotation', () => {
-      selectionState.clickSelect(testAnnotation1.id);
+      selectionState.clickSelect(testAnnotation1.id, undefined);
       expect(selectionState.isEmpty()).toBe(false);
       expect(selectionState.isSelected(testAnnotation1)).toBe(true);
     });

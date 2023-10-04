@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { AnnotationBody } from '../Annotation';
+import type { AnnotationBody } from './Annotation';
 
 export interface W3CAnnotation {
 
