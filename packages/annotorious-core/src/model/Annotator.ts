@@ -28,10 +28,12 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   setFormatter(formatter: Formatter): void;
 
-  setUser(user: User): void;
-
   setPresenceProvider?(provider: PresenceProvider): void;
 
+  setSelected(arg?: string | string[]): void;
+
+  setUser(user: User): void;
+  
   on<T extends keyof LifecycleEvents<E>>(event: T, callback: LifecycleEvents<E>[T]): void;
 
   off<T extends keyof LifecycleEvents<E>>(event: T, callback: LifecycleEvents<E>[T]): void;

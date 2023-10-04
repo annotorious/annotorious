@@ -29,6 +29,8 @@ export interface W3CAnnotationBody {
 
   creator?: {
 
+    type?: string;
+
     id: string;
 
     name?: string;

@@ -150,6 +150,14 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const setFormatter = (formatter: Formatter) =>
     displayLayer.$set({ formatter });
 
+  const setSelected = (arg?: string | string[]) => {
+    if (arg) {
+      selection.setSelected(arg);
+    } else {
+      selection.clear();
+    }
+  }
+
   const setPresenceProvider = (provider: PresenceProvider) =>
     presenceLayer.$set({ provider });
 
@@ -184,6 +192,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     setAnnotations,
     setFormatter,
     setPresenceProvider,
+    setSelected,
     setUser,
     startDrawing,
     state,

@@ -139,6 +139,14 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     // TODO
   }
 
+  const setSelected = (arg?: string | string[]) => {
+    if (arg) {
+      selection.setSelected(arg);
+    } else {
+      selection.clear();
+    }
+  }
+
   const setUser = (user: User) => {
     currentUser = user;
     // annotationLayer.$set({ user });
@@ -156,6 +164,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     setAnnotations,
     setDrawingTool,
     setFormatter, 
+    setSelected,
     setUser,
     state
   }
