@@ -10,7 +10,7 @@ export interface OpenSeadragonViewerProps {
 
 }
 
-export const OpenSeadragonViewer = forwardRef((props: OpenSeadragonViewerProps, ref) => {
+export const OpenSeadragonViewer = forwardRef<OpenSeadragon.Viewer, OpenSeadragonViewerProps>((props: OpenSeadragonViewerProps, ref) => {
 
   const { className, options } = props;
 
