@@ -177,6 +177,19 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     drawingLayer.$set({ tool: null });
   }
 
+  const updateAnnotation = (updated: E): E => {
+    if (opts.adapter) {
+      const crosswalked = opts.adapter.parse(updated).parsed;
+      const previous = opts.adapter.serialize(store.getAnnotation(crosswalked.id));
+      store.updateAnnotation(crosswalked);
+      return previous;
+    } else {
+      const previous = store.getAnnotation((updated as ImageAnnotation).id);
+      store.updateAnnotation(updated as ImageAnnotation);
+      return previous as E;
+    }
+  }
+
   return {
     addAnnotation,
     fitBounds,
@@ -197,6 +210,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     startDrawing,
     state,
     stopDrawing,
+    updateAnnotation,
     viewer
   }
 

@@ -33,6 +33,8 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
   setSelected(arg?: string | string[]): void;
 
   setUser(user: User): void;
+
+  updateAnnotation(annotation: E): E;
   
   on<T extends keyof LifecycleEvents<E>>(event: T, callback: LifecycleEvents<E>[T]): void;
 

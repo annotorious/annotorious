@@ -152,6 +152,19 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     // annotationLayer.$set({ user });
   }
 
+  const updateAnnotation = (updated: E): E => {
+    if (opts.adapter) {
+      const crosswalked = opts.adapter.parse(updated).parsed;
+      const previous = opts.adapter.serialize(store.getAnnotation(crosswalked.id));
+      store.updateAnnotation(crosswalked);
+      return previous;
+    } else {
+      const previous = store.getAnnotation((updated as ImageAnnotation).id);
+      store.updateAnnotation(updated as ImageAnnotation);
+      return previous as E;
+    }
+  }
+
   return {
     addAnnotation,
     getAnnotationById,
@@ -166,6 +179,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     setFormatter, 
     setSelected,
     setUser,
+    updateAnnotation,
     state
   }
 
