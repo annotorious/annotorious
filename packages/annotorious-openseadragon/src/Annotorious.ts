@@ -121,6 +121,19 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
         return annotations;
       });
 
+  const removeAnnotation = (arg: E | string): E => {
+    if (typeof arg === 'string') {
+      const annotation = store.getAnnotation(arg);
+      store.deleteAnnotation(arg);
+
+      return opts.adapter ? opts.adapter.serialize(annotation) : annotation as E;
+    } else {
+      const annotation = opts.adapter ? opts.adapter.parse(arg).parsed : (arg as ImageAnnotation);
+      store.deleteAnnotation(annotation);
+      return arg;
+    }
+  }
+
   const setAnnotations = (annotations: E[]) => {
     if (opts.adapter) {
       const { parsed, failed } = parseAll(opts.adapter)(annotations);
@@ -167,6 +180,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     loadAnnotations,
     on: lifecycle.on,
     off: lifecycle.off,
+    removeAnnotation,
     setAnnotations,
     setFormatter,
     setPresenceProvider,

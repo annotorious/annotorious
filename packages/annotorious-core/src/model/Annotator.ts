@@ -22,6 +22,8 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   loadAnnotations(url: string): Promise<E[]>;
 
+  removeAnnotation(arg: E | string): E;
+
   setAnnotations(annotations: E[]): void;
 
   setFormatter(formatter: Formatter): void;
