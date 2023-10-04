@@ -13,7 +13,10 @@ export type {
   Formatter,
   ParseResult,
   User,
-  W3CAnnotation
+  W3CAnnotation,
+  W3CAnnotationBody,
+  W3CAnnotationTarget,
+  W3CSelector
 } from '@annotorious/core/src/model';
 
 import { 
