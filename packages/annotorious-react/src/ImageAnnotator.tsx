@@ -31,6 +31,6 @@ export const ImageAnnotator = (props: ImageAnnotatorProps) => {
       (anno as AnnotoriousImageAnnotator).setDrawingTool(props.tool);
   }, [props.tool, anno]);
  
-  return cloneElement(child, { onLoad }  as Partial<HTMLImageElement>)
+  return <>{cloneElement(child, { onLoad }  as Partial<HTMLImageElement>)}</>
 
 }

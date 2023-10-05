@@ -35,7 +35,7 @@ export const AnnotoriousContext = createContext({
 
 });
 
-export const Annotorious = forwardRef((props: { children: ReactNode }, ref) => {
+export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props: { children: ReactNode }, ref) => {
 
   const [anno, setAnno] = useState<Annotator>(null);
 
