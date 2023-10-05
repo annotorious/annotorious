@@ -40,7 +40,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   const { hover, selection, store } = state;
 
   const lifecycle = createLifecyleObserver<ImageAnnotation, E>(
-    store, selection, hover, undefined, opts.adapter);
+    store, selection, hover, undefined, opts.adapter, opts.autoSave);
 
   // We'll wrap the image in a container DIV.
   const container = document.createElement('DIV');
@@ -73,7 +73,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   /******++++++*************/
 
   // Most of the external API functions are covered in the base annotator
-  const base = createBaseAnnotator<ImageAnnotation, E>(store);
+  const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
 
   const getUser = () => currentUser;
 

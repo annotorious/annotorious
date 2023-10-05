@@ -1,9 +1,9 @@
 import { Children, ReactElement, cloneElement, useContext, useEffect } from 'react';
-import { createImageAnnotator, DrawingTool } from '@annotorious/annotorious';
-import type { ImageAnnotator as AnnotoriousImageAnnotator } from '@annotorious/annotorious';
+import { AnnotoriousOpts, createImageAnnotator, DrawingTool } from '@annotorious/annotorious';
+import type { ImageAnnotation, ImageAnnotator as AnnotoriousImageAnnotator } from '@annotorious/annotorious';
 import { AnnotoriousContext } from './Annotorious';
 
-export interface ImageAnnotatorProps {
+export interface ImageAnnotatorProps<E extends unknown> extends AnnotoriousOpts<ImageAnnotation, E> {
 
   children: ReactElement<HTMLImageElement>;
 
@@ -11,9 +11,11 @@ export interface ImageAnnotatorProps {
 
 }
 
-export const ImageAnnotator = (props: ImageAnnotatorProps) => {
+export const ImageAnnotator = <E extends unknown>(props: ImageAnnotatorProps<E>) => {
 
-  const child = Children.only(props.children);
+  const { children, tool, ...opts } = props;
+
+  const child = Children.only(children);
 
   const { anno, setAnno } = useContext(AnnotoriousContext);
 
@@ -21,7 +23,7 @@ export const ImageAnnotator = (props: ImageAnnotatorProps) => {
     if (!anno) {
       const img = evt.target as HTMLImageElement;
 
-      const next = createImageAnnotator(img);
+      const next = createImageAnnotator(img, opts);
       setAnno(next); 
     }
   };

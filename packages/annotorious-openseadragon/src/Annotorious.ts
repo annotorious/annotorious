@@ -43,7 +43,8 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   const { hover, selection, store } = state;
 
-  const lifecycle = createLifecyleObserver(store, selection, hover, undefined, opts.adapter);
+  const lifecycle = createLifecyleObserver(
+    store, selection, hover, undefined, opts.adapter, opts.autoSave);
 
   initKeyCommands(viewer.element, selection, store); 
 
@@ -86,7 +87,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   /******++++++*************/
 
   // Most of the external API functions are covered in the base annotator
-  const base = createBaseAnnotator<ImageAnnotation, E>(store);
+  const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
 
   const fitBounds = _fitBounds(viewer, store);
 
