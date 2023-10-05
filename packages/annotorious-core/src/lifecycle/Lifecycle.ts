@@ -12,7 +12,8 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
   selectionState: SelectionState<I>, 
   hoverState: HoverState<I>,
   viewportState?: ViewportState,
-  adapter?: FormatAdapter<I, E>
+  adapter?: FormatAdapter<I, E>,
+  autoSave?: boolean
 ) => {
   const observers: Map<keyof LifecycleEvents, Function[]> = new Map();
 
@@ -141,11 +142,13 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
     emit('viewportIntersect', ids.map(store.getAnnotation)));
 
   store.observe(event => {
-    // Idleness update trigger
-    if (idleTimeout)
-      clearTimeout(idleTimeout);
+    // autoSave option triggers update events on idleness
+    if (autoSave) {
+      if (idleTimeout)
+        clearTimeout(idleTimeout);
 
-    idleTimeout = setTimeout(onIdleUpdate, 1000);
+      idleTimeout = setTimeout(onIdleUpdate, 1000);
+    }
 
     // Local CREATE and DELETE events are applied immediately
     const { created, deleted } = event.changes;

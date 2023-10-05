@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
-import { Annotator, Formatter } from '@annotorious/core';
+import { Formatter } from '@annotorious/core';
 import { createOSDAnnotator } from '@annotorious/openseadragon';
 import { OpenSeadragonAnnotator as AnnotoriousOpenSeadragonAnnotator } from '@annotorious/openseadragon';
 import { AnnotoriousOpts, ImageAnnotation } from '@annotorious/annotorious';

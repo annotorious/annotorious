@@ -6,6 +6,8 @@ export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E exten
 
   adapter?: FormatAdapter<I, E>;
 
+  autoSave?: boolean;
+
   pointerSelectAction?: PointerSelectAction | ((a: I) => PointerSelectAction);
 
   readOnly?: boolean;

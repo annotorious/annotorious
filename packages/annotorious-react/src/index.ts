@@ -62,6 +62,11 @@ export const createBody = _createBody;
 
 // Essential re-exports from @annotorious/annotorious 
 export type {
-  ImageAnnotator,
+  ImageAnnotator as AnnotoriousImageAnnotator,
   ImageAnnotation
 } from '@annotorious/annotorious';
+
+// Essential re-exports from @annotorious/openseadragon 
+export type {
+  OpenSeadragonAnnotator as AnnotoriousOpenSeadragonAnnotator
+} from '@annotorious/openseadragon';
