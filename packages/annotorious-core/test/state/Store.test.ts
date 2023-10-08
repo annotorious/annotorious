@@ -26,6 +26,44 @@ describe('store', () => {
     expect(dequal(store.getAnnotation(id), annotation)).toBe(true);
   });
 
+  it('should properly run updateAnnotation', () => {
+    const store = createStore();
+    store.addAnnotation(annotation);
+
+    expect(dequal(store.getAnnotation(annotation.id), annotation)).toBe(true);
+
+    const withChangedBodies = {
+      ...annotation,
+      bodies: []
+    };
+
+    store.updateAnnotation(withChangedBodies);
+
+    expect(dequal(store.getAnnotation(annotation.id), annotation)).toBe(false);
+    expect(dequal(store.getAnnotation(annotation.id), withChangedBodies)).toBe(true);
+    expect(store.all().length).toBe(1);
+  });
+
+  it('should properly run updateAnnotation with ID change', () => {
+    const store = createStore();
+    store.addAnnotation(annotation);
+
+    const withChangedId = {
+      ...annotation,
+      id: 'annotation-2'
+    };
+
+    expect(() => 
+      store.updateAnnotation(withChangedId)
+    ).toThrowError();
+
+    store.updateAnnotation(annotation.id, withChangedId);
+
+    expect(store.getAnnotation(annotation.id)).toBeUndefined();
+    expect(dequal(store.getAnnotation('annotation-2'), withChangedId)).toBe(true);
+    expect(store.all().length).toBe(1);
+  })
+
   it('should properly run addBody', () => {
     const store = createStore();
     store.addAnnotation(annotation);
