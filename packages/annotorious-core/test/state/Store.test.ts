@@ -85,6 +85,21 @@ describe('store', () => {
     expect(updatedAnnotation?.bodies.length).toBe(0);
   });
 
+  it('should properly run clear', () => {
+    const store = createStore();
+    store.addAnnotation(annotation);
+
+    const retrievedBefore = store.getAnnotation(annotation.id);
+    expect(retrievedBefore.id).toBe(annotation.id);
+
+    store.clear();
+
+    const retrievedAfter = store.getAnnotation(annotation.id);
+
+    expect(retrievedAfter).toBeUndefined();
+    expect(store.all().length).toBe(0);
+  });
+
   it('should properly run updateBody', () => {
     const store = createStore();
     store.addAnnotation(annotation);

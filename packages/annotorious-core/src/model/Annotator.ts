@@ -75,6 +75,8 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
+  const clearAnnotations = () => store.clear();
+
   const getAnnotationById = (id: string): E | undefined => {
     const annotation = store.getAnnotation(id);
     return (adapter && annotation) ?

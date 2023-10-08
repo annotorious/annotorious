@@ -57,7 +57,6 @@ export const createStore = <T extends Annotation>() => {
     }
   }
 
-
   const updateAnnotation = (arg1: string | T, arg2: T | Origin = Origin.LOCAL, arg3 = Origin.LOCAL) => {
     const origin: Origin = isAnnotation(arg2) ? arg3 : arg2;
 
@@ -75,6 +74,9 @@ export const createStore = <T extends Annotation>() => {
         annotationIndex.delete(oldId);
         annotationIndex.set(updated.id, updated);
       }
+
+      oldValue.bodies.forEach(b => bodyIndex.delete(b.id));
+      updated.bodies.forEach(b => bodyIndex.set(b.id, updated.id));
 
       emit(origin, { updated: [update] })
     } else {
@@ -105,6 +107,11 @@ export const createStore = <T extends Annotation>() => {
   }
 
   const all = () => [...annotationIndex.values()];
+
+  const clear = () => { 
+    annotationIndex.clear();
+    bodyIndex.clear();
+  }
 
   const bulkAddAnnotation = (annotations: T[], replace = true, origin = Origin.LOCAL) => {
     if (replace) {
@@ -231,6 +238,11 @@ export const createStore = <T extends Annotation>() => {
 
       annotationIndex.set(oldAnnotation.id, newAnnotation);
 
+      if (oldBody.id !== newBody.id) {
+        bodyIndex.delete(oldBody.id);
+        bodyIndex.set(newBody.id, newAnnotation.id);
+      }
+
       return {
         oldValue: oldAnnotation, 
         newValue: newAnnotation,
@@ -296,6 +308,7 @@ export const createStore = <T extends Annotation>() => {
     bulkDeleteAnnotation,
     bulkUpdateBodies,
     bulkUpdateTargets,
+    clear,
     deleteAnnotation,
     deleteBody,
     getAnnotation,
