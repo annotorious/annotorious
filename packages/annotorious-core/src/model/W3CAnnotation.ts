@@ -79,7 +79,11 @@ export const parseW3CBodies = (
   body: W3CAnnotationBody | W3CAnnotationBody[], 
   annotationId: string
 ): AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(b => ({
-  // We want a simple, fast ID that remains the same for same body content
+  // The internal model strictly requires IDs. (Because multi-user scenarios
+  // will have problems without them.) In the W3C model, bodys *may* have IDs.
+  // We'll create ad-hoc IDs for bodies without IDs, but want to make sure that
+  // generating the ID is idempotent: the same body should always get the same ID.
+  // This will avoid unexpected results when checking for equality.  
   id: b.id || hashCode(b),
   annotation: annotationId,
   type: b.type,
