@@ -15,6 +15,8 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   addAnnotation(annotation: E): void;
 
+  clearAnnotations(): void;
+
   getAnnotationById(id: string): E | undefined;
 
   getAnnotations(): E[];
@@ -135,6 +137,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
 
   return { 
     addAnnotation,
+    clearAnnotations,
     getAnnotationById,
     getAnnotations,
     loadAnnotations,
