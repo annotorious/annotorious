@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { parseBodies } from '@annotorious/core';
-import type { FormatAdapter, ParseResult, W3CAnnotation } from '@annotorious/core';
+import type { AnnotationBody, FormatAdapter, ParseResult, W3CAnnotation, W3CAnnotationBody } from '@annotorious/core';
 import { ShapeType } from '../core';
 import type { ImageAnnotation, RectangleGeometry } from '../core';
 import type { FragmentSelector } from './fragment';
@@ -57,6 +57,15 @@ export const parseW3CImageAnnotation = (
 
 }
 
+const serializeBody = (body: AnnotationBody): W3CAnnotationBody => {
+  const w3c = {...body};
+
+  delete body.annotation;
+  delete body.id;
+
+  return w3c;
+}
+
 export const serializeW3CImageAnnotation = (
   annotation: ImageAnnotation, 
   source: string
@@ -72,7 +81,7 @@ export const serializeW3CImageAnnotation = (
     '@context': 'http://www.w3.org/ns/anno.jsonld',
     id: annotation.id,
     type: 'Annotation',
-    body: annotation.bodies,
+    body: annotation.bodies.map(serializeBody),
     target: {
       source,
       selector
