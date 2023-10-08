@@ -8,6 +8,8 @@ type AnnotationBodyIdentifier = { id: string, annotation: string };
 
 export type Store<T extends Annotation> = ReturnType<typeof createStore<T>>;
 
+const isAnnotation = <T extends Annotation>(arg: any): arg is T => arg.id !== undefined;
+
 export const createStore = <T extends Annotation>() => {
 
   const annotationIndex = new Map<string, T>();
@@ -55,17 +57,28 @@ export const createStore = <T extends Annotation>() => {
     }
   }
 
-  const updateAnnotation = (annotation: T, origin = Origin.LOCAL) => {
-    const oldValue = annotationIndex.get(annotation.id);
+
+  const updateAnnotation = (arg1: string | T, arg2: T | Origin = Origin.LOCAL, arg3 = Origin.LOCAL) => {
+    const origin: Origin = isAnnotation(arg2) ? arg3 : arg2;
+
+    const updated: T = typeof arg1 === 'string' ? arg2 as T : arg1;
+
+    const oldId: string = typeof arg1 === 'string' ? arg1 : arg1.id;
+    const oldValue = annotationIndex.get(oldId);
 
     if (oldValue) {
-      const update: Update<T> = diffAnnotations(oldValue, annotation);
+      const update: Update<T> = diffAnnotations(oldValue, updated);
 
-      annotationIndex.set(annotation.id, annotation);
+      if (oldId === updated.id) {
+        annotationIndex.set(oldId, updated);
+      } else {
+        annotationIndex.delete(oldId);
+        annotationIndex.set(updated.id, updated);
+      }
 
       emit(origin, { updated: [update] })
     } else {
-      throw Error(`Cannot update annotation ${annotation.id} - does not exist`);
+      throw Error(`Cannot update annotation ${oldId} - does not exist`);
     }
   }
 
