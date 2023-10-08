@@ -19,6 +19,8 @@ export interface W3CAnnotation {
 
 export interface W3CAnnotationBody {
 
+  id?: string;
+
   type?: string;
 
   purpose?: string;
@@ -59,11 +61,11 @@ export interface W3CSelector {
 /**
  * Helper to crosswalk the W3C annotation body to a list of core AnnotationBody objects.
  */
-export const parseBodies = (
+export const parseW3CBodies = (
   body: W3CAnnotationBody | W3CAnnotationBody[], 
   annotationId: string
 ): AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(b => ({
-  id: uuidv4(),
+  id: b.id || uuidv4(),
   annotation: annotationId,
   type: b.type,
   purpose: b.purpose,
@@ -74,4 +76,12 @@ export const parseBodies = (
     undefined
 }));
 
+
+export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[] => 
+  bodies.map(b => {
+    const w3c = { ...b };
+    delete w3c.annotation;
+    delete w3c.id;
+    return w3c;
+  });
 
