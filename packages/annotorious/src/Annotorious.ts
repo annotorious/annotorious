@@ -1,8 +1,8 @@
 import type { SvelteComponent } from 'svelte';
 import type { Annotator, Formatter, User } from '@annotorious/core';
-import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver, Origin, parseAll } from '@annotorious/core';
+import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver } from '@annotorious/core';
 import { SVGAnnotationLayer } from './annotation';
-import { getTool, type DrawingTool } from './annotation/tools';
+import { getTool, registerTool, type DrawingTool } from './annotation/tools';
 import type { SVGAnnotationLayerPointerEvent } from './annotation';
 import type { ImageAnnotation } from './model';
 import { createSvelteImageAnnotatorState } from './state';
@@ -15,6 +15,8 @@ import './themes/dark/index.css';
 import './themes/light/index.css';
 
 export interface ImageAnnotator<E extends unknown = ImageAnnotation> extends Annotator<ImageAnnotation, E> { 
+
+  addDrawingTool(name: string, tool: typeof SvelteComponent): void;
 
   setDrawingTool(tool: DrawingTool): void; 
 
@@ -75,6 +77,9 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
 
+  const addDrawingTool = (name: string, tool: typeof SvelteComponent) =>
+    registerTool(name, tool);
+
   const getUser = () => currentUser;
 
   const setDrawingTool = (tool: DrawingTool) => {
@@ -101,6 +106,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   return {
     ...base,
+    addDrawingTool,
     getUser,
     on: lifecycle.on,
     off: lifecycle.off,
