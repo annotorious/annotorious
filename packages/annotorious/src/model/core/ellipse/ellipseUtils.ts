@@ -2,7 +2,7 @@ import { ShapeType } from '../Shape';
 import { registerShapeUtil, type ShapeUtil } from '../shapeUtils';
 import type { Ellipse } from './Ellipse';
 
-const PolygonUtil: ShapeUtil<Ellipse> = {
+const EllipseUtil: ShapeUtil<Ellipse> = {
 
   area: (e: Ellipse): number => Math.PI * e.geometry.rx * e.geometry.ry,
 
@@ -24,4 +24,4 @@ const PolygonUtil: ShapeUtil<Ellipse> = {
   }
 };
 
-registerShapeUtil(ShapeType.POLYGON, PolygonUtil);
+registerShapeUtil(ShapeType.ELLIPSE, EllipseUtil);
