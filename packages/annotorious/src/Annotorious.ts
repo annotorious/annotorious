@@ -1,8 +1,9 @@
 import type { SvelteComponent } from 'svelte';
 import type { Annotator, Formatter, User } from '@annotorious/core';
 import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver } from '@annotorious/core';
-import { SVGAnnotationLayer } from './annotation';
+import { registerEditor } from './annotation/editors';
 import { getTool, registerTool, type DrawingTool } from './annotation/tools';
+import { SVGAnnotationLayer } from './annotation';
 import type { SVGAnnotationLayerPointerEvent } from './annotation';
 import type { ImageAnnotation, ShapeType } from './model';
 import { createSvelteImageAnnotatorState } from './state';
@@ -83,7 +84,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     registerTool(name, tool);
 
   const registerShapeEditor = (shapeType: ShapeType, editor: typeof SvelteComponent) =>
-    registerTool(shapeType, editor);
+    registerEditor(shapeType, editor);
 
   const getUser = () => currentUser;
 
