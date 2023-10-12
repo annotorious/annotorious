@@ -6,16 +6,19 @@
   import type { ImageAnnotation, Shape} from '../model';
   import { getEditor } from './editors';
   import { Rect, Polygon} from './shapes';
-  import { getTool } from './tools';
+  import { getTool, Tool } from './tools';
   import { enableResponsive } from './utils';
   import { createSVGTransform } from './Transform';
   import { addEventListeners } from './SVGAnnotationLayerPointerEvent';
-    import type { SvelteImageAnnotatorState } from 'src/state';
+  import type { SvelteImageAnnotatorState } from 'src/state';
 
   /** Props **/
   export let image: HTMLImageElement | HTMLCanvasElement;
   export let state: SvelteImageAnnotatorState;
   export let tool: typeof SvelteComponent = getTool('rectangle');
+
+  /** Drawing tool layer **/
+  let drawingEl: SVGGElement;
 
   /** Responsive scaling **/
   let svgEl: SVGSVGElement;
@@ -122,7 +125,10 @@
     {/each}
   </g>
 
-  <g class="drawing">
+  <g 
+    bind:this={drawingEl}
+    class="drawing" >
+
     {#if editableAnnotations}
       {#each editableAnnotations as editable}
         <svelte:component 
@@ -132,12 +138,15 @@
           viewportScale={$scale}
           on:change={onChangeSelected(editable)} />
       {/each}
-    {:else if Boolean(tool)} 
-      <svelte:component 
-        this={tool}
-        transform={transform}
-        viewportScale={$scale}
-        on:create={onSelectionCreated} />
+    {:else if drawingEl && tool} 
+      {#key tool}
+        <Tool 
+          target={drawingEl}
+          tool={tool}
+          transform={transform}
+          viewportScale={$scale}
+          on:create={onSelectionCreated} />
+      {/key}
     {/if}
   </g>
 </svg>

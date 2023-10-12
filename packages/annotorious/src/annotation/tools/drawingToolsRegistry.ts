@@ -12,7 +12,6 @@ const REGISTERED = new Map<DrawingTool, typeof SvelteComponent>([
 export const listTools = () => [...REGISTERED.keys()];
 
 export const getTool = (name: string) => REGISTERED.get(name);
-
-export const registerTool = (name: string, tool: typeof SvelteComponent) => {
+  
+export const registerTool = (name: string, tool: typeof SvelteComponent) =>
   REGISTERED.set(name, tool);
-}
