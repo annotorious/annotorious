@@ -20,8 +20,6 @@
   $: if (toolComponent) toolComponent.$set({ viewportScale });
 
   onMount(() => {
-    console.log('tool', tool);
-    
     toolComponent = new tool({
       target,
       props: { transform, viewportScale }
