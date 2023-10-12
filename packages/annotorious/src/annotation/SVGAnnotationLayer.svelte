@@ -5,7 +5,7 @@
   import { ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
   import { getEditor } from './editors';
-  import { Rect, Polygon} from './shapes';
+  import { Ellipse, Polygon, Rectangle} from './shapes';
   import { getTool, Tool } from './tools';
   import { enableResponsive } from './utils';
   import { createSVGTransform } from './Transform';
@@ -115,11 +115,14 @@
   <g>
     {#each $store as annotation}
       {#if !isEditable(annotation)}
-        {@const geom = annotation.target.selector.geometry}
-        {#if (annotation.target.selector.type === ShapeType.RECTANGLE)}
-          <Rect geom={geom} />
-        {:else if (annotation.target.selector.type === ShapeType.POLYGON)}
-          <Polygon geom={geom} />
+        {@const selector = annotation.target.selector}
+
+        {#if (selector.type === ShapeType.ELLIPSE)}
+          <Ellipse geom={selector.geometry} />
+        {:else if (selector.type === ShapeType.RECTANGLE)}
+          <Rectangle geom={selector.geometry} />
+        {:else if (selector.type === ShapeType.POLYGON)}
+          <Polygon geom={selector.geometry} />
         {/if}
       {/if}
     {/each}
