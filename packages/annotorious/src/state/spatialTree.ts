@@ -20,22 +20,28 @@ export const createSpatialTree = () => {
 
   const tree = new RBush<IndexedTarget>();
 
-  const all = () => tree.all().map(item => item.target);
+  const index = new Map<string, IndexedTarget>();
 
-  const clear = () => tree.clear();
+  const all = () => [...index.values()];
+
+  const clear = () => {
+    tree.clear();
+    index.clear();
+  }
 
   const insert = (target: ImageAnnotationTarget) => {
     const { minX, minY, maxX, maxY } = target.selector.geometry.bounds;
-    tree.insert({ minX, minY, maxX, maxY, target });
+
+    const t = { minX, minY, maxX, maxY, target };
+
+    tree.insert(t);
+    index.set(target.annotation, t);
   };
 
   const remove = (target: ImageAnnotationTarget) => {
-    const item = {
-      ...target.selector.geometry.bounds,
-      target
-    };
-
-    tree.remove(item, (a, b) => a.target.annotation === b.target.annotation);
+    const item = index.get(target.annotation);
+    tree.remove(item);
+    index.delete(target.annotation);
   };
 
   const update = (previous: ImageAnnotationTarget, updated: ImageAnnotationTarget) => {
@@ -44,14 +50,16 @@ export const createSpatialTree = () => {
   };
 
   const set = (targets: ImageAnnotationTarget[], replace: boolean = true) => {
-    if (replace) tree.clear();
+    if (replace) 
+      clear();
 
-    tree.load(
-      targets.map(target => {
-        const { minX, minY, maxX, maxY } = target.selector.geometry.bounds;
-        return { minX, minY, maxX, maxY, target };
-      })
-    );
+    const indexedTargets = targets.map(target => {
+      const { minX, minY, maxX, maxY } = target.selector.geometry.bounds;
+      return { minX, minY, maxX, maxY, target };
+    });
+
+    indexedTargets.forEach(t => index.set(t.target.annotation, t));
+    tree.load(indexedTargets);
   };
 
   const getAt = (x: number, y: number): ImageAnnotationTarget | null => {
