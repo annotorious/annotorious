@@ -3,6 +3,7 @@ import { registerShapeUtil, type ShapeUtil } from '../shapeUtils';
 import type { Polygon } from './Polygon';
 
 const PolygonUtil: ShapeUtil<Polygon> = {
+
   area: (polygon: Polygon): number => {
     const { points } = polygon.geometry;
 
@@ -36,6 +37,7 @@ const PolygonUtil: ShapeUtil<Polygon> = {
 
     return inside;
   }
+  
 };
 
 registerShapeUtil(ShapeType.POLYGON, PolygonUtil);
