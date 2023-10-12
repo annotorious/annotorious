@@ -4,9 +4,9 @@
   import type { StoreChangeEvent } from '@annotorious/core';
   import { ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
-  import { getEditor } from './editors';
+  import { getEditor, EditorMount } from './editors';
   import { Ellipse, Polygon, Rectangle} from './shapes';
-  import { getTool, Tool } from './tools';
+  import { getTool, ToolMount } from './tools';
   import { enableResponsive } from './utils';
   import { createSVGTransform } from './Transform';
   import { addEventListeners } from './SVGAnnotationLayerPointerEvent';
@@ -131,25 +131,29 @@
   <g 
     bind:this={drawingEl}
     class="drawing" >
-
-    {#if editableAnnotations}
-      {#each editableAnnotations as editable}
-        <svelte:component 
-          this={getEditor(editable.target.selector)}
-          shape={editable.target.selector}
-          transform={transform}
-          viewportScale={$scale}
-          on:change={onChangeSelected(editable)} />
-      {/each}
-    {:else if drawingEl && tool} 
-      {#key tool}
-        <Tool 
-          target={drawingEl}
-          tool={tool}
-          transform={transform}
-          viewportScale={$scale}
-          on:create={onSelectionCreated} />
-      {/key}
+    {#if drawingEl}
+      {#if editableAnnotations}
+        {#each editableAnnotations as editable}
+          {#key editable.id}
+            <EditorMount
+              target={drawingEl}
+              editor={getEditor(editable.target.selector)}
+              shape={editable.target.selector}
+              transform={transform}
+              viewportScale={$scale}
+              on:change={onChangeSelected(editable)} />
+          {/key}
+        {/each}
+      {:else if tool} 
+        {#key tool}
+          <ToolMount 
+            target={drawingEl}
+            tool={tool}
+            transform={transform}
+            viewportScale={$scale}
+            on:create={onSelectionCreated} />
+        {/key}
+      {/if}
     {/if}
   </g>
 </svg>

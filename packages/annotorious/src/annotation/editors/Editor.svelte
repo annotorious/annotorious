@@ -35,7 +35,7 @@
 
       const delta: [number, number] = [x - origin[0], y - origin[1]];
 
-      shape = editor(initialShape, grabbedHandle, delta)
+      shape = editor(initialShape, grabbedHandle, delta);
       
       dispatch('change', shape);
     }

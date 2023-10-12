@@ -13,13 +13,20 @@
 
   export let viewportScale: number;
 
+  let toolComponent: SvelteComponent;
+
+  $: if (toolComponent) toolComponent.$set({ transform });
+
+  $: if (toolComponent) toolComponent.$set({ viewportScale });
+
   onMount(() => {
-    const toolComponent = new tool({
+    toolComponent = new tool({
       target,
       props: { transform, viewportScale }
     });
 
-    toolComponent.$on('create', event => dispatch('create', event.detail));
+    toolComponent.$on('create', 
+      event => dispatch('create', event.detail));
 
     return () => {
       toolComponent.$destroy();
