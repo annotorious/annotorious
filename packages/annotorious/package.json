@@ -33,6 +33,7 @@
     },
     "./annotorious.css": "./dist/annotorious.css",
     "./src": "./src/index.ts",
+    "./src/annotation": "./src/annotation/index.ts",
     "./src/model": "./src/model/index.ts"
   },
   "devDependencies": {
