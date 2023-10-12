@@ -10,6 +10,8 @@ export interface Shape extends AbstractSelector {
 
 export enum ShapeType {
 
+  ELLIPSE = 'ELLIPSE',
+
   POLYGON = 'POLYGON',
 
   RECTANGLE = 'RECTANGLE'
