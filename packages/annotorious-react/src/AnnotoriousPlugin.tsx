@@ -4,7 +4,7 @@ import { useAnnotator } from './Annotorious';
 
 export interface AnnotoriousPluginProps <I extends Annotation, E extends unknown> {
 
-  plugin: (anno: Annotator<I, E>, opts?: Object) => { unmount?: () => void };
+  plugin: (anno: Annotator<I, E>, opts?: Object) => { unmount?: () => void } | undefined;
 
   opts?: Object;
 
@@ -20,7 +20,7 @@ export const AnnotoriousPlugin = <I extends Annotation = Annotation, E extends u
       const p = plugin(anno, opts);
 
       return () => {
-        if (p.unmount)
+        if (p?.unmount)
           p.unmount();
       }
     }

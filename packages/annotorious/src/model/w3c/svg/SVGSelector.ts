@@ -85,10 +85,10 @@ export const serializeSVGSelector = (shape: Shape): SVGSelector => {
   if (shape.type === ShapeType.POLYGON) {
     const geom = shape.geometry as PolygonGeometry;
     const { points } = geom;
-    value = `<polygon points="${points.map((xy) => xy.join(',')).join(' ')}" />`;
+    value = `<svg><polygon points="${points.map((xy) => xy.join(',')).join(' ')}" /></svg>`;
   } else if (shape.type === ShapeType.ELLIPSE) {
     const geom = shape.geometry as EllipseGeometry;
-    value = `<ellipse cx="${geom.cx}" cy="${geom.cy}" rx="${geom.rx}" ry="${geom.ry}" />`
+    value = `<svg><ellipse cx="${geom.cx}" cy="${geom.cy}" rx="${geom.rx}" ry="${geom.ry}" /></svg>`
   }
 
   if (value) {
