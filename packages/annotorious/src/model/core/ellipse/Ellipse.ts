@@ -16,8 +16,6 @@ export interface EllipseGeometry extends Geometry {
 
   ry: number;
 
-  rotation: number;
-
   bounds: Bounds;
   
 }

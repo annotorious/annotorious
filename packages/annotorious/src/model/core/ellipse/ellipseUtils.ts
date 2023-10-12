@@ -7,9 +7,10 @@ const EllipseUtil: ShapeUtil<Ellipse> = {
   area: (e: Ellipse): number => Math.PI * e.geometry.rx * e.geometry.ry,
 
   intersects: (e: Ellipse, x: number, y: number): boolean => {
-    const { cx, cy, rx, ry, rotation } = e.geometry;
+    const { cx, cy, rx, ry } = e.geometry;
 
-    const rot = rotation || 0;
+    // For future use
+    const rot = 0;
 
     const cos = Math.cos(rot);
     const sin = Math.sin(rot);

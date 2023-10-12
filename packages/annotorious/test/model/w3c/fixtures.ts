@@ -16,6 +16,22 @@ export const annotations = [{
   }
 },{
   '@context': 'http://www.w3.org/ns/anno.jsonld',
+  id: 'http://www.example.com/annotation/185fb0e5-a6e1-42c3-b97d-b7da3ad023b9',
+  type: 'Annotation',
+  body: {
+    type: 'TextualBody',
+    value: 'Another comment'
+  },
+  target: {
+    source: 'http://www.example.com/source/1',
+    selector: {
+      type: 'SvgSelector',
+      value:
+        '<svg><ellipse cx="60" cy="80" rx="10" ry="10" /></svg>'
+    }
+  }
+}, {
+  '@context': 'http://www.w3.org/ns/anno.jsonld',
   id: 'http://www.example.com/annotation/a263656a-3dfe-4720-aae4-7a5a49c2f53f',
   type: 'Annotation',
   body: [
