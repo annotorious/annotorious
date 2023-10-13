@@ -108,9 +108,13 @@ export const createStore = <T extends Annotation>() => {
 
   const all = () => [...annotationIndex.values()];
 
-  const clear = () => { 
+  const clear = (origin = Origin.LOCAL) => { 
+    const all = [...annotationIndex.values()];
+
     annotationIndex.clear();
     bodyIndex.clear();
+
+    emit(origin, { deleted: all });
   }
 
   const bulkAddAnnotation = (annotations: T[], replace = true, origin = Origin.LOCAL) => {
