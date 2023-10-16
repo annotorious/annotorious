@@ -4,7 +4,8 @@ import {
   OpenSeadragonViewer, 
   OpenSeadragonAnnotator, 
   OpenSeadragonPopup, 
-  useAnnotator
+  useAnnotator,
+  useSelection
 } from '../src';
 
 import '@annotorious/openseadragon/annotorious-openseadragon.css';
@@ -48,6 +49,8 @@ export const App = () => {
 
   const anno = useAnnotator();
 
+  const { selected } = useSelection()
+
   useEffect(() => {
     if (anno) {
       fetch('annotations.json')
@@ -58,18 +61,35 @@ export const App = () => {
     }
   }, [anno]);
 
-  return (
-    <OpenSeadragonAnnotator 
-      adapter={W3CImageFormat(
-        'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c')}>
-          
-      <OpenSeadragonViewer className="openseadragon" options={OSD_OPTIONS} />
+  const startDrawing = () => {
+    // @ts-ignore
+    anno?.startDrawing('rectangle');
+  }
 
-      <OpenSeadragonPopup 
-        popup={() => (
-          <div className="popup">Hello World</div>
-        )} />
-    </OpenSeadragonAnnotator>
+  const onDelete = () => {
+    if (selected.length > 0) {
+      anno.removeAnnotation(selected[0].annotation.id);
+    }
+  }
+
+  return (
+    <div>
+      <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 999 }}>
+        <button onClick={startDrawing}>Start Drawing</button>
+        <button onClick={onDelete}>Delete</button>
+      </div>
+      <OpenSeadragonAnnotator 
+        adapter={W3CImageFormat(
+          'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c')}>
+            
+        <OpenSeadragonViewer className="openseadragon" options={OSD_OPTIONS} />
+
+        <OpenSeadragonPopup 
+          popup={() => (
+            <div className="popup">Hello World</div>
+          )} />
+      </OpenSeadragonAnnotator>
+    </div>
   )
 
 }
