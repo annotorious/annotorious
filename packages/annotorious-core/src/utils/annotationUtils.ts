@@ -21,7 +21,7 @@ export const getContributors = (annotation: Annotation): User[] => {
 
 export const createBody = (
   annotation: Annotation, 
-  payload: { value: string, [key: string]: any },
+  payload: { [key: string]: any },
   created?: Date,
   creator?: User
 ): AnnotationBody => ({
