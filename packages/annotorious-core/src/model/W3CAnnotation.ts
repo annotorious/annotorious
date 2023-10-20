@@ -78,22 +78,30 @@ const hashCode = (obj: Object): string => {
 export const parseW3CBodies = (
   body: W3CAnnotationBody | W3CAnnotationBody[], 
   annotationId: string
-): AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(b => ({
+): AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(body => {
+
+  // Exctract properties that conform to the internal model, but keep custom props
+  const { id, type, purpose, value, created, creator, ...rest} = body;
+
   // The internal model strictly requires IDs. (Because multi-user scenarios
   // will have problems without them.) In the W3C model, bodys *may* have IDs.
   // We'll create ad-hoc IDs for bodies without IDs, but want to make sure that
   // generating the ID is idempotent: the same body should always get the same ID.
   // This will avoid unexpected results when checking for equality.  
-  id: b.id || hashCode(b),
-  annotation: annotationId,
-  type: b.type,
-  purpose: b.purpose,
-  value: b.value,
-  created: b.created,
-  creator: b.creator ? 
-    typeof b.creator === 'object' ? { ...b.creator }: b.creator :
-    undefined
-}));
+  return {
+    id: id || hashCode(body),
+    annotation: annotationId,
+    type,
+    purpose,
+    value,
+    created,
+    creator: creator ? 
+      typeof creator === 'object' ? { ...creator }: creator :
+      undefined,
+    ...rest
+  }
+
+});
 
 
 export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[] => 
