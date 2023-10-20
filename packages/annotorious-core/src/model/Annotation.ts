@@ -44,7 +44,7 @@ export interface AnnotationBody {
 
   purpose?: string;
 
-  value: string;
+  value?: string;
 
   creator?: User;
 
