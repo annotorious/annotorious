@@ -26,6 +26,8 @@ export interface W3CAnnotationBody {
 
   value?: string;
 
+  source?: string;
+
   created?: Date;
 
   creator?: {
@@ -102,7 +104,6 @@ export const parseW3CBodies = (
   }
 
 });
-
 
 export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[] => 
   bodies.map(b => {
