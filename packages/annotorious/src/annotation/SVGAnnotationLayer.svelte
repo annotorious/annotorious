@@ -116,14 +116,15 @@
     {#each $store as annotation}
       {#if !isEditable(annotation)}
         {@const selector = annotation.target.selector}
-
-        {#if (selector.type === ShapeType.ELLIPSE)}
-          <Ellipse geom={selector.geometry} />
-        {:else if (selector.type === ShapeType.RECTANGLE)}
-          <Rectangle geom={selector.geometry} />
-        {:else if (selector.type === ShapeType.POLYGON)}
-          <Polygon geom={selector.geometry} />
-        {/if}
+        {#key annotation.id}
+          {#if (selector.type === ShapeType.ELLIPSE)}
+            <Ellipse id={annotation.id} geom={selector.geometry} />
+          {:else if (selector.type === ShapeType.RECTANGLE)}
+            <Rectangle id={annotation.id} geom={selector.geometry} />
+          {:else if (selector.type === ShapeType.POLYGON)}
+            <Polygon id={annotation.id} geom={selector.geometry} />
+          {/if}
+        {/key}
       {/if}
     {/each}
   </g>
