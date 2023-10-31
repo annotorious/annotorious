@@ -49,6 +49,11 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
     if (anno) {
       const { selection, store } = anno.state;
 
+      // Components below <Annotorious /> may have
+      // loaded annotations into the store already! 
+      if (store.all().length > 0)
+        setAnnotations(store.all());
+
       // Keeps annotations in sync with a React state,
       // so clients can render components the usual React way.
       const onStoreChange = (event: StoreChangeEvent<Annotation>) =>
