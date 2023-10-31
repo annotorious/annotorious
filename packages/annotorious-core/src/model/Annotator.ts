@@ -17,6 +17,8 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   clearAnnotations(): void;
 
+  destroy(): void;
+
   getAnnotationById(id: string): E | undefined;
 
   getAnnotations(): E[];

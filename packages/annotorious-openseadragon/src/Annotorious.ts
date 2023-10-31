@@ -89,6 +89,13 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
 
+  const destroy = () => {
+    // Destroy Svelte layers
+    displayLayer.$destroy();
+    presenceLayer.$destroy();
+    drawingLayer.$destroy();
+  }
+
   const fitBounds = _fitBounds(viewer, store);
 
   const fitBoundsWithConstraints = _fitBoundsWithConstraints(viewer, store);
@@ -127,6 +134,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   return {
     ...base,
+    destroy,
     fitBounds,
     fitBoundsWithConstraints,
     getUser,

@@ -118,6 +118,8 @@
       viewer.removeHandler('canvas-release', onCanvasRelease);
       viewer.removeHandler('update-viewport', stage.redraw);
       viewer.removeHandler('animation-finish', updateViewportState);
+
+      canvas.parentNode.removeChild(canvas);
     }
   });
 

@@ -80,6 +80,15 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
 
+  const destroy = () => {
+    // Destroy Svelte annotation layer
+    annotationLayer.$destroy();
+
+    // Unwrap the image
+    container.parentNode.insertBefore(img, container);
+    container.parentNode.removeChild(container);
+  }
+
   const registerDrawingTool = (name: string, tool: typeof SvelteComponent) =>
     registerTool(name, tool);
 
@@ -112,6 +121,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   return {
     ...base,
+    destroy,
     getUser,
     on: lifecycle.on,
     off: lifecycle.off,
