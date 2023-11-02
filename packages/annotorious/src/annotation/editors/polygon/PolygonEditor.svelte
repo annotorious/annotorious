@@ -1,12 +1,13 @@
 <script type="ts">
-  import { boundsFromPoints, type Polygon } from '../../../model';
+  import { boundsFromPoints } from '../../../model';
+  import type { Polygon } from '../../../model';
   import type { Transform } from '../../Transform';
   import { Editor, Handle } from '..';
 
+  /** Props */
   export let shape: Polygon;
-
+  export let computedStyle: string = undefined;
   export let transform: Transform;
-
   export let viewportScale: number = 1;
 
   $: geom = shape.geometry;
@@ -44,11 +45,13 @@
 
   <polygon
     class="a9s-outer"
+    style={computedStyle ? 'display:none;' : undefined}
     on:pointerdown={grab(Handle.SHAPE)}
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
 
   <polygon
     class="a9s-inner a9s-shape-handle"
+    style={computedStyle}
     on:pointerdown={grab(Handle.SHAPE)}
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
 

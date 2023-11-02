@@ -1,21 +1,23 @@
 <script lang="ts">
+  import type { DrawingStyle } from '@annotorious/core';
   import { createEventDispatcher, onMount, type SvelteComponent } from 'svelte';
+  import type { ImageAnnotation, Shape } from '../../model';
+  import { computeStyle } from '../utils/styling';
   import type { Transform } from '../Transform';
-  import type { Shape } from 'src/model';
 
   const dispatch = createEventDispatcher<{ change: Shape }>();
 
-  export let target: SVGGElement;
-
+  /** Props */
+  export let annotation: ImageAnnotation;
   export let editor: typeof SvelteComponent;
-
-  export let shape: Shape;
-  
+  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
+  export let target: SVGGElement;
   export let transform: Transform;
-
   export let viewportScale: number;
 
   let editorComponent: SvelteComponent;
+
+  $: computedStyle = computeStyle(annotation, style);
 
   $: if (editorComponent) editorComponent.$set({ transform });
 
@@ -24,7 +26,7 @@
   onMount(() => {
     editorComponent = new editor({
       target,
-      props: { shape, transform, viewportScale }
+      props: { shape: annotation.target.selector, computedStyle, transform, viewportScale }
     });
 
     editorComponent.$on('change', event => {

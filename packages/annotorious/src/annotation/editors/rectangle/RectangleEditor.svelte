@@ -1,12 +1,12 @@
 <script type="ts">
-  import { Editor, Handle } from '..';
   import type { Rectangle } from '../../../model';
-  import type { Transform } from '../..';
+  import type { Transform } from '../../Transform';
+  import { Editor, Handle } from '..';
 
+  /** Props */
   export let shape: Rectangle;
-
+  export let computedStyle: string = undefined;
   export let transform: Transform;
-
   export let viewportScale: number = 1;
 
   $: geom = shape.geometry;
@@ -91,11 +91,13 @@
 
   <rect 
     class="a9s-outer"
+    style={computedStyle ? 'display:none;' : undefined}
     on:pointerdown={grab(Handle.SHAPE)}
     x={geom.x} y={geom.y} width={geom.w} height={geom.h} />
 
   <rect 
     class="a9s-inner a9s-shape-handle"
+    style={computedStyle}
     on:pointerdown={grab(Handle.SHAPE)}
     x={geom.x} y={geom.y} width={geom.w} height={geom.h} />
 

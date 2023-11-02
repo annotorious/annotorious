@@ -140,7 +140,8 @@
             <EditorMount
               target={drawingEl}
               editor={getEditor(editable.target.selector)}
-              shape={editable.target.selector}
+              annotation={editable}
+              style={style}
               transform={transform}
               viewportScale={$scale}
               on:change={onChangeSelected(editable)} />

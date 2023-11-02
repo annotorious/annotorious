@@ -6,10 +6,9 @@
 
   const dispatch = createEventDispatcher<{ grab: undefined, release: undefined, change: Shape }>();
 
+  /** Props */
   export let shape: Shape;
-
   export let editor: (shape: Shape, handle: Handle, delta: [number, number]) => Shape;
-
   export let transform: Transform;
 
   let grabbedHandle: Handle = null;
