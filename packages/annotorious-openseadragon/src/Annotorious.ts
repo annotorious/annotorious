@@ -54,7 +54,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   const displayLayer = new PixiLayer({
     target: viewer.element,
-    props: { state, viewer, style: null }
+    props: { state, viewer, style: _style }
   });
 
   const presenceLayer = new SVGPresenceLayer({

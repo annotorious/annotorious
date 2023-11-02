@@ -1,16 +1,22 @@
 <script type="ts">
-  import type { Geometry, RectangleGeometry } from '../../model';
+  import type { DrawingStyle } from '@annotorious/core';
+  import type { Geometry, ImageAnnotation, RectangleGeometry } from '../../model';
+  import { computeStyle } from '../utils/styling';
   
   /** Props **/
-  export let id: string;
+  export let annotation: ImageAnnotation;
   export let geom: Geometry;
+  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
+
+  $: computedStyle = computeStyle(annotation, style);
 
   const { x, y, w, h } = geom as RectangleGeometry;
 </script>
 
-<g data-id={id}>
+<g data-id={annotation.id}>
   <rect
     class="a9s-outer"
+    style={computedStyle ? 'display:none;' : undefined}
     x={x} 
     y={y} 
     width={w} 
@@ -18,6 +24,7 @@
 
   <rect
     class="a9s-inner"
+    style={computedStyle}
     x={x} 
     y={y} 
     width={w} 

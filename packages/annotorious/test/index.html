@@ -45,7 +45,10 @@
         }
 
         const anno = createImageAnnotator('sample-image', {
-          adapter: W3CImageFormat('sample-image')
+          adapter: W3CImageFormat('sample-image'),
+          style: function(annotation) {
+            return annotation.target.selector.type === 'RECTANGLE' ? { fill: 'red' } : { fill: 'blue' };
+          }
         });
 
         anno.loadAnnotations('./annotations.w3c.json');

@@ -64,7 +64,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   const annotationLayer = new SVGAnnotationLayer({
     target: container,
-    props: { image: img, state }
+    props: { image: img, state, style: _style }
   });
 
   annotationLayer.$on('click', (evt: CustomEvent<SVGAnnotationLayerPointerEvent>) => {
@@ -82,9 +82,9 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
 
-  const setStyle = (s: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) => {
-    // TODO re-render
-    _style = s;
+  const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) => {
+    _style = style;
+    annotationLayer.$set({ style });
   }
 
   const destroy = () => {

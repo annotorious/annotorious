@@ -1,7 +1,7 @@
 <script type="ts">
   import { onMount, type SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-  import type { StoreChangeEvent } from '@annotorious/core';
+  import type { DrawingStyle, StoreChangeEvent } from '@annotorious/core';
   import { ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
   import { getEditor, EditorMount } from './editors';
@@ -15,6 +15,7 @@
   /** Props **/
   export let image: HTMLImageElement | HTMLCanvasElement;
   export let state: SvelteImageAnnotatorState;
+  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
   export let tool: typeof SvelteComponent = getTool('rectangle');
 
   /** Drawing tool layer **/
@@ -118,11 +119,11 @@
         {@const selector = annotation.target.selector}
         {#key annotation.id}
           {#if (selector.type === ShapeType.ELLIPSE)}
-            <Ellipse id={annotation.id} geom={selector.geometry} />
+            <Ellipse annotation={annotation} geom={selector.geometry} style={style} />
           {:else if (selector.type === ShapeType.RECTANGLE)}
-            <Rectangle id={annotation.id} geom={selector.geometry} />
+            <Rectangle annotation={annotation} geom={selector.geometry} style={style} />
           {:else if (selector.type === ShapeType.POLYGON)}
-            <Polygon id={annotation.id} geom={selector.geometry} />
+            <Polygon annotation={annotation} geom={selector.geometry} style={style} />
           {/if}
         {/key}
       {/if}
