@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import type OpenSeadragon from 'openseadragon';
 import { ShapeType } from '@annotorious/annotorious/src';
 import type { ImageAnnotation, Polygon, Rectangle } from '@annotorious/annotorious/src';
-import type { DrawingStyle, Formatter } from '@annotorious/core';
+import type { DrawingStyle } from '@annotorious/core';
 
 const DEFAULT_FILL = 0x1a73e8;
 const DEFAULT_ALPHA = 0.25;
@@ -87,19 +87,19 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   // Lookup table: rendered shapes by annotation ID
   const renderedAnnotations = new Map<string, { g: PIXI.Graphics, annotation: ImageAnnotation }>(); 
 
-  let formatter: Formatter | undefined = undefined;
+  let style: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined = undefined;
 
   const addAnnotation = (annotation: ImageAnnotation) => {
     const { selector } = annotation.target;
 
-    const style = formatter ? formatter(annotation) : undefined;
+    const s = typeof style == 'function' ? style(annotation) : style;
 
     let g: PIXI.Graphics;
 
     if (selector.type === ShapeType.RECTANGLE) {
-      g = drawRectangle(selector as Rectangle, style);
+      g = drawRectangle(selector as Rectangle, s);
     } else if (selector.type === ShapeType.POLYGON) {
-      g = drawPolygon(selector as Polygon, style);
+      g = drawPolygon(selector as Polygon, s);
     } else {
       console.warn(`Unsupported shape type: ${selector.type}`)
     }
@@ -134,18 +134,20 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     renderer.render(graphics);
   }
 
-  const setFormatter = (f: Formatter | undefined) => {
-    if (f) {
+  const setStyle = (s: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined) => {
+    if (typeof s === 'function') {
       renderedAnnotations.forEach(({ g, annotation }, _) => {
-        const { fill } = f(annotation);
+        const { fill } = s(annotation);
         g.tint = fill ? PIXI.utils.string2hex(fill) : DEFAULT_FILL;
       });
     } else {
+      const fill = s?.fill ? PIXI.utils.string2hex(s.fill) : DEFAULT_FILL;
+
       renderedAnnotations.forEach(({ g }, _) =>
-        g.tint = DEFAULT_FILL);
+        g.tint = fill);
     }
   
-    formatter = f;
+    style = s;
 
     renderer.render(graphics);
   }
@@ -155,7 +157,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     redraw: redraw(viewer, graphics, renderer),
     removeAnnotation,
     resize,
-    setFormatter,
+    setStyle,
     updateAnnotation
   }
   

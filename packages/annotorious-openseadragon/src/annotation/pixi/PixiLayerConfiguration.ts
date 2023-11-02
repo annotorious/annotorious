@@ -1,4 +1,4 @@
-import type { ImageAnnotation, Style } from '@annotorious/annotorious/src';
+import type { DrawingStyle, ImageAnnotation } from '@annotorious/annotorious/src';
 
 export interface PixiLayerConfiguration {
 
@@ -9,10 +9,8 @@ export interface PixiLayerConfiguration {
   filters?: PixiLayerFilter[];
 
   /** Determines the annotation rendering style **/
-  style?: Style | PixiLayerFormatter;
+  style?: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle);
 
 }
 
 export type PixiLayerFilter = { (annotation: ImageAnnotation): boolean }
-
-export type PixiLayerFormatter = { (annotation: ImageAnnotation): Style }

@@ -3,8 +3,8 @@ import type { User } from './User';
 import type { PresenceProvider } from '../presence';
 import { Origin, type HoverState, type SelectionState, type Store, type ViewportState } from '../state';
 import type { LifecycleEvents } from '../lifecycle';
-import type { Formatter } from './Formatter';
 import { parseAll, type FormatAdapter } from './FormatAdapter';
+import type { DrawingStyle } from './DrawingStyle';
 
 /**
  * Base annotator interface.
@@ -12,6 +12,8 @@ import { parseAll, type FormatAdapter } from './FormatAdapter';
  * E ... external adapted representation
  */
 export interface Annotator<I extends Annotation = Annotation, E extends unknown = Annotation> {
+
+  style: DrawingStyle | ((annotation: I) => DrawingStyle) | undefined;
 
   addAnnotation(annotation: E): void;
 
@@ -30,8 +32,6 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
   removeAnnotation(arg: E | string): E;
 
   setAnnotations(annotations: E[]): void;
-
-  setFormatter(formatter: Formatter): void;
 
   setPresenceProvider?(provider: PresenceProvider): void;
 

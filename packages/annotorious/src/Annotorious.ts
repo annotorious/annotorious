@@ -1,5 +1,5 @@
 import type { SvelteComponent } from 'svelte';
-import type { Annotator, Formatter, User } from '@annotorious/core';
+import type { Annotator, DrawingStyle, User } from '@annotorious/core';
 import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver } from '@annotorious/core';
 import { registerEditor } from './annotation/editors';
 import { getTool, registerTool, type DrawingTool } from './annotation/tools';
@@ -38,14 +38,16 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   const opts = fillDefaults<ImageAnnotation, E>(options);
 
-  let currentUser: User = opts.readOnly ? null : createAnonymousGuest();
-
   const state = createSvelteImageAnnotatorState(opts);
 
   const { hover, selection, store } = state;
 
   const lifecycle = createLifecyleObserver<ImageAnnotation, E>(
     store, selection, hover, undefined, opts.adapter, opts.autoSave);
+
+  let _style = opts.style;
+
+  let currentUser: User = opts.readOnly ? null : createAnonymousGuest();
 
   // We'll wrap the image in a container DIV.
   const container = document.createElement('DIV');
@@ -80,6 +82,11 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
 
+  const setStyle = (s: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) => {
+    // TODO re-render
+    _style = s;
+  }
+
   const destroy = () => {
     // Destroy Svelte annotation layer
     annotationLayer.$destroy();
@@ -102,10 +109,6 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     annotationLayer.$set({ tool: t })
   }
 
-  const setFormatter = (formatter: Formatter) => {
-    // TODO
-  }
-
   const setSelected = (arg?: string | string[]) => {
     if (arg) {
       selection.setSelected(arg);
@@ -121,6 +124,8 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   return {
     ...base,
+    get style() { return _style },
+    set style(s: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) { setStyle(s) },
     destroy,
     getUser,
     on: lifecycle.on,
@@ -128,7 +133,6 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     registerDrawingTool,
     registerShapeEditor,
     setDrawingTool,
-    setFormatter, 
     setSelected,
     setUser,
     state

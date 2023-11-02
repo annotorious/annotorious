@@ -32,6 +32,11 @@ export const ImageAnnotator = <E extends unknown>(props: ImageAnnotatorProps<E>)
     if (props.tool && anno)
       (anno as AnnotoriousImageAnnotator).setDrawingTool(props.tool);
   }, [props.tool, anno]);
+
+  useEffect(() => {
+    if (anno)
+      anno.style = props.style;
+  }, [props.style]);
  
   return <>{cloneElement(child, { onLoad }  as Partial<HTMLImageElement>)}</>
 

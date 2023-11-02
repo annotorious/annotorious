@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
-import { Formatter } from '@annotorious/core';
+import { DrawingStyle } from '@annotorious/core';
 import { createOSDAnnotator } from '@annotorious/openseadragon';
 import { OpenSeadragonAnnotator as AnnotoriousOpenSeadragonAnnotator } from '@annotorious/openseadragon';
 import { AnnotoriousOpts, ImageAnnotation } from '@annotorious/annotorious';
@@ -14,8 +14,6 @@ export const OpenSeadragonAnnotatorContext = createContext<{
 export type OpenSeadragonAnnotatorProps<E extends unknown> = AnnotoriousOpts<ImageAnnotation, E> & {
 
   children?: ReactNode;
-
-  formatter?: Formatter;
 
   keepEnabled?: boolean;
 
@@ -34,7 +32,6 @@ export const OpenSeadragonAnnotator = <E extends unknown>(props: OpenSeadragonAn
   useEffect(() => {
     if (viewer) {
       const anno = createOSDAnnotator<E>(viewer, opts);
-      anno.setFormatter(props.formatter);
       setAnno(anno);
     }
   }, [viewer]);
@@ -50,11 +47,9 @@ export const OpenSeadragonAnnotator = <E extends unknown>(props: OpenSeadragonAn
   }, [props.tool, props.keepEnabled]);
 
   useEffect(() => {
-    if (!anno)
-      return;
-    
-    (anno as AnnotoriousOpenSeadragonAnnotator).setFormatter(props.formatter);
-  }, [props.formatter]);
+    if (anno)    
+      anno.style = props.style;
+  }, [props.style]);
 
   return (
     <OpenSeadragonAnnotatorContext.Provider value={{ viewer, setViewer }}>

@@ -1,7 +1,7 @@
 import type OpenSeadragon from 'openseadragon';
 import type { SvelteComponent } from 'svelte';
-import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver, Origin, parseAll  } from '@annotorious/core';
-import type { Annotator, Formatter, PresenceProvider, User } from '@annotorious/core';
+import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver } from '@annotorious/core';
+import type { Annotator, DrawingStyle, PresenceProvider, User } from '@annotorious/core';
 import { fillDefaults, listTools, getTool, createImageAnnotatorState } from '@annotorious/annotorious/src';
 import type { AnnotoriousOpts, ImageAnnotation } from '@annotorious/annotorious/src';
 import type { PixiLayerClickEvent } from './annotation';
@@ -46,13 +46,15 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const lifecycle = createLifecyleObserver(
     store, selection, hover, undefined, opts.adapter, opts.autoSave);
 
-  initKeyCommands(viewer.element, selection, store); 
+  let _style = opts.style;
 
   let currentUser: User = opts.readOnly ? null : createAnonymousGuest();
 
+  initKeyCommands(viewer.element, selection, store); 
+
   const displayLayer = new PixiLayer({
     target: viewer.element,
-    props: { state, viewer, formatter: null }
+    props: { state, viewer, style: null }
   });
 
   const presenceLayer = new SVGPresenceLayer({
@@ -89,6 +91,11 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
 
+  const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) => {
+    _style = style;
+    displayLayer.$set({ style });
+  }
+
   const destroy = () => {
     // Destroy Svelte layers
     displayLayer.$destroy();
@@ -101,9 +108,6 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const fitBoundsWithConstraints = _fitBoundsWithConstraints(viewer, store);
 
   const getUser = () => currentUser;
-
-  const setFormatter = (formatter: Formatter) =>
-    displayLayer.$set({ formatter });
 
   const setSelected = (arg?: string | string[]) => {
     if (arg) {
@@ -134,6 +138,8 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   return {
     ...base,
+    get style() { return _style },
+    set style(s: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) { setStyle(s) },
     destroy,
     fitBounds,
     fitBoundsWithConstraints,
@@ -141,7 +147,6 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     listTools,
     on: lifecycle.on,
     off: lifecycle.off,
-    setFormatter,
     setPresenceProvider,
     setSelected,
     setUser,

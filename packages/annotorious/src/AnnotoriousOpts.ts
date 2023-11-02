@@ -1,5 +1,5 @@
 import { PointerSelectAction } from '@annotorious/core';
-import type { Annotation, FormatAdapter } from '@annotorious/core';
+import type { Annotation, DrawingStyle, FormatAdapter } from '@annotorious/core';
 import type { ImageAnnotation } from './model';
 
 export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation> {
@@ -12,20 +12,8 @@ export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E exten
 
   readOnly?: boolean;
 
-  style?: Style | ((a: E) => Style);
+  style?: DrawingStyle | ((annotation: I) => DrawingStyle);
 
-}
-
-export interface Style {
-
-  fill?: string 
-
-  fillOpacity?: number 
-
-  stroke?: string
-
-  strokeOpacity?: number
-  
 }
 
 export const fillDefaults = <I extends ImageAnnotation = ImageAnnotation, E extends unknown = ImageAnnotation> (

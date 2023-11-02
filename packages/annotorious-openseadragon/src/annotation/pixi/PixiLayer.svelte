@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
   import OpenSeadragon from 'openseadragon';
-  import type { Formatter, ImageAnnotatorState } from '@annotorious/annotorious/src';
+  import type { DrawingStyle, ImageAnnotation, ImageAnnotatorState } from '@annotorious/annotorious/src';
   import type { PixiLayerClickEvent } from './PixiLayerClickEvent';
   import { createStage } from './stageRenderer';
 
@@ -11,7 +11,7 @@
 
   export let viewer: OpenSeadragon.Viewer;
 
-  export let formatter: Formatter = null;
+  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
 
   const { store, hover, viewport } = state;
   
@@ -21,7 +21,7 @@
 
   let dragged = false;
 
-  $: stage?.setFormatter(formatter);
+  $: stage?.setStyle(style);
 
   // Helper
   const getImageXY = (xy: OpenSeadragon.Point): OpenSeadragon.Point => {

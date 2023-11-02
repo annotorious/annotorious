@@ -19,7 +19,6 @@ export type {
   Color,
   DrawingStyle,
   FormatAdapter,
-  Formatter,
   ParseResult,
   User,
   W3CAnnotation,
