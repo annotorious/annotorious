@@ -47,7 +47,7 @@
 
         const anno = createImageAnnotator('sample-image', {
           adapter: W3CImageFormat('sample-image'),
-          drawOnSingleClick: true,
+          // drawOnSingleClick: true,
           style: function(annotation) {
             return annotation.target.selector.type === 'RECTANGLE' ? { fill: 'red' } : { fill: 'blue' };
           }

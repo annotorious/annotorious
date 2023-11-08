@@ -3,7 +3,7 @@
   import { ShapeType, type Rectangle } from '../../../model';
   import type { Transform } from '../..';
 
-  const dispatch = createEventDispatcher<{ startDrawing: PointerEvent, create: Rectangle }>();
+  const dispatch = createEventDispatcher<{ create: Rectangle }>();
   
   export let drawOnSingleClick: boolean;
 
@@ -23,7 +23,6 @@
     lastPointerDown = performance.now();
 
     if (!drawOnSingleClick) {
-      // Start drawing on drag
       origin = transform.elementToImage(evt.offsetX, evt.offsetY);
       anchor = origin;
 
@@ -31,8 +30,6 @@
       y = origin[1];
       w = 1;
       h = 1;
-
-      dispatch('startDrawing', evt);
     }
   }
 
@@ -48,9 +45,9 @@
   }
     
   const onPointerUp = (evt: PointerEvent) => {
-    if (drawOnSingleClick) {
-      const timeDifference = performance.now() - lastPointerDown;
+    const timeDifference = performance.now() - lastPointerDown;
 
+    if (drawOnSingleClick) {
       // Not a single click - ignore
       if (timeDifference > 300)
         return;
@@ -68,11 +65,15 @@
         y = origin[1];
         w = 1;
         h = 1;
-
-        dispatch('startDrawing', evt);
       }
-    } else {
-      stopDrawing();
+    } else if (origin) {
+      if (timeDifference > 300 || w * h > 100) {
+        evt.stopPropagation();
+        stopDrawing();
+      } else {
+        origin = null;
+        anchor = null;
+      }
     }
   }
 
@@ -107,7 +108,6 @@
     svg.addEventListener('pointerup', onPointerUp, true);
 
     return () => {
-      console.log('unmount!');
       svg.removeEventListener('pointerdown', onPointerDown);
       svg.removeEventListener('pointermove', onPointerMove);
       svg.removeEventListener('pointerup', onPointerUp, true); 

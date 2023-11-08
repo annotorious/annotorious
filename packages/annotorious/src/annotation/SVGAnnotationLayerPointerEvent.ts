@@ -2,7 +2,6 @@ import { createEventDispatcher } from 'svelte';
 import type { SvelteImageAnnotationStore } from '../state';
 import type { ImageAnnotation } from '../model';
 import { isTouch } from './utils';
-import type { SvelteStore } from '@annotorious/core';
 
 export interface SVGAnnotationLayerPointerEvent {
     
@@ -13,7 +12,7 @@ export interface SVGAnnotationLayerPointerEvent {
 }
 
 // Maximum amount of ms between pointer down and up to make it a click
-const MAX_CLICK_DURATION = 300;
+const MAX_CLICK_DURATION = 250;
 
 export const addEventListeners = (svg: SVGSVGElement, store: SvelteImageAnnotationStore) => {
 
@@ -22,15 +21,15 @@ export const addEventListeners = (svg: SVGSVGElement, store: SvelteImageAnnotati
   let lastPointerDown: number;
 
   const onPointerDown = () =>
-    lastPointerDown = new Date().getTime();
+    lastPointerDown = performance.now();
 
   const onPointerUp = (evt: PointerEvent) => {
-    const duration = new Date().getTime() - lastPointerDown;
+    const duration = performance.now() - lastPointerDown;
 
     if (duration < MAX_CLICK_DURATION) {
       const { x, y } = getSVGPoint(evt, svg);
       const annotation = store.getAt(x, y);
-    
+
       if (annotation)
         dispatch('click', { originalEvent: evt, annotation });
       else
