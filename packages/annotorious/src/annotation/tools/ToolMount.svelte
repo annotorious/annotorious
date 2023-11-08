@@ -3,14 +3,13 @@
   import type { Transform } from '../Transform';
   import type { Shape } from 'src/model';
 
-  const dispatch = createEventDispatcher<{ create: Shape }>();
+  const dispatch = createEventDispatcher<{ startDrawing: PointerEvent, create: Shape }>();
 
+  /** Props **/
+  export let drawOnSingleClick: boolean;
   export let target: SVGGElement;
-
   export let tool: typeof SvelteComponent;
-  
   export let transform: Transform;
-
   export let viewportScale: number;
 
   let toolComponent: SvelteComponent;
@@ -22,8 +21,11 @@
   onMount(() => {
     toolComponent = new tool({
       target,
-      props: { transform, viewportScale }
+      props: { transform, viewportScale, drawOnSingleClick }
     });
+
+    toolComponent.$on('startDrawing',
+      event => dispatch('startDrawing', event.detail));
 
     toolComponent.$on('create', 
       event => dispatch('create', event.detail));

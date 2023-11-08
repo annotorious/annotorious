@@ -13,7 +13,7 @@ export interface SVGAnnotationLayerPointerEvent {
 }
 
 // Maximum amount of ms between pointer down and up to make it a click
-const MAX_CLICK_DURATION = 200;
+const MAX_CLICK_DURATION = 300;
 
 export const addEventListeners = (svg: SVGSVGElement, store: SvelteImageAnnotationStore) => {
 

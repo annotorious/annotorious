@@ -23,6 +23,8 @@ export interface ImageAnnotator<E extends unknown = ImageAnnotation> extends Ann
 
   setDrawingTool(tool: DrawingTool): void; 
 
+  setDrawingEnabled(enabled: boolean): void;
+
 }
 
 export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
@@ -45,9 +47,9 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   const lifecycle = createLifecyleObserver<ImageAnnotation, E>(
     store, selection, hover, undefined, opts.adapter, opts.autoSave);
 
-  let _style = opts.style;
+  let currentUser: User = createAnonymousGuest();
 
-  let currentUser: User = opts.readOnly ? null : createAnonymousGuest();
+  let style = opts.style;
 
   // We'll wrap the image in a container DIV.
   const container = document.createElement('DIV');
@@ -64,12 +66,19 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   const annotationLayer = new SVGAnnotationLayer({
     target: container,
-    props: { image: img, state, style: _style }
+    props: { 
+      drawingEnabled: opts.drawingEnabled, 
+      drawOnSingleClick: opts.drawOnSingleClick,
+      image: img, 
+      state, 
+      style, 
+      user: currentUser
+    }
   });
 
   annotationLayer.$on('click', (evt: CustomEvent<SVGAnnotationLayerPointerEvent>) => {
     const { originalEvent, annotation } = evt.detail;
-    if (annotation)
+    if (annotation && !opts.drawOnSingleClick)
       selection.clickSelect(annotation.id, originalEvent);
     else if (!selection.isEmpty())
       selection.clear();
@@ -82,8 +91,8 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
 
-  const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) => {
-    _style = style;
+  const setStyle = (drawingStyle: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) => {
+    style = drawingStyle;
     annotationLayer.$set({ style });
   }
 
@@ -109,6 +118,9 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     annotationLayer.$set({ tool: t })
   }
 
+  const setDrawingEnabled = (enabled: boolean) =>
+    annotationLayer.$set({ drawingEnabled: enabled });
+
   const setSelected = (arg?: string | string[]) => {
     if (arg) {
       selection.setSelected(arg);
@@ -119,12 +131,12 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   const setUser = (user: User) => {
     currentUser = user;
-    // annotationLayer.$set({ user });
+    annotationLayer.$set({ user });
   }
 
   return {
     ...base,
-    get style() { return _style },
+    get style() { return style },
     set style(s: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) { setStyle(s) },
     destroy,
     getUser,
@@ -132,6 +144,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     off: lifecycle.off,
     registerDrawingTool,
     registerShapeEditor,
+    setDrawingEnabled,
     setDrawingTool,
     setSelected,
     setUser,

@@ -27,6 +27,7 @@
   </head>
   <body>
     <div id="content">    
+      <button id="toggle">DRAW</button>
       <img id="sample-image" src="640px-Hallstatt.jpg" />
     </div>
 
@@ -46,6 +47,7 @@
 
         const anno = createImageAnnotator('sample-image', {
           adapter: W3CImageFormat('sample-image'),
+          drawOnSingleClick: true,
           style: function(annotation) {
             return annotation.target.selector.type === 'RECTANGLE' ? { fill: 'red' } : { fill: 'blue' };
           }
@@ -69,7 +71,18 @@
           console.log('selected', selected);
         });
 
-        anno.setDrawingTool('polygon');
+        const toggle = document.getElementById('toggle');
+        toggle.addEventListener('click', function() {
+          if (toggle.innerHTML === 'DRAW') {
+            toggle.innerHTML = 'SELECT';
+            anno.setDrawingEnabled(false);
+          } else {
+            toggle.innerHTML = 'DRAW';
+            anno.setDrawingEnabled(true);
+          }
+        });
+
+        // anno.setDrawingTool('polygon');
       }
     </script>
   </body>

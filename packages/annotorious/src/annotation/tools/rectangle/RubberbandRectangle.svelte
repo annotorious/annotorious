@@ -3,11 +3,15 @@
   import { ShapeType, type Rectangle } from '../../../model';
   import type { Transform } from '../..';
 
-  const dispatch = createEventDispatcher<{ create: Rectangle }>();
+  const dispatch = createEventDispatcher<{ startDrawing: PointerEvent, create: Rectangle }>();
   
+  export let drawOnSingleClick: boolean;
+
   export let transform: Transform;
   
   let container: SVGGElement;
+
+  let lastPointerDown: number;
 
   let origin: [x: number, y: number]; 
 
@@ -16,13 +20,20 @@
   let x: number, y: number, w: number, h: number;
 
   const onPointerDown = (evt: PointerEvent) => {
-    origin = transform.elementToImage(evt.offsetX, evt.offsetY);
-    anchor = origin;
+    lastPointerDown = performance.now();
 
-    x = origin[0];
-    y = origin[1];
-    w = 1;
-    h = 1;
+    if (!drawOnSingleClick) {
+      // Start drawing on drag
+      origin = transform.elementToImage(evt.offsetX, evt.offsetY);
+      anchor = origin;
+
+      x = origin[0];
+      y = origin[1];
+      w = 1;
+      h = 1;
+
+      dispatch('startDrawing', evt);
+    }
   }
 
   const onPointerMove = (evt: PointerEvent) => {
@@ -36,7 +47,36 @@
     }
   }
     
-  const onPointerUp = () => {
+  const onPointerUp = (evt: PointerEvent) => {
+    if (drawOnSingleClick) {
+      const timeDifference = performance.now() - lastPointerDown;
+
+      // Not a single click - ignore
+      if (timeDifference > 300)
+        return;
+
+      evt.stopPropagation();
+
+      if (origin) {
+        stopDrawing();
+      } else {
+        // Start drawing
+        origin = transform.elementToImage(evt.offsetX, evt.offsetY);
+        anchor = origin;
+
+        x = origin[0];
+        y = origin[1];
+        w = 1;
+        h = 1;
+
+        dispatch('startDrawing', evt);
+      }
+    } else {
+      stopDrawing();
+    }
+  }
+
+  const stopDrawing = () => {
     // Require 4x4 pixels minimum
     if (w * h > 15) {
       const shape: Rectangle = {
@@ -54,7 +94,7 @@
 
       dispatch('create', shape);
     }
-
+    
     origin = null;
     anchor = null;
   }
@@ -64,12 +104,13 @@
 
     svg.addEventListener('pointerdown', onPointerDown);
     svg.addEventListener('pointermove', onPointerMove);
-    svg.addEventListener('pointerup', onPointerUp);
+    svg.addEventListener('pointerup', onPointerUp, true);
 
     return () => {
+      console.log('unmount!');
       svg.removeEventListener('pointerdown', onPointerDown);
       svg.removeEventListener('pointermove', onPointerMove);
-      svg.removeEventListener('pointerup', onPointerUp); 
+      svg.removeEventListener('pointerup', onPointerUp, true); 
     }
   });
 </script>

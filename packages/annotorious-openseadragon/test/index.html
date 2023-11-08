@@ -22,7 +22,6 @@
     <div id="openseadragon">
       <div class="buttons" style="position:absolute; top: 10px; right: 10px; z-index: 1;">
         <button id="draw">Start Drawing</button>
-        <button id="formatter">Clear Formatter</button>
       </div>
     </div>
 
@@ -70,24 +69,6 @@
           adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c')
         });
 
-        // A dummy formatter that cycles through these colors
-        var colors = [
-          0x1a73e8,
-          0xe81a1e,
-          0x34e81a,
-          0xa1570c
-        ];
-
-        var counter = -1;
-
-        anno.setFormatter(annotation => {
-          counter = counter + 1;
-          return {
-            fill: colors[counter % colors.length],
-            fillOpacity: 0.25
-          };
-        });
-
         fetch('annotations.json').then((response) => response.json())
           .then(annotations =>
             anno.setAnnotations(annotations));
@@ -105,11 +86,6 @@
             trigger.dataset.enabled = 'true';
             trigger.innerHTML = 'Stop Drawing';
           }
-        });
-
-        const formatter = document.getElementById('formatter');
-        formatter.addEventListener('click', function() {
-          anno.setFormatter();
         });
 
         anno.on('clickAnnotation', a => console.log('clicked', a));

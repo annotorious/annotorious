@@ -8,9 +8,11 @@ export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E exten
 
   autoSave?: boolean;
 
-  pointerSelectAction?: PointerSelectAction | ((a: I) => PointerSelectAction);
+  drawingEnabled?: boolean;
 
-  readOnly?: boolean;
+  drawOnSingleClick?: boolean;
+
+  pointerSelectAction?: PointerSelectAction | ((a: I) => PointerSelectAction);
 
   style?: DrawingStyle | ((annotation: I) => DrawingStyle);
 
@@ -22,6 +24,7 @@ export const fillDefaults = <I extends ImageAnnotation = ImageAnnotation, E exte
 
   return {
     ...opts,
+    drawingEnabled: opts.drawingEnabled === undefined,
     pointerSelectAction: opts.pointerSelectAction || PointerSelectAction.EDIT
   };
 

@@ -1,7 +1,7 @@
 <script type="ts">
   import { onMount, type SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-  import type { DrawingStyle, StoreChangeEvent } from '@annotorious/core';
+  import type { DrawingStyle, StoreChangeEvent, User } from '@annotorious/core';
   import { ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
   import { getEditor, EditorMount } from './editors';
@@ -13,10 +13,13 @@
   import type { SvelteImageAnnotatorState } from 'src/state';
 
   /** Props **/
+  export let drawingEnabled: boolean;
+  export let drawOnSingleClick: boolean;
   export let image: HTMLImageElement | HTMLCanvasElement;
   export let state: SvelteImageAnnotatorState;
   export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
   export let tool: typeof SvelteComponent = getTool('rectangle');
+  export let user: User;
 
   /** Drawing tool layer **/
   let drawingEl: SVGGElement;
@@ -75,7 +78,7 @@
       target: {
         annotation: id,
         selector: evt.detail,
-        creator: null,
+        creator: user,
         created: new Date()
       }
     };
@@ -92,7 +95,7 @@
     const GRACE_PERIOD = 10 * 60 * 1000;
 
     const isUpdate = 
-      // target.creator?.id !== user.id ||
+      target.creator?.id !== user.id ||
       !target.created ||
       new Date().getTime() - target.created.getTime() > GRACE_PERIOD;
 
@@ -101,7 +104,7 @@
       selector: event.detail,
       created: isUpdate ? target.created : new Date(),
       updated: isUpdate ? new Date() : null,
-      //updatedBy: isUpdate ? user : null
+      updatedBy: isUpdate ? user : null
     });
   }
 </script>
@@ -147,13 +150,15 @@
               on:change={onChangeSelected(editable)} />
           {/key}
         {/each}
-      {:else if tool} 
+      {:else if (tool && drawingEnabled)} 
         {#key tool}
           <ToolMount 
             target={drawingEl}
             tool={tool}
+            drawOnSingleClick={drawOnSingleClick}
             transform={transform}
             viewportScale={$scale}
+            on:startDrawing
             on:create={onSelectionCreated} />
         {/key}
       {/if}
