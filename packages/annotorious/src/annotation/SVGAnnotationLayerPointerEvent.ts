@@ -28,6 +28,7 @@ export const addEventListeners = (svg: SVGSVGElement, store: SvelteImageAnnotati
 
     if (duration < MAX_CLICK_DURATION) {
       const { x, y } = getSVGPoint(evt, svg);
+
       const annotation = store.getAt(x, y);
 
       if (annotation)
@@ -42,22 +43,14 @@ export const addEventListeners = (svg: SVGSVGElement, store: SvelteImageAnnotati
 
 const getSVGPoint = (evt: PointerEvent, svg: SVGSVGElement) => {
   const pt = svg.createSVGPoint();
+  const bbox = svg.getBoundingClientRect();
 
-  if (isTouch) {
-    const bbox = svg.getBoundingClientRect();
+  const x = evt.clientX - bbox.x;
+  const y = evt.clientY - bbox.y;
 
-    const x = evt.clientX - bbox.x;
-    const y = evt.clientY - bbox.y;
+  const { left, top } = svg.getBoundingClientRect();
+  pt.x = x + left;
+  pt.y = y + top;
 
-    const { left, top } = svg.getBoundingClientRect();
-    pt.x = x + left;
-    pt.y = y + top;
-
-    return pt.matrixTransform(svg.getScreenCTM().inverse());
-  } else {
-    pt.x = evt.offsetX;
-    pt.y = evt.offsetY;
-
-    return pt.matrixTransform(svg.getCTM().inverse());
-  }
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
 }
