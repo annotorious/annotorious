@@ -2,10 +2,11 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import { ShapeType, type Rectangle } from '../../../model';
   import type { Transform } from '../..';
+  import type { DrawingMode } from 'src/AnnotoriousOpts';
 
   const dispatch = createEventDispatcher<{ create: Rectangle }>();
   
-  export let drawOnSingleClick: boolean;
+  export let drawingMode: DrawingMode;
 
   export let transform: Transform;
   
@@ -22,7 +23,7 @@
   const onPointerDown = (evt: PointerEvent) => {
     lastPointerDown = performance.now();
 
-    if (!drawOnSingleClick) {
+    if (drawingMode === 'drag') {
       origin = transform.elementToImage(evt.offsetX, evt.offsetY);
       anchor = origin;
 
@@ -47,7 +48,7 @@
   const onPointerUp = (evt: PointerEvent) => {
     const timeDifference = performance.now() - lastPointerDown;
 
-    if (drawOnSingleClick) {
+    if (drawingMode === 'click') {
       // Not a single click - ignore
       if (timeDifference > 300)
         return;

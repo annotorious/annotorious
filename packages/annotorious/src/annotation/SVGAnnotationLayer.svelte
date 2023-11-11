@@ -11,10 +11,11 @@
   import { createSVGTransform } from './Transform';
   import { addEventListeners } from './SVGAnnotationLayerPointerEvent';
   import type { SvelteImageAnnotatorState } from 'src/state';
+  import type { DrawingMode } from 'src/AnnotoriousOpts';
 
   /** Props **/
   export let drawingEnabled: boolean;
-  export let drawOnSingleClick: boolean;
+  export let drawingMode: DrawingMode;
   export let image: HTMLImageElement | HTMLCanvasElement;
   export let state: SvelteImageAnnotatorState;
   export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
@@ -155,10 +156,9 @@
           <ToolMount 
             target={drawingEl}
             tool={tool}
-            drawOnSingleClick={drawOnSingleClick}
+            drawingMode={drawingMode}
             transform={transform}
             viewportScale={$scale}
-            on:startDrawing
             on:create={onSelectionCreated} />
         {/key}
       {/if}

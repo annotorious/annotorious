@@ -2,7 +2,7 @@ import type { SvelteComponent } from 'svelte';
 import type { Annotator, DrawingStyle, User } from '@annotorious/core';
 import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver } from '@annotorious/core';
 import { registerEditor } from './annotation/editors';
-import { getTool, registerTool, type DrawingTool } from './annotation/tools';
+import { getTool, registerTool, listDrawingTools, type DrawingTool } from './annotation/tools';
 import { SVGAnnotationLayer } from './annotation';
 import type { SVGAnnotationLayerPointerEvent } from './annotation';
 import type { ImageAnnotation, ShapeType } from './model';
@@ -16,6 +16,8 @@ import './themes/dark/index.css';
 import './themes/light/index.css';
 
 export interface ImageAnnotator<E extends unknown = ImageAnnotation> extends Annotator<ImageAnnotation, E> { 
+
+  listDrawingTools(): string[];
 
   registerDrawingTool(name: string, tool: typeof SvelteComponent): void;
 
@@ -68,7 +70,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     target: container,
     props: { 
       drawingEnabled: opts.drawingEnabled, 
-      drawOnSingleClick: opts.drawOnSingleClick,
+      drawingMode: opts.drawingMode,
       image: img, 
       state, 
       style, 
@@ -78,7 +80,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   annotationLayer.$on('click', (evt: CustomEvent<SVGAnnotationLayerPointerEvent>) => {
     const { originalEvent, annotation } = evt.detail;
-    if (annotation && !opts.drawOnSingleClick)
+    if (annotation && opts.drawingMode === 'drag')
       selection.clickSelect(annotation.id, originalEvent);
     else if (!selection.isEmpty())
       selection.clear();
@@ -105,13 +107,13 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     container.parentNode.removeChild(container);
   }
 
+  const getUser = () => currentUser;
+
   const registerDrawingTool = (name: string, tool: typeof SvelteComponent) =>
     registerTool(name, tool);
 
   const registerShapeEditor = (shapeType: ShapeType, editor: typeof SvelteComponent) =>
     registerEditor(shapeType, editor);
-
-  const getUser = () => currentUser;
 
   const setDrawingTool = (tool: DrawingTool) => {
     const t = getTool(tool) as typeof SvelteComponent;
@@ -140,6 +142,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     set style(s: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) { setStyle(s) },
     destroy,
     getUser,
+    listDrawingTools,
     on: lifecycle.on,
     off: lifecycle.off,
     registerDrawingTool,

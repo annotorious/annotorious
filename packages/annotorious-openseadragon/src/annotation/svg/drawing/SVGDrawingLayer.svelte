@@ -4,15 +4,21 @@
   import OpenSeadragon from 'openseadragon';
   import type { StoreChangeEvent, User } from '@annotorious/core';
   import { getEditor } from '@annotorious/annotorious/src';
-  import type { ImageAnnotation, Shape, ImageAnnotatorState } from '@annotorious/annotorious/src';
+  import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious/src';
   import OSDLayer from '../OSDLayer.svelte';
+    import ToolMount from '@annotorious/annotorious/src/annotation/tools/ToolMount.svelte';
+    import EditorMount from '@annotorious/annotorious/src/annotation/editors/EditorMount.svelte';
     
   /** Props **/
+  export let drawingEnabled: boolean;
+  export let drawingMode: DrawingMode;
   export let state: ImageAnnotatorState;
-  export let viewer: OpenSeadragon.Viewer;
-  export let user: User;
   export let tool: typeof SvelteComponent = null;
-  export let keepEnabled: boolean = false;
+  export let user: User;
+  export let viewer: OpenSeadragon.Viewer;
+
+  /** Drawing tool layer **/
+  let drawingEl: SVGGElement;
 
   /** Tool lifecycle **/
   $: tool ? viewer.setMouseNavEnabled(false) : viewer.setMouseNavEnabled(true); 
@@ -116,21 +122,27 @@
     class="a9s-annotationlayer a9s-osd-drawinglayer"
     class:drawing={tool}>
 
-    <g transform={transform}>
+    <g 
+      bind:this={drawingEl}
+      class="drawing"
+      transform={transform}>
       {#if editableAnnotations}
         {#each editableAnnotations as editable}
-          <svelte:component 
-            this={getEditor(editable.target.selector)}
-            shape={cast(editable.target.selector)}
+          <EditorMount
+            target={drawingEl}
+            editor={getEditor(editable.target.selector)}
+            annotation={editable}
             transform={{ elementToImage: toolTransform }}
             viewportScale={scale}
             on:grab={onGrab} 
             on:change={onChangeSelected(editable)}
             on:release={onRelease} />
         {/each}
-      {:else if Boolean(tool)} 
-        <svelte:component 
-          this={tool}
+      {:else if (tool && drawingEnabled)} 
+        <ToolMount
+          target={drawingEl}
+          tool={tool}
+          drawingMode={drawingMode}
           transform={{ elementToImage: toolTransform }}
           viewportScale={scale}
           on:create={onSelectionCreated} />

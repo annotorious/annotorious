@@ -9,7 +9,7 @@ const REGISTERED = new Map<DrawingTool, typeof SvelteComponent>([
   ['polygon', RubberbandPolygon]
 ]);
 
-export const listTools = () => [...REGISTERED.keys()];
+export const listDrawingTools = () => [...REGISTERED.keys()];
 
 export const getTool = (name: string) => REGISTERED.get(name);
   

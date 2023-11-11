@@ -1,9 +1,10 @@
 import type OpenSeadragon from 'openseadragon';
 import type { SvelteComponent } from 'svelte';
 import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver } from '@annotorious/core';
-import type { Annotator, DrawingStyle, PresenceProvider, User } from '@annotorious/core';
-import { fillDefaults, listTools, getTool, createImageAnnotatorState } from '@annotorious/annotorious/src';
-import type { AnnotoriousOpts, ImageAnnotation } from '@annotorious/annotorious/src';
+import type { Annotator, DrawingStyle, PresenceProvider, User } from '@annotorious/core/src';
+import { fillDefaults, createImageAnnotatorState } from '@annotorious/annotorious/src';
+import { listDrawingTools, getTool, registerTool, registerEditor } from '@annotorious/annotorious/src/annotation';
+import type { AnnotoriousOpts, DrawingTool, ImageAnnotation, ShapeType } from '@annotorious/annotorious/src';
 import type { PixiLayerClickEvent } from './annotation';
 import { PixiLayer, SVGDrawingLayer, SVGPresenceLayer } from './annotation';
 import { initKeyCommands } from './keyCommands';
@@ -24,11 +25,15 @@ export interface OpenSeadragonAnnotator<E extends unknown = ImageAnnotation> ext
 
   fitBoundsWithConstraints(arg: { id: string } | string, opts?: FitboundsOptions): void;
 
-  listTools(): string[];
+  listDrawingTools(): string[];
 
-  startDrawing(tool: string, keepEnabled?: boolean): void;
+  registerDrawingTool(name: string, tool: typeof SvelteComponent): void;
 
-  stopDrawing(): void;
+  registerShapeEditor(shapeType: ShapeType, editor: typeof SvelteComponent): void;
+
+  setDrawingTool(tool: DrawingTool): void;
+
+  setDrawingEnabled(enabled: boolean): void;
 
 }
 
@@ -48,7 +53,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   let _style = opts.style;
 
-  let currentUser: User = opts.readOnly ? null : createAnonymousGuest();
+  let currentUser: User = createAnonymousGuest();
 
   initKeyCommands(viewer.element, selection, store); 
 
@@ -64,7 +69,13 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   const drawingLayer = new SVGDrawingLayer({
     target: viewer.element.querySelector('.openseadragon-canvas'),
-    props: { state, viewer, user: currentUser }
+    props: { 
+      drawingEnabled: opts.drawingEnabled,
+      drawingMode: opts.drawingMode,
+      state, 
+      user: currentUser, 
+      viewer
+    }
   });
 
   displayLayer.$on('click', (evt: CustomEvent<PixiLayerClickEvent>) => {
@@ -109,6 +120,20 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   const getUser = () => currentUser;
 
+  const registerDrawingTool = (name: string, tool: typeof SvelteComponent) =>
+    registerTool(name, tool);
+
+  const registerShapeEditor = (shapeType: ShapeType, editor: typeof SvelteComponent) =>
+    registerEditor(shapeType, editor);
+
+  const setDrawingTool = (tool: DrawingTool) => {
+    const t = getTool(tool) as typeof SvelteComponent;
+    drawingLayer.$set({ tool: t })
+  }
+
+  const setDrawingEnabled = (enabled: boolean) =>
+    drawingLayer.$set({ drawingEnabled: enabled });
+
   const setSelected = (arg?: string | string[]) => {
     if (arg) {
       selection.setSelected(arg);
@@ -125,17 +150,6 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     drawingLayer.$set({ user });
   }
 
-  const startDrawing = (tool: string, keepEnabled: boolean = false) => {
-    const t = getTool(tool) as typeof SvelteComponent;
-    //@ts-ignore
-    drawingLayer.$set({ tool: t, keepEnabled })
-  }
-
-  const stopDrawing = () => {
-    //@ts-ignore
-    drawingLayer.$set({ tool: null });
-  }
-
   return {
     ...base,
     get style() { return _style },
@@ -144,15 +158,17 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     fitBounds,
     fitBoundsWithConstraints,
     getUser,
-    listTools,
+    listDrawingTools,
     on: lifecycle.on,
     off: lifecycle.off,
+    registerDrawingTool,
+    registerShapeEditor,
+    setDrawingEnabled,
+    setDrawingTool,
     setPresenceProvider,
     setSelected,
     setUser,
-    startDrawing,
     state,
-    stopDrawing,
     viewer
   }
 
