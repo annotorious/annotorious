@@ -15,7 +15,7 @@ export type OpenSeadragonAnnotatorProps<E extends unknown> = AnnotoriousOpts<Ima
 
   children?: ReactNode;
 
-  keepEnabled?: boolean;
+  drawingEnabled?: boolean;
 
   tool?: string | null;
 
@@ -23,7 +23,7 @@ export type OpenSeadragonAnnotatorProps<E extends unknown> = AnnotoriousOpts<Ima
 
 export const OpenSeadragonAnnotator = <E extends unknown>(props: OpenSeadragonAnnotatorProps<E>) => {
 
-  const { children, keepEnabled, tool, ...opts } = props;
+  const { children, drawingEnabled, tool, ...opts } = props;
 
   const [viewer, setViewer] = useState<OpenSeadragon.Viewer>();
 
@@ -37,14 +37,14 @@ export const OpenSeadragonAnnotator = <E extends unknown>(props: OpenSeadragonAn
   }, [viewer]);
 
   useEffect(() => {
-    if (!anno)
-      return;
+    if (anno)
+      (anno as AnnotoriousOpenSeadragonAnnotator).setDrawingTool(tool);
+  }, [tool]);
 
-    if (props.tool)
-      (anno as AnnotoriousOpenSeadragonAnnotator).startDrawing(props.tool, props.keepEnabled);
-    else
-      (anno as AnnotoriousOpenSeadragonAnnotator).stopDrawing();
-  }, [props.tool, props.keepEnabled]);
+  useEffect(() => {
+    if (anno)
+      (anno as AnnotoriousOpenSeadragonAnnotator).setDrawingEnabled(drawingEnabled);
+  }, [drawingEnabled]);
 
   useEffect(() => {
     if (anno)    

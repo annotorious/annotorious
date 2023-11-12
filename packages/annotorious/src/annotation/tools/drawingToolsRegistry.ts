@@ -1,7 +1,7 @@
 import type { SvelteComponent } from 'svelte';
 import { RubberbandRectangle } from './rectangle';
 import { RubberbandPolygon } from './polygon';
-import type { DrawingMode } from 'src/AnnotoriousOpts';
+import type { DrawingMode } from '../../AnnotoriousOpts';
 
 export type DrawingTool = 'rectangle' | 'polygon' | string;
 

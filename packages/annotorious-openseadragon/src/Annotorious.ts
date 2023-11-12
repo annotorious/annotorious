@@ -55,6 +55,10 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   let currentUser: User = createAnonymousGuest();
 
+  let drawingEnabled = opts.drawingEnabled;
+
+  let drawingMode = opts.drawingMode;
+
   initKeyCommands(viewer.element, selection, store); 
 
   const displayLayer = new PixiLayer({
@@ -70,8 +74,8 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const drawingLayer = new SVGDrawingLayer({
     target: viewer.element.querySelector('.openseadragon-canvas'),
     props: { 
-      drawingEnabled: opts.drawingEnabled,
-      preferredDrawingMode: opts.drawingMode,
+      drawingEnabled,
+      preferredDrawingMode: drawingMode,
       state,
       user: currentUser, 
       viewer
@@ -80,7 +84,11 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   displayLayer.$on('click', (evt: CustomEvent<PixiLayerClickEvent>) => {
     const { originalEvent, annotation } = evt.detail;
-    if (annotation)
+
+    // Ignore click event if drawing is currently active with mode  'click'
+    const blockEvent = drawingMode === 'click' && drawingEnabled;
+
+    if (annotation && !blockEvent)
       selection.clickSelect(annotation.id, originalEvent);
     else if (!selection.isEmpty())
       selection.clear();
@@ -128,11 +136,16 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   const setDrawingTool = (t: DrawingTool) => {
     const { tool, opts } = getTool(t);
+
+    drawingMode = opts?.drawingMode || drawingMode;
+
     drawingLayer.$set({ tool, opts });
   }
 
-  const setDrawingEnabled = (enabled: boolean) =>
-    drawingLayer.$set({ drawingEnabled: enabled });
+  const setDrawingEnabled = (enabled: boolean) => {
+    drawingEnabled = enabled;
+    drawingLayer.$set({ drawingEnabled });
+  }
 
   const setSelected = (arg?: string | string[]) => {
     if (arg) {

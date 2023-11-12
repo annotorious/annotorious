@@ -40,7 +40,7 @@
     }
   }
 
-  const onRelease = (evt: PointerEvent) => {
+  const onRelease = (evt: PointerEvent) => {    
     const target = evt.target as Element;
     target.releasePointerCapture(evt.pointerId);
 

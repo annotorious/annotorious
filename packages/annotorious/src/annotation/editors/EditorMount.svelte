@@ -5,7 +5,7 @@
   import { computeStyle } from '../utils/styling';
   import type { Transform } from '../Transform';
 
-  const dispatch = createEventDispatcher<{ change: Shape }>();
+  const dispatch = createEventDispatcher<{ grab: undefined, release: undefined, change: Shape }>();
 
   /** Props */
   export let annotation: ImageAnnotation;
@@ -33,6 +33,9 @@
       editorComponent.$$set({ shape: event.detail });
       dispatch('change', event.detail)
     });
+
+    editorComponent.$on('grab', event => dispatch('grab', event.detail));
+    editorComponent.$on('release', event => dispatch('release', event.detail));
 
     return () => {
       editorComponent.$destroy();
