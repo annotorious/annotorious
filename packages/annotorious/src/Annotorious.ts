@@ -19,7 +19,7 @@ export interface ImageAnnotator<E extends unknown = ImageAnnotation> extends Ann
 
   listDrawingTools(): string[];
 
-  registerDrawingTool(name: string, tool: typeof SvelteComponent): void;
+  registerDrawingTool(name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts): void;
 
   registerShapeEditor(shapeType: ShapeType, editor: typeof SvelteComponent): void;
 

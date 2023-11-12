@@ -87,6 +87,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
     // Ignore click event if drawing is currently active with mode  'click'
     const blockEvent = drawingMode === 'click' && drawingEnabled;
+
     if (annotation && !blockEvent)
       selection.clickSelect(annotation.id, originalEvent);
     else if (!selection.isEmpty())
@@ -134,10 +135,12 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     registerEditor(shapeType, editor);
 
   const setDrawingTool = (t: DrawingTool) => {
-    const { tool, opts } = getTool(t);
+    const toolSpec = getTool(t);
+    if (!toolSpec)
+      throw `Tool not found: ${t}`;
 
+    const { tool, opts } = toolSpec;
     drawingMode = opts?.drawingMode || drawingMode;
-
     drawingLayer.$set({ tool, opts });
   }
 
