@@ -121,25 +121,29 @@
       transform={transform}>
       {#if editableAnnotations}
         {#each editableAnnotations as editable}
-          <EditorMount
-            target={drawingEl}
-            editor={getEditor(editable.target.selector)}
-            annotation={editable}
-            transform={{ elementToImage: toolTransform }}
-            viewportScale={scale}
-            on:grab={onGrab} 
-            on:change={onChangeSelected(editable)}
-            on:release={onRelease} />
+          {#key editable.id}
+            <EditorMount
+              target={drawingEl}
+              editor={getEditor(editable.target.selector)}
+              annotation={editable}
+              transform={{ elementToImage: toolTransform }}
+              viewportScale={scale}
+              on:grab={onGrab} 
+              on:change={onChangeSelected(editable)}
+              on:release={onRelease} />
+            {/key}
         {/each}
       {:else if (tool && drawingEnabled)} 
-        <OSDToolMount
-          target={drawingEl}
-          tool={tool}
-          drawingMode={drawingMode}
-          transform={{ elementToImage: toolTransform }}
-          viewer={viewer}
-          viewportScale={scale}
-          on:create={onSelectionCreated} />
+        {#key tool}
+          <OSDToolMount
+            target={drawingEl}
+            tool={tool}
+            drawingMode={drawingMode}
+            transform={{ elementToImage: toolTransform }}
+            viewer={viewer}
+            viewportScale={scale}
+            on:create={onSelectionCreated} />
+          {/key}
       {/if}
     </g>
   </svg>
