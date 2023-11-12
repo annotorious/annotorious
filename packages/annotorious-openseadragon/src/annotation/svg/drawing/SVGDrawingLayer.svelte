@@ -1,11 +1,11 @@
 <script type="ts">
-  import { onMount, type SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-  import OpenSeadragon, { type CanvasClickEvent } from 'openseadragon';
+  import OpenSeadragon from 'openseadragon';
   import type { StoreChangeEvent, User } from '@annotorious/core';
-  import { getEditor, EditorMount, ToolMount, getTool } from '@annotorious/annotorious/src';
-  import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode, DrawingToolOpts } from '@annotorious/annotorious/src';
+  import { getEditor, EditorMount, getTool } from '@annotorious/annotorious/src';
+  import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious/src';
   import OSDLayer from '../OSDLayer.svelte';
+  import OSDToolMount from './OSDToolMount.svelte';
 
   /** Props **/
   export let drawingEnabled: boolean;
@@ -109,20 +109,6 @@
 
     viewer.setMouseNavEnabled(true);
   }
-
-  onMount(() => {
-    drawingEl.parentElement.addEventListener('pointermove', () => console.log('MOVE'));
-
-    const onCanvasClick = (event: CanvasClickEvent) => {
-      const { originalEvent } = event;
-
-      const cloned = new PointerEvent(originalEvent.type, originalEvent)
-
-      // drawingEl.parentElement.dispatchEvent(cloned);
-    }
-
-    viewer.addHandler('canvas-click', onCanvasClick);
-  });
 </script>
 
 <OSDLayer viewer={viewer} let:transform let:scale>
@@ -146,11 +132,12 @@
             on:release={onRelease} />
         {/each}
       {:else if (tool && drawingEnabled)} 
-        <ToolMount
+        <OSDToolMount
           target={drawingEl}
           tool={tool}
           drawingMode={drawingMode}
           transform={{ elementToImage: toolTransform }}
+          viewer={viewer}
           viewportScale={scale}
           on:create={onSelectionCreated} />
       {/if}

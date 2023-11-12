@@ -47,6 +47,8 @@
   }
     
   const onPointerUp = (evt: PointerEvent) => {
+    console.log('up!');
+    
     if (drawingMode === 'click')
       evt.stopImmediatePropagation();
     
