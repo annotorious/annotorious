@@ -29,7 +29,7 @@ export const fillDefaults = <I extends ImageAnnotation = ImageAnnotation, E exte
   return {
     ...opts,
     drawingEnabled: opts.drawingEnabled === undefined ? true : opts.drawingEnabled,
-    drawingMode: opts.drawingMode || 'click',
+    drawingMode: opts.drawingMode || 'drag',
     pointerSelectAction: opts.pointerSelectAction || PointerSelectAction.EDIT
   };
 

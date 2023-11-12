@@ -4,7 +4,7 @@ import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver } fro
 import { registerEditor } from './annotation/editors';
 import { getTool, registerTool, listDrawingTools, type DrawingTool } from './annotation/tools';
 import { SVGAnnotationLayer } from './annotation';
-import type { SVGAnnotationLayerPointerEvent } from './annotation';
+import type { DrawingToolOpts, SVGAnnotationLayerPointerEvent } from './annotation';
 import type { ImageAnnotation, ShapeType } from './model';
 import { createSvelteImageAnnotatorState } from './state';
 import { setTheme } from './themes';
@@ -70,8 +70,8 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     target: container,
     props: { 
       drawingEnabled: opts.drawingEnabled, 
-      drawingMode: opts.drawingMode,
       image: img, 
+      preferredDrawingMode: opts.drawingMode,
       state, 
       style, 
       user: currentUser
@@ -80,7 +80,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   annotationLayer.$on('click', (evt: CustomEvent<SVGAnnotationLayerPointerEvent>) => {
     const { originalEvent, annotation } = evt.detail;
-    if (annotation && opts.drawingMode === 'drag')
+    if (annotation)
       selection.clickSelect(annotation.id, originalEvent);
     else if (!selection.isEmpty())
       selection.clear();
@@ -109,15 +109,15 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   const getUser = () => currentUser;
 
-  const registerDrawingTool = (name: string, tool: typeof SvelteComponent) =>
-    registerTool(name, tool);
+  const registerDrawingTool = (name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts) =>
+    registerTool(name, tool, opts);
 
   const registerShapeEditor = (shapeType: ShapeType, editor: typeof SvelteComponent) =>
     registerEditor(shapeType, editor);
 
-  const setDrawingTool = (tool: DrawingTool) => {
-    const t = getTool(tool) as typeof SvelteComponent;
-    annotationLayer.$set({ tool: t })
+  const setDrawingTool = (t: DrawingTool) => {
+    const { tool, opts } = getTool(t);
+    annotationLayer.$set({ tool, opts })
   }
 
   const setDrawingEnabled = (enabled: boolean) =>

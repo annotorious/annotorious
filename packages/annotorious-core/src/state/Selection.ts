@@ -16,7 +16,7 @@ export enum PointerSelectAction {
 
   EDIT = 'EDIT', // Make annotation target(s) editable on pointer select
   
-  HIGHLIGHT = 'HIGHLIGHT',  // Just hightlight on select, but don't make editable
+  SELECT = 'SELECT',  // Just select, but don't make editable
 
   NONE = 'NONE' // Click won't select - annotation is completely inert
 
@@ -53,7 +53,7 @@ export const createSelectionState = <T extends Annotation>(
       const action = onPointerSelect(annotation, selectAction);
       if (action === PointerSelectAction.EDIT)
         set({ selected: [{ id, editable: true }], pointerEvent }); 
-      else if (action === PointerSelectAction.HIGHLIGHT)
+      else if (action === PointerSelectAction.SELECT)
         set({ selected: [{ id }], pointerEvent }); 
       else
         set({ selected: [], pointerEvent });

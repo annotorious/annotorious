@@ -15,7 +15,6 @@ export interface SVGAnnotationLayerPointerEvent {
 const MAX_CLICK_DURATION = 250;
 
 export const addEventListeners = (svg: SVGSVGElement, store: SvelteImageAnnotationStore) => {
-
   const dispatch = createEventDispatcher<{ click: SVGAnnotationLayerPointerEvent}>();
 
   let lastPointerDown: number;

@@ -15,12 +15,14 @@
 
   /** Props **/
   export let drawingEnabled: boolean;
-  export let drawingMode: DrawingMode;
   export let image: HTMLImageElement | HTMLCanvasElement;
+  export let preferredDrawingMode: DrawingMode;
   export let state: SvelteImageAnnotatorState;
   export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
-  export let tool: typeof SvelteComponent = getTool('rectangle');
+  export let { tool, opts } = getTool('rectangle');
   export let user: User;
+
+  $: drawingMode = opts?.drawingMode || preferredDrawingMode;
 
   /** Drawing tool layer **/
   let drawingEl: SVGGElement;

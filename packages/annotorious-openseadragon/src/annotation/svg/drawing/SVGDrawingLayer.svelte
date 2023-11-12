@@ -1,19 +1,17 @@
 <script type="ts">
-  import type { SvelteComponent } from 'svelte';
+  import { onMount, type SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-  import OpenSeadragon from 'openseadragon';
+  import OpenSeadragon, { type CanvasClickEvent } from 'openseadragon';
   import type { StoreChangeEvent, User } from '@annotorious/core';
-  import { getEditor } from '@annotorious/annotorious/src';
-  import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious/src';
+  import { getEditor, EditorMount, ToolMount, getTool } from '@annotorious/annotorious/src';
+  import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode, DrawingToolOpts } from '@annotorious/annotorious/src';
   import OSDLayer from '../OSDLayer.svelte';
-    import ToolMount from '@annotorious/annotorious/src/annotation/tools/ToolMount.svelte';
-    import EditorMount from '@annotorious/annotorious/src/annotation/editors/EditorMount.svelte';
-    
+
   /** Props **/
   export let drawingEnabled: boolean;
-  export let drawingMode: DrawingMode;
+  export let preferredDrawingMode: DrawingMode;
   export let state: ImageAnnotatorState;
-  export let tool: typeof SvelteComponent = null;
+  export let { tool, opts } = getTool('rectangle');
   export let user: User;
   export let viewer: OpenSeadragon.Viewer;
 
@@ -21,9 +19,11 @@
   let drawingEl: SVGGElement;
 
   /** Tool lifecycle **/
-  $: tool ? viewer.setMouseNavEnabled(false) : viewer.setMouseNavEnabled(true); 
+  $: drawingMode = opts?.drawingMode || preferredDrawingMode;
 
-  $: tool && selection.clear();
+  $: drawingEnabled && drawingMode === 'drag' ? viewer.setMouseNavEnabled(false) : viewer.setMouseNavEnabled(true); 
+
+  $: drawingEnabled && selection.clear();
 
   /** Selection tracking **/
   const { store, selection } = state;
@@ -32,7 +32,7 @@
 
   let editableAnnotations: ImageAnnotation[] = null;
  
-  $: if ($selection.selected.length === 0 && keepEnabled && tool) { viewer.setMouseNavEnabled(false) }
+  $: if ($selection.selected.length === 0 && drawingMode === 'drag' && drawingEnabled) { viewer.setMouseNavEnabled(false) }
   
   $: trackSelection($selection.selected);
 
@@ -108,23 +108,30 @@
     selection.setSelected(annotation.id);
 
     viewer.setMouseNavEnabled(true);
-
-    if (!keepEnabled)
-      tool = null;
   }
 
-  // A typecasting helper, because 'as' doesn't work in Svelte markup
-  const cast = <T extends Shape>(x: Shape) => x as T;
+  onMount(() => {
+    drawingEl.parentElement.addEventListener('pointermove', () => console.log('MOVE'));
+
+    const onCanvasClick = (event: CanvasClickEvent) => {
+      const { originalEvent } = event;
+
+      const cloned = new PointerEvent(originalEvent.type, originalEvent)
+
+      // drawingEl.parentElement.dispatchEvent(cloned);
+    }
+
+    viewer.addHandler('canvas-click', onCanvasClick);
+  });
 </script>
 
 <OSDLayer viewer={viewer} let:transform let:scale>
   <svg 
     class="a9s-annotationlayer a9s-osd-drawinglayer"
-    class:drawing={tool}>
+    class:drawing={drawingEnabled}>
 
     <g 
       bind:this={drawingEl}
-      class="drawing"
       transform={transform}>
       {#if editableAnnotations}
         {#each editableAnnotations as editable}

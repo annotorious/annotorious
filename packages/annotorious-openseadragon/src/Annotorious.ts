@@ -4,7 +4,7 @@ import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver } fro
 import type { Annotator, DrawingStyle, PresenceProvider, User } from '@annotorious/core/src';
 import { fillDefaults, createImageAnnotatorState } from '@annotorious/annotorious/src';
 import { listDrawingTools, getTool, registerTool, registerEditor } from '@annotorious/annotorious/src/annotation';
-import type { AnnotoriousOpts, DrawingTool, ImageAnnotation, ShapeType } from '@annotorious/annotorious/src';
+import type { AnnotoriousOpts, DrawingTool, DrawingToolOpts, ImageAnnotation, ShapeType } from '@annotorious/annotorious/src';
 import type { PixiLayerClickEvent } from './annotation';
 import { PixiLayer, SVGDrawingLayer, SVGPresenceLayer } from './annotation';
 import { initKeyCommands } from './keyCommands';
@@ -27,7 +27,7 @@ export interface OpenSeadragonAnnotator<E extends unknown = ImageAnnotation> ext
 
   listDrawingTools(): string[];
 
-  registerDrawingTool(name: string, tool: typeof SvelteComponent): void;
+  registerDrawingTool(name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts): void;
 
   registerShapeEditor(shapeType: ShapeType, editor: typeof SvelteComponent): void;
 
@@ -71,8 +71,8 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     target: viewer.element.querySelector('.openseadragon-canvas'),
     props: { 
       drawingEnabled: opts.drawingEnabled,
-      drawingMode: opts.drawingMode,
-      state, 
+      preferredDrawingMode: opts.drawingMode,
+      state,
       user: currentUser, 
       viewer
     }
@@ -120,15 +120,15 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   const getUser = () => currentUser;
 
-  const registerDrawingTool = (name: string, tool: typeof SvelteComponent) =>
-    registerTool(name, tool);
+  const registerDrawingTool = (name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts) =>
+    registerTool(name, tool, opts);
 
   const registerShapeEditor = (shapeType: ShapeType, editor: typeof SvelteComponent) =>
     registerEditor(shapeType, editor);
 
-  const setDrawingTool = (tool: DrawingTool) => {
-    const t = getTool(tool) as typeof SvelteComponent;
-    drawingLayer.$set({ tool: t })
+  const setDrawingTool = (t: DrawingTool) => {
+    const { tool, opts } = getTool(t);
+    drawingLayer.$set({ tool, opts });
   }
 
   const setDrawingEnabled = (enabled: boolean) =>

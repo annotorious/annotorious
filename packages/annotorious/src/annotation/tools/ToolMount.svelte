@@ -4,7 +4,7 @@
   import type { Shape } from 'src/model';
   import type { DrawingMode } from 'src/AnnotoriousOpts';
 
-  const dispatch = createEventDispatcher<{ startDrawing: PointerEvent, create: Shape }>();
+  const dispatch = createEventDispatcher<{ create: Shape }>();
 
   /** Props **/
   export let drawingMode: DrawingMode;
@@ -20,18 +20,30 @@
   $: if (toolComponent) toolComponent.$set({ viewportScale });
 
   onMount(() => {
+    const svg = target.closest('svg');
+
+    const cleanup: Function[] = [];
+
+    const addEventListener = (name: string, handler: (evt: PointerEvent) => void, capture?: boolean) => {
+      svg.addEventListener(name, handler, capture);
+      cleanup.push(() => svg.removeEventListener(name, handler, capture));
+    }
+
     toolComponent = new tool({
       target,
-      props: { transform, viewportScale, drawingMode }
+      props: { 
+        addEventListener,
+        drawingMode,
+        transform, 
+        viewportScale
+      }
     });
-
-    toolComponent.$on('startDrawing',
-      event => dispatch('startDrawing', event.detail));
 
     toolComponent.$on('create', 
       event => dispatch('create', event.detail));
 
     return () => {
+      cleanup.forEach(fn => fn());
       toolComponent.$destroy();
     }
   });

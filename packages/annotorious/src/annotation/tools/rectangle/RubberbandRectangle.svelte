@@ -6,8 +6,9 @@
 
   const dispatch = createEventDispatcher<{ create: Rectangle }>();
   
+  /** Props **/
+  export let addEventListener: (type: string, fn: EventListener, capture?: boolean) => void;
   export let drawingMode: DrawingMode;
-
   export let transform: Transform;
   
   let container: SVGGElement;
@@ -46,6 +47,9 @@
   }
     
   const onPointerUp = (evt: PointerEvent) => {
+    if (drawingMode === 'click')
+      evt.stopImmediatePropagation();
+    
     const timeDifference = performance.now() - lastPointerDown;
 
     if (drawingMode === 'click') {
@@ -102,17 +106,9 @@
   }
 
   onMount(() => {
-    const svg = container.closest('svg');
-
-    svg.addEventListener('pointerdown', onPointerDown);
-    svg.addEventListener('pointermove', onPointerMove);
-    svg.addEventListener('pointerup', onPointerUp, true);
-
-    return () => {
-      svg.removeEventListener('pointerdown', onPointerDown);
-      svg.removeEventListener('pointermove', onPointerMove);
-      svg.removeEventListener('pointerup', onPointerUp, true); 
-    }
+    addEventListener('pointerdown', onPointerDown);
+    addEventListener('pointermove', onPointerMove);
+    addEventListener('pointerup', onPointerUp, true);
   });
 </script>
 
