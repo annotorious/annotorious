@@ -1,41 +1,39 @@
 import * as PIXI from 'pixi.js';
 import type OpenSeadragon from 'openseadragon';
 import { ShapeType } from '@annotorious/annotorious/src';
-import type { ImageAnnotation, Polygon, Rectangle } from '@annotorious/annotorious/src';
+import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annotorious/annotorious/src';
 import type { DrawingStyle } from '@annotorious/core';
 
 const DEFAULT_FILL = 0x1a73e8;
 const DEFAULT_ALPHA = 0.25;
 
-const drawRectangle = (rectangle: Rectangle, style?: DrawingStyle) => {
-  const { x, y, w, h } = rectangle.geometry;
-
+const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (shape: T, style?: DrawingStyle) => {
   const fill = style?.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
   const alpha = style?.fillOpacity === undefined ? DEFAULT_ALPHA : style.fillOpacity;
 
-  const rect = new PIXI.Graphics();
-  rect.beginFill(0xffffff, alpha);
-  rect.drawRect(x, y, w, h);
-  rect.endFill();
+  const g = new PIXI.Graphics();
+  g.beginFill(0xffffff, alpha);
+  fn(shape, g); 
+  g.endFill();
 
-  rect.tint = fill;
-
-  return rect;
+  g.tint = fill;
+  return g;
 }
 
-const drawPolygon = (polygon: Polygon, style?: DrawingStyle) => {
+const drawEllipse = drawShape((ellipse: Ellipse, g: PIXI.Graphics) => {
+  const { cx, cy, rx, ry } = ellipse.geometry;
+  g.drawEllipse(cx, cy, rx, ry)
+});
+
+const drawPolygon = drawShape((polygon: Polygon, g: PIXI.Graphics) => {
   const flattend = polygon.geometry.points.reduce((flat, xy) => ([...flat, ...xy]), []);   
+  g.drawPolygon(flattend);
+});
 
-  const fill = style?.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
-  const alpha = style?.fillOpacity === undefined ? DEFAULT_ALPHA : style.fillOpacity;
-
-  const poly = new PIXI.Graphics();
-  poly.beginFill(fill, alpha);
-  poly.drawPolygon(flattend);
-  poly.endFill();
-
-  return poly;
-}
+const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
+  const { x, y, w, h } = rectangle.geometry;
+  g.drawRect(x, y, w, h);
+});
 
 const redraw = (viewer: OpenSeadragon.Viewer, graphics: PIXI.Graphics, renderer: PIXI.AbstractRenderer) => () => {
   const viewportBounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds(true));
@@ -100,6 +98,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       g = drawRectangle(selector as Rectangle, s);
     } else if (selector.type === ShapeType.POLYGON) {
       g = drawPolygon(selector as Polygon, s);
+    } else if (selector.type === ShapeType.ELLIPSE) {
+      g = drawEllipse(selector as Ellipse, s);
     } else {
       console.warn(`Unsupported shape type: ${selector.type}`)
     }
