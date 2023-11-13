@@ -1,8 +1,8 @@
 <script type="ts">
   import { createEventDispatcher, onMount } from 'svelte';
+  import type { DrawingMode } from '../../../AnnotoriousOpts';
   import { ShapeType, type Rectangle } from '../../../model';
   import type { Transform } from '../..';
-  import type { DrawingMode } from 'src/AnnotoriousOpts';
 
   const dispatch = createEventDispatcher<{ create: Rectangle }>();
   
@@ -47,9 +47,6 @@
   }
     
   const onPointerUp = (evt: PointerEvent) => {
-    if (drawingMode === 'click')
-      evt.stopImmediatePropagation();
-    
     const timeDifference = performance.now() - lastPointerDown;
 
     if (drawingMode === 'click') {

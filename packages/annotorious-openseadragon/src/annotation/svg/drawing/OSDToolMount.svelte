@@ -24,16 +24,18 @@
     const cleanup: Function[] = [];
 
     const addEventListener = (name: string, handler: (evt: PointerEvent) => void, capture?: boolean) => {
-      if (name === 'pointerup') {
+      if (name === 'pointerup' || name === 'dblclick') {
         // OpenSeadragon, by design, stops the 'pointerup' event. In order to capture pointer up events,
         // we need to listen to the canvas-click event instead
-        const onCanvasClick = (event: OpenSeadragon.CanvasClickEvent) => {
+        const osdHandler = (event: OpenSeadragon.CanvasClickEvent) => {
           const { originalEvent } = event;
           handler(originalEvent as PointerEvent);
         }
 
-        viewer.addHandler('canvas-click', onCanvasClick);
-        cleanup.push(() => viewer.removeHandler('canvas-click', onCanvasClick));
+        const osdName = name === 'pointerup' ? 'canvas-click' : 'canvas-double-click';
+
+        viewer.addHandler(osdName, osdHandler);
+        cleanup.push(() => viewer.removeHandler(osdName, osdHandler));
       } else {
         svg.addEventListener(name, handler, capture);
         cleanup.push(() => svg.removeEventListener(name, handler, capture));

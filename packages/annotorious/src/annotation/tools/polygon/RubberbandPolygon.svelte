@@ -1,16 +1,21 @@
 <script type="ts">
   import { onMount, createEventDispatcher } from 'svelte';
+  import type { DrawingMode } from '../../../AnnotoriousOpts';
   import { boundsFromPoints, ShapeType, type Polygon } from '../../../model';
   import { distance } from '../../utils';
   import type { Transform } from '../..';
 
   const dispatch = createEventDispatcher<{ create: Polygon }>();
 
+  /** Props **/
+  export let addEventListener: (type: string, fn: EventListener, capture?: boolean) => void;
+  export let drawingMode: DrawingMode;
   export let transform: Transform;
-
   export let viewportScale = 1;
 
   let container: SVGGElement;
+
+  let lastPointerDown: number;
 
   let points: [number, number][] = [];
   
@@ -23,12 +28,16 @@
   $: handleSize = 10 / viewportScale;
 
   const onPointerDown = (evt: PointerEvent) => {
-    const point = transform.elementToImage(evt.offsetX, evt.offsetY);
+    lastPointerDown = performance.now();
 
-    if (points.length === 0)
-      points.push(point);
+    if (drawingMode === 'drag') {
+      if (points.length === 0) {
+        const point = transform.elementToImage(evt.offsetX, evt.offsetY);
+        points.push(point);
 
-    cursor = point;
+        cursor = point;
+      }
+    }
   }
 
   const onPointerMove = (evt: PointerEvent) => {
@@ -43,42 +52,56 @@
   }
 
   const onPointerUp = (evt: PointerEvent) => {
-    // Require minimum drag of 4px
-    if (points.length === 1) {
-      const dist = distance(points[0], cursor);
+    const timeDifference = performance.now() - lastPointerDown;
 
-      if (dist <= 4) {
-        // Cancel
-        points = [];
-        cursor = null;
-
+    if (drawingMode === 'click') {
+      // Not a single click - ignore
+      if (timeDifference > 300)
         return;
+
+      evt.stopPropagation();
+
+      if (isClosable) {
+        stopDrawing();
+      } else if (points.length === 0) {
+        // Start drawing
+        const point = transform.elementToImage(evt.offsetX, evt.offsetY);
+        points.push(point);
+
+        cursor = point;
+      } else {
+        points.push(cursor);
       }
-    }
+    } else {
+      // Require minimum drag of 4px
+      if (points.length === 1) {
+        const dist = distance(points[0], cursor);
 
-    // Stop click event from propagating if we're drawing
-    evt.stopImmediatePropagation();
+        if (dist <= 4) {
+          // Cancel
+          points = [];
+          cursor = null;
 
-    if (isClosable) {
-      const shape: Polygon = {
-        type: ShapeType.POLYGON, 
-        geometry: {
-          bounds: boundsFromPoints(points),
-          points: [...points]
+          return;
         }
       }
 
-      points = [];
-      cursor = null;
-    
-      dispatch('create', shape);
-    } else {
-      points.push(cursor);
+      // Stop click event from propagating if we're drawing
+      evt.stopImmediatePropagation();
+
+      if (isClosable) {
+        stopDrawing();
+      } else {
+        points.push(cursor);
+      }
     }
   }
 
   const onDblClick = () => {
+    console.log('dblclick');
+    
     const p = [...points, cursor];
+
     const shape: Polygon = {
         type: ShapeType.POLYGON, 
         geometry: {
@@ -93,20 +116,26 @@
       dispatch('create', shape);
   }
 
-  onMount(() => {
-    const svg = container.closest('svg');
-
-    svg.addEventListener('pointerdown', onPointerDown, true);
-    svg.addEventListener('pointermove', onPointerMove);
-    svg.addEventListener('pointerup', onPointerUp, true);
-    svg.addEventListener('dblclick', onDblClick, true);
-
-    return () => {
-      svg.removeEventListener('pointerdown', onPointerDown, true);
-      svg.removeEventListener('pointermove', onPointerMove, true);
-      svg.removeEventListener('pointerup', onPointerUp, true);
-      svg.removeEventListener('dblclick', onDblClick, true);
+  const stopDrawing = () => {
+    const shape: Polygon = {
+      type: ShapeType.POLYGON, 
+      geometry: {
+        bounds: boundsFromPoints(points),
+        points: [...points]
+      }
     }
+
+    points = [];
+    cursor = null;
+  
+    dispatch('create', shape);
+  }
+
+  onMount(() => {
+    addEventListener('pointerdown', onPointerDown, true);
+    addEventListener('pointermove', onPointerMove);
+    addEventListener('pointerup', onPointerUp, true);
+    addEventListener('dblclick', onDblClick, true);
   });
 </script>
 
