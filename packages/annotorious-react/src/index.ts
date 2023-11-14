@@ -31,7 +31,7 @@ import {
   defaultColorProvider as _defaultColorProvider
 } from '@annotorious/core/src/presence'; 
 
-export { _defaultColorProvider as defaultColorProvider };
+export { _defaultColorProvider as defaultColorProvider };
 
 export type {
   Appearance,

@@ -117,6 +117,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   const setDrawingTool = (t: DrawingTool) => {
     const { tool, opts } = getTool(t);
+    // @ts-ignore
     annotationLayer.$set({ tool, opts })
   }
 
