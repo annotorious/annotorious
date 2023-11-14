@@ -31,7 +31,7 @@
 
     editorComponent.$on('change', event => {
       editorComponent.$$set({ shape: event.detail });
-      dispatch('change', event.detail)
+      dispatch('change', event.detail);
     });
 
     editorComponent.$on('grab', event => dispatch('grab', event.detail));
