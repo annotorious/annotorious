@@ -3,6 +3,8 @@ export * from './AnnotoriousPlugin';
 export * from './AnnotoriousPopup';
 export * from './ImageAnnotator';
 
+export * from './openseadragon';
+
 // This ensures the Annotorious stylesheet gets packaged into annotorious-react
 import '@annotorious/annotorious/annotorious.css';
 import '@annotorious/openseadragon/annotorious-openseadragon.css';
