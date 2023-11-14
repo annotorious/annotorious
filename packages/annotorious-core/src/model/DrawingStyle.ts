@@ -12,4 +12,8 @@ export interface DrawingStyle {
 
   fillOpacity?: number;
 
+  stroke?: Color;
+
+  strokeOpacity?: number;
+
 }
