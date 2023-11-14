@@ -26,7 +26,6 @@
     "dist",
     "src"
   ],
-  "svelte": "./src/index.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

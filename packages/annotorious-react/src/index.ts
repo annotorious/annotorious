@@ -9,6 +9,10 @@ export * from './openseadragon';
 import '@annotorious/annotorious/annotorious.css';
 import '@annotorious/openseadragon/annotorious-openseadragon.css';
 
+export type {
+  LifecycleEvents
+} from '@annotorious/core/src/lifecycle';
+
 // Essential re-exports from @annotorious/core
 export type {
   Annotation,
