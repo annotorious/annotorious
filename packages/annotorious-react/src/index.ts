@@ -52,9 +52,11 @@ export type {
 } from '@annotorious/core/src/state';
 
 import {
+  Origin as _Origin,
   PointerSelectAction as _PointerSelectAction
 } from '@annotorious/core/src/state';
 
+export const Origin = _Origin;
 export const PointerSelectAction = _PointerSelectAction;
 
 import {
