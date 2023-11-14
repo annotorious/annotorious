@@ -83,7 +83,7 @@ export const parseW3CBodies = (
 ): AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(body => {
 
   // Exctract properties that conform to the internal model, but keep custom props
-  const { id, type, purpose, value, created, creator, ...rest} = body;
+  const { id, type, purpose, value, created, creator, ...rest } = body;
 
   // The internal model strictly requires IDs. (Because multi-user scenarios
   // will have problems without them.) In the W3C model, bodys *may* have IDs.
@@ -91,7 +91,7 @@ export const parseW3CBodies = (
   // generating the ID is idempotent: the same body should always get the same ID.
   // This will avoid unexpected results when checking for equality.  
   return {
-    id: id || hashCode(body),
+    id: id || `temp-${hashCode(body)}`,
     annotation: annotationId,
     type,
     purpose,
@@ -105,11 +105,14 @@ export const parseW3CBodies = (
 
 });
 
+/** Serialization helper to remove core-specific fields from the annotation body **/
 export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[] => 
   bodies.map(b => {
     const w3c = { ...b };
     delete w3c.annotation;
-    delete w3c.id;
+
+    if (w3c.id?.startsWith('temp-'))
+      delete w3c.id;
+  
     return w3c;
   });
-

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { parseW3CBodies, serializeW3CBodies } from '@annotorious/core';
-import type { FormatAdapter, ParseResult, W3CAnnotation, W3CAnnotationBody } from '@annotorious/core';
+import type { FormatAdapter, ParseResult, W3CAnnotation } from '@annotorious/core';
 import { ShapeType } from '../core';
 import type { ImageAnnotation, RectangleGeometry } from '../core';
 import type { FragmentSelector } from './fragment';
