@@ -10,13 +10,14 @@ const DEFAULT_ALPHA = 0.25;
 const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (shape: T, style?: DrawingStyle) => {
   const fill = style?.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
   const alpha = style?.fillOpacity === undefined ? DEFAULT_ALPHA : style.fillOpacity;
-
+  
   const g = new PIXI.Graphics();
   g.beginFill(0xffffff, alpha);
+  g.lineStyle(1, 0xffffff, 1, 0.5, true);
   fn(shape, g); 
   g.endFill();
-
   g.tint = fill;
+  
   return g;
 }
 
@@ -79,7 +80,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     width: canvas.width, 
     height: canvas.height,
     backgroundAlpha: 0,
-    view: canvas
+    view: canvas,
+    antialias: true
   });
 
   // Lookup table: rendered shapes by annotation ID
