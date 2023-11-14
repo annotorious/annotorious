@@ -31,7 +31,7 @@ import {
   defaultColorProvider as _defaultColorProvider
 } from '@annotorious/core/src/presence'; 
 
-export const defaultColorProvider = _defaultColorProvider;
+export { _defaultColorProvider as defaultColorProvider };
 
 export type {
   Appearance,
@@ -56,14 +56,14 @@ import {
   PointerSelectAction as _PointerSelectAction
 } from '@annotorious/core/src/state';
 
-export const Origin = _Origin;
-export const PointerSelectAction = _PointerSelectAction;
+export { _Origin as Origin };
+export { _PointerSelectAction as PointerSelectAction };
 
 import {
   createBody as _createBody
 } from '@annotorious/core/src/utils';
 
-export const createBody = _createBody;
+export { _createBody as createBody };
 
 // Essential re-exports from @annotorious/annotorious 
 export type {
@@ -81,7 +81,7 @@ import {
   W3CImageFormat as _W3CImageFormat
 } from '@annotorious/annotorious';
 
-export const ShapeType = _ShapeType;
-export const W3CImageFormat = _W3CImageFormat;
+export { _ShapeType as ShapeType };
+export { _W3CImageFormat as W3CImageFormat };
 
 export type { Viewer } from 'openseadragon';
