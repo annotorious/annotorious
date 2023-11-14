@@ -139,8 +139,12 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   const setStyle = (s: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined) => {
     if (typeof s === 'function') {
       renderedAnnotations.forEach(({ g, annotation }, _) => {
-        const { fill } = s(annotation);
-        g.tint = fill ? PIXI.utils.string2hex(fill) : DEFAULT_FILL;
+        const style = s(annotation);
+        if (style) {
+          g.tint = style.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
+        } else {
+          g.tint = DEFAULT_FILL;
+        }
       });
     } else {
       const fill = s?.fill ? PIXI.utils.string2hex(s.fill) : DEFAULT_FILL;
