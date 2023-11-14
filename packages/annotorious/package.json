@@ -23,8 +23,10 @@
   "module": "./dist/annotorious.es.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
+  "svelte": "./src/index.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
