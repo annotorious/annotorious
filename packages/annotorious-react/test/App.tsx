@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { W3CImageFormat } from '@annotorious/openseadragon';
 import { 
   OpenSeadragonViewer, 
   OpenSeadragonAnnotator, 
   OpenSeadragonPopup, 
   useAnnotator,
-  useSelection
+  useSelection,
+  AnnotoriousOpenSeadragonAnnotator
 } from '../src';
 
 import '@annotorious/openseadragon/annotorious-openseadragon.css';
@@ -47,7 +48,9 @@ const OSD_OPTIONS: OpenSeadragon.Options = {
 
 export const App = () => {
 
-  const anno = useAnnotator();
+  const anno = useAnnotator<AnnotoriousOpenSeadragonAnnotator>();
+
+  const [mode, setMode] = useState<'move' | 'draw'>('move')
 
   const { selected } = useSelection()
 
@@ -61,10 +64,10 @@ export const App = () => {
     }
   }, [anno]);
 
-  const startDrawing = () => {
-    // @ts-ignore
-    anno?.startDrawing('rectangle');
-  }
+  useEffect(() => {
+    if (anno)
+      anno.setDrawingEnabled(mode === 'draw');
+  }, [mode]);
 
   const onDelete = () => {
     if (selected.length > 0) {
@@ -75,12 +78,13 @@ export const App = () => {
   return (
     <div>
       <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 999 }}>
-        <button onClick={startDrawing}>Start Drawing</button>
-        <button onClick={onDelete}>Delete</button>
+        <button onClick={() => setMode(mode => mode === 'draw' ? 'move' : 'draw')}>{mode}</button>
       </div>
       <OpenSeadragonAnnotator 
         adapter={W3CImageFormat(
-          'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c')}>
+          'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c')}
+        drawingEnabled={false}
+        drawingMode="click">
             
         <OpenSeadragonViewer className="openseadragon" options={OSD_OPTIONS} />
 

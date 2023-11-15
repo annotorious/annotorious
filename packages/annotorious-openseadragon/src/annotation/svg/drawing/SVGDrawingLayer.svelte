@@ -119,7 +119,7 @@
     <g 
       bind:this={drawingEl}
       transform={transform}>
-      {#if editableAnnotations}
+      {#if drawingEl && editableAnnotations}
         {#each editableAnnotations as editable}
           {#key editable.id}
             <EditorMount
@@ -133,7 +133,7 @@
               on:release={onRelease} />
             {/key}
         {/each}
-      {:else if (tool && drawingEnabled)} 
+      {:else if (drawingEl && tool && drawingEnabled)} 
         {#key tool}
           <OSDToolMount
             target={drawingEl}
