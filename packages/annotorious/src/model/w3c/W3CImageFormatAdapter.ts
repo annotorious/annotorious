@@ -43,7 +43,7 @@ export const parseW3CImageAnnotation = (
       parseSVGSelector(w3cSelector as SVGSelector) : undefined;
 
   return selector ? { 
-    parsed:{
+    parsed: {
       ...annotation,
       id: annotationId,
       bodies,
@@ -70,6 +70,7 @@ export const serializeW3CImageAnnotation = (
       serializeSVGSelector(shape);
 
   return {
+    ...annotation,
     '@context': 'http://www.w3.org/ns/anno.jsonld',
     id: annotation.id,
     type: 'Annotation',
