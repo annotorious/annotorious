@@ -15,6 +15,7 @@
   "types": "./src/index.ts",
   "svelte": "./src/index.ts",
   "devDependencies": {
+    "@annotorious/core": "*",
     "@sveltejs/vite-plugin-svelte": "^2.4.6",
     "@tsconfig/svelte": "^3.0.0",
     "@types/openseadragon": "^3.0.7",
