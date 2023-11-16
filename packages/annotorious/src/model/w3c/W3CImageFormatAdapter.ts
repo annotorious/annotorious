@@ -44,6 +44,7 @@ export const parseW3CImageAnnotation = (
 
   return selector ? { 
     parsed:{
+      ...annotation,
       id: annotationId,
       bodies,
       target: {
