@@ -12,7 +12,7 @@
     "test": "echo 'Skipping tests in @annotorious/svelte package'"
   },
   "module": "./dist/annotorious-svelte.es.js",
-  "types": "./src/index.ts",
+  "types": "./dist/index.d.ts",
   "svelte": "./src/index.ts",
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.4.6",
