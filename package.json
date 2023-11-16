@@ -1,7 +1,7 @@
 {
   "name": "@annotorious/monorepo",
   "version": "3.0.0-rc.1",
-  "description": "Annotorious v3 monorep",
+  "description": "Annotorious v3 monorepo",
   "author": "Rainer Simon",
   "repository": {
     "type": "git",
