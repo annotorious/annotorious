@@ -86,12 +86,16 @@
     canvas.addEventListener('pointermove', moveHandler); 
 
     const observer = new ResizeObserver(entries => {
-      const { width, height } = entries[0].contentRect;
+      try {
+        const { width, height } = entries[0].contentRect;
 
-      canvas.width = width;
-      canvas.height = height;
-      
-      stage.resize(width, height);
+        canvas.width = width;
+        canvas.height = height;
+        
+        stage.resize(width, height);
+      } catch {
+        console.warn('WebGL canvas already disposed');
+      }
     });
 
     observer.observe(canvas);
