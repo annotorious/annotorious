@@ -158,8 +158,13 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     renderer.render(graphics);
   }
 
+  const destroy = () => {
+    renderer.destroy();
+  }
+
   return {
     addAnnotation,
+    destroy,
     redraw: redraw(viewer, graphics, renderer),
     removeAnnotation,
     resize,

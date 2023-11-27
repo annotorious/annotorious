@@ -32,6 +32,11 @@ export const OpenSeadragonAnnotator = <E extends unknown>(props: OpenSeadragonAn
     if (viewer) {
       const anno = createOSDAnnotator<E>(viewer, opts);
       setAnno(anno);
+
+      return () => {
+        anno.destroy();
+        setAnno(undefined);
+      }
     }
   }, [viewer]);
 

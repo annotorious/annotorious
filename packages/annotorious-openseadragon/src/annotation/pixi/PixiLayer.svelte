@@ -119,6 +119,8 @@
       viewer.removeHandler('update-viewport', stage.redraw);
       viewer.removeHandler('animation-finish', updateViewportState);
 
+      stage.destroy();
+
       canvas.parentNode.removeChild(canvas);
     }
   });

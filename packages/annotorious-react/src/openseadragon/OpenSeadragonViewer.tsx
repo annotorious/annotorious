@@ -18,7 +18,7 @@ export const OpenSeadragonViewer = forwardRef<OpenSeadragon.Viewer, OpenSeadrago
 
   const { viewer, setViewer } = useContext(OpenSeadragonAnnotatorContext);
 
-  useEffect(() => {
+  useEffect(() => {    
     if (element.current) {
       const v = OpenSeadragon({...options, element: element.current });
 
@@ -29,9 +29,12 @@ export const OpenSeadragonViewer = forwardRef<OpenSeadragon.Viewer, OpenSeadrago
 
       return () => {
         v.destroy();
+
+        if (setViewer) 
+          setViewer(undefined);
       }
     }
-  }, []);
+  }, [options]);
 
   useImperativeHandle(ref, () => viewer);
 
