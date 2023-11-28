@@ -61,12 +61,20 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   const displayLayer = new PixiLayer({
     target: viewer.element,
-    props: { state, viewer, style: opts.style }
+    props: { 
+      state, 
+      viewer, 
+      style: opts.style
+    }
   });
 
   const presenceLayer = new SVGPresenceLayer({
     target: viewer.element.querySelector('.openseadragon-canvas'),
-    props: { store, viewer, provider: null }
+    props: { 
+      store,
+      viewer, 
+      provider: null 
+    }
   });
 
   const drawingLayer = new SVGDrawingLayer({
@@ -109,7 +117,6 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
 
   const destroy = () => {
-    // Destroy Svelte layers
     displayLayer.$destroy();
     presenceLayer.$destroy();
     drawingLayer.$destroy();
@@ -142,9 +149,8 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     drawingLayer.$set({ drawingEnabled });
   }
 
-  const setFilter = (filter: Filter) => {
-    // TODO
-  }
+  const setFilter = (filter: Filter) =>
+    displayLayer.$set({ filter });
 
   const setSelected = (arg?: string | string[]) => {
     if (arg) {

@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js';
 import type OpenSeadragon from 'openseadragon';
 import { ShapeType } from '@annotorious/annotorious/src';
+import type { DrawingStyle, Filter } from '@annotorious/core';
 import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annotorious/annotorious/src';
-import type { DrawingStyle } from '@annotorious/core';
 
 const DEFAULT_FILL = 0x1a73e8;
 const DEFAULT_ALPHA = 0.25;
@@ -136,6 +136,10 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     renderer.render(graphics);
   }
 
+  const setFilter = (filter: Filter) => {
+    // TODO
+  }
+
   const setStyle = (s: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined) => {
     if (typeof s === 'function') {
       renderedAnnotations.forEach(({ g, annotation }, _) => {
@@ -158,9 +162,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     renderer.render(graphics);
   }
 
-  const destroy = () => {
-    renderer.destroy();
-  }
+  const destroy = () => renderer.destroy();
 
   return {
     addAnnotation,
@@ -168,6 +170,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     redraw: redraw(viewer, graphics, renderer),
     removeAnnotation,
     resize,
+    setFilter,
     setStyle,
     updateAnnotation
   }

@@ -21,12 +21,21 @@
   <body>
     <div id="openseadragon">
       <div class="buttons" style="position:absolute; top: 10px; right: 10px; z-index: 1;">
+        <button id="filter">Toggle Filter</button>
         <button id="move-or-draw">Move</button>
       </div>
     </div>
 
     <script type='module'>
       import { OpenSeadragon, createOSDAnnotator, W3CImageFormat } from './index.ts';
+
+      var filter = 'SHOW_ALL';
+
+      var filters = {
+        'SHOW_ALL': undefined,
+        'SHOW_RECTANGLES': a => a.target.selector.type === 'RECTANGLE',
+        'SHOW_POLYGONS': a => a.target.selector.type === 'POLYGON'
+      };
 
       window.onload = function() {
         var viewer = OpenSeadragon({
@@ -89,6 +98,20 @@
             anno.setDrawingEnabled(false);
             trigger.innerHTML = 'Move';
           }
+        });
+
+        const filterSetting = document.getElementById('filter');
+        filterSetting.addEventListener('click', function() {
+          if (filter === 'SHOW_ALL') {
+            filter = 'SHOW_RECTANGLES';
+          } else if (filter === 'SHOW_RECTANGLES') {
+            filter = 'SHOW_POLYGONS';
+          } else {
+            filter = 'SHOW_ALL';
+          }
+
+          anno.setFilter(filters[filter]);
+          console.log('Changed filter: ' + filter);
         });
 
         anno.on('clickAnnotation', a => console.log('clicked', a));
