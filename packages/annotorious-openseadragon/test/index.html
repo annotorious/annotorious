@@ -83,8 +83,6 @@
           }
         });
 
-        // anno.setDrawingTool('polygon');
-
         fetch('annotations.json').then((response) => response.json())
           .then(annotations =>
             anno.setAnnotations(annotations));

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { W3CImageFormat } from '@annotorious/openseadragon';
+import { ImageAnnotation, W3CImageFormat } from '@annotorious/openseadragon';
 import { 
   OpenSeadragonViewer, 
   OpenSeadragonAnnotator, 
@@ -46,11 +46,19 @@ const OSD_OPTIONS: OpenSeadragon.Options = {
   }
 };
 
+const FILTERS = [ 
+  { key: 'SHOW_ALL', filter: undefined },
+  { key: 'SHOW_RECTANGLES', filter: (a: ImageAnnotation) => a.target.selector.type === 'RECTANGLE' },
+  { key: 'SHOW_POLYGONS', filter: (a: ImageAnnotation) => a.target.selector.type === 'POLYGON' }
+];
+
 export const App = () => {
 
   const anno = useAnnotator<AnnotoriousOpenSeadragonAnnotator>();
 
-  const [mode, setMode] = useState<'move' | 'draw'>('move')
+  const [mode, setMode] = useState<'move' | 'draw'>('move');
+
+  const [filter, setFilter] = useState<{ key: String, filter: ((a: ImageAnnotation) => boolean) | undefined }>(FILTERS[0]);
 
   const { selected } = useSelection()
 
@@ -69,22 +77,33 @@ export const App = () => {
       anno.setDrawingEnabled(mode === 'draw');
   }, [mode]);
 
-  const onDelete = () => {
-    if (selected.length > 0) {
-      anno.removeAnnotation(selected[0].annotation.id);
-    }
+  const toggleFilter = () => {
+    // @ts-ignore
+    const idx = FILTERS.indexOf(filter);
+    const next = (idx + 1) % FILTERS.length;
+    setFilter(FILTERS[next]);
   }
 
   return (
     <div>
       <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 999 }}>
-        <button onClick={() => setMode(mode => mode === 'draw' ? 'move' : 'draw')}>{mode}</button>
+        <button
+          onClick={toggleFilter}>
+          {filter.key}
+        </button>
+
+        <button
+          onClick={() => setMode(mode => mode === 'draw' ? 'move' : 'draw')}>
+          {mode}
+        </button>
       </div>
+
       <OpenSeadragonAnnotator 
         adapter={W3CImageFormat(
           'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c')}
         drawingEnabled={false}
-        drawingMode="click">
+        drawingMode="click"
+        filter={filter.filter}>
             
         <OpenSeadragonViewer className="openseadragon" options={OSD_OPTIONS} />
 
