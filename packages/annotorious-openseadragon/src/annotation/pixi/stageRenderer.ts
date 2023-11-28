@@ -84,8 +84,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     antialias: true
   });
 
-  // Lookup table: rendered shapes by annotation ID
-  const renderedAnnotations = new Map<string, { g: PIXI.Graphics, annotation: ImageAnnotation }>(); 
+  // Lookup table: shapes and annotations by annotation ID
+  const annotationShapes = new Map<string, { g: PIXI.Graphics, annotation: ImageAnnotation }>(); 
 
   let style: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined = undefined;
 
@@ -108,23 +108,23 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
     if (g) {
       graphics.addChild(g);
-      renderedAnnotations.set(annotation.id, { g, annotation });
+      annotationShapes.set(annotation.id, { g, annotation });
     }
   }
 
   const removeAnnotation = (annotation: ImageAnnotation) => {
-    const r = renderedAnnotations.get(annotation.id);
+    const r = annotationShapes.get(annotation.id);
     if (r) {
-      renderedAnnotations.delete(annotation.id);  
+      annotationShapes.delete(annotation.id);  
       r.g.destroy();
     }
   }
 
   const updateAnnotation = (oldValue: ImageAnnotation, newValue: ImageAnnotation) => {
-    const r = renderedAnnotations.get(oldValue.id);
+    const r = annotationShapes.get(oldValue.id);
 
     if (r) {
-      renderedAnnotations.delete(oldValue.id);
+      annotationShapes.delete(oldValue.id);
       r.g.destroy();
 
       addAnnotation(newValue)
@@ -137,12 +137,24 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   }
 
   const setFilter = (filter: Filter) => {
-    // TODO
+    const { children } = graphics;
+
+    annotationShapes.forEach(({ g, annotation }) => {
+      const visible = filter ? filter(annotation) : true;
+      
+      if (visible && !(children.includes(g))) {
+        graphics.addChild(g);
+      } else if (!visible && children.includes(g)) {
+        graphics.removeChild(g);
+      }
+    });
+
+    renderer.render(graphics);
   }
 
   const setStyle = (s: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined) => {
     if (typeof s === 'function') {
-      renderedAnnotations.forEach(({ g, annotation }, _) => {
+      annotationShapes.forEach(({ g, annotation }, _) => {
         const style = s(annotation);
         if (style) {
           g.tint = style.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
@@ -152,9 +164,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       });
     } else {
       const fill = s?.fill ? PIXI.utils.string2hex(s.fill) : DEFAULT_FILL;
-
-      renderedAnnotations.forEach(({ g }, _) =>
-        g.tint = fill);
+      annotationShapes.forEach(({ g }, _) => g.tint = fill);
     }
   
     style = s;
