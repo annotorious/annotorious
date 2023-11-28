@@ -1,8 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
 import { createOSDAnnotator } from '@annotorious/openseadragon';
-import { OpenSeadragonAnnotator as AnnotoriousOpenSeadragonAnnotator } from '@annotorious/openseadragon';
-import { AnnotoriousOpts, ImageAnnotation } from '@annotorious/annotorious';
+import { AnnotoriousOpts, DrawingStyle, Filter, ImageAnnotation } from '@annotorious/annotorious';
 import { AnnotoriousContext } from '../Annotorious';
 
 export const OpenSeadragonAnnotatorContext = createContext<{ 
@@ -15,6 +14,10 @@ export type OpenSeadragonAnnotatorProps<E extends unknown> = AnnotoriousOpts<Ima
   children?: ReactNode;
 
   drawingEnabled?: boolean;
+
+  filter?: Filter<ImageAnnotation>;
+
+  style?: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle);
 
   tool?: string | null;
 
@@ -41,18 +44,19 @@ export const OpenSeadragonAnnotator = <E extends unknown>(props: OpenSeadragonAn
   }, [viewer]);
 
   useEffect(() => {
-    if (anno)
-      (anno as AnnotoriousOpenSeadragonAnnotator).setDrawingTool(tool);
+    if (anno) anno.setDrawingTool(tool);
   }, [tool]);
 
   useEffect(() => {
-    if (anno)
-      (anno as AnnotoriousOpenSeadragonAnnotator).setDrawingEnabled(props.drawingEnabled);
+    if (anno) anno.setDrawingEnabled(props.drawingEnabled);
   }, [props.drawingEnabled]);
 
   useEffect(() => {
-    if (anno)    
-      anno.style = props.style;
+    if (anno) anno.setFilter(props.filter);
+  }, [props.filter]);
+
+  useEffect(() => {
+    if (anno) anno.setStyle(props.style);
   }, [props.style]);
 
   return (

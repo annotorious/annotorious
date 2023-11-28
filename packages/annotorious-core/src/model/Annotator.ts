@@ -5,6 +5,7 @@ import { Origin, type HoverState, type SelectionState, type Store, type Viewport
 import type { LifecycleEvents } from '../lifecycle';
 import { parseAll, type FormatAdapter } from './FormatAdapter';
 import type { DrawingStyle } from './DrawingStyle';
+import type { Filter } from './Filter';
 
 /**
  * Base annotator interface.
@@ -12,8 +13,6 @@ import type { DrawingStyle } from './DrawingStyle';
  * E ... external adapted representation
  */
 export interface Annotator<I extends Annotation = Annotation, E extends unknown = Annotation> {
-
-  style: DrawingStyle | ((annotation: I) => DrawingStyle) | undefined;
 
   addAnnotation(annotation: E): void;
 
@@ -33,9 +32,13 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   setAnnotations(annotations: E[]): void;
 
+  setFilter(filter: Filter): void;
+
   setPresenceProvider?(provider: PresenceProvider): void;
 
   setSelected(arg?: string | string[]): void;
+
+  setStyle(arg: DrawingStyle | ((annotation: I) => DrawingStyle) | undefined): void;
 
   setUser(user: User): void;
 

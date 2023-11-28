@@ -1,5 +1,5 @@
 import type { SvelteComponent } from 'svelte';
-import type { Annotator, DrawingStyle, User } from '@annotorious/core';
+import type { Annotator, DrawingStyle, Filter, User } from '@annotorious/core';
 import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver } from '@annotorious/core';
 import { registerEditor } from './annotation/editors';
 import { getTool, registerTool, listDrawingTools, type DrawingTool } from './annotation/tools';
@@ -51,8 +51,6 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   let currentUser: User = createAnonymousGuest();
 
-  let style = opts.style;
-
   // We'll wrap the image in a container DIV.
   const container = document.createElement('DIV');
   container.style.position = 'relative';
@@ -73,7 +71,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
       image: img, 
       preferredDrawingMode: opts.drawingMode,
       state, 
-      style, 
+      style: opts.style, 
       user: currentUser
     }
   });
@@ -92,11 +90,6 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
-
-  const setStyle = (drawingStyle: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) => {
-    style = drawingStyle;
-    annotationLayer.$set({ style });
-  }
 
   const destroy = () => {
     // Destroy Svelte annotation layer
@@ -123,6 +116,10 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   const setDrawingEnabled = (enabled: boolean) =>
     annotationLayer.$set({ drawingEnabled: enabled });
+  
+  const setFilter = (filter: Filter) => {
+    console.warn('Filter not implemented yet');
+  }
 
   const setSelected = (arg?: string | string[]) => {
     if (arg) {
@@ -132,6 +129,9 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     }
   }
 
+  const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) =>
+    annotationLayer.$set({ style });
+
   const setUser = (user: User) => {
     currentUser = user;
     annotationLayer.$set({ user });
@@ -139,8 +139,6 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   return {
     ...base,
-    get style() { return style },
-    set style(s: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) { setStyle(s) },
     destroy,
     getUser,
     listDrawingTools,
@@ -150,7 +148,9 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     registerShapeEditor,
     setDrawingEnabled,
     setDrawingTool,
+    setFilter,
     setSelected,
+    setStyle,
     setUser,
     state
   }

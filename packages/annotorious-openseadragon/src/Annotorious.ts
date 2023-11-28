@@ -1,6 +1,6 @@
 import type OpenSeadragon from 'openseadragon';
 import type { SvelteComponent } from 'svelte';
-import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver } from '@annotorious/core';
+import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver, type Filter } from '@annotorious/core';
 import type { Annotator, DrawingStyle, PresenceProvider, User } from '@annotorious/core/src';
 import { fillDefaults, createImageAnnotatorState } from '@annotorious/annotorious/src';
 import { listDrawingTools, getTool, registerTool, registerEditor } from '@annotorious/annotorious/src/annotation';
@@ -51,8 +51,6 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const lifecycle = createLifecyleObserver(
     store, selection, hover, undefined, opts.adapter, opts.autoSave);
 
-  let _style = opts.style;
-
   let currentUser: User = createAnonymousGuest();
 
   let drawingEnabled = opts.drawingEnabled;
@@ -63,7 +61,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   const displayLayer = new PixiLayer({
     target: viewer.element,
-    props: { state, viewer, style: _style }
+    props: { state, viewer, style: opts.style }
   });
 
   const presenceLayer = new SVGPresenceLayer({
@@ -110,11 +108,6 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
 
-  const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) => {
-    _style = style;
-    displayLayer.$set({ style });
-  }
-
   const destroy = () => {
     // Destroy Svelte layers
     displayLayer.$destroy();
@@ -149,6 +142,10 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     drawingLayer.$set({ drawingEnabled });
   }
 
+  const setFilter = (filter: Filter) => {
+    // TODO
+  }
+
   const setSelected = (arg?: string | string[]) => {
     if (arg) {
       selection.setSelected(arg);
@@ -156,6 +153,9 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
       selection.clear();
     }
   }
+
+  const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) =>
+    displayLayer.$set({ style });
 
   const setPresenceProvider = (provider: PresenceProvider) =>
     presenceLayer.$set({ provider });
@@ -167,8 +167,6 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   return {
     ...base,
-    get style() { return _style },
-    set style(s: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) { setStyle(s) },
     destroy,
     fitBounds,
     fitBoundsWithConstraints,
@@ -180,8 +178,10 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     registerShapeEditor,
     setDrawingEnabled,
     setDrawingTool,
+    setFilter,
     setPresenceProvider,
     setSelected,
+    setStyle,
     setUser,
     state,
     viewer
