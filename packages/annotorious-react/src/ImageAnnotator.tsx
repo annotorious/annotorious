@@ -1,11 +1,15 @@
 import { Children, ReactElement, cloneElement, useContext, useEffect } from 'react';
-import { AnnotoriousOpts, createImageAnnotator, DrawingTool } from '@annotorious/annotorious';
-import type { ImageAnnotation, ImageAnnotator as AnnotoriousImageAnnotator } from '@annotorious/annotorious';
+import { AnnotoriousOpts, createImageAnnotator } from '@annotorious/annotorious';
+import type { DrawingStyle, DrawingTool, Filter, ImageAnnotation } from '@annotorious/annotorious';
 import { AnnotoriousContext } from './Annotorious';
 
 export interface ImageAnnotatorProps<E extends unknown> extends AnnotoriousOpts<ImageAnnotation, E> {
 
   children: ReactElement<HTMLImageElement>;
+
+  filter?: Filter<ImageAnnotation>;
+
+  style?: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle);
 
   tool?: DrawingTool
 
@@ -29,13 +33,15 @@ export const ImageAnnotator = <E extends unknown>(props: ImageAnnotatorProps<E>)
   };
 
   useEffect(() => {
-    if (props.tool && anno)
-      (anno as AnnotoriousImageAnnotator).setDrawingTool(props.tool);
+    if (props.tool && anno) anno.setDrawingTool(props.tool);
   }, [props.tool, anno]);
 
   useEffect(() => {
-    if (anno)
-      anno.style = props.style;
+    if (anno) anno.setFilter(props.filter);
+  }, [props.filter]);
+
+  useEffect(() => {
+    if (anno) anno.setStyle(props.style);
   }, [props.style]);
  
   return <>{cloneElement(child, { onLoad }  as Partial<HTMLImageElement>)}</>
