@@ -34,13 +34,15 @@
 
   const onPointerMove = (canvas: HTMLCanvasElement) => (evt: PointerEvent) => {
     const {x, y} = getImageXY(new OpenSeadragon.Point(evt.offsetX, evt.offsetY));
-    const hovered = store.getAt(x, y);
+    
+    const hit = store.getAt(x, y);
+    const isVisibleHit = hit && (!filter || filter(hit));
 
-    if (hovered) {
+    if (isVisibleHit) {
       canvas.classList.add('hover');
 
-      if ($hover !== hovered.id)
-        hover.set(hovered.id);
+      if ($hover !== hit.id)
+        hover.set(hit.id);
     } else {
       canvas.classList.remove('hover');
 
