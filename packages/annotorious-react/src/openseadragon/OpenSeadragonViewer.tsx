@@ -34,7 +34,7 @@ export const OpenSeadragonViewer = forwardRef<OpenSeadragon.Viewer, OpenSeadrago
           setViewer(undefined);
       }
     }
-  }, [options]);
+  }, [JSON.stringify(options)]);
 
   useImperativeHandle(ref, () => viewer);
 
