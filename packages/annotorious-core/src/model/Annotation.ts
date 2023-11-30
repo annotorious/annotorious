@@ -42,7 +42,7 @@ export interface AnnotationBody {
 
   type?: string;
 
-  purpose?: string;
+  purpose?: Purpose | string;
 
   value?: string;
 
@@ -55,3 +55,19 @@ export interface AnnotationBody {
   updated?: Date;
 
 }
+
+// Pre-defined purposes from https://www.w3.org/TR/annotation-model/#motivation-and-purpose
+export type Purpose = 
+  'assessing' |
+  'bookmarking' |
+  'classifying' |
+  'commenting' |
+  'describing' |
+  'editing' |
+  'highlighting' |
+  'identifying' |
+  'linking' |
+  'moderating' |
+  'questioning' |
+  'replying' |
+  'tagging';
