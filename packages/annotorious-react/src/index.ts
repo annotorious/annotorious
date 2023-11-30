@@ -14,37 +14,9 @@ export type {
 } from '@annotorious/core/src/lifecycle';
 
 // Essential re-exports from @annotorious/core
-export type {
-  Annotation,
-  AnnotationBody,
-  AnnotationTarget,
-  Annotator,
-  AnnotatorState,
-  Color,
-  DrawingStyle,
-  FormatAdapter,
-  ParseResult,
-  User,
-  W3CAnnotation,
-  W3CAnnotationBody,
-  W3CAnnotationTarget,
-  W3CSelector 
-} from '@annotorious/core/src/model';
-
-import { 
-  defaultColorProvider as _defaultColorProvider
-} from '@annotorious/core/src/presence'; 
-
-export { _defaultColorProvider as defaultColorProvider };
-
-export type {
-  Appearance,
-  AppearanceProvider,
-  PresenceEvents,
-  PresenceProvider,
-  PresenceState,
-  PresentUser
-} from '@annotorious/core/src/presence';
+export * from '@annotorious/core/src/model';
+export * from '@annotorious/core/src/presence';
+export * from '@annotorious/core/src/utils';
 
 export type { 
   HoverState,
@@ -62,12 +34,6 @@ import {
 
 export { _Origin as Origin };
 export { _PointerSelectAction as PointerSelectAction };
-
-import {
-  createBody as _createBody
-} from '@annotorious/core/src/utils';
-
-export { _createBody as createBody };
 
 // Essential re-exports from @annotorious/annotorious 
 export type {

@@ -16,5 +16,14 @@ export type {
   Selection,
   SelectionState,
   Store,
+  StoreChangeEvent,
   StoreObserver
 } from '@annotorious/core/src/state';
+
+import {
+  Origin as _Origin,
+  PointerSelectAction as _PointerSelectAction
+} from '@annotorious/core/src/state';
+
+export { _Origin as Origin };
+export { _PointerSelectAction as PointerSelectAction };
