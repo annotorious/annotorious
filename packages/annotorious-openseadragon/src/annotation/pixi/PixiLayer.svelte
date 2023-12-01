@@ -8,12 +8,12 @@
   import './PixiLayer.css';
 
   /** Props */
-  export let state: ImageAnnotatorState;
-  export let viewer: OpenSeadragon.Viewer;
-  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
   export let filter: Filter<ImageAnnotation> = undefined;
+  export let state: ImageAnnotatorState;
+  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
+  export let viewer: OpenSeadragon.Viewer;
 
-  const { store, hover, viewport } = state;
+  const { store, hover, selection, viewport } = state;
   
   const dispatch = createEventDispatcher<{ click: PixiLayerClickEvent}>();
 
@@ -22,7 +22,9 @@
   let dragged = false;
 
   $: stage?.setFilter(filter);
-  
+
+  $: stage?.setSelected($selection);
+
   $: stage?.setStyle(style);
 
   // Helper

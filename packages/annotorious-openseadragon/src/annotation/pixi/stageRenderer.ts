@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import type OpenSeadragon from 'openseadragon';
 import { ShapeType } from '@annotorious/annotorious/src';
-import type { DrawingStyle, Filter } from '@annotorious/core';
+import type { DrawingStyle, Filter, Selection } from '@annotorious/core';
 import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annotorious/annotorious/src';
 
 const DEFAULT_FILL = 0x1a73e8;
@@ -87,6 +87,10 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   // Lookup table: shapes and annotations by annotation ID
   const annotationShapes = new Map<string, { g: PIXI.Graphics, annotation: ImageAnnotation }>(); 
 
+  // Current selection (if any)
+  let selectedIds = new Set<string>();
+
+  // Current style (if any)
   let style: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined = undefined;
 
   const addAnnotation = (annotation: ImageAnnotation) => {
@@ -140,7 +144,10 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     const { children } = graphics;
 
     annotationShapes.forEach(({ g, annotation }) => {
-      const visible = filter ? filter(annotation) : true;
+      // Note: selected annotation always remains visible
+      const visible = filter ? 
+        selectedIds.has(annotation.id) || filter(annotation) : 
+        true;
       
       if (visible && !(children.includes(g))) {
         graphics.addChild(g);
@@ -150,6 +157,11 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     });
 
     renderer.render(graphics);
+  }
+
+  const setSelected = (selection: Selection) => {
+    const { selected } = selection;
+    selectedIds = new Set(selected.map(t => t.id));
   }
 
   const setStyle = (s: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined) => {
@@ -181,6 +193,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     removeAnnotation,
     resize,
     setFilter,
+    setSelected,
     setStyle,
     updateAnnotation
   }
