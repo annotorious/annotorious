@@ -2,13 +2,61 @@ export * from './osd';
 
 export { default as MouseOverTooltip } from './MouseOverTooltip.svelte';
 
-// Re-export essentials from @annotorious/core
+// Essential re-exports from @annotorious/core
 export type {
+  Annotation,
+  AnnotationBody,
+  AnnotationTarget,
+  Annotator,
+  AnnotatorState,
+  Color,
+  DrawingStyle,
+  FormatAdapter,
+  ParseResult,
+  User,
+  W3CAnnotation,
+  W3CAnnotationBody,
+  W3CAnnotationTarget,
+  W3CSelector
+} from '@annotorious/core/src/model';
+
+export type { 
+  HoverState,
+  Selection,
+  SelectionState,
+  Store,
+  StoreChangeEvent,
+  StoreObserver,
   SvelteAnnotator,
   SvelteAnnotatorState
-} from '@annotorious/core';
+} from '@annotorious/core/src/state';
 
-// Re-export essentials from @annotorious/annotorious
+import {
+  PointerSelectAction as _PointerSelectAction
+} from '@annotorious/core/src/state';
+
+export const PointerSelectAction = _PointerSelectAction;
+
+import {
+  createBody as _createBody
+} from '@annotorious/core/src/utils';
+
+export const createBody = _createBody;
+
+// Essential re-exports from @annotorious/annotorious 
 export type {
-  ImageAnnotation
+  ImageAnnotator,
+  ImageAnnotation,
+  ImageAnnotatorState,
+  Polygon,
+  Rectangle,
+  Shape
 } from '@annotorious/annotorious';
+
+import {   
+  ShapeType as _ShapeType,
+  W3CImageFormat as _W3CImageFormat
+} from '@annotorious/annotorious';
+
+export const ShapeType = _ShapeType;
+export const W3CImageFormat = _W3CImageFormat;
