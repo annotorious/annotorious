@@ -10,7 +10,7 @@
 
   $: computedStyle = computeStyle(annotation, style);
 
-  const { x, y, w, h } = geom as RectangleGeometry;
+  $: ({ x, y, w, h } = geom as RectangleGeometry);
 </script>
 
 <g data-id={annotation.id}>

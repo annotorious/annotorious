@@ -1,6 +1,7 @@
 import type { Annotation } from '../model';
 import type { Store } from './Store';
-import { type ChangeSet, Origin, type StoreChangeEvent } from './StoreObserver';
+import { Origin } from './StoreObserver';
+import type { ChangeSet, StoreChangeEvent, Update } from './StoreObserver';
 
 export interface UndoStack {
 
@@ -30,24 +31,50 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
 
   let pointer = -1;
 
-  const onChange = debounce((event: StoreChangeEvent<T>) => {
+  let muteEvents = false;
+
+  const onChange = (event: StoreChangeEvent<T>) => {
     const { changes } = event;
 
-    changeStack.splice(pointer);
-    changeStack.push(changes);
+    if (!muteEvents) {
+      changeStack.splice(pointer + 1);
+      changeStack.push(changes);
 
-    pointer = changeStack.length - 1;
-  }, 100);
+      pointer = changeStack.length - 1;
+    }
+      
+    muteEvents = false;
+  }
 
   store.observe(onChange, { origin: Origin.LOCAL });
 
+  const undoCreated = (created: T[]) => 
+    created?.length > 0 && store.bulkDeleteAnnotation(created);
+
+  const redoCreated = (created: T[]) =>
+    created?.length > 0 && store.bulkAddAnnotation(created, false);
+
+  const undoUpdated = (updated: Update<T>[]) =>
+    updated?.length > 0 && updated.forEach(({ oldValue }) => store.updateAnnotation(oldValue));
+  
+  const redoUpdated = (updated: Update<T>[]) =>
+    updated?.length > 0 && updated.forEach(({ newValue }) => store.updateAnnotation(newValue));
+
+  const undoDeleted = (deleted: T[]) => 
+    deleted?.length > 0 && store.bulkAddAnnotation(deleted, false);
+
+  const redoDeleted = (deleted: T[]) =>
+    deleted?.length > 0 && store.bulkDeleteAnnotation(deleted);
+
   const undo = () => {
     if (pointer > -1) {
-      const lastChange = changeStack[pointer];
+      muteEvents = true;
 
-      console.log('undoing change', lastChange);
+      const { created, updated, deleted} = changeStack[pointer];
 
-      // TODO undo last change
+      undoCreated(created);
+      undoUpdated(updated);
+      undoDeleted(deleted);
 
       pointer -= 1;
     }
@@ -55,9 +82,13 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
 
   const redo = () => {
     if (changeStack.length - 1 > pointer) {
-      const nextChange = changeStack[pointer + 1];
+      muteEvents = true;
 
-      console.log('redoing', nextChange);
+      const { created, updated, deleted } = changeStack[pointer + 1];
+
+      redoCreated(created);
+      redoUpdated(updated);
+      redoDeleted(deleted);
 
       pointer += 1;
     }

@@ -19,8 +19,8 @@
 
   $: computedStyle = computeStyle(annotation, style);
 
+  $: if (annotation) editorComponent?.$set({ shape: annotation.target.selector });
   $: if (editorComponent) editorComponent.$set({ transform });
-
   $: if (editorComponent) editorComponent.$set({ viewportScale });
 
   onMount(() => {
