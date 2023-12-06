@@ -15,7 +15,7 @@
 
   let container: SVGGElement;
 
-  let lastPointerDown: number;
+  let lastPointerDown: PointerEvent;
 
   let points: [number, number][] = [];
   
@@ -28,8 +28,7 @@
   $: handleSize = 10 / viewportScale;
 
   const onPointerDown = (evt: PointerEvent) => {
-    console.log('down');
-    lastPointerDown = performance.now();
+    lastPointerDown = evt;
 
     if (drawingMode === 'drag') {
       if (points.length === 0) {
@@ -42,7 +41,6 @@
   }
 
   const onPointerMove = (evt: PointerEvent) => {
-    console.log('move!');
     if (points.length > 0) {
       cursor = transform.elementToImage(evt.offsetX, evt.offsetY);
 
@@ -54,14 +52,16 @@
   }
 
   const onPointerUp = (evt: PointerEvent) => {
-    console.log('up');
-    
-    const timeDifference = performance.now() - lastPointerDown;
-
     if (drawingMode === 'click') {
-      if (timeDifference > 300) // Not a single click - ignore
-        return;
+      const timeDifference = evt.timeStamp - lastPointerDown.timeStamp;
 
+      const d = distance(
+        [lastPointerDown.offsetX, lastPointerDown.offsetY], 
+        [evt.offsetX, evt.offsetY]);
+
+      if (timeDifference > 300 || d > 15) // Not a single click - ignore
+        return;
+      
       evt.stopPropagation();
 
       if (isClosable) {
