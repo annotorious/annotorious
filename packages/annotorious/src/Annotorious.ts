@@ -1,6 +1,6 @@
 import type { SvelteComponent } from 'svelte';
 import type { Annotator, DrawingStyle, Filter, User } from '@annotorious/core';
-import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver } from '@annotorious/core';
+import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver, createUndoStack } from '@annotorious/core';
 import { registerEditor } from './annotation/editors';
 import { getTool, registerTool, listDrawingTools, type DrawingTool } from './annotation/tools';
 import { SVGAnnotationLayer } from './annotation';
@@ -10,6 +10,7 @@ import { createSvelteImageAnnotatorState } from './state';
 import { setTheme } from './themes';
 import { fillDefaults } from './AnnotoriousOpts';
 import type { AnnotoriousOpts } from './AnnotoriousOpts';
+import { initKeyboardCommands } from './keyboardCommands';
 
 import './Annotorious.css';
 import './themes/dark/index.css';
@@ -49,7 +50,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   const lifecycle = createLifecyleObserver<ImageAnnotation, E>(
     store, selection, hover, undefined, opts.adapter, opts.autoSave);
 
-  let currentUser: User = createAnonymousGuest();
+  const undoStack = createUndoStack(store);
 
   // We'll wrap the image in a container DIV.
   const container = document.createElement('DIV');
@@ -61,6 +62,10 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   img.parentNode.insertBefore(container, img);
   container.appendChild(img);
+
+  const keyboardCommands = initKeyboardCommands(undoStack);
+
+  let currentUser: User = createAnonymousGuest();
 
   setTheme(img, container);
 
@@ -98,6 +103,9 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     // Unwrap the image
     container.parentNode.insertBefore(img, container);
     container.parentNode.removeChild(container);
+
+    // Other cleanup actions
+    keyboardCommands.destroy();
   }
 
   const getUser = () => currentUser;
