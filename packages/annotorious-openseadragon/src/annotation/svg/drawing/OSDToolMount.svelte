@@ -24,6 +24,10 @@
     const cleanup: Function[] = [];
 
     const addEventListener = (name: string, handler: (evt: PointerEvent) => void, capture?: boolean) => {
+      // Attach to SVG element
+      svg.addEventListener(name, handler, capture);
+      cleanup.push(() => svg.removeEventListener(name, handler, capture));
+
       if (name === 'pointerup' || name === 'dblclick') {
         // OpenSeadragon, by design, stops the 'pointerup' event. In order to capture pointer up events,
         // we need to listen to the canvas-click event instead
@@ -36,20 +40,14 @@
 
         viewer.addHandler(osdName, osdHandler);
         cleanup.push(() => viewer.removeHandler(osdName, osdHandler));
-      } else {
-        svg.addEventListener(name, handler, capture);
-        cleanup.push(() => svg.removeEventListener(name, handler, capture));
-
-        // OpenSeadragon stops the 'pointermove' event when the canvas is dragged!
-        if (name === 'pointermove') {
-          const dragHandler = (event: OpenSeadragon.CanvasDragEvent) => {
-            const { originalEvent } = event;
-            handler(originalEvent as PointerEvent);
-          }
-
-          viewer.addHandler('canvas-drag', dragHandler);
-          cleanup.push(() => viewer.removeHandler('canvas-drag', dragHandler));
+      } else if (name === 'pointermove') {
+        const dragHandler = (event: OpenSeadragon.CanvasDragEvent) => {
+          const { originalEvent } = event;
+          handler(originalEvent as PointerEvent);
         }
+
+        viewer.addHandler('canvas-drag', dragHandler);
+        cleanup.push(() => viewer.removeHandler('canvas-drag', dragHandler));
       }
     }
 

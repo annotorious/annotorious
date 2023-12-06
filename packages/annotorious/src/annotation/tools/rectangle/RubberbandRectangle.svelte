@@ -47,6 +47,8 @@
   }
     
   const onPointerUp = (evt: PointerEvent) => {
+    console.log('up');
+    
     const timeDifference = performance.now() - lastPointerDown;
 
     if (drawingMode === 'click') {
