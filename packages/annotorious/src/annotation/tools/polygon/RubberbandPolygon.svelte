@@ -1,7 +1,7 @@
 <script type="ts">
   import { onMount, createEventDispatcher } from 'svelte';
   import type { DrawingMode } from '../../../AnnotoriousOpts';
-  import { boundsFromPoints, ShapeType, type Polygon } from '../../../model';
+  import { boundsFromPoints, computeArea, ShapeType, type Polygon } from '../../../model';
   import { distance } from '../../utils';
   import type { Transform } from '../..';
 
@@ -41,6 +41,7 @@
   }
 
   const onPointerMove = (evt: PointerEvent) => {
+    console.log('move!');
     if (points.length > 0) {
       cursor = transform.elementToImage(evt.offsetX, evt.offsetY);
 
@@ -98,22 +99,25 @@
   }
 
   const onDblClick = () => {
-    console.log('dblclick');
-    
+    // Require min 3 points (incl. cursor) and minimum
+    // polygon area
     const p = [...points, cursor];
 
     const shape: Polygon = {
-        type: ShapeType.POLYGON, 
-        geometry: {
-          bounds: boundsFromPoints(p),
-          points: p
-        }
+      type: ShapeType.POLYGON, 
+      geometry: {
+        bounds: boundsFromPoints(p),
+        points: p
       }
+    }
 
+    const area = computeArea(shape);
+    if (area > 4) {
       points = [];
       cursor = null;
     
       dispatch('create', shape);
+    }
   }
 
   const stopDrawing = () => {

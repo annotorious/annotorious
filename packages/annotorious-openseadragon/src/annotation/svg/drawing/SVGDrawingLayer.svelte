@@ -33,7 +33,7 @@
   let editableAnnotations: ImageAnnotation[] = null;
  
   $: if ($selection.selected.length === 0 && drawingMode === 'drag' && drawingEnabled) { viewer.setMouseNavEnabled(false) }
-  
+
   $: trackSelection($selection.selected);
 
   const trackSelection = (selected: { id: string, editable?: boolean}[]) => {

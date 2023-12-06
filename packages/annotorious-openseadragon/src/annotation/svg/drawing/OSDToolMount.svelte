@@ -28,6 +28,8 @@
         // OpenSeadragon, by design, stops the 'pointerup' event. In order to capture pointer up events,
         // we need to listen to the canvas-click event instead
         const osdHandler = (event: OpenSeadragon.CanvasClickEvent) => {
+          console.log('event', name);
+        
           const { originalEvent } = event;
           handler(originalEvent as PointerEvent);
         }
