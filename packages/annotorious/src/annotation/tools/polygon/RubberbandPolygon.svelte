@@ -28,6 +28,7 @@
   $: handleSize = 10 / viewportScale;
 
   const onPointerDown = (evt: PointerEvent) => {
+    console.log('down');
     lastPointerDown = performance.now();
 
     if (drawingMode === 'drag') {
@@ -53,11 +54,12 @@
   }
 
   const onPointerUp = (evt: PointerEvent) => {
+    console.log('up');
+    
     const timeDifference = performance.now() - lastPointerDown;
 
     if (drawingMode === 'click') {
-      // Not a single click - ignore
-      if (timeDifference > 300)
+      if (timeDifference > 300) // Not a single click - ignore
         return;
 
       evt.stopPropagation();

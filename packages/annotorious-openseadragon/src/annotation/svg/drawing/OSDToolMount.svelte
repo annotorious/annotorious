@@ -28,8 +28,6 @@
         // OpenSeadragon, by design, stops the 'pointerup' event. In order to capture pointer up events,
         // we need to listen to the canvas-click event instead
         const osdHandler = (event: OpenSeadragon.CanvasClickEvent) => {
-          console.log('event', name);
-        
           const { originalEvent } = event;
           handler(originalEvent as PointerEvent);
         }
@@ -41,6 +39,17 @@
       } else {
         svg.addEventListener(name, handler, capture);
         cleanup.push(() => svg.removeEventListener(name, handler, capture));
+
+        // OpenSeadragon stops the 'pointermove' event when the canvas is dragged!
+        if (name === 'pointermove') {
+          const dragHandler = (event: OpenSeadragon.CanvasDragEvent) => {
+            const { originalEvent } = event;
+            handler(originalEvent as PointerEvent);
+          }
+
+          viewer.addHandler('canvas-drag', dragHandler);
+          cleanup.push(() => viewer.removeHandler('canvas-drag', dragHandler));
+        }
       }
     }
 
