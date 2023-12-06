@@ -23,11 +23,17 @@ const getChangedBodies = (oldValue: Annotation, newValue: Annotation) =>
 const hasTargetChanged = (oldValue: Annotation, newValue: Annotation) => 
   !dequal(oldValue.target, newValue.target);
 
-export const diffAnnotations = <T extends Annotation = Annotation>(oldValue: T, newValue: T): Update<T> => ({
-  oldValue, 
-  newValue,
-  bodiesCreated: getAddedBodies(oldValue, newValue),
-  bodiesDeleted: getRemovedBodies(oldValue, newValue),
-  bodiesUpdated: getChangedBodies(oldValue, newValue),
-  targetUpdated: hasTargetChanged(oldValue, newValue) ? { oldTarget: oldValue.target, newTarget: newValue.target } : undefined
-});
+export const diffAnnotations = <T extends Annotation = Annotation>(oldValue: T, newValue: T): Update<T> => {
+  const bodiesCreated = getAddedBodies(oldValue, newValue);
+  const bodiesDeleted = getRemovedBodies(oldValue, newValue);
+  const bodiesUpdated = getChangedBodies(oldValue, newValue);
+
+  return {
+    oldValue, 
+    newValue,
+    bodiesCreated: bodiesCreated.length > 0 ? bodiesCreated : undefined,
+    bodiesDeleted: bodiesDeleted.length > 0 ? bodiesDeleted : undefined,
+    bodiesUpdated: bodiesUpdated.length > 0 ? bodiesUpdated : undefined,
+    targetUpdated: hasTargetChanged(oldValue, newValue) ? { oldTarget: oldValue.target, newTarget: newValue.target } : undefined
+  }
+}
