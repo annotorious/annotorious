@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import OpenSeadragon from 'openseadragon';
 import { ImageAnnotation, W3CImageFormat } from '@annotorious/openseadragon';
 import { 
   OpenSeadragonViewer, 
@@ -10,7 +11,6 @@ import {
 } from '../src';
 
 import '@annotorious/openseadragon/annotorious-openseadragon.css';
-import OpenSeadragon from 'openseadragon';
 
 const IIIF_SAMPLE = {
   "@context" : "http://iiif.io/api/image/2/context.json",
@@ -60,8 +60,6 @@ export const App = () => {
 
   const [filter, setFilter] = useState<{ key: String, filter: ((a: ImageAnnotation) => boolean) | undefined }>(FILTERS[0]);
 
-  const { selected } = useSelection()
-
   useEffect(() => {
     if (anno) {
       fetch('annotations.json')
@@ -103,6 +101,7 @@ export const App = () => {
           'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c')}
         drawingEnabled={false}
         drawingMode="click"
+        tool="polygon"
         filter={filter.filter}>
             
         <OpenSeadragonViewer className="openseadragon" options={OSD_OPTIONS} />

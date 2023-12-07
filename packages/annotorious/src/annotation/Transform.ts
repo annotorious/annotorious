@@ -13,11 +13,13 @@ export const IdentityTransform: Transform = {
 export const createSVGTransform = (svg: SVGSVGElement): Transform => ({
 
   elementToImage: (offsetX: number, offsetY: number) => {
+    const bbox = svg.getBoundingClientRect();
+
     const pt = svg.createSVGPoint();
-    pt.x = offsetX;
-    pt.y = offsetY;
+    pt.x = offsetX + bbox.x;
+    pt.y = offsetY + bbox.y;
   
-    const { x, y } = pt.matrixTransform(svg.getCTM().inverse());
+    const { x, y } = pt.matrixTransform(svg.getScreenCTM().inverse());
     return [x, y];
   }
 

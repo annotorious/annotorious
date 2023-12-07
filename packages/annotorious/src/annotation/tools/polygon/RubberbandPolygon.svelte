@@ -26,7 +26,7 @@
   $: handleSize = 10 / viewportScale;
 
   const onPointerDown = (evt: PointerEvent) => {
-    lastPointerDown = evt;
+    lastPointerDown = {...evt};
 
     if (drawingMode === 'drag') {
       if (points.length === 0) {
@@ -59,8 +59,6 @@
 
       if (timeDifference > 300 || d > 15) // Not a single click - ignore
         return;
-      
-      evt.stopPropagation();
 
       if (isClosable) {
         stopDrawing();
