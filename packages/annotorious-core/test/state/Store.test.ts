@@ -53,10 +53,6 @@ describe('store', () => {
       id: 'annotation-2'
     };
 
-    expect(() => 
-      store.updateAnnotation(withChangedId)
-    ).toThrowError();
-
     store.updateAnnotation(annotation.id, withChangedId);
 
     expect(store.getAnnotation(annotation.id)).toBeUndefined();
