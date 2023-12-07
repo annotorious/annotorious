@@ -1,7 +1,7 @@
 import type { Annotation } from './Annotation';
 import type { User } from './User';
 import type { PresenceProvider } from '../presence';
-import { Origin, type HoverState, type SelectionState, type Store, type ViewportState } from '../state';
+import { Origin, type HoverState, type SelectionState, type Store, type UndoStack, type ViewportState } from '../state';
 import type { LifecycleEvents } from '../lifecycle';
 import { parseAll, type FormatAdapter } from './FormatAdapter';
 import type { DrawingStyle } from './DrawingStyle';
@@ -28,6 +28,8 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   loadAnnotations(url: string): Promise<E[]>;
 
+  redo(): void;
+
   removeAnnotation(arg: E | string): E;
 
   setAnnotations(annotations: E[]): void;
@@ -41,6 +43,8 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
   setStyle(arg: DrawingStyle | ((annotation: I) => DrawingStyle) | undefined): void;
 
   setUser(user: User): void;
+
+  undo(): void;
 
   updateAnnotation(annotation: E): E;
   
@@ -66,6 +70,7 @@ export interface AnnotatorState<A extends Annotation> {
 
 export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
   store: Store<I>, 
+  undoStack: UndoStack,
   adapter?: FormatAdapter<I, E>
 ) => {
 
@@ -146,8 +151,10 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     getAnnotationById,
     getAnnotations,
     loadAnnotations,
+    redo: undoStack.redo,
     removeAnnotation,
     setAnnotations,
+    undo: undoStack.undo,
     updateAnnotation
   }
 

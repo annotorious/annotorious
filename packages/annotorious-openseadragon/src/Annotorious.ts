@@ -115,7 +115,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   /******++++++*************/
 
   // Most of the external API functions are covered in the base annotator
-  const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
+  const base = createBaseAnnotator<ImageAnnotation, E>(store, undoStack, opts.adapter);
 
   const destroy = () => {
     // Destroy Svelte layers
