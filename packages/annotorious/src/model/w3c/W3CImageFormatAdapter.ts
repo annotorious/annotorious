@@ -30,7 +30,9 @@ export const parseW3CImageAnnotation = (
 ): ParseResult<ImageAnnotation> => {
   const annotationId = annotation.id || uuidv4();
 
-  const bodies = parseW3CBodies(annotation.body, annotationId);
+  const { body, ...rest } = annotation;
+
+  const bodies = parseW3CBodies(body, annotationId);
 
   const target = Array.isArray(annotation.target) ? annotation.target[0] : annotation.target;
 
@@ -44,7 +46,7 @@ export const parseW3CImageAnnotation = (
 
   return selector ? { 
     parsed: {
-      ...annotation,
+      ...rest,
       id: annotationId,
       bodies,
       target: {
