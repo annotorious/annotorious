@@ -10,8 +10,6 @@
   export let addEventListener: (type: string, fn: EventListener, capture?: boolean) => void;
   export let drawingMode: DrawingMode;
   export let transform: Transform;
-  
-  let container: SVGGElement;
 
   let lastPointerDown: number;
 
@@ -109,10 +107,7 @@
   });
 </script>
 
-<g 
-  bind:this={container}
-  class="a9s-annotation a9s-rubberband">
-  
+<g class="a9s-annotation a9s-rubberband">
   {#if origin}
     <rect
       class="a9s-outer"

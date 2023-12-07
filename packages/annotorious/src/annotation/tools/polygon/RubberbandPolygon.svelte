@@ -13,8 +13,6 @@
   export let transform: Transform;
   export let viewportScale = 1;
 
-  let container: SVGGElement;
-
   let lastPointerDown: PointerEvent;
 
   let points: [number, number][] = [];
@@ -145,10 +143,7 @@
   });
 </script>
 
-<g 
-  bind:this={container}
-  class="a9s-annotation a9s-rubberband">
-
+<g class="a9s-annotation a9s-rubberband">
   {#if cursor}
     {@const coords = (isClosable ? points : [...points, cursor]).map(xy => xy.join(',')).join(' ')}
       <polygon 

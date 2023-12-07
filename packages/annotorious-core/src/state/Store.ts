@@ -57,9 +57,7 @@ export const createStore = <T extends Annotation>() => {
     }
   }
 
-  const updateAnnotation = (arg1: string | T, arg2: T | Origin = Origin.LOCAL, arg3 = Origin.LOCAL) => {
-    const origin: Origin = isAnnotation(arg2) ? arg3 : arg2;
-
+  const updateOneAnnotation = (arg1: string | T, arg2?: T | Origin) => {
     const updated: T = typeof arg1 === 'string' ? arg2 as T : arg1;
 
     const oldId: string = typeof arg1 === 'string' ? arg1 : arg1.id;
@@ -78,10 +76,28 @@ export const createStore = <T extends Annotation>() => {
       oldValue.bodies.forEach(b => bodyIndex.delete(b.id));
       updated.bodies.forEach(b => bodyIndex.set(b.id, updated.id));
 
-      emit(origin, { updated: [update] })
+      return update;
     } else {
-      throw Error(`Cannot update annotation ${oldId} - does not exist`);
+      console.warn(`Cannot update annotation ${oldId} - does not exist`);
     }
+  }
+  
+  const updateAnnotation = (arg1: string | T, arg2: T | Origin = Origin.LOCAL, arg3 = Origin.LOCAL) => {
+    const origin: Origin = isAnnotation(arg2) ? arg3 : arg2;
+
+    const update = updateOneAnnotation(arg1, arg2);
+    if (update)
+      emit(origin, { updated: [update] })
+  }
+
+  const bulkUpdateAnnotation = (annotations: T[], origin = Origin.LOCAL) => {
+    const updated = annotations.reduce((updated, annotation) => {
+      const u = updateOneAnnotation(annotation);
+      return u ? [...updated, u] : updated;
+    }, [] as Update<T>[]);
+
+    if (updated.length > 0)
+      emit(origin, { updated });
   }
 
   const addBody = (body: AnnotationBody, origin = Origin.LOCAL) => {
@@ -310,6 +326,7 @@ export const createStore = <T extends Annotation>() => {
     all,
     bulkAddAnnotation,
     bulkDeleteAnnotation,
+    bulkUpdateAnnotation,
     bulkUpdateBodies,
     bulkUpdateTargets,
     clear,
