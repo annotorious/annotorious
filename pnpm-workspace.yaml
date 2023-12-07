@@ -1,0 +1,6 @@
+packages:
+  - './packages/annotorious-core'
+  - './packages/annotorious'
+  - './packages/annotorious-openseadragon'
+  - './packages/annotorious-react'
+  - './packages/annotorious-svelte'
