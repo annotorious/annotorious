@@ -6,7 +6,6 @@ import {
   OpenSeadragonAnnotator, 
   OpenSeadragonPopup, 
   useAnnotator,
-  useSelection,
   AnnotoriousOpenSeadragonAnnotator
 } from '../src';
 
