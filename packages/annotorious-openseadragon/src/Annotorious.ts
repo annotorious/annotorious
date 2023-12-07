@@ -1,13 +1,12 @@
 import type OpenSeadragon from 'openseadragon';
 import type { SvelteComponent } from 'svelte';
-import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver, type Filter } from '@annotorious/core';
-import type { Annotator, DrawingStyle, PresenceProvider, User } from '@annotorious/core/src';
-import { fillDefaults, createImageAnnotatorState } from '@annotorious/annotorious/src';
+import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver, createUndoStack } from '@annotorious/core';
+import type { Annotator, DrawingStyle, Filter, PresenceProvider, User } from '@annotorious/core';
+import { fillDefaults, createImageAnnotatorState, initKeyboardCommands} from '@annotorious/annotorious/src';
 import { listDrawingTools, getTool, registerTool, registerEditor } from '@annotorious/annotorious/src/annotation';
 import type { AnnotoriousOpts, DrawingTool, DrawingToolOpts, ImageAnnotation, ShapeType } from '@annotorious/annotorious/src';
 import type { PixiLayerClickEvent } from './annotation';
 import { PixiLayer, SVGDrawingLayer, SVGPresenceLayer } from './annotation';
-import { initKeyCommands } from './keyCommands';
 import { setTheme } from './themes/setTheme';
 import { 
   fitBounds as _fitBounds, 
@@ -51,13 +50,15 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const lifecycle = createLifecyleObserver(
     store, selection, hover, undefined, opts.adapter, opts.autoSave);
 
+  const undoStack = createUndoStack(store);
+
   let currentUser: User = createAnonymousGuest();
 
   let drawingEnabled = opts.drawingEnabled;
 
   let drawingMode = opts.drawingMode;
 
-  initKeyCommands(viewer.element, selection, store); 
+  const keyboardCommands = initKeyboardCommands(undoStack, viewer.element);
 
   const displayLayer = new PixiLayer({
     target: viewer.element,
@@ -117,9 +118,14 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const base = createBaseAnnotator<ImageAnnotation, E>(store, opts.adapter);
 
   const destroy = () => {
+    // Destroy Svelte layers
     displayLayer.$destroy();
     presenceLayer.$destroy();
     drawingLayer.$destroy();
+
+    // Other cleanup actions
+    keyboardCommands.destroy();
+    undoStack.destroy();
   }
 
   const fitBounds = _fitBounds(viewer, store);

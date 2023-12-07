@@ -3,8 +3,11 @@ import type { UndoStack } from '@annotorious/core';
 const isMac = navigator.userAgent.indexOf('Mac OS X') !== -1;
 
 export const initKeyboardCommands = (
-  undoStack: UndoStack
+  undoStack: UndoStack,
+  container?: Element 
 ) => {
+
+  const el = container || document;
 
   const onWinKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'Z' && event.ctrlKey) {
@@ -26,16 +29,16 @@ export const initKeyboardCommands = (
 
   const destroy = () => {
     if (isMac) {
-      document.removeEventListener('keydown', onMacKeyDown);
+      el.removeEventListener('keydown', onMacKeyDown);
     } else {
-      document.removeEventListener('keydown', onWinKeyDown);
+      el.removeEventListener('keydown', onWinKeyDown);
     }
   }
 
   if (isMac)
-    document.addEventListener('keydown', onMacKeyDown);
+    el.addEventListener('keydown', onMacKeyDown);
   else
-    document.addEventListener('keydown', onWinKeyDown);
+    el.addEventListener('keydown', onWinKeyDown);
 
   return { 
     destroy

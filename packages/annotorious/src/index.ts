@@ -5,6 +5,7 @@ export * from './themes';
 export * from './annotation/tools';
 export * from './Annotorious';
 export * from './AnnotoriousOpts';
+export * from './keyboardCommands';
 
 // Re-export essentials from @annotorious/core utilities for convenience
 export * from '@annotorious/core/src/model';

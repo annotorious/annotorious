@@ -106,6 +106,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
     // Other cleanup actions
     keyboardCommands.destroy();
+    undoStack.destroy();
   }
 
   const getUser = () => currentUser;
