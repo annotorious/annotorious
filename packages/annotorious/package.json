@@ -48,6 +48,9 @@
     "vite-plugin-dts": "^3.6.0",
     "vitest": "^0.34.6"
   },
+  "peerDependencies": {
+    "@annotorious/core": "*"
+  },
   "dependencies": {
     "rbush": "^3.0.1",
     "uuid": "^9.0.1"
