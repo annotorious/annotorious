@@ -55,7 +55,7 @@ export const parseW3CImageAnnotation = (
       }
     }
   } : {
-    error: Error(`Unknown selector type: ${selector.type}`)
+    error: Error(`Unknown selector type: ${w3cSelector.type}`)
   };
 
 }
