@@ -1,4 +1,5 @@
 .vscode
+.idea
 dist
 node_modules
 **/config.json
