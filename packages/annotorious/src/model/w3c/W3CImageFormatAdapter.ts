@@ -49,7 +49,12 @@ export const parseW3CImageAnnotation = (
       w3cSelector.type === 'SvgSelector' ?
         parseSVGSelector(w3cSelector as SVGSelector) : undefined;
 
-  const target = parseW3CTarget<ImageAnnotationTarget>(w3cTarget, annotationId, parseLifecycleInfo(annotation), selector);
+  const target = parseW3CTarget<ImageAnnotationTarget>(
+    w3cTarget,
+    annotationId,
+    parseLifecycleInfo(annotation),
+    selector
+  );
 
   return selector ? {
     parsed: {
