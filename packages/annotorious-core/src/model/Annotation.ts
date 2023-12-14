@@ -12,7 +12,7 @@ export interface Annotation {
 
     [key: string]: any;
 
-  }
+  };
 
 }
 
@@ -57,7 +57,7 @@ export interface AnnotationBody {
 }
 
 // Pre-defined purposes from https://www.w3.org/TR/annotation-model/#motivation-and-purpose
-export type Purpose = 
+export type Purpose =
   'assessing' |
   'bookmarking' |
   'classifying' |
@@ -71,3 +71,16 @@ export type Purpose =
   'questioning' |
   'replying' |
   'tagging';
+
+/**
+ * Extracts the annotation lifecycle properties from the given target
+ * @see https://www.w3.org/TR/annotation-model/#lifecycle-information
+ */
+export const extractTargetLifecycleProps = (
+  target: AnnotationTarget
+): Pick<AnnotationTarget, 'created' | 'creator' | 'updated' | 'updatedBy'> => ({
+  created: target.created,
+  creator: target.creator,
+  updated: target.updated,
+  updatedBy: target.updatedBy
+});

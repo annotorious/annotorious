@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { parseW3CBodies, serializeW3CBodies } from '@annotorious/core';
+import { extractTargetLifecycleProps, parseW3CBodies, serializeW3CBodies } from '@annotorious/core';
 import type { FormatAdapter, ParseResult, W3CAnnotation } from '@annotorious/core';
 import { ShapeType } from '../core';
 import type { ImageAnnotation, RectangleGeometry } from '../core';
@@ -21,11 +21,11 @@ export const W3CImageFormat = (
   const serialize = (annotation: ImageAnnotation) =>
     serializeW3CImageAnnotation(annotation, source);
 
-  return { parse, serialize }
-}
+  return { parse, serialize };
+};
 
 export const parseW3CImageAnnotation = (
-  annotation: W3CAnnotation, 
+  annotation: W3CAnnotation,
   invertY: boolean = false
 ): ParseResult<ImageAnnotation> => {
   const annotationId = annotation.id || uuidv4();
@@ -38,13 +38,13 @@ export const parseW3CImageAnnotation = (
 
   const w3cSelector = Array.isArray(target.selector) ? target.selector[0] : target.selector;
 
-  const selector = 
+  const selector =
     w3cSelector.type === 'FragmentSelector' ?
       parseFragmentSelector(w3cSelector as FragmentSelector, invertY) :
-    w3cSelector.type === 'SvgSelector' ?
-      parseSVGSelector(w3cSelector as SVGSelector) : undefined;
+      w3cSelector.type === 'SvgSelector' ?
+        parseSVGSelector(w3cSelector as SVGSelector) : undefined;
 
-  return selector ? { 
+  return selector ? {
     parsed: {
       ...rest,
       id: annotationId,
@@ -58,13 +58,15 @@ export const parseW3CImageAnnotation = (
     error: Error(`Unknown selector type: ${w3cSelector.type}`)
   };
 
-}
+};
 
 export const serializeW3CImageAnnotation = (
-  annotation: ImageAnnotation, 
+  annotation: ImageAnnotation,
   source: string
 ): W3CAnnotation => {
-  const shape = annotation.target.selector;
+  const { target, bodies, ...serializableRest } = annotation;
+
+  const shape = target.selector;
 
   const selector =
     shape.type == ShapeType.RECTANGLE ?
@@ -72,11 +74,11 @@ export const serializeW3CImageAnnotation = (
       serializeSVGSelector(shape);
 
   return {
-    ...annotation,
+    ...serializableRest,
+    ...extractTargetLifecycleProps(target),
     '@context': 'http://www.w3.org/ns/anno.jsonld',
-    id: annotation.id,
     type: 'Annotation',
-    body: serializeW3CBodies(annotation.bodies),
+    body: serializeW3CBodies(bodies),
     target: {
       source,
       selector
