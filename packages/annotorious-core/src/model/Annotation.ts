@@ -84,12 +84,3 @@ export type Purpose =
   'replying' |
   'tagging';
 
-
-export const parseLifecycleInfo = <T extends AnnotationLifecycleInfo>(
-  infoContainer: T
-): AnnotationLifecycleInfo => ({
-  created: infoContainer.created,
-  creator: infoContainer.creator,
-  updated: infoContainer.updated,
-  updatedBy: infoContainer.updatedBy
-});

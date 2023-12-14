@@ -1,4 +1,4 @@
-import type { AnnotationBody, AnnotationTarget } from './Annotation';
+import type { AnnotationBody, AnnotationLifecycleInfo, AnnotationTarget } from './Annotation';
 import type { User } from './User';
 
 export interface W3CAnnotation<S = W3CSelector> extends W3CAnnotationLifecycleInfo {
@@ -24,11 +24,11 @@ export interface W3CAnnotationLifecycleInfo {
 
   creator?: User;
 
-  created?: Date;
+  created?: string;
 
   updatedBy?: User;
 
-  updated?: Date;
+  updated?: string;
 
 }
 
@@ -136,7 +136,7 @@ export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[
 export const parseW3CTarget = <A extends AnnotationTarget, T extends W3CAnnotationTarget<T['selector']> = W3CAnnotationTarget>(
   target: T,
   annotationId: string,
-  lifecycleInfo: W3CAnnotationLifecycleInfo,
+  lifecycleInfo: AnnotationLifecycleInfo,
   selector: A['selector']
 ): A =>
   ({
@@ -154,3 +154,17 @@ export const serializeW3CTarget = <A extends AnnotationTarget, T extends W3CAnno
     source
   } as unknown as T;
 };
+
+export const parseW3CLifecycleInfo = (info: W3CAnnotationLifecycleInfo): AnnotationLifecycleInfo => ({
+  created: new Date(info.created),
+  creator: info.creator,
+  updated: new Date(info.updated),
+  updatedBy: info.updatedBy
+});
+
+export const serializeW3CLifecycleInfo = (info: AnnotationLifecycleInfo): W3CAnnotationLifecycleInfo => ({
+  created: info.created?.toISOString(),
+  creator: info.creator,
+  updated: info.updated?.toISOString(),
+  updatedBy: info.updatedBy
+});

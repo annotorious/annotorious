@@ -1,7 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { FormatAdapter, ParseResult, W3CAnnotation } from '@annotorious/core';
 import {
-  parseLifecycleInfo,
+  type FormatAdapter,
+  type ParseResult,
+  parseW3CLifecycleInfo,
+  serializeW3CLifecycleInfo,
+  type W3CAnnotation
+} from '@annotorious/core';
+import {
   parseW3CBodies,
   parseW3CTarget,
   serializeW3CBodies,
@@ -52,7 +57,7 @@ export const parseW3CImageAnnotation = (
   const target = parseW3CTarget<ImageAnnotationTarget>(
     w3cTarget,
     annotationId,
-    parseLifecycleInfo(annotation),
+    parseW3CLifecycleInfo(annotation),
     selector
   );
 
@@ -86,7 +91,7 @@ export const serializeW3CImageAnnotation = (
 
   return {
     ...serializableRest,
-    ...parseLifecycleInfo(target),
+    ...serializeW3CLifecycleInfo(target),
     '@context': 'http://www.w3.org/ns/anno.jsonld',
     type: 'Annotation',
     body: serializeW3CBodies(bodies),
