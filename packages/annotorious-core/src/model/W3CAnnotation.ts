@@ -1,7 +1,7 @@
 import type { AnnotationBody, AnnotationTarget } from './Annotation';
 import type { User } from './User';
 
-export interface W3CAnnotation extends W3CAnnotationLifecycleInfo {
+export interface W3CAnnotation<S = W3CSelector> extends W3CAnnotationLifecycleInfo {
 
   '@context': 'http://www.w3.org/ns/anno.jsonld';
 
@@ -11,7 +11,7 @@ export interface W3CAnnotation extends W3CAnnotationLifecycleInfo {
 
   body: W3CAnnotationBody | W3CAnnotationBody[];
 
-  target: W3CAnnotationTarget | W3CAnnotationTarget[];
+  target: W3CAnnotationTarget<S> | W3CAnnotationTarget<S>[];
 
   [key: string]: any;
 
