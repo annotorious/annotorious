@@ -85,7 +85,7 @@ export type Purpose =
   'tagging';
 
 
-export const extractLifecycleInfo = <T extends AnnotationLifecycleInfo>(
+export const parseLifecycleInfo = <T extends AnnotationLifecycleInfo>(
   infoContainer: T
 ): AnnotationLifecycleInfo => ({
   created: infoContainer.created,
