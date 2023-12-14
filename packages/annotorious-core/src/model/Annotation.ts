@@ -25,7 +25,7 @@ export interface AnnotationTarget extends AnnotationLifecycleInfo {
 }
 
 /**
- * They are co-located with the target because:
+ * Lifecycle info is co-located with the target because:
  * > The targets and bodies can be created pretty much independently
  * > created / creator info at the annotation level as a piece of derived information -
  * > whoever was the first creator of the first part of the annotation.

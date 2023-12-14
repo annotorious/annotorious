@@ -1,6 +1,7 @@
-import type { AnnotationBody } from './Annotation';
+import type { AnnotationBody, AnnotationLifecycleInfo, AnnotationTarget } from './Annotation';
+import type { User } from './User';
 
-export interface W3CAnnotation {
+export interface W3CAnnotation extends W3CAnnotationLifecycleInfo {
 
   '@context': 'http://www.w3.org/ns/anno.jsonld';
 
@@ -8,11 +9,26 @@ export interface W3CAnnotation {
 
   id: string;
 
-  body: W3CAnnotationBody | W3CAnnotationBody[]
+  body: W3CAnnotationBody | W3CAnnotationBody[];
 
   target: W3CAnnotationTarget | W3CAnnotationTarget[];
 
   [key: string]: any;
+
+}
+
+/**
+ * @see https://www.w3.org/TR/annotation-model/#lifecycle-information
+ */
+export interface W3CAnnotationLifecycleInfo {
+
+  creator?: User;
+
+  created?: Date;
+
+  updatedBy?: User;
+
+  updated?: Date;
 
 }
 
@@ -66,19 +82,19 @@ const hashCode = (obj: Object): string => {
   let hash = 0;
 
   for (let i = 0, len = str.length; i < len; i++) {
-      let chr = str.charCodeAt(i);
-      hash = (hash << 5) - hash + chr;
-      hash |= 0; // Convert to 32bit integer
+    let chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
   }
 
   return `${hash}`;
-}
+};
 
 /**
  * Helper to crosswalk the W3C annotation body to a list of core AnnotationBody objects.
  */
 export const parseW3CBodies = (
-  body: W3CAnnotationBody | W3CAnnotationBody[], 
+  body: W3CAnnotationBody | W3CAnnotationBody[],
   annotationId: string
 ): AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(body => {
 
@@ -97,22 +113,22 @@ export const parseW3CBodies = (
     purpose,
     value,
     created,
-    creator: creator ? 
-      typeof creator === 'object' ? { ...creator }: creator :
+    creator: creator ?
+      typeof creator === 'object' ? { ...creator } : creator :
       undefined,
     ...rest
-  }
+  };
 
 });
 
 /** Serialization helper to remove core-specific fields from the annotation body **/
-export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[] => 
+export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[] =>
   bodies.map(b => {
     const w3c = { ...b };
     delete w3c.annotation;
 
     if (w3c.id?.startsWith('temp-'))
       delete w3c.id;
-  
+
     return w3c;
   });
