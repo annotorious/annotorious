@@ -16,11 +16,23 @@ export interface Annotation {
 
 }
 
-export interface AnnotationTarget {
+export interface AnnotationTarget extends AnnotationLifecycleInfo {
 
   annotation: string;
 
   selector: AbstractSelector;
+
+}
+
+/**
+ * They are co-located with the target because:
+ * > The targets and bodies can be created pretty much independently
+ * > created / creator info at the annotation level as a piece of derived information -
+ * > whoever was the first creator of the first part of the annotation.
+ * @see https://github.com/annotorious/annotorious/issues/325#issuecomment-1855697146
+ * @see https://www.w3.org/TR/annotation-model/#lifecycle-information
+ */
+export interface AnnotationLifecycleInfo {
 
   creator?: User;
 
@@ -72,15 +84,12 @@ export type Purpose =
   'replying' |
   'tagging';
 
-/**
- * Extracts the annotation lifecycle properties from the given target
- * @see https://www.w3.org/TR/annotation-model/#lifecycle-information
- */
-export const extractTargetLifecycleProps = (
-  target: AnnotationTarget
-): Pick<AnnotationTarget, 'created' | 'creator' | 'updated' | 'updatedBy'> => ({
-  created: target.created,
-  creator: target.creator,
-  updated: target.updated,
-  updatedBy: target.updatedBy
+
+export const extractLifecycleInfo = <T extends AnnotationLifecycleInfo>(
+  infoContainer: T
+): AnnotationLifecycleInfo => ({
+  created: infoContainer.created,
+  creator: infoContainer.creator,
+  updated: infoContainer.updated,
+  updatedBy: infoContainer.updatedBy
 });

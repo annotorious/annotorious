@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { extractTargetLifecycleProps, parseW3CBodies, serializeW3CBodies } from '@annotorious/core';
+import { extractLifecycleInfo, parseW3CBodies, serializeW3CBodies } from '@annotorious/core';
 import type { FormatAdapter, ParseResult, W3CAnnotation } from '@annotorious/core';
 import { ShapeType } from '../core';
 import type { ImageAnnotation, RectangleGeometry } from '../core';
@@ -75,7 +75,7 @@ export const serializeW3CImageAnnotation = (
 
   return {
     ...serializableRest,
-    ...extractTargetLifecycleProps(target),
+    ...extractLifecycleInfo(target),
     '@context': 'http://www.w3.org/ns/anno.jsonld',
     type: 'Annotation',
     body: serializeW3CBodies(bodies),
