@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import type { FormatAdapter, ParseResult, W3CAnnotation } from '@annotorious/core';
 import {
   parseLifecycleInfo,
   parseW3CBodies,
@@ -6,9 +7,8 @@ import {
   serializeW3CBodies,
   serializeW3CTarget
 } from '@annotorious/core';
-import type { FormatAdapter, ParseResult, W3CAnnotation } from '@annotorious/core';
-import { type ImageAnnotationTarget, type Shape, ShapeType } from '../core';
 import type { ImageAnnotation, RectangleGeometry } from '../core';
+import { type ImageAnnotationTarget, ShapeType } from '../core';
 import type { FragmentSelector } from './fragment';
 import { parseFragmentSelector, serializeFragmentSelector } from './fragment';
 import type { SVGSelector } from './svg';

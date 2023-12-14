@@ -1,4 +1,4 @@
-import type { AnnotationBody, AnnotationLifecycleInfo, AnnotationTarget } from './Annotation';
+import type { AnnotationBody, AnnotationTarget } from './Annotation';
 import type { User } from './User';
 
 export interface W3CAnnotation extends W3CAnnotationLifecycleInfo {
