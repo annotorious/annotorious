@@ -58,11 +58,11 @@ export interface W3CAnnotationBody {
 
 }
 
-export interface W3CAnnotationTarget {
+export interface W3CAnnotationTarget<S = W3CSelector> {
 
   source: string;
 
-  selector?: W3CSelector | W3CSelector[];
+  selector?: S | S[];
 
 }
 
@@ -146,7 +146,7 @@ export const parseW3CTarget = <T extends AnnotationTarget>(
     selector,
   } as unknown as T);
 
-export const serializeW3CTarget = <A extends AnnotationTarget, T extends W3CAnnotationTarget = W3CAnnotationTarget>(target: A, source: string, selector: T['selector']): T => {
+export const serializeW3CTarget = <A extends AnnotationTarget, T extends W3CAnnotationTarget<T['selector']> = W3CAnnotationTarget>(target: A, source: string, selector: T['selector']): T => {
   const { creator, created, updatedBy, updated, ...serializableRest } = target;
   return {
     ...serializableRest,
