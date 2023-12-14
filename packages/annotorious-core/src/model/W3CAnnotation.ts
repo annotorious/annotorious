@@ -132,3 +132,25 @@ export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[
 
     return w3c;
   });
+
+export const parseW3CTarget = <T extends AnnotationTarget>(
+  target: W3CAnnotationTarget,
+  annotationId: string,
+  lifecycleInfo: W3CAnnotationLifecycleInfo,
+  selector: T['selector']
+): T =>
+  ({
+    ...target,
+    ...lifecycleInfo,
+    annotation: annotationId,
+    selector,
+  } as unknown as T);
+
+export const serializeW3CTarget = <A extends AnnotationTarget, T extends W3CAnnotationTarget = W3CAnnotationTarget>(target: A, source: string, selector: T['selector']): T => {
+  const { creator, created, updatedBy, updated, ...serializableRest } = target;
+  return {
+    ...serializableRest,
+    selector,
+    source
+  } as unknown as T;
+};
