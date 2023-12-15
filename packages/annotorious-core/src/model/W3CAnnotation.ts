@@ -156,9 +156,9 @@ export const serializeW3CTarget = <A extends AnnotationTarget, T extends W3CAnno
 };
 
 export const parseW3CLifecycleInfo = (info: W3CAnnotationLifecycleInfo): AnnotationLifecycleInfo => ({
-  created: new Date(info.created),
+  created: info.created ? new Date(info.created) : undefined,
   creator: info.creator,
-  updated: new Date(info.updated),
+  updated: info.updated ? new Date(info.updated) : undefined,
   updatedBy: info.updatedBy
 });
 
