@@ -13,7 +13,7 @@
   export let transform: Transform;
   export let viewportScale = 1;
 
-  let lastPointerDown: PointerEvent;
+  let lastPointerDown: { timeStamp: number, offsetX: number, offsetY: number };
 
   let points: [number, number][] = [];
   
@@ -26,7 +26,9 @@
   $: handleSize = 10 / viewportScale;
 
   const onPointerDown = (evt: PointerEvent) => {
-    lastPointerDown = {...evt};
+    // Note that the event itself is ephemeral!
+    const { timeStamp, offsetX, offsetY } = evt;
+    lastPointerDown = { timeStamp, offsetX, offsetY };
 
     if (drawingMode === 'drag') {
       if (points.length === 0) {
