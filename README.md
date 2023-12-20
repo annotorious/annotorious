@@ -1,4 +1,4 @@
-![Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious](/images/splash-image.jpg "Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious")
+![Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious](/docs/images/splash-image.jpg "Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious")
 
 # Annotorious 3
 
