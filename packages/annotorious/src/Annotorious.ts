@@ -7,8 +7,8 @@ import { SVGAnnotationLayer } from './annotation';
 import type { DrawingToolOpts, SVGAnnotationLayerPointerEvent } from './annotation';
 import type { ImageAnnotation, ShapeType } from './model';
 import { createSvelteImageAnnotatorState } from './state';
-import { setTheme } from './themes';
-import { fillDefaults } from './AnnotoriousOpts';
+import { setTheme as _setTheme } from './themes';
+import { fillDefaults, type Theme } from './AnnotoriousOpts';
 import type { AnnotoriousOpts } from './AnnotoriousOpts';
 import { initKeyboardCommands } from './keyboardCommands';
 
@@ -27,6 +27,8 @@ export interface ImageAnnotator<E extends unknown = ImageAnnotation> extends Ann
   setDrawingTool(tool: DrawingTool): void; 
 
   setDrawingEnabled(enabled: boolean): void;
+
+  setTheme(theme: Theme): void;
 
 }
 
@@ -67,7 +69,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   let currentUser: User = createAnonymousGuest();
 
-  setTheme(img, container);
+  _setTheme(img, container, opts.theme);
 
   const annotationLayer = new SVGAnnotationLayer({
     target: container,
@@ -141,6 +143,8 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) =>
     annotationLayer.$set({ style });
 
+  const setTheme = (theme: Theme) => _setTheme(img, container, theme);
+  
   const setUser = (user: User) => {
     currentUser = user;
     annotationLayer.$set({ user });
@@ -160,6 +164,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     setFilter,
     setSelected,
     setStyle,
+    setTheme,
     setUser,
     state
   }

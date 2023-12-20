@@ -2,12 +2,12 @@ import type OpenSeadragon from 'openseadragon';
 import type { SvelteComponent } from 'svelte';
 import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver, createUndoStack } from '@annotorious/core';
 import type { Annotator, DrawingStyle, Filter, PresenceProvider, User } from '@annotorious/core';
-import { fillDefaults, createImageAnnotatorState, initKeyboardCommands} from '@annotorious/annotorious/src';
+import { fillDefaults, createImageAnnotatorState, initKeyboardCommands, type Theme} from '@annotorious/annotorious/src';
 import { listDrawingTools, getTool, registerTool, registerEditor } from '@annotorious/annotorious/src/annotation';
 import type { AnnotoriousOpts, DrawingTool, DrawingToolOpts, ImageAnnotation, ShapeType } from '@annotorious/annotorious/src';
 import type { PixiLayerClickEvent } from './annotation';
 import { PixiLayer, SVGDrawingLayer, SVGPresenceLayer } from './annotation';
-import { setTheme } from './themes/setTheme';
+import { setTheme as _setTheme } from './themes/setTheme';
 import { 
   fitBounds as _fitBounds, 
   fitBoundsWithConstraints as _fitBoundsWithConstraints, 
@@ -33,6 +33,8 @@ export interface OpenSeadragonAnnotator<E extends unknown = ImageAnnotation> ext
   setDrawingTool(tool: DrawingTool): void;
 
   setDrawingEnabled(enabled: boolean): void;
+
+  setTheme(theme: 'light' | 'dark' | 'auto'): void;
 
 }
 
@@ -108,7 +110,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     }
   });
   
-  setTheme(viewer);
+  _setTheme(viewer, opts.theme);
 
   /*************************/
   /*      External API     */
@@ -172,6 +174,8 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const setPresenceProvider = (provider: PresenceProvider) =>
     presenceLayer.$set({ provider });
 
+  const setTheme = (theme: Theme) => _setTheme(viewer, theme);
+
   const setUser = (user: User) => {
     currentUser = user;
     drawingLayer.$set({ user });
@@ -194,6 +198,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     setPresenceProvider,
     setSelected,
     setStyle,
+    setTheme,
     setUser,
     state,
     viewer

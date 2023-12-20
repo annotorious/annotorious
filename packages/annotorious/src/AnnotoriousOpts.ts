@@ -18,9 +18,13 @@ export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E exten
 
   style?: DrawingStyle | ((annotation: I) => DrawingStyle);
 
+  theme?: Theme;
+
 }
 
 export type DrawingMode = 'click' | 'drag';
+
+export type Theme = 'dark' | 'light' | 'auto';
 
 export const fillDefaults = <I extends ImageAnnotation = ImageAnnotation, E extends unknown = ImageAnnotation> (
   opts: AnnotoriousOpts<I, E>
@@ -30,7 +34,8 @@ export const fillDefaults = <I extends ImageAnnotation = ImageAnnotation, E exte
     ...opts,
     drawingEnabled: opts.drawingEnabled === undefined ? true : opts.drawingEnabled,
     drawingMode: opts.drawingMode || 'drag',
-    pointerSelectAction: opts.pointerSelectAction || PointerSelectAction.EDIT
+    pointerSelectAction: opts.pointerSelectAction || PointerSelectAction.EDIT,
+    theme: opts.theme || 'light'
   };
 
 };

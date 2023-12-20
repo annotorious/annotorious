@@ -1,3 +1,5 @@
+import type { Theme } from '../../AnnotoriousOpts';
+
 export const sampleBrightness = (imageOrCanvas: HTMLElement) => {
 
   let canvas: HTMLCanvasElement;
@@ -35,12 +37,15 @@ export const sampleBrightness = (imageOrCanvas: HTMLElement) => {
   return totalBrightness / 81;
 }
 
-export const setTheme = (imageOrCanvas: HTMLElement, container: HTMLElement) => {
-  const brightness = sampleBrightness(imageOrCanvas);
+export const setTheme = (imageOrCanvas: HTMLElement, container: HTMLElement, theme: Theme) => {
+  const getAutoTheme = () => {
+    const brightness = sampleBrightness(imageOrCanvas);
+    const theme = brightness > 0.6 ? 'dark' : 'light'
 
-  const theme = brightness > 0.6 ? 'dark' : 'light'
+    console.log(`[Annotorious] Image brightness: ${brightness.toFixed(1)}. Setting ${theme} theme.`);
 
-  console.log(`[Annotorious] Image brightness: ${brightness.toFixed(1)}. Setting ${theme} theme.`);
+    return theme;
+  }
 
-  container.setAttribute('data-theme', theme);
+  container.setAttribute('data-theme', theme === 'auto' ? getAutoTheme() : theme);
 }
