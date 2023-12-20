@@ -37,15 +37,14 @@ export const sampleBrightness = (imageOrCanvas: HTMLElement) => {
   return totalBrightness / 81;
 }
 
-export const setTheme = (imageOrCanvas: HTMLElement, container: HTMLElement, theme: Theme) => {
-  const getAutoTheme = () => {
-    const brightness = sampleBrightness(imageOrCanvas);
-    const theme = brightness > 0.6 ? 'dark' : 'light'
+export const detectTheme = (imageOrCanvas: HTMLElement) => {
+  const brightness = sampleBrightness(imageOrCanvas);
+  const theme = brightness > 0.6 ? 'dark' : 'light'
 
-    console.log(`[Annotorious] Image brightness: ${brightness.toFixed(1)}. Setting ${theme} theme.`);
+  console.log(`[Annotorious] Image brightness: ${brightness.toFixed(1)}. Setting ${theme} theme.`);
 
-    return theme;
-  }
-
-  container.setAttribute('data-theme', theme === 'auto' ? getAutoTheme() : theme);
+  return theme;
 }
+
+export const setTheme = (imageOrCanvas: HTMLElement, container: HTMLElement, theme: Theme) =>
+  container.setAttribute('data-theme', theme === 'auto' ? detectTheme(imageOrCanvas) : theme);
