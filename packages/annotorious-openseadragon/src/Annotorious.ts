@@ -49,10 +49,10 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   const { hover, selection, store } = state;
 
-  const lifecycle = createLifecyleObserver(
-    store, selection, hover, undefined, opts.adapter, opts.autoSave);
-
   const undoStack = createUndoStack(store);
+
+  const lifecycle = createLifecyleObserver(
+    state, undoStack, opts.adapter, opts.autoSave);
 
   let currentUser: User = createAnonymousGuest();
 

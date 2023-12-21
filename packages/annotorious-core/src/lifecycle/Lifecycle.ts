@@ -1,20 +1,20 @@
 import { dequal } from 'dequal/lite';
-import type { Annotation, FormatAdapter } from '../model';
-import { Origin } from '../state';
-import type { HoverState, SelectionState, Store, ViewportState } from '../state';
+import type { Annotation, AnnotatorState, FormatAdapter } from '../model';
+import { Origin, type ChangeSet, type UndoStack } from '../state';
+import type { ViewportState } from '../state';
 import type { LifecycleEvents } from './LifecycleEvents';
 
 export type Lifecycle<I extends Annotation, E extends unknown> = 
   ReturnType<typeof createLifecyleObserver<I, E>>;
 
 export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
-  store: Store<I>,
-  selectionState: SelectionState<I>, 
-  hoverState: HoverState<I>,
-  viewportState?: ViewportState,
+  state: AnnotatorState<I>,
+  undoStack: UndoStack<I>,
   adapter?: FormatAdapter<I, E>,
   autoSave?: boolean
 ) => {
+  const { store, selection, hover, viewport } = state;
+
   const observers: Map<keyof LifecycleEvents, Function[]> = new Map();
 
   // The currently selected annotations, in the state when they were selected 
@@ -62,7 +62,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
   }
 
   const onIdleUpdate = () => {
-    const { selected } = selectionState;
+    const { selected } = selection;
 
     // User idle after activity - fire update events for selected
     // annotations that changed
@@ -81,7 +81,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
     });
   }
 
-  selectionState.subscribe(({ selected })=> {
+  selection.subscribe(({ selected })=> {
     if (initialSelection.length === 0 && selected.length === 0)
       return;
 
@@ -125,7 +125,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
     emit('selectionChanged', initialSelection);
   });
 
-  hoverState.subscribe(id => {
+  hover.subscribe(id => {
     if (!currentHover && id) {
       emit('mouseEnterAnnotation', store.getAnnotation(id));
     } else if (currentHover && !id) {
@@ -138,7 +138,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
     currentHover = id;
   });
 
-  viewportState?.subscribe(ids => 
+  viewport?.subscribe(ids => 
     emit('viewportIntersect', ids.map(store.getAnnotation)));
 
   store.observe(event => {
@@ -191,6 +191,20 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
       }
     }
   }, { origin: Origin.REMOTE });
+
+  const onUndoOrRedo = (undo: boolean) => (changes: ChangeSet<I>) => {
+    const { created, deleted, updated } = changes;
+    created.forEach(a => emit('createAnnotation', a));
+    deleted.forEach(a => emit('deleteAnnotation', a));
+
+    if (undo)
+      updated.forEach(t => emit('updateAnnotation', t.oldValue, t.newValue));
+    else
+      updated.forEach(t => emit('updateAnnotation', t.newValue, t.oldValue));
+  }
+
+  undoStack.on('undo', onUndoOrRedo(true));
+  undoStack.on('redo', onUndoOrRedo(false));
 
   return { on, off, emit }
 

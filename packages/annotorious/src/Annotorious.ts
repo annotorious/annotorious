@@ -47,12 +47,13 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   const state = createSvelteImageAnnotatorState(opts);
 
-  const { hover, selection, store } = state;
-
-  const lifecycle = createLifecyleObserver<ImageAnnotation, E>(
-    store, selection, hover, undefined, opts.adapter, opts.autoSave);
+  const { selection, store } = state;
 
   const undoStack = createUndoStack(store);
+
+  const lifecycle = createLifecyleObserver<ImageAnnotation, E>(
+    state, undoStack, opts.adapter, opts.autoSave
+  );
 
   // We'll wrap the image in a container DIV.
   const container = document.createElement('DIV');

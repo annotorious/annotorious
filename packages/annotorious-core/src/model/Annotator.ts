@@ -74,7 +74,7 @@ export interface AnnotatorState<A extends Annotation> {
 
 export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
   store: Store<I>, 
-  undoStack: UndoStack,
+  undoStack: UndoStack<I>,
   adapter?: FormatAdapter<I, E>
 ) => {
 

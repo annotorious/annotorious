@@ -1,9 +1,9 @@
-import type { UndoStack } from '@annotorious/core';
+import type { Annotation, UndoStack } from '@annotorious/core';
 
 const isMac = navigator.userAgent.indexOf('Mac OS X') !== -1;
 
-export const initKeyboardCommands = (
-  undoStack: UndoStack,
+export const initKeyboardCommands = <T extends Annotation>(
+  undoStack: UndoStack<T>,
   container?: Element 
 ) => {
 

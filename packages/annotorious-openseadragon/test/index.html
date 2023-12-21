@@ -119,6 +119,7 @@
         anno.on('deleteAnnotation', a => console.log('deleted', a));
         anno.on('selectionChanged', selected => console.log('selection', selected));
         anno.on('updateAnnotation', (a, previous) => console.log('updated', previous, 'with', a));
+        anno.on('viewportIntersect', visible => console.log('visible', visible));
       }
     </script>
   </body>

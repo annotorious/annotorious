@@ -148,7 +148,7 @@ const _useViewportState = <T extends Annotation>() => {
 
   useEffect(() => {
     if (anno) {
-      const { store, viewport} = anno.state;
+      const { store, viewport } = anno.state;
 
       if (!viewport)
         return;

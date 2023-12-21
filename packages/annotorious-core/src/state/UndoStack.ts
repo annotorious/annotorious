@@ -1,3 +1,4 @@
+import { createNanoEvents, type Unsubscribe } from 'nanoevents';
 import type { Annotation } from '../model';
 import type { Store } from './Store';
 import { Origin } from './StoreObserver';
@@ -8,7 +9,7 @@ import { mergeChanges, type ChangeSet, type StoreChangeEvent, type Update } from
 // as a new undo/redo step.
 const DEBOUNCE = 250;
 
-export interface UndoStack {
+export interface UndoStack <T extends Annotation> {
 
   canRedo(): boolean;
 
@@ -16,13 +17,25 @@ export interface UndoStack {
 
   destroy(): void;
 
+  on<E extends keyof UndoStackEvents<T>>(event: E, callback: UndoStackEvents<T>[E]): Unsubscribe;
+
   undo(): void;
 
   redo(): void;
 
 }
 
-export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStack => {
+export interface UndoStackEvents <T extends Annotation> {
+
+  redo(change: ChangeSet<T>): void;
+
+  undo(change: ChangeSet<T>): void;
+
+}
+
+export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStack<T> => {
+
+  const emitter = createNanoEvents<UndoStackEvents<T>>();
 
   const changeStack: ChangeSet<T>[] = [];
 
@@ -81,11 +94,13 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
     if (pointer > -1) {
       muteEvents = true;
 
-      const { created, updated, deleted} = changeStack[pointer];
+      const { created, updated, deleted } = changeStack[pointer];
 
       undoCreated(created);
       undoUpdated(updated);
       undoDeleted(deleted);
+
+      emitter.emit('undo', changeStack[pointer]);
 
       pointer -= 1;
     }
@@ -103,6 +118,8 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
       redoUpdated(updated);
       redoDeleted(deleted);
 
+      emitter.emit('redo', changeStack[pointer + 1]);
+
       pointer += 1;
     }
   }
@@ -111,10 +128,14 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
 
   const destroy = () => store.unobserve(onChange);
 
+  const on = <E extends keyof UndoStackEvents<T>>(event: E, callback: UndoStackEvents<T>[E]) => 
+    emitter.on(event, callback);
+
   return {
     canRedo,
     canUndo,
     destroy,
+    on,
     redo,
     undo
   }
