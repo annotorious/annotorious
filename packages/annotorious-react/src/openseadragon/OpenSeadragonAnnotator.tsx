@@ -35,8 +35,6 @@ export const OpenSeadragonAnnotator = <E extends unknown>(props: OpenSeadragonAn
     if (viewer) {
       const anno = createOSDAnnotator<E>(viewer, opts);
 
-      console.log(anno, setAnno);
-
       if (props.tool)
         anno.setDrawingTool(props.tool);
 
