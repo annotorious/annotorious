@@ -1,6 +1,6 @@
 import { createContext, forwardRef, ReactNode} from 'react';
 import { useContext, useEffect, useImperativeHandle, useState } from 'react';
-import { Annotation, Annotator, Store, StoreChangeEvent } from '@annotorious/core';
+import { Annotation, Annotator, Store, StoreChangeEvent } from '.';
 import { useDebounce } from './useDebounce';
 
 interface Selection<T extends Annotation = Annotation> {

@@ -1,5 +1,5 @@
 import { forwardRef, ReactNode } from 'react';
-import { ImageAnnotation } from '@annotorious/annotorious';
+import { ImageAnnotation } from '.';
 import { useDraggable } from '@neodrag/react';
 
 export interface AnnotoriousPopupProps {

@@ -1,6 +1,6 @@
 import { Children, ReactElement, cloneElement, useContext, useEffect } from 'react';
-import { AnnotoriousOpts, createImageAnnotator } from '@annotorious/annotorious';
-import type { DrawingStyle, DrawingTool, Filter, ImageAnnotation } from '@annotorious/annotorious';
+import { AnnotoriousOpts, createImageAnnotator } from '.';
+import type { DrawingStyle, DrawingTool, Filter, ImageAnnotation } from '.';
 import { AnnotoriousContext } from './Annotorious';
 
 export interface ImageAnnotatorProps<E extends unknown> extends AnnotoriousOpts<ImageAnnotation, E> {

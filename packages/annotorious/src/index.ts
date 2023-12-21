@@ -7,24 +7,32 @@ export * from './Annotorious';
 export * from './AnnotoriousOpts';
 export * from './keyboardCommands';
 
-// Re-export essentials from @annotorious/core utilities for convenience
-export * from '@annotorious/core/src/model';
-export * from '@annotorious/core/src/presence';
-export * from '@annotorious/core/src/utils';
-
-export type { 
+// Essential re-exports from @annotorious/core
+export type {
+  Annotation,
+  AnnotationBody,
+  AnnotationTarget,
+  Annotator,
+  AnnotatorState,
+  Appearance,
+  AppearanceProvider,
+  Color,
+  DrawingStyle,
+  Filter,
+  FormatAdapter,
   HoverState,
+  LifecycleEvents,
+  ParseResult,
+  PresentUser,
+  Purpose,
   Selection,
   SelectionState,
   Store,
   StoreChangeEvent,
-  StoreObserver
-} from '@annotorious/core/src/state';
-
-import {
-  Origin as _Origin,
-  PointerSelectAction as _PointerSelectAction
-} from '@annotorious/core/src/state';
-
-export { _Origin as Origin };
-export { _PointerSelectAction as PointerSelectAction };
+  StoreObserver,
+  User,
+  W3CAnnotation,
+  W3CAnnotationBody,
+  W3CAnnotationTarget,
+  W3CSelector
+} from '@annotorious/core';

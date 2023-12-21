@@ -55,9 +55,16 @@ export { _PointerSelectAction as PointerSelectAction };
 
 // Essential re-exports from @annotorious/annotorious 
 export type {
+  AnnotoriousOpts,
+  DrawingMode,
+  DrawingTool,
   ImageAnnotator as AnnotoriousImageAnnotator,
   ImageAnnotation
 } from '@annotorious/annotorious';
+
+import { createImageAnnotator as _createImageAnnotator } from '@annotorious/annotorious';
+
+export { _createImageAnnotator as createImageAnnotator };
 
 // Essential re-exports from @annotorious/openseadragon 
 export type {

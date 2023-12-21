@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Annotation, Annotator } from '@annotorious/annotorious';
+import { Annotation, Annotator } from '..';
 import { useAnnotator } from './Annotorious';
 
 export interface AnnotoriousPluginProps <I extends Annotation, E extends unknown> {
