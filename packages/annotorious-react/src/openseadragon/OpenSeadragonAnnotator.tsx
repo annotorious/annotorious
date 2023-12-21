@@ -2,7 +2,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from 'react
 import OpenSeadragon from 'openseadragon';
 import { createOSDAnnotator } from '@annotorious/openseadragon';
 import { AnnotoriousOpts, DrawingStyle, Filter, ImageAnnotation } from '@annotorious/annotorious';
-import { AnnotoriousContext } from '../Annotorious';
+import { useAnnotatorState } from '..';
 
 export const OpenSeadragonAnnotatorContext = createContext<{ 
   viewer: OpenSeadragon.Viewer,
@@ -29,11 +29,13 @@ export const OpenSeadragonAnnotator = <E extends unknown>(props: OpenSeadragonAn
 
   const [viewer, setViewer] = useState<OpenSeadragon.Viewer>();
 
-  const { anno, setAnno } = useContext(AnnotoriousContext);
+  const { anno, setAnno } = useAnnotatorState();
 
   useEffect(() => {
     if (viewer) {
       const anno = createOSDAnnotator<E>(viewer, opts);
+
+      console.log(anno, setAnno);
 
       if (props.tool)
         anno.setDrawingTool(props.tool);
