@@ -29,7 +29,7 @@ export default defineConfig({
         ...Object.keys(packageJson.peerDependencies)
       ],
       output: {
-        preserveModules: false,
+        preserveModules: true,
         assetFileNames: 'annotorious-react-osd.[ext]',
         globals: {
           react: 'React',

@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/svelte",
-  "version": "3.0.0-rc.13",
+  "version": "3.0.0-rc.14",
   "description": "Annotorious Svelte bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",

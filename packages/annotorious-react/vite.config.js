@@ -28,7 +28,7 @@ export default defineConfig({
         ...Object.keys(packageJson.peerDependencies)
       ],
       output: {
-        preserveModules: false,
+        preserveModules: true,
         assetFileNames: 'annotorious-react.[ext]',
         globals: {
           react: 'React',

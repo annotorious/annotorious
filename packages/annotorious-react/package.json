@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/react",
-  "version": "3.0.0-rc.13",
+  "version": "3.0.0-rc.14",
   "description": "Annotorious React bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -29,7 +29,9 @@
   },
   "typesVersions": {
     "*": {
-      "openseadragon": ["./dist/openseadragon/index.d.ts"]
+      "openseadragon": [
+        "./dist/openseadragon/index.d.ts"
+      ]
     }
   },
   "devDependencies": {
