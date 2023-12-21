@@ -2,7 +2,7 @@
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
   import type { StoreChangeEvent, User } from '@annotorious/core';
-  import { getEditor, EditorMount, getTool } from '@annotorious/annotorious/src';
+  import { getEditor, EditorMount, getTool, listDrawingTools } from '@annotorious/annotorious/src';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious/src';
   import OSDLayer from '../OSDLayer.svelte';
   import OSDToolMount from './OSDToolMount.svelte';
@@ -11,9 +11,11 @@
   export let drawingEnabled: boolean;
   export let preferredDrawingMode: DrawingMode;
   export let state: ImageAnnotatorState;
-  export let { tool, opts } = getTool('rectangle');
+  export let toolName: string = listDrawingTools().length > 0 ? listDrawingTools()[0] : undefined;
   export let user: User;
   export let viewer: OpenSeadragon.Viewer;
+
+  $: ({ tool, opts } = getTool(toolName));
 
   /** Drawing tool layer **/
   let drawingEl: SVGGElement;
@@ -134,7 +136,7 @@
             {/key}
         {/each}
       {:else if (drawingEl && tool && drawingEnabled)} 
-        {#key tool}
+        {#key toolName} 
           <OSDToolMount
             target={drawingEl}
             tool={tool}
@@ -143,7 +145,7 @@
             viewer={viewer}
             viewportScale={scale}
             on:create={onSelectionCreated} />
-          {/key}
+        {/key}
       {/if}
     </g>
   </svg>

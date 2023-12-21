@@ -30,7 +30,7 @@ export interface OpenSeadragonAnnotator<E extends unknown = ImageAnnotation> ext
 
   registerShapeEditor(shapeType: ShapeType, editor: typeof SvelteComponent): void;
 
-  setDrawingTool(tool: DrawingTool): void;
+  setDrawingTool(name: DrawingTool): void;
 
   setDrawingEnabled(enabled: boolean): void;
 
@@ -142,14 +142,13 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const registerShapeEditor = (shapeType: ShapeType, editor: typeof SvelteComponent) =>
     registerEditor(shapeType, editor);
 
-  const setDrawingTool = (t: DrawingTool) => {
-    const toolSpec = getTool(t);
+  const setDrawingTool = (name: DrawingTool) => {
+    // Validate that the tool exists
+    const toolSpec = getTool(name);
     if (!toolSpec)
-      throw `Tool not found: ${t}`;
-
-    const { tool, opts } = toolSpec;
-    drawingMode = opts?.drawingMode || drawingMode;
-    drawingLayer.$set({ tool, opts });
+      throw `No drawing tool named ${name}`;
+    
+    drawingLayer.$set({ toolName: name });
   }
 
   const setDrawingEnabled = (enabled: boolean) => {

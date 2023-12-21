@@ -24,7 +24,7 @@ export interface ImageAnnotator<E extends unknown = ImageAnnotation> extends Ann
 
   registerShapeEditor(shapeType: ShapeType, editor: typeof SvelteComponent): void;
 
-  setDrawingTool(tool: DrawingTool): void; 
+  setDrawingTool(name: DrawingTool): void; 
 
   setDrawingEnabled(enabled: boolean): void;
 
@@ -120,10 +120,13 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   const registerShapeEditor = (shapeType: ShapeType, editor: typeof SvelteComponent) =>
     registerEditor(shapeType, editor);
 
-  const setDrawingTool = (t: DrawingTool) => {
-    const { tool, opts } = getTool(t);
-    // @ts-ignore
-    annotationLayer.$set({ tool, opts })
+  const setDrawingTool = (name: DrawingTool) => {
+    // Validate that the tool exists
+    const toolSpec = getTool(name);
+    if (!toolSpec)
+      throw `No drawing tool named ${name}`;
+
+    annotationLayer.$set({ toolName: name })
   }
 
   const setDrawingEnabled = (enabled: boolean) =>

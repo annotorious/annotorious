@@ -6,7 +6,7 @@
   import type { ImageAnnotation, Shape} from '../model';
   import { getEditor, EditorMount } from './editors';
   import { Ellipse, Polygon, Rectangle} from './shapes';
-  import { getTool, ToolMount } from './tools';
+  import { getTool, listDrawingTools, ToolMount } from './tools';
   import { enableResponsive } from './utils';
   import { createSVGTransform } from './Transform';
   import { addEventListeners } from './SVGAnnotationLayerPointerEvent';
@@ -19,8 +19,10 @@
   export let preferredDrawingMode: DrawingMode;
   export let state: SvelteImageAnnotatorState;
   export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
-  export let { tool, opts } = getTool('rectangle');
+  export let toolName: string = listDrawingTools().length > 0 ? listDrawingTools()[0] : undefined;
   export let user: User;
+
+  $: ({ tool, opts } = getTool(toolName));
 
   $: drawingMode = opts?.drawingMode || preferredDrawingMode;
 
@@ -154,7 +156,7 @@
           {/key}
         {/each}
       {:else if (tool && drawingEnabled)} 
-        {#key tool}
+        {#key toolName}
           <ToolMount 
             target={drawingEl}
             tool={tool}
