@@ -27,6 +27,11 @@
     },
     "./annotorious-react.css": "./dist/annotorious-react.css"
   },
+  "typesVersions": {
+    "*": {
+      "openseadragon": ["./dist/openseadragon/index.d.ts"]
+    }
+  },
   "devDependencies": {
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
