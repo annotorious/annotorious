@@ -9,29 +9,39 @@ export * from './openseadragon';
 import '@annotorious/annotorious/annotorious.css';
 import '@annotorious/openseadragon/annotorious-openseadragon.css';
 
-export type {
-  LifecycleEvents
-} from '@annotorious/core/src/lifecycle';
-
 // Essential re-exports from @annotorious/core
-export * from '@annotorious/core/src/model';
-export * from '@annotorious/core/src/presence';
-export * from '@annotorious/core/src/utils';
-
-export type { 
+export type {
+  Annotation,
+  AnnotationBody,
+  AnnotationTarget,
+  Annotator,
+  AnnotatorState,
+  DrawingStyle,
+  Filter,
+  FormatAdapter,
   HoverState,
+  LifecycleEvents,
+  ParseResult,
+  Purpose,
   Selection,
   SelectionState,
   Store,
   StoreChangeEvent,
-  StoreObserver
-} from '@annotorious/core/src/state';
+  StoreObserver,
+  User,
+  W3CAnnotation,
+  W3CAnnotationBody,
+  W3CAnnotationTarget,
+  W3CSelector
+} from '@annotorious/core';
 
 import {
+  createAnonymousGuest as _createAnonymousGuest, 
   Origin as _Origin,
   PointerSelectAction as _PointerSelectAction
-} from '@annotorious/core/src/state';
+} from '@annotorious/core';
 
+export { _createAnonymousGuest as createAnonymousGuest };
 export { _Origin as Origin };
 export { _PointerSelectAction as PointerSelectAction };
 

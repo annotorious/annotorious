@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { Annotation, AnnotationBody, User } from '../model';
-
+import type { Annotation, AnnotationBody } from '../model/Annotation';
+import type {  User } from '../model/User';
 /**
  * Returns all users listed as creators or updaters in any parts of this
  * annotation.

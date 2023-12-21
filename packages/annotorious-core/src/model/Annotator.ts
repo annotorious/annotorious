@@ -1,8 +1,8 @@
 import type { Annotation } from './Annotation';
 import type { User } from './User';
-import type { PresenceProvider } from '../presence';
+import type { PresenceProvider } from '../presence/PresenceProvider';
 import { Origin, type HoverState, type SelectionState, type Store, type UndoStack, type ViewportState } from '../state';
-import type { LifecycleEvents } from '../lifecycle';
+import type { LifecycleEvents } from '../lifecycle/LifecycleEvents';
 import { parseAll, type FormatAdapter } from './FormatAdapter';
 import type { DrawingStyle } from './DrawingStyle';
 import type { Filter } from './Filter';

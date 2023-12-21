@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/core",
-  "version": "3.0.0-rc.6",
+  "version": "3.0.0-rc.7",
   "description": "Annotorious core types and functions",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -18,24 +18,12 @@
     "test": "vitest",
     "coverage": "vitest run --coverage"
   },
+  "main": "./dist/annotorious-core.es.js",
   "module": "./dist/annotorious-core.es.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/annotorious-core.es.js"
-    },
-    "./src": "./src/index.ts",
-    "./src/lifecycle": "./src/lifecycle/index.ts",
-    "./src/model": "./src/model/index.ts",
-    "./src/presence": "./src/presence/index.ts",
-    "./src/state": "./src/state/index.ts",
-    "./src/utils": "./src/utils/index.ts"
-  },
   "devDependencies": {
     "@tsconfig/svelte": "^3.0.0",
     "@types/deep-equal": "^1.0.2",

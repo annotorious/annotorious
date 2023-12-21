@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import { createNanoEvents, type Unsubscribe } from 'nanoevents';
-import type { User } from '../model';
+import type { User } from '../model/User';
 import type { PresentUser } from './PresentUser';
 import type { PresenceEvents } from './PresenceEvents';
 import { createDefaultAppearenceProvider } from './AppearanceProvider';

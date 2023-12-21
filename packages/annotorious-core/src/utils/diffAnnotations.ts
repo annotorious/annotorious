@@ -1,6 +1,6 @@
 import { dequal } from 'dequal/lite';
-import type { Update } from '../state';
-import type { Annotation } from '../model';
+import type { Update } from '../state/StoreObserver';
+import type { Annotation } from '../model/Annotation';
 
 const getAddedBodies = (oldValue: Annotation, newValue: Annotation) => {
   const oldBodyIds = new Set(oldValue.bodies.map(b => b.id));

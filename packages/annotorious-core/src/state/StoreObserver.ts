@@ -1,4 +1,4 @@
-import type { Annotation, AnnotationBody, AnnotationTarget } from '../model';
+import type { Annotation, AnnotationBody, AnnotationTarget } from '../model/Annotation';
 import { diffAnnotations } from '../utils';
 
 /** Interface for listening to changes in the annotation store **/

@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/openseadragon",
-  "version": "3.0.0-rc.6",
+  "version": "3.0.0-rc.7",
   "description": "Annotorious for OpenSeadragon",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -46,7 +46,6 @@
     "vite-plugin-dts": "^3.6.0"
   },
   "peerDependencies": {
-    "@annotorious/core": "*",
     "openseadragon": "^3.0.0 || ^4.0.0"
   },
   "dependencies": {
