@@ -16,6 +16,8 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   addAnnotation(annotation: E): void;
 
+  cancelSelected(): void;
+
   canRedo(): boolean;
 
   canUndo(): boolean;
@@ -27,6 +29,8 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
   getAnnotationById(id: string): E | undefined;
 
   getAnnotations(): E[];
+
+  getSelected(): E[];
 
   getUser(): User;
 
@@ -73,10 +77,12 @@ export interface AnnotatorState<A extends Annotation> {
 }
 
 export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
-  store: Store<I>, 
+  state: AnnotatorState<I>, 
   undoStack: UndoStack<I>,
   adapter?: FormatAdapter<I, E>
 ) => {
+
+  const { store, selection } = state;
 
   const addAnnotation = (annotation: E) => {
     if (adapter) {
@@ -91,6 +97,8 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
+  const cancelSelected = () => selection.clear();
+
   const clearAnnotations = () => store.clear();
 
   const getAnnotationById = (id: string): E | undefined => {
@@ -101,6 +109,16 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
 
   const getAnnotations = () =>
     (adapter ? store.all().map(adapter.serialize) : store.all()) as E[];
+
+  const getSelected = () => {
+    const selectedIds = selection.selected?.map(s => s.id) || [];
+
+    const selected = selectedIds.map(id => store.getAnnotation(id));
+
+    return adapter 
+      ? selected.map(adapter.serialize) 
+      : selected as unknown as E[];
+  }
 
   const loadAnnotations = (url: string) =>
     fetch(url)
@@ -136,6 +154,14 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
+  const setSelected = (arg?: string | string[]) => {
+    if (arg) {
+      selection.setSelected(arg);
+    } else {
+      selection.clear();
+    }
+  }
+
   const updateAnnotation = (updated: E): E => {
     if (adapter) {
       const crosswalked = adapter.parse(updated).parsed;
@@ -154,15 +180,18 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
   // if people are not careful.
   return { 
     addAnnotation,
+    cancelSelected,
     canRedo: undoStack.canRedo,
     canUndo: undoStack.canUndo,
     clearAnnotations,
     getAnnotationById,
     getAnnotations,
+    getSelected,
     loadAnnotations,
     redo: undoStack.redo,
     removeAnnotation,
     setAnnotations,
+    setSelected,
     undo: undoStack.undo,
     updateAnnotation
   }

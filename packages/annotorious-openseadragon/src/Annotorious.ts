@@ -117,7 +117,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   /******++++++*************/
 
   // Most of the external API functions are covered in the base annotator
-  const base = createBaseAnnotator<ImageAnnotation, E>(store, undoStack, opts.adapter);
+  const base = createBaseAnnotator<ImageAnnotation, E>(state, undoStack, opts.adapter);
 
   const destroy = () => {
     // Destroy Svelte layers
@@ -160,14 +160,6 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const setFilter = (filter: Filter) =>
     displayLayer.$set({ filter });
 
-  const setSelected = (arg?: string | string[]) => {
-    if (arg) {
-      selection.setSelected(arg);
-    } else {
-      selection.clear();
-    }
-  }
-
   const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) =>
     displayLayer.$set({ style });
 
@@ -196,7 +188,6 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     setDrawingTool,
     setFilter,
     setPresenceProvider,
-    setSelected,
     setStyle,
     setTheme,
     setUser,

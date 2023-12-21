@@ -97,7 +97,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   /******++++++*************/
 
   // Most of the external API functions are covered in the base annotator
-  const base = createBaseAnnotator<ImageAnnotation, E>(store, undoStack, opts.adapter);
+  const base = createBaseAnnotator<ImageAnnotation, E>(state, undoStack, opts.adapter);
 
   const destroy = () => {
     // Destroy Svelte annotation layer
@@ -133,14 +133,6 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     console.warn('Filter not implemented yet');
   }
 
-  const setSelected = (arg?: string | string[]) => {
-    if (arg) {
-      selection.setSelected(arg);
-    } else {
-      selection.clear();
-    }
-  }
-
   const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) =>
     annotationLayer.$set({ style });
 
@@ -163,7 +155,6 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     setDrawingEnabled,
     setDrawingTool,
     setFilter,
-    setSelected,
     setStyle,
     setTheme,
     setUser,
