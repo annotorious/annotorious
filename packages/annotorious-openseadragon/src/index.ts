@@ -40,7 +40,9 @@ export type {
   ImageAnnotation,
   ImageAnnotatorState,
   Polygon,
+  PolygonGeometry,
   Rectangle,
+  RectangleGeometry,
   Shape
 } from '@annotorious/annotorious';
 
