@@ -21,7 +21,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/annotorious-react.es.js"
     },
-    "./openseadragon": "./src/openseadragon/index.ts",
     "./annotorious-react.css": "./dist/annotorious-react.css"
   },
   "devDependencies": {
@@ -35,12 +34,14 @@
   },
   "peerDependencies": {
     "@annotorious/annotorious": "*",
-    "@annotorious/openseadragon": "*",
     "openseadragon": "^3.0.0 || ^4.0.0",
     "react": "16.8.0 || >=17.x || >=18.x",
     "react-dom": "16.8.0 || >=17.x || >=18.x"
   },
   "peerDependenciesMeta": {
+    "@annotorious/openseadragon": {
+      "optional": true
+    },
     "openseadragon": {
       "optional": true
     }
