@@ -21,7 +21,7 @@ import {
   listDrawingTools,
   registerTool,
   registerEditor
-} from '@annotorious/annotorious/src';
+} from '@annotorious/annotorious';
 import type {
   AnnotoriousOpts, 
   DrawingTool, 
