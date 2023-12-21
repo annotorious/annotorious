@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, type SvelteComponent } from 'svelte';
   import type OpenSeadragon from 'openseadragon';
-  import type { DrawingMode, Shape, Transform } from '@annotorious/annotorious/src';
+  import type { DrawingMode, Shape, Transform } from '@annotorious/annotorious';
 
   const dispatch = createEventDispatcher<{ create: Shape }>();
 

@@ -2,8 +2,9 @@
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
   import type { StoreChangeEvent, User } from '@annotorious/core';
-  import { getEditor, EditorMount, getTool, listDrawingTools } from '@annotorious/annotorious/src';
-  import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious/src';
+  import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
+  import { getEditor, getTool, listDrawingTools } from '@annotorious/annotorious';
+  import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
   import OSDLayer from '../OSDLayer.svelte';
   import OSDToolMount from './OSDToolMount.svelte';
 

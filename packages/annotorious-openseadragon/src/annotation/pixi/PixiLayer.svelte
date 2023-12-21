@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
   import OpenSeadragon from 'openseadragon';
-  import type { DrawingStyle, Filter, ImageAnnotation, ImageAnnotatorState } from '@annotorious/annotorious/src';
+  import type { DrawingStyle, Filter, ImageAnnotation, ImageAnnotatorState } from '@annotorious/annotorious';
   import type { PixiLayerClickEvent } from './PixiLayerClickEvent';
   import { createStage } from './stageRenderer';
 

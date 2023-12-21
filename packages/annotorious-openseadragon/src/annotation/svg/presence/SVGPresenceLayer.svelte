@@ -1,7 +1,7 @@
 <script type="ts">
   import { onDestroy } from 'svelte';
   import type { PresenceProvider, PresentUser, StoreChangeEvent } from '@annotorious/core';
-  import { ShapeType, type ImageAnnotation, type ImageAnnotationStore } from '@annotorious/annotorious/src';
+  import { ShapeType, type ImageAnnotation, type ImageAnnotationStore } from '@annotorious/annotorious';
   import OSDLayer from '../OSDLayer.svelte';
   import SVGPresencePolygon from './shapes/PresencePolygon.svelte';
   import SVGPresenceRectangle from './shapes/PresenceRectangle.svelte';

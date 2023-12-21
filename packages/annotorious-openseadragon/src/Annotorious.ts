@@ -1,13 +1,38 @@
 import type OpenSeadragon from 'openseadragon';
 import type { SvelteComponent } from 'svelte';
-import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver, createUndoStack } from '@annotorious/core';
-import type { Annotator, DrawingStyle, Filter, PresenceProvider, User } from '@annotorious/core';
-import { fillDefaults, createImageAnnotatorState, initKeyboardCommands, type Theme} from '@annotorious/annotorious/src';
-import { listDrawingTools, getTool, registerTool, registerEditor } from '@annotorious/annotorious/src/annotation';
-import type { AnnotoriousOpts, DrawingTool, DrawingToolOpts, ImageAnnotation, ShapeType } from '@annotorious/annotorious/src';
+import { 
+  createAnonymousGuest, 
+  createBaseAnnotator, 
+  createLifecyleObserver, 
+  createUndoStack 
+} from '@annotorious/core';
+import type { 
+  Annotator, 
+  DrawingStyle, 
+  Filter, 
+  PresenceProvider, 
+  User 
+} from '@annotorious/core';
+import { 
+  createImageAnnotatorState, 
+  fillDefaults, 
+  getTool,
+  initKeyboardCommands,
+  listDrawingTools,
+  registerTool,
+  registerEditor
+} from '@annotorious/annotorious/src';
+import type {
+  AnnotoriousOpts, 
+  DrawingTool, 
+  DrawingToolOpts, 
+  ImageAnnotation, 
+  ShapeType, 
+  Theme
+} from '@annotorious/annotorious';
 import type { PixiLayerClickEvent } from './annotation';
 import { PixiLayer, SVGDrawingLayer, SVGPresenceLayer } from './annotation';
-import { setTheme as _setTheme } from './themes/setTheme';
+import { setTheme as _setTheme } from './themes';
 import { 
   fitBounds as _fitBounds, 
   fitBoundsWithConstraints as _fitBoundsWithConstraints, 

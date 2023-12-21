@@ -33,9 +33,7 @@
       "require": "./dist/annotorious.js"
     },
     "./annotorious.css": "./dist/annotorious.css",
-    "./src": "./src/index.ts",
-    "./src/annotation": "./src/annotation/index.ts",
-    "./src/model": "./src/model/index.ts"
+    "./src": "./src/index.ts"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.4.6",
