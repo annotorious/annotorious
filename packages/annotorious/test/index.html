@@ -46,6 +46,7 @@
 
         const anno = createImageAnnotator('sample-image', {
           adapter: W3CImageFormat('sample-image'),
+          autoSave: true,
           style: function(annotation) {
             return annotation.target.selector.type === 'RECTANGLE' ? { fill: 'red' } : { fill: 'blue' };
           }
@@ -54,15 +55,21 @@
         anno.loadAnnotations('./annotations.w3c.json');
       
         anno.on('createAnnotation', function (annotation) {
-          // console.log('created', annotation);
+          console.log('created', annotation);
+          console.log('can undo?', anno.canUndo());
+          console.log('can redo?', anno.canRedo());
         });
 
         anno.on('updateAnnotation', function(annotation, previous) {
-          // console.log('updated', previous, 'with', annotation);
+          console.log('updated', previous, 'with', annotation);
+          console.log('can undo?', anno.canUndo());
+          console.log('can redo?', anno.canRedo());
         });
 
         anno.on('deleteAnnotation', function(annotation) {
-          // console.log('deleted', annotation);
+          console.log('deleted', annotation);
+          console.log('can undo?', anno.canUndo());
+          console.log('can redo?', anno.canRedo());
         });
 
         anno.on('selectionChanged', function(selected) {

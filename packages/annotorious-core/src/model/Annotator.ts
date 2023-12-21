@@ -16,6 +16,10 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   addAnnotation(annotation: E): void;
 
+  canRedo(): boolean;
+
+  canUndo(): boolean;
+
   clearAnnotations(): void;
 
   destroy(): void;
@@ -145,8 +149,13 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
+  // Note that we don't spread the undoStack - it has a .destroy()
+  // method that would likely get overwritten by other Annotator implementations
+  // if people are not careful.
   return { 
     addAnnotation,
+    canRedo: undoStack.canRedo,
+    canUndo: undoStack.canUndo,
     clearAnnotations,
     getAnnotationById,
     getAnnotations,

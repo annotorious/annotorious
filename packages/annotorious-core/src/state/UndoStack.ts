@@ -10,6 +10,10 @@ const DEBOUNCE = 250;
 
 export interface UndoStack {
 
+  canRedo(): boolean;
+
+  canUndo(): boolean;
+
   destroy(): void;
 
   undo(): void;
@@ -87,6 +91,8 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
     }
   }
 
+  const canUndo = () => pointer > -1;
+
   const redo = () => {
     if (changeStack.length - 1 > pointer) {
       muteEvents = true;
@@ -101,9 +107,13 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
     }
   }
 
+  const canRedo = () => changeStack.length - 1 > pointer;
+
   const destroy = () => store.unobserve(onChange);
 
   return {
+    canRedo,
+    canUndo,
     destroy,
     redo,
     undo
