@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
 import { ImageAnnotation, W3CImageFormat } from '@annotorious/openseadragon';
-import { 
+import { useAnnotator, AnnotoriousOpenSeadragonAnnotator } from '../src';
+import {
   OpenSeadragonViewer, 
   OpenSeadragonAnnotator, 
   OpenSeadragonPopup, 
-  useAnnotator,
-  AnnotoriousOpenSeadragonAnnotator
-} from '../src';
+} from '../src/openseadragon';
 
 import '@annotorious/openseadragon/annotorious-openseadragon.css';
 
@@ -39,7 +38,7 @@ const IIIF_SAMPLE = {
 const OSD_OPTIONS: OpenSeadragon.Options = {
   prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@3.1/build/openseadragon/images/',
   tileSources: IIIF_SAMPLE,
-  crossOriginPolicy: 'Anonymous',
+  // crossOriginPolicy: 'Anonymous',
   gestureSettingsMouse: {
     clickToZoom: false
   }

@@ -21,6 +21,7 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/annotorious-react.es.js"
     },
+    "./openseadragon": "./src/openseadragon/index.ts",
     "./annotorious-react.css": "./dist/annotorious-react.css"
   },
   "devDependencies": {
