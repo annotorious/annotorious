@@ -50,6 +50,7 @@ export const parseW3CImageAnnotation = (
       id: annotationId,
       bodies,
       target: {
+        ...rest.target,
         annotation: annotationId,
         selector
       }
