@@ -6,13 +6,18 @@ import dts from 'vite-plugin-dts';
 export default defineConfig({
   plugins: [
     svelte({ preprocess: sveltePreprocess() }),
-    dts({ insertTypesEntry: true })
+    dts({ 
+      insertTypesEntry: true,
+      include: ['./src/'],
+      entryRoot: './src'
+    })
   ],
   build: {
     sourcemap: true,
     lib: {
       entry: './src/index.ts',
-      name: 'AnnotoriousCore'
+      formats: ['es'],
+      fileName: (format) => `annotorious-core.${format}.js`
     }
   }
 });
