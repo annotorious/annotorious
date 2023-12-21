@@ -29,5 +29,10 @@
     "@annotorious/core": "*",
     "openseadragon": "^3.0.0 || ^4.0.0"
   },
+  "peerDependenciesMeta": {
+    "openseadragon": {
+      "optional": true
+    }
+  },
   "sideEffects": false
 }
