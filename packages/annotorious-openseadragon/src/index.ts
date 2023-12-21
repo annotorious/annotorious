@@ -36,8 +36,12 @@ export const createBody = _createBody;
 
 // Essential re-exports from @annotorious/annotorious 
 export type {
-  ImageAnnotator,
+  AnnotoriousOpts,
+  DrawingMode,
+  DrawingTool,
+  ImageAnnotator as AnnotoriousImageAnnotator,
   ImageAnnotation,
+  ImageAnnotator,
   ImageAnnotatorState,
   Polygon,
   PolygonGeometry,
@@ -47,9 +51,11 @@ export type {
 } from '@annotorious/annotorious';
 
 import {   
+  createImageAnnotator as _createImageAnnotator,
   ShapeType as _ShapeType,
   W3CImageFormat as _W3CImageFormat
 } from '@annotorious/annotorious';
 
+export const createImageAnnotator = _createImageAnnotator;
 export const ShapeType = _ShapeType;
 export const W3CImageFormat = _W3CImageFormat;

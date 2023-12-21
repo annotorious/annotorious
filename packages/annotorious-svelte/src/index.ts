@@ -9,54 +9,74 @@ export type {
   AnnotationTarget,
   Annotator,
   AnnotatorState,
+  Appearance,
+  AppearanceProvider,
   Color,
   DrawingStyle,
+  Filter,
   FormatAdapter,
-  ParseResult,
-  User,
-  W3CAnnotation,
-  W3CAnnotationBody,
-  W3CAnnotationTarget,
-  W3CSelector
-} from '@annotorious/core/src/model';
-
-export type { 
   HoverState,
+  LifecycleEvents,
+  ParseResult,
+  PresentUser,
+  Purpose,
   Selection,
   SelectionState,
   Store,
   StoreChangeEvent,
   StoreObserver,
   SvelteAnnotator,
-  SvelteAnnotatorState
-} from '@annotorious/core/src/state';
+  SvelteAnnotatorState,
+  User,
+  W3CAnnotation,
+  W3CAnnotationBody,
+  W3CAnnotationTarget,
+  W3CSelector
+} from '@annotorious/core';
 
 import {
+  createAnonymousGuest as _createAnonymousGuest, 
+  createBody as _createBody,
+  defaultColorProvider as _defaultColorProvider,
+  Origin as _Origin,
   PointerSelectAction as _PointerSelectAction
-} from '@annotorious/core/src/state';
+} from '@annotorious/core';
 
-export const PointerSelectAction = _PointerSelectAction;
-
-import {
-  createBody as _createBody
-} from '@annotorious/core/src/utils';
-
-export const createBody = _createBody;
+export { _createAnonymousGuest as createAnonymousGuest };
+export { _createBody as createBody };
+export { _defaultColorProvider as defaultColorProvider };
+export { _Origin as Origin };
+export { _PointerSelectAction as PointerSelectAction };
 
 // Essential re-exports from @annotorious/annotorious 
 export type {
-  ImageAnnotator,
+  AnnotoriousOpts,
+  DrawingMode,
+  DrawingTool,
+  ImageAnnotator as AnnotoriousImageAnnotator,
   ImageAnnotation,
+  ImageAnnotator,
   ImageAnnotatorState,
   Polygon,
+  PolygonGeometry,
   Rectangle,
+  RectangleGeometry,
   Shape
 } from '@annotorious/annotorious';
 
 import {   
+  createImageAnnotator as _createImageAnnotator,
   ShapeType as _ShapeType,
   W3CImageFormat as _W3CImageFormat
 } from '@annotorious/annotorious';
 
+export const createImageAnnotator = _createImageAnnotator;
 export const ShapeType = _ShapeType;
 export const W3CImageFormat = _W3CImageFormat;
+
+// Essential re-exports from @annotorious/openseadragon 
+export type {
+  OpenSeadragonAnnotator as AnnotoriousOpenSeadragonAnnotator
+} from '@annotorious/openseadragon';
+
+export type { Viewer } from 'openseadragon';

@@ -57,24 +57,29 @@ export type {
   DrawingMode,
   DrawingTool,
   ImageAnnotator as AnnotoriousImageAnnotator,
-  ImageAnnotation
+  ImageAnnotation,
+  ImageAnnotator,
+  ImageAnnotatorState,
+  Polygon,
+  PolygonGeometry,
+  Rectangle,
+  RectangleGeometry,
+  Shape
 } from '@annotorious/annotorious';
 
-import { createImageAnnotator as _createImageAnnotator } from '@annotorious/annotorious';
+import {   
+  createImageAnnotator as _createImageAnnotator,
+  ShapeType as _ShapeType,
+  W3CImageFormat as _W3CImageFormat
+} from '@annotorious/annotorious';
 
-export { _createImageAnnotator as createImageAnnotator };
+export const createImageAnnotator = _createImageAnnotator;
+export const ShapeType = _ShapeType;
+export const W3CImageFormat = _W3CImageFormat;
 
 // Essential re-exports from @annotorious/openseadragon 
 export type {
   OpenSeadragonAnnotator as AnnotoriousOpenSeadragonAnnotator
 } from '@annotorious/openseadragon';
-
-import {   
-  ShapeType as _ShapeType,
-  W3CImageFormat as _W3CImageFormat
-} from '@annotorious/annotorious';
-
-export { _ShapeType as ShapeType };
-export { _W3CImageFormat as W3CImageFormat };
 
 export type { Viewer } from 'openseadragon';
