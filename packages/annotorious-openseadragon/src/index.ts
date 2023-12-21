@@ -10,39 +10,28 @@ export type {
   Color,
   DrawingStyle,
   FormatAdapter,
+  HoverState,
+  Selection,
+  SelectionState,
+  Store,
+  StoreChangeEvent,
+  StoreObserver,
   ParseResult,
   User,
   W3CAnnotation,
   W3CAnnotationBody,
   W3CAnnotationTarget,
   W3CSelector
-} from '@annotorious/core/src/model';
+} from '@annotorious/core';
 
 import { 
-  defaultColorProvider as _defaultColorProvider
-} from '@annotorious/core/src/presence'; 
+  createBody as _createBody,
+  defaultColorProvider as _defaultColorProvider,
+  PointerSelectAction as _PointerSelectAction
+} from '@annotorious/core'; 
 
 export const defaultColorProvider = _defaultColorProvider;
-
-export type { 
-  HoverState,
-  Selection,
-  SelectionState,
-  Store,
-  StoreChangeEvent,
-  StoreObserver
-} from '@annotorious/core/src/state';
-
-import {
-  PointerSelectAction as _PointerSelectAction
-} from '@annotorious/core/src/state';
-
 export const PointerSelectAction = _PointerSelectAction;
-
-import {
-  createBody as _createBody
-} from '@annotorious/core/src/utils';
-
 export const createBody = _createBody;
 
 // Essential re-exports from @annotorious/annotorious 
