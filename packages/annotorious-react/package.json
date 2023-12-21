@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/react",
-  "version": "3.0.0-rc.11",
+  "version": "3.0.0-rc.12",
   "description": "Annotorious React bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "start": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && vite build --config vite.config.osd.js",
     "test": "echo 'Skipping tests in @annotorious/react package'"
   },
   "module": "./dist/annotorious-react.es.js",
@@ -20,6 +20,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/annotorious-react.es.js"
+    },
+    "./openseadragon": {
+      "types": "./dist/openseadragon/index.d.ts",
+      "import": "./dist/openseadragon/annotorious-react-osd.es.js"
     },
     "./annotorious-react.css": "./dist/annotorious-react.css"
   },

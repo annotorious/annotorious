@@ -10,8 +10,8 @@ export default defineConfig({
     react(),
     tsConfigPaths(),
     dts({
-      include: ['./src/'],
-      entryRoot: './src'
+      include: ['./src/openseadragon'],
+      entryRoot: './src/openseadragon'
     })
   ],
   server: {
@@ -19,17 +19,18 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: './src/index.ts',
+      entry: './src/openseadragon/index.ts',
       formats: ['es'],
-      fileName: (format) => `annotorious-react.${format}.js`
+      fileName: (format) => `annotorious-react-osd.${format}.js`
     },
+    outDir: './dist/openseadragon',
     rollupOptions: {
       external: [
         ...Object.keys(packageJson.peerDependencies)
       ],
       output: {
         preserveModules: false,
-        assetFileNames: 'annotorious-react.[ext]',
+        assetFileNames: 'annotorious-react-osd.[ext]',
         globals: {
           react: 'React',
           openseadragon: 'OpenSeadragon'
