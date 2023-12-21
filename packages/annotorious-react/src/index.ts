@@ -16,12 +16,16 @@ export type {
   AnnotationTarget,
   Annotator,
   AnnotatorState,
+  Appearance,
+  AppearanceProvider,
+  Color,
   DrawingStyle,
   Filter,
   FormatAdapter,
   HoverState,
   LifecycleEvents,
   ParseResult,
+  PresentUser,
   Purpose,
   Selection,
   SelectionState,
@@ -37,11 +41,15 @@ export type {
 
 import {
   createAnonymousGuest as _createAnonymousGuest, 
+  createBody as _createBody,
+  defaultColorProvider as _defaultColorProvider,
   Origin as _Origin,
   PointerSelectAction as _PointerSelectAction
 } from '@annotorious/core';
 
 export { _createAnonymousGuest as createAnonymousGuest };
+export { _createBody as createBody };
+export { _defaultColorProvider as defaultColorProvider };
 export { _Origin as Origin };
 export { _PointerSelectAction as PointerSelectAction };
 
