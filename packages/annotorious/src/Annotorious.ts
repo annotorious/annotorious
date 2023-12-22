@@ -1,5 +1,5 @@
 import type { SvelteComponent } from 'svelte';
-import type { Annotator, DrawingStyle, Filter, User } from '@annotorious/core';
+import { PointerSelectAction, type Annotator, type DrawingStyle, type Filter, type User } from '@annotorious/core';
 import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver, createUndoStack } from '@annotorious/core';
 import { registerEditor } from './annotation/editors';
 import { getTool, registerTool, listDrawingTools, type DrawingTool } from './annotation/tools';
@@ -43,7 +43,12 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   const img = (typeof image === 'string' ? 
     document.getElementById(image) : image) as HTMLImageElement | HTMLCanvasElement;
 
-  const opts = fillDefaults<ImageAnnotation, E>(options);
+  const opts = fillDefaults<ImageAnnotation, E>(options, {
+    drawingEnabled: true,
+    drawingMode: 'drag',
+    pointerSelectAction: PointerSelectAction.EDIT,
+    theme: 'light'
+  });
 
   const state = createSvelteImageAnnotatorState(opts);
 

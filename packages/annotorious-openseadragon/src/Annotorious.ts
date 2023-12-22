@@ -4,7 +4,8 @@ import {
   createAnonymousGuest, 
   createBaseAnnotator, 
   createLifecyleObserver, 
-  createUndoStack 
+  createUndoStack, 
+  PointerSelectAction
 } from '@annotorious/core';
 import type { 
   Annotator, 
@@ -68,7 +69,12 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   options: AnnotoriousOpts<ImageAnnotation, E> = {}
 ): OpenSeadragonAnnotator<E> => {
 
-  const opts = fillDefaults(options);
+  const opts = fillDefaults<ImageAnnotation, E>(options, {
+    drawingEnabled: false,
+    drawingMode: 'click',
+    pointerSelectAction: PointerSelectAction.EDIT,
+    theme: 'light'
+  });
 
   const state = createImageAnnotatorState(opts);
 

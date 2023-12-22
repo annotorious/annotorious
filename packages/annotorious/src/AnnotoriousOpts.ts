@@ -1,5 +1,4 @@
-import { PointerSelectAction } from '@annotorious/core';
-import type { Annotation, DrawingStyle, FormatAdapter } from '@annotorious/core';
+import type { Annotation, DrawingStyle, FormatAdapter, PointerSelectAction } from '@annotorious/core';
 import type { ImageAnnotation } from './model';
 
 export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation> {
@@ -27,15 +26,16 @@ export type DrawingMode = 'click' | 'drag';
 export type Theme = 'dark' | 'light' | 'auto';
 
 export const fillDefaults = <I extends ImageAnnotation = ImageAnnotation, E extends unknown = ImageAnnotation> (
-  opts: AnnotoriousOpts<I, E>
+  opts: AnnotoriousOpts<I, E>,
+  defaults: AnnotoriousOpts<I, E>
 ): AnnotoriousOpts<I, E> => {
 
   return {
     ...opts,
-    drawingEnabled: opts.drawingEnabled === undefined ? true : opts.drawingEnabled,
-    drawingMode: opts.drawingMode || 'drag',
-    pointerSelectAction: opts.pointerSelectAction || PointerSelectAction.EDIT,
-    theme: opts.theme || 'light'
+    drawingEnabled: opts.drawingEnabled === undefined ? defaults.drawingEnabled : opts.drawingEnabled,
+    drawingMode: opts.drawingMode || defaults.drawingMode,
+    pointerSelectAction: opts.pointerSelectAction || defaults.pointerSelectAction,
+    theme: opts.theme || defaults.theme
   };
 
 };
