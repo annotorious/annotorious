@@ -7,18 +7,60 @@ import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annot
 const DEFAULT_FILL = 0x1a73e8;
 const DEFAULT_ALPHA = 0.25;
 
-const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (shape: T, style?: DrawingStyle) => {
-  const fill = style?.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
-  const alpha = style?.fillOpacity === undefined ? DEFAULT_ALPHA : style.fillOpacity;
-  
-  const g = new PIXI.Graphics();
-  g.beginFill(0xffffff, alpha);
-  g.lineStyle(1, 0xffffff, 1, 0.5, true);
-  fn(shape, g); 
-  g.endFill();
-  g.tint = fill;
-  
-  return g;
+// Fast redraws skip counter-scaling operations
+let fastRedraw = false;
+
+// Likewise, if scale has not changed, counter-scaling is also skipped
+let lastScale: number;
+
+interface AnnotationShape {
+
+  annotation: ImageAnnotation;
+
+  fill: PIXI.Graphics;
+
+  stroke: PIXI.Graphics;
+
+  strokeWidth: number;
+
+}
+
+const getGraphicsStyle = (style?: DrawingStyle) => {
+  const fillStyle = {
+    tint: style?.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL,
+    alpha: style?.fillOpacity === undefined ? DEFAULT_ALPHA : Math.min(style.fillOpacity, 1)
+  };
+
+  const strokeStyle = {
+    tint: style?.stroke && PIXI.utils.string2hex(style.stroke),
+    alpha: style?.strokeOpacity === undefined ? 0 : Math.min(style.strokeOpacity, 1),
+    lineWidth: style?.stroke ? style?.strokeWidth || 1 : 0
+  }
+
+  return { fillStyle, strokeStyle };
+}
+
+const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (container: PIXI.Graphics, shape: T, style?: DrawingStyle) => {
+  const { fillStyle, strokeStyle } = getGraphicsStyle(style);
+
+  const fillGraphics = new PIXI.Graphics();
+  fillGraphics.beginFill(0xffffff);
+  fn(shape, fillGraphics); 
+  fillGraphics.endFill();
+  fillGraphics.tint = fillStyle.tint;
+  fillGraphics.alpha = fillStyle.alpha;
+
+  container.addChild(fillGraphics);
+    
+  const strokeGraphics = new PIXI.Graphics();
+  strokeGraphics.lineStyle(strokeStyle.lineWidth / lastScale, 0xffffff, 1, 0.5, strokeStyle.lineWidth === 1);
+  fn(shape, strokeGraphics); 
+  strokeGraphics.tint = strokeStyle.tint;
+  strokeGraphics.alpha = strokeStyle.alpha;
+
+  container.addChild(strokeGraphics);
+    
+  return { fill: fillGraphics, stroke: strokeGraphics, strokeWidth: strokeStyle.lineWidth };
 }
 
 const drawEllipse = drawShape((ellipse: Ellipse, g: PIXI.Graphics) => {
@@ -36,12 +78,46 @@ const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
   g.drawRect(x, y, w, h);
 });
 
-const redraw = (viewer: OpenSeadragon.Viewer, graphics: PIXI.Graphics, renderer: PIXI.AbstractRenderer) => () => {
+const redrawStage = (
+  viewer: OpenSeadragon.Viewer, 
+  graphics: PIXI.Graphics,
+  shapes: Map<String, AnnotationShape>,
+  renderer: PIXI.AbstractRenderer
+) => () => {
   const viewportBounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds(true));
 
   const containerWidth = viewer.viewport.getContainerSize().x;
   const zoom = viewer.viewport.getZoom(true);
   const scale = zoom * containerWidth / viewer.world.getContentFactor();
+
+  if (scale !== lastScale && !fastRedraw) {
+    fastRedraw = true;
+
+    shapes.forEach(({ stroke, strokeWidth }) => {
+      const { lineStyle } = stroke.geometry.graphicsData[0];
+
+      if (strokeWidth > 1) {
+        // Disable fast redraws if at least one shape
+        // has non-native stroke
+        fastRedraw = false;
+
+        // Counter scale stroke
+        lineStyle.width = strokeWidth / scale;
+
+        // @ts-ignore
+        stroke.geometry.invalidate();
+      } else if (strokeWidth === 1 && !lineStyle.native) {
+        // Set native stroke if necessary
+        lineStyle.width = 1;
+        lineStyle.native = true;
+
+        // @ts-ignore
+        stroke.geometry.invalidate();
+      }
+    });
+  }
+
+  lastScale = scale;
 
   const rotation = Math.PI * viewer.viewport.getRotation() / 180;
 
@@ -81,11 +157,12 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     height: canvas.height,
     backgroundAlpha: 0,
     view: canvas,
-    antialias: true
+    antialias: true,
+    resolution: 2
   });
 
   // Lookup table: shapes and annotations by annotation ID
-  const annotationShapes = new Map<string, { g: PIXI.Graphics, annotation: ImageAnnotation }>(); 
+  const annotationShapes = new Map<string, AnnotationShape>(); 
 
   // Current selection (if any)
   let selectedIds = new Set<string>();
@@ -94,42 +171,48 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   let style: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined = undefined;
 
   const addAnnotation = (annotation: ImageAnnotation) => {
+    // In case this annotation adds stroke > 1
+    fastRedraw = false; 
+
     const { selector } = annotation.target;
 
     const s = typeof style == 'function' ? style(annotation) : style;
 
-    let g: PIXI.Graphics;
+    let rendered: { fill: PIXI.Graphics, stroke: PIXI.Graphics, strokeWidth: number };
 
     if (selector.type === ShapeType.RECTANGLE) {
-      g = drawRectangle(selector as Rectangle, s);
+      rendered = drawRectangle(graphics, selector as Rectangle, s);
     } else if (selector.type === ShapeType.POLYGON) {
-      g = drawPolygon(selector as Polygon, s);
+      rendered = drawPolygon(graphics, selector as Polygon, s);
     } else if (selector.type === ShapeType.ELLIPSE) {
-      g = drawEllipse(selector as Ellipse, s);
+      rendered = drawEllipse(graphics, selector as Ellipse, s);
     } else {
       console.warn(`Unsupported shape type: ${selector.type}`)
     }
 
-    if (g) {
-      graphics.addChild(g);
-      annotationShapes.set(annotation.id, { g, annotation });
-    }
+    if (rendered)
+      annotationShapes.set(annotation.id, { annotation, ...rendered });
   }
 
   const removeAnnotation = (annotation: ImageAnnotation) => {
-    const r = annotationShapes.get(annotation.id);
-    if (r) {
-      annotationShapes.delete(annotation.id);  
-      r.g.destroy();
+    const rendered = annotationShapes.get(annotation.id);
+    if (rendered) {
+      annotationShapes.delete(annotation.id); 
+      rendered.fill.destroy();
+      rendered.stroke.destroy(); 
     }
   }
 
   const updateAnnotation = (oldValue: ImageAnnotation, newValue: ImageAnnotation) => {
-    const r = annotationShapes.get(oldValue.id);
+    // In case this annotation adds stroke > 1
+    fastRedraw = false; 
+    
+    const rendered = annotationShapes.get(oldValue.id);
 
-    if (r) {
+    if (rendered) {
       annotationShapes.delete(oldValue.id);
-      r.g.destroy();
+      rendered.fill.destroy();
+      rendered.stroke.destroy();
 
       addAnnotation(newValue)
     }
@@ -141,18 +224,23 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   }
 
   const setFilter = (filter: Filter) => {
+    // In case this filter adds annotations with stroke > 1
+    fastRedraw = false; 
+
     const { children } = graphics;
 
-    annotationShapes.forEach(({ g, annotation }) => {
+    annotationShapes.forEach(({ fill, stroke , annotation }) => {
       // Note: selected annotation always remains visible
       const visible = filter ? 
         selectedIds.has(annotation.id) || filter(annotation) : 
         true;
       
-      if (visible && !(children.includes(g))) {
-        graphics.addChild(g);
-      } else if (!visible && children.includes(g)) {
-        graphics.removeChild(g);
+      if (visible && !(children.includes(fill))) {
+        graphics.addChild(fill);
+        graphics.addChild(stroke);
+      } else if (!visible && children.includes(fill)) {
+        graphics.removeChild(fill);
+        graphics.removeChild(stroke)
       }
     });
 
@@ -166,30 +254,48 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
   const setStyle = (s: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined) => {
     if (typeof s === 'function') {
-      annotationShapes.forEach(({ g, annotation }, _) => {
-        const style = s(annotation);
-        if (style) {
-          g.tint = style.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
-        } else {
-          g.tint = DEFAULT_FILL;
-        }
+      annotationShapes.forEach(({ annotation, fill, stroke, strokeWidth }, _) => {
+        if (strokeWidth > 1)
+          fastRedraw = false;
+
+        const { fillStyle, strokeStyle } = getGraphicsStyle(s(annotation));
+
+        fill.tint = fillStyle.tint;
+        fill.alpha = fillStyle.alpha;
+
+        stroke.tint = strokeStyle.tint;
+        stroke.alpha = strokeStyle.alpha;
+
+        annotationShapes.set(annotation.id, { annotation, fill, stroke, strokeWidth });
       });
     } else {
-      const fill = s?.fill ? PIXI.utils.string2hex(s.fill) : DEFAULT_FILL;
-      annotationShapes.forEach(({ g }, _) => g.tint = fill);
+      const { fillStyle, strokeStyle } = getGraphicsStyle(s);
+
+      if (strokeStyle.lineWidth > 1)
+        fastRedraw = false;
+
+      annotationShapes.forEach(({ annotation, fill, stroke, strokeWidth }, _) => {
+        fill.tint = fillStyle.tint;
+        fill.alpha = fillStyle.alpha;
+
+        stroke.tint = strokeStyle.tint;
+        stroke.alpha = strokeStyle.alpha;
+
+        annotationShapes.set(annotation.id, { annotation, fill, stroke, strokeWidth });
+      });
     }
   
     style = s;
 
     renderer.render(graphics);
   }
-
+  
   const destroy = () => renderer.destroy();
 
   return {
     addAnnotation,
     destroy,
-    redraw: redraw(viewer, graphics, renderer),
+    redraw: redrawStage(viewer, graphics, annotationShapes, renderer),
     removeAnnotation,
     resize,
     setFilter,
