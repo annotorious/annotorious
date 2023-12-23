@@ -7,18 +7,43 @@ import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annot
 const DEFAULT_FILL = 0x1a73e8;
 const DEFAULT_ALPHA = 0.25;
 
-const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (shape: T, style?: DrawingStyle) => {
-  const fill = style?.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
-  const alpha = style?.fillOpacity === undefined ? DEFAULT_ALPHA : style.fillOpacity;
-  
-  const g = new PIXI.Graphics();
-  g.beginFill(0xffffff, alpha);
-  g.lineStyle(1, 0xffffff, 1, 0.5, true);
-  fn(shape, g); 
-  g.endFill();
-  g.tint = fill;
-  
-  return g;
+interface AnnotationShape {
+
+  annotation: ImageAnnotation;
+
+  fill: PIXI.Graphics;
+
+  stroke: PIXI.Graphics;
+
+  strokeWidth: number;
+
+}
+
+const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (container: PIXI.Graphics, shape: T, style?: DrawingStyle) => {
+  const fill: number = style?.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
+  const fillOpacity: number = style?.fillOpacity === undefined ? DEFAULT_ALPHA : style.fillOpacity;
+
+  const stroke: number | undefined = style?.stroke && PIXI.utils.string2hex(style.stroke);
+  const strokeOpacity: number = style?.strokeOpacity === undefined ? 1 : style.strokeOpacity;
+
+  const strokeWidth: number = style?.strokeWidth || 1;
+
+  const fillGraphics = new PIXI.Graphics();
+  fillGraphics.beginFill(0xffffff, fillOpacity);
+  fn(shape, fillGraphics); 
+  fillGraphics.endFill();
+  fillGraphics.tint = fill;
+
+  container.addChild(fillGraphics);
+    
+  const strokeGraphics = new PIXI.Graphics();
+  strokeGraphics.lineStyle(strokeWidth, 0xffffff, stroke ? strokeOpacity : 0, 0.5, strokeWidth === 1);
+  fn(shape, strokeGraphics); 
+  strokeGraphics.tint = stroke;
+
+  container.addChild(strokeGraphics);
+    
+  return { fill: fillGraphics, stroke: strokeGraphics, strokeWidth };
 }
 
 const drawEllipse = drawShape((ellipse: Ellipse, g: PIXI.Graphics) => {
@@ -36,12 +61,26 @@ const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
   g.drawRect(x, y, w, h);
 });
 
-const redraw = (viewer: OpenSeadragon.Viewer, graphics: PIXI.Graphics, renderer: PIXI.AbstractRenderer) => () => {
+const redraw = (
+  viewer: OpenSeadragon.Viewer, 
+  graphics: PIXI.Graphics,
+  shapes: Map<String, AnnotationShape>,
+  renderer: PIXI.AbstractRenderer,
+) => () => {
   const viewportBounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds(true));
 
   const containerWidth = viewer.viewport.getContainerSize().x;
   const zoom = viewer.viewport.getZoom(true);
   const scale = zoom * containerWidth / viewer.world.getContentFactor();
+
+  shapes.forEach(({ fill, stroke }) => {
+    const { lineStyle } = stroke.geometry.graphicsData[0];
+    if (lineStyle.width > 1) {
+      lineStyle.width = 6 / scale;
+      // @ts-ignore
+      g.geometry.invalidate();
+    }
+  });
 
   const rotation = Math.PI * viewer.viewport.getRotation() / 180;
 
@@ -85,7 +124,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   });
 
   // Lookup table: shapes and annotations by annotation ID
-  const annotationShapes = new Map<string, { g: PIXI.Graphics, annotation: ImageAnnotation }>(); 
+  const annotationShapes = new Map<string, AnnotationShape>(); 
 
   // Current selection (if any)
   let selectedIds = new Set<string>();
@@ -98,38 +137,38 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
     const s = typeof style == 'function' ? style(annotation) : style;
 
-    let g: PIXI.Graphics;
+    let rendered: { fill: PIXI.Graphics, stroke: PIXI.Graphics, strokeWidth: number };
 
     if (selector.type === ShapeType.RECTANGLE) {
-      g = drawRectangle(selector as Rectangle, s);
+      rendered = drawRectangle(graphics, selector as Rectangle, s);
     } else if (selector.type === ShapeType.POLYGON) {
-      g = drawPolygon(selector as Polygon, s);
+      rendered = drawPolygon(graphics, selector as Polygon, s);
     } else if (selector.type === ShapeType.ELLIPSE) {
-      g = drawEllipse(selector as Ellipse, s);
+      rendered = drawEllipse(graphics, selector as Ellipse, s);
     } else {
       console.warn(`Unsupported shape type: ${selector.type}`)
     }
 
-    if (g) {
-      graphics.addChild(g);
-      annotationShapes.set(annotation.id, { g, annotation });
-    }
+    if (rendered)
+      annotationShapes.set(annotation.id, { annotation, ...rendered });
   }
 
   const removeAnnotation = (annotation: ImageAnnotation) => {
-    const r = annotationShapes.get(annotation.id);
-    if (r) {
-      annotationShapes.delete(annotation.id);  
-      r.g.destroy();
+    const rendered = annotationShapes.get(annotation.id);
+    if (rendered) {
+      annotationShapes.delete(annotation.id); 
+      rendered.fill.destroy();
+      rendered.stroke.destroy(); 
     }
   }
 
   const updateAnnotation = (oldValue: ImageAnnotation, newValue: ImageAnnotation) => {
-    const r = annotationShapes.get(oldValue.id);
+    const rendered = annotationShapes.get(oldValue.id);
 
-    if (r) {
+    if (rendered) {
       annotationShapes.delete(oldValue.id);
-      r.g.destroy();
+      rendered.fill.destroy();
+      rendered.stroke.destroy();
 
       addAnnotation(newValue)
     }
@@ -143,16 +182,18 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   const setFilter = (filter: Filter) => {
     const { children } = graphics;
 
-    annotationShapes.forEach(({ g, annotation }) => {
+    annotationShapes.forEach(({ fill, stroke , annotation }) => {
       // Note: selected annotation always remains visible
       const visible = filter ? 
         selectedIds.has(annotation.id) || filter(annotation) : 
         true;
       
-      if (visible && !(children.includes(g))) {
-        graphics.addChild(g);
-      } else if (!visible && children.includes(g)) {
-        graphics.removeChild(g);
+      if (visible && !(children.includes(fill))) {
+        graphics.addChild(fill);
+        graphics.addChild(stroke);
+      } else if (!visible && children.includes(fill)) {
+        graphics.removeChild(fill);
+        graphics.removeChild(stroke)
       }
     });
 
@@ -166,17 +207,19 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
   const setStyle = (s: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined) => {
     if (typeof s === 'function') {
-      annotationShapes.forEach(({ g, annotation }, _) => {
+      annotationShapes.forEach(({ fill, stroke, strokeWidth, annotation }, _) => {
         const style = s(annotation);
         if (style) {
-          g.tint = style.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
+          fill.tint = style.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL;
+
         } else {
-          g.tint = DEFAULT_FILL;
+          fill.tint = DEFAULT_FILL;
+          // outline
         }
       });
     } else {
-      const fill = s?.fill ? PIXI.utils.string2hex(s.fill) : DEFAULT_FILL;
-      annotationShapes.forEach(({ g }, _) => g.tint = fill);
+      const nextFill = s?.fill ? PIXI.utils.string2hex(s.fill) : DEFAULT_FILL;
+      annotationShapes.forEach(({ fill }, _) => fill.tint = nextFill);
     }
   
     style = s;
@@ -189,7 +232,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   return {
     addAnnotation,
     destroy,
-    redraw: redraw(viewer, graphics, renderer),
+    redraw: redraw(viewer, graphics, annotationShapes, renderer),
     removeAnnotation,
     resize,
     setFilter,

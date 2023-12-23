@@ -16,4 +16,6 @@ export interface DrawingStyle {
 
   strokeOpacity?: number;
 
+  strokeWidth?: number;
+
 }
