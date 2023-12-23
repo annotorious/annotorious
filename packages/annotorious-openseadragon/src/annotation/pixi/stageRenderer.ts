@@ -7,6 +7,12 @@ import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annot
 const DEFAULT_FILL = 0x1a73e8;
 const DEFAULT_ALPHA = 0.25;
 
+// Fast redraws skip counter-scaling operations
+let fastRedraw = false;
+
+// Likewise, if scale has not changed, counter-scaling is also skipped
+let lastScale: number;
+
 interface AnnotationShape {
 
   annotation: ImageAnnotation;
@@ -22,12 +28,12 @@ interface AnnotationShape {
 const getGraphicsStyle = (style?: DrawingStyle) => {
   const fillStyle = {
     tint: style?.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL,
-    alpha: style?.fillOpacity === undefined ? DEFAULT_ALPHA : style.fillOpacity
+    alpha: style?.fillOpacity === undefined ? DEFAULT_ALPHA : Math.min(style.fillOpacity, 1)
   };
 
   const strokeStyle = {
     tint: style?.stroke && PIXI.utils.string2hex(style.stroke),
-    alpha: style?.strokeOpacity === undefined ? 0 : style.strokeOpacity,
+    alpha: style?.strokeOpacity === undefined ? 0 : Math.min(style.strokeOpacity, 1),
     lineWidth: style?.stroke ? style?.strokeWidth || 1 : 0
   }
 
@@ -47,7 +53,7 @@ const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (co
   container.addChild(fillGraphics);
     
   const strokeGraphics = new PIXI.Graphics();
-  strokeGraphics.lineStyle(strokeStyle.lineWidth, 0xffffff, 1, 0.5, strokeStyle.lineWidth === 1);
+  strokeGraphics.lineStyle(strokeStyle.lineWidth / lastScale, 0xffffff, 1, 0.5, strokeStyle.lineWidth === 1);
   fn(shape, strokeGraphics); 
   strokeGraphics.tint = strokeStyle.tint;
   strokeGraphics.alpha = strokeStyle.alpha;
@@ -84,24 +90,34 @@ const redrawStage = (
   const zoom = viewer.viewport.getZoom(true);
   const scale = zoom * containerWidth / viewer.world.getContentFactor();
 
-  shapes.forEach(({ stroke, strokeWidth }) => {
-    const { lineStyle } = stroke.geometry.graphicsData[0];
+  if (scale !== lastScale && !fastRedraw) {
+    fastRedraw = true;
 
-    if (strokeWidth > 1) {
-      // Counter scale stroke
-      lineStyle.width = strokeWidth / scale;
+    shapes.forEach(({ stroke, strokeWidth }) => {
+      const { lineStyle } = stroke.geometry.graphicsData[0];
 
-      // @ts-ignore
-      stroke.geometry.invalidate();
-    } else if (strokeWidth === 1 && !lineStyle.native) {
-      // Set native stroke if necessary
-      lineStyle.width = 1;
-      lineStyle.native = true;
+      if (strokeWidth > 1) {
+        // Disable fast redraws if at least one shape
+        // has non-native stroke
+        fastRedraw = false;
 
-      // @ts-ignore
-      stroke.geometry.invalidate();
-    }
-  });
+        // Counter scale stroke
+        lineStyle.width = strokeWidth / scale;
+
+        // @ts-ignore
+        stroke.geometry.invalidate();
+      } else if (strokeWidth === 1 && !lineStyle.native) {
+        // Set native stroke if necessary
+        lineStyle.width = 1;
+        lineStyle.native = true;
+
+        // @ts-ignore
+        stroke.geometry.invalidate();
+      }
+    });
+  }
+
+  lastScale = scale;
 
   const rotation = Math.PI * viewer.viewport.getRotation() / 180;
 
@@ -155,6 +171,9 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   let style: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined = undefined;
 
   const addAnnotation = (annotation: ImageAnnotation) => {
+    // In case this annotation adds stroke > 1
+    fastRedraw = false; 
+
     const { selector } = annotation.target;
 
     const s = typeof style == 'function' ? style(annotation) : style;
@@ -185,6 +204,9 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   }
 
   const updateAnnotation = (oldValue: ImageAnnotation, newValue: ImageAnnotation) => {
+    // In case this annotation adds stroke > 1
+    fastRedraw = false; 
+    
     const rendered = annotationShapes.get(oldValue.id);
 
     if (rendered) {
@@ -202,6 +224,9 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   }
 
   const setFilter = (filter: Filter) => {
+    // In case this filter adds annotations with stroke > 1
+    fastRedraw = false; 
+
     const { children } = graphics;
 
     annotationShapes.forEach(({ fill, stroke , annotation }) => {
@@ -230,6 +255,9 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   const setStyle = (s: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined) => {
     if (typeof s === 'function') {
       annotationShapes.forEach(({ annotation, fill, stroke, strokeWidth }, _) => {
+        if (strokeWidth > 1)
+          fastRedraw = false;
+
         const { fillStyle, strokeStyle } = getGraphicsStyle(s(annotation));
 
         fill.tint = fillStyle.tint;
@@ -242,6 +270,9 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       });
     } else {
       const { fillStyle, strokeStyle } = getGraphicsStyle(s);
+
+      if (strokeStyle.lineWidth > 1)
+        fastRedraw = false;
 
       annotationShapes.forEach(({ annotation, fill, stroke, strokeWidth }, _) => {
         fill.tint = fillStyle.tint;
