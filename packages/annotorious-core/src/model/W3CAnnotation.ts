@@ -74,6 +74,9 @@ const hashCode = (obj: Object): string => {
   return `${hash}`;
 }
 
+export const parseW3CUser = (user?: any) => user 
+  ? typeof user === 'object' ? { ...user } : user : undefined;
+
 /**
  * Helper to crosswalk the W3C annotation body to a list of core AnnotationBody objects.
  */
@@ -96,10 +99,8 @@ export const parseW3CBodies = (
     type,
     purpose,
     value,
-    created,
-    creator: creator ? 
-      typeof creator === 'object' ? { ...creator }: creator :
-      undefined,
+    created: created ? new Date(created) : undefined,
+    creator: parseW3CUser(creator), 
     ...rest
   }
 

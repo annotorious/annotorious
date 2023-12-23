@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { parseW3CBodies, serializeW3CBodies } from '@annotorious/core';
+import { parseW3CUser, parseW3CBodies, serializeW3CBodies } from '@annotorious/core';
 import type { FormatAdapter, ParseResult, W3CAnnotation } from '@annotorious/core';
 import { ShapeType } from '../core';
 import type { ImageAnnotation, RectangleGeometry } from '../core';
@@ -30,7 +30,14 @@ export const parseW3CImageAnnotation = (
 ): ParseResult<ImageAnnotation> => {
   const annotationId = annotation.id || uuidv4();
 
-  const { body, ...rest } = annotation;
+  const { 
+    creator,
+    created,
+    updatedBy,
+    updated,
+    body, 
+    ...rest 
+  } = annotation;
 
   const bodies = parseW3CBodies(body, annotationId);
 
@@ -50,6 +57,8 @@ export const parseW3CImageAnnotation = (
       id: annotationId,
       bodies,
       target: {
+        created: created ? new Date(created) : undefined,
+        creator: parseW3CUser(creator),
         ...rest.target,
         annotation: annotationId,
         selector
@@ -65,12 +74,19 @@ export const serializeW3CImageAnnotation = (
   annotation: ImageAnnotation, 
   source: string
 ): W3CAnnotation => {
-  const shape = annotation.target.selector;
+  const { 
+    selector, 
+    creator, 
+    created, 
+    updated, 
+    updatedBy, 
+    ...rest 
+  } = annotation.target;
 
-  const selector =
-    shape.type == ShapeType.RECTANGLE ?
-      serializeFragmentSelector(shape.geometry as RectangleGeometry) :
-      serializeSVGSelector(shape);
+  const w3CSelector =
+    selector.type == ShapeType.RECTANGLE ?
+      serializeFragmentSelector(selector.geometry as RectangleGeometry) :
+      serializeSVGSelector(selector);
 
   return {
     ...annotation,
@@ -78,9 +94,12 @@ export const serializeW3CImageAnnotation = (
     id: annotation.id,
     type: 'Annotation',
     body: serializeW3CBodies(annotation.bodies),
+    creator,
+    created: created?.toISOString(),
     target: {
+      ...rest,
       source,
-      selector
+      selector: w3CSelector
     }
   };
 };
