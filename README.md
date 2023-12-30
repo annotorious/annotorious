@@ -1,12 +1,13 @@
 ![Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious](/docs/images/splash-image.jpg "Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious")
 
+> __IMPORTANT__ This repository is work in progress. I am building the next major release of Annotorious. If you 
+> are looking for the most recent official release, [visit the main project homepage](https://annotorious.github.io). 
+> Documentation in this Readme __is only for the upcoming alpha release!__ 
+
 # Annotorious 3
 
 Add image annotation functionality to any Web page with a few lines of JavaScript. 🚀 Easy to integrate
 🎨 fully customizable 🪶 weighs less than 100kB.
-
-> __This repository is work in progress.__ We are building the next major release of Annotorious. If you are
-> looking for the most recent official release, [visit the main project homepage](https://annotorious.github.io).
 
 ## Getting Started
 
@@ -66,6 +67,10 @@ export function AnnotatableImage() => {
 ```
 
 [Full React API documentation](docs/react.md)
+
+## Support this Project
+
+You can support by work with a one-time or recurring donation on [SteadyHQ](https://steadyhq.com/rainer-simon).
 
 ## Contributing
 
