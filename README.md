@@ -2,7 +2,7 @@
 
 > __IMPORTANT__ This repository is work in progress. I am building the next major release of Annotorious. If you 
 > are looking for the most recent official release, [visit the main project homepage](https://annotorious.github.io). 
-> Documentation in this Readme __is only for the upcoming alpha release!__ 
+> Documentation in this Readme __is only for the upcoming alpha release__ and __will not work with Annotorious 2.7.x!__ 
 
 # Annotorious 3
 
