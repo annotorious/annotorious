@@ -40,9 +40,8 @@ export const parseW3CImageAnnotation = (
 
   const bodies = parseW3CBodies(body, annotationId);
 
-  const target = Array.isArray(annotation.target) ? annotation.target[0] : annotation.target;
-
-  const w3cSelector = Array.isArray(target.selector) ? target.selector[0] : target.selector;
+  const w3cTarget = Array.isArray(annotation.target) ? annotation.target[0] : annotation.target;
+  const w3cSelector = Array.isArray(w3cTarget.selector) ? w3cTarget.selector[0] : w3cTarget.selector;
 
   const selector = 
     w3cSelector.type === 'FragmentSelector' ?
