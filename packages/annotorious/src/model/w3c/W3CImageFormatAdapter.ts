@@ -7,8 +7,9 @@ import type { FragmentSelector } from './fragment';
 import { parseFragmentSelector, serializeFragmentSelector } from './fragment';
 import type { SVGSelector } from './svg';
 import { parseSVGSelector, serializeSVGSelector } from './svg';
+import type { W3CImageAnnotation } from './W3CImageAnnotation';
 
-export type W3CImageFormatAdapter = FormatAdapter<ImageAnnotation, W3CAnnotation>;
+export type W3CImageFormatAdapter = FormatAdapter<ImageAnnotation, W3CImageAnnotation>;
 
 export const W3CImageFormat = (
   source: string,
@@ -73,7 +74,7 @@ export const parseW3CImageAnnotation = (
 export const serializeW3CImageAnnotation = (
   annotation: ImageAnnotation, 
   source: string
-): W3CAnnotation => {
+): W3CImageAnnotation => {
   const { 
     selector, 
     creator, 
