@@ -20,8 +20,7 @@ export type {
   User,
   W3CAnnotation,
   W3CAnnotationBody,
-  W3CAnnotationTarget,
-  W3CSelector
+  W3CAnnotationTarget
 } from '@annotorious/core';
 
 import { 

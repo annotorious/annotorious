@@ -46,18 +46,11 @@ export interface W3CAnnotationTarget {
 
   source: string;
 
-  selector?: W3CSelector | W3CSelector[];
+  selector?: AbstractW3CSelector;
 
 }
 
-export interface W3CSelector {
-
-  type: string;
-
-  conformsTo?: string;
-
-  value: string;
-}
+export interface AbstractW3CSelector { }
 
 // https://stackoverflow.com/questions/6122571/simple-non-secure-hash-function-for-javascript
 const hashCode = (obj: Object): string => {
@@ -74,14 +67,14 @@ const hashCode = (obj: Object): string => {
   return `${hash}`;
 }
 
-export const parseW3CUser = (user?: any) => user 
+export const parseW3CUser = (user?: any) => user
   ? typeof user === 'object' ? { ...user } : user : undefined;
 
 /**
  * Helper to crosswalk the W3C annotation body to a list of core AnnotationBody objects.
  */
 export const parseW3CBodies = (
-  body: W3CAnnotationBody | W3CAnnotationBody[], 
+  body: W3CAnnotationBody | W3CAnnotationBody[],
   annotationId: string
 ): AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(body => {
 
@@ -100,20 +93,20 @@ export const parseW3CBodies = (
     purpose,
     value,
     created: created ? new Date(created) : undefined,
-    creator: parseW3CUser(creator), 
+    creator: parseW3CUser(creator),
     ...rest
   }
 
 });
 
 /** Serialization helper to remove core-specific fields from the annotation body **/
-export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[] => 
+export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[] =>
   bodies.map(b => {
     const w3c = { ...b };
     delete w3c.annotation;
 
     if (w3c.id?.startsWith('temp-'))
       delete w3c.id;
-  
+
     return w3c;
   });
