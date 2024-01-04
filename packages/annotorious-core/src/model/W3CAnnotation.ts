@@ -8,7 +8,13 @@ export interface W3CAnnotation {
 
   id: string;
 
-  body: W3CAnnotationBody | W3CAnnotationBody[]
+  created?: string;
+
+  creator?: W3CAnnotationUser;
+
+  modified?: string;
+
+  body: W3CAnnotationBody | W3CAnnotationBody[];
 
   target: W3CAnnotationTarget | W3CAnnotationTarget[];
 
