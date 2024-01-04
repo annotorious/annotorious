@@ -109,11 +109,11 @@ export const parseW3CBodies = (
 /** Serialization helper to remove core-specific fields from the annotation body **/
 export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[] => 
   bodies.map(b => {
-    const w3c = { ...b };
+    const w3c = { ...b } as any;
     delete w3c.annotation;
 
     if (w3c.id?.startsWith('temp-'))
       delete w3c.id;
   
-    return w3c;
+    return w3c as W3CAnnotationBody;
   });

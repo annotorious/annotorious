@@ -168,8 +168,8 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
 
   const updateAnnotation = (updated: E): E => {
     if (adapter) {
-      const crosswalked = adapter.parse(updated).parsed;
-      const previous = adapter.serialize(store.getAnnotation(crosswalked.id));
+      const crosswalked = adapter.parse(updated).parsed!;
+      const previous = adapter.serialize(store.getAnnotation(crosswalked.id)!);
       store.updateAnnotation(crosswalked);
       return previous;
     } else {
