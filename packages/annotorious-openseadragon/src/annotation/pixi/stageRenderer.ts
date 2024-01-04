@@ -33,7 +33,7 @@ const getGraphicsStyle = (style?: DrawingStyle) => {
 
   const strokeStyle = {
     tint: style?.stroke && PIXI.utils.string2hex(style.stroke),
-    alpha: style?.strokeOpacity === undefined ? (style.stroke ? 1 : 0) : Math.min(style.strokeOpacity, 1),
+    alpha: style?.strokeOpacity === undefined ? (style?.stroke ? 1 : 0) : Math.min(style.strokeOpacity, 1),
     lineWidth: style?.stroke ? style?.strokeWidth || 1 : 0
   }
 
