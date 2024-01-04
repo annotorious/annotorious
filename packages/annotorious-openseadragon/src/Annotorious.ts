@@ -98,7 +98,8 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     props: { 
       state, 
       viewer, 
-      style: opts.style
+      style: opts.style,
+      filter: undefined
     }
   });
 

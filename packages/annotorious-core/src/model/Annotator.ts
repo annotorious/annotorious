@@ -38,7 +38,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   redo(): void;
 
-  removeAnnotation(arg: E | string): E;
+  removeAnnotation(arg: E | string): E | undefined;
 
   setAnnotations(annotations: E[]): void;
 
