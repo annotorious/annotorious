@@ -12,12 +12,22 @@ export interface W3CImageAnnotationTarget extends W3CAnnotationTarget {
 
 }
 
-export interface W3CImageSelector {
+export interface FragmentSelector {
 
-  type: string;
+  type: 'FragmentSelector';
 
-  conformsTo?: string;
+  conformsTo: 'http://www.w3.org/TR/media-frags/',
 
   value: string;
 
 }
+
+export interface SVGSelector {
+
+  type: 'SvgSelector';
+
+  value: string;
+
+}
+
+export type W3CImageSelector = FragmentSelector | SVGSelector;
