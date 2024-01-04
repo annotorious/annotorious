@@ -33,8 +33,6 @@ export const parseW3CImageAnnotation = (
   const { 
     creator,
     created,
-    updatedBy,
-    updated,
     body, 
     ...rest 
   } = annotation;
@@ -59,8 +57,6 @@ export const parseW3CImageAnnotation = (
       target: {
         created: created ? new Date(created) : undefined,
         creator: parseW3CUser(creator),
-        updated: updated ? new Date(updated) : undefined,
-        updatedBy: parseW3CUser(updatedBy),
         ...rest.target,
         annotation: annotationId,
         selector
@@ -80,8 +76,8 @@ export const serializeW3CImageAnnotation = (
     selector, 
     creator, 
     created, 
-    updated, 
-    updatedBy, 
+    updated: _updated,
+    updatedBy: _updatedBy,
     ...rest 
   } = annotation.target;
 
@@ -98,8 +94,6 @@ export const serializeW3CImageAnnotation = (
     body: serializeW3CBodies(annotation.bodies),
     created: created?.toISOString(),
     creator,
-    updated: updated?.toISOString(),
-    updatedBy,
     target: {
       ...rest,
       source,
