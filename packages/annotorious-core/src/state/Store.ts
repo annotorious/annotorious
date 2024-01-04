@@ -151,7 +151,7 @@ export const createStore = <T extends Annotation>() => {
       const existing = annotations.reduce((all, next) => {
         const existing = annotationIndex.get(next.id);
         return existing ? [...all, existing ] : all;
-      }, []);
+      }, [] as T[]);
 
       if (existing.length > 0)
         throw Error(`Bulk insert would overwrite the following annotations: ${existing.map(a => a.id).join(', ')}`);
@@ -232,7 +232,7 @@ export const createStore = <T extends Annotation>() => {
     const annotationId = bodyIndex.get(id);
     if (annotationId) {
       const annotation = getAnnotation(annotationId);
-      const body = annotation.bodies.find(b => b.id === id);
+      const body = annotation!.bodies.find(b => b.id === id);
       if (body) {
         return body;
       } else {
@@ -249,7 +249,7 @@ export const createStore = <T extends Annotation>() => {
 
     const oldAnnotation = annotationIndex.get(oldBodyId.annotation);
     if (oldAnnotation) {
-      const oldBody = oldAnnotation.bodies.find(b => b.id === oldBodyId.id);
+      const oldBody = oldAnnotation.bodies.find(b => b.id === oldBodyId.id)!;
 
       const newAnnotation = { 
         ...oldAnnotation,
@@ -275,7 +275,8 @@ export const createStore = <T extends Annotation>() => {
 
   const updateBody = (oldBodyId: AnnotationBodyIdentifier, newBody: AnnotationBody, origin = Origin.LOCAL) => {
     const update = updateOneBody(oldBodyId, newBody);
-    emit(origin, { updated: [ update ]} );
+    if (update)
+      emit(origin, { updated: [ update ]} );
   }
 
   const bulkUpdateBodies = (bodies: AnnotationBody[], origin = Origin.LOCAL) => {

@@ -4,18 +4,21 @@ import type { Annotation } from '../../src/model';
 
 const testAnnotation1: Annotation = {
   id: 'test-id-1',
+  // @ts-ignore
   target: null,
   bodies: [],
 };
 
 const testAnnotation2: Annotation = {
   id: 'test-id-2',
+  // @ts-ignore
   target: null,
   bodies: [],
 }
 
 const testAnnotation3: Annotation = {
   id: 'test-id-3',
+  // @ts-ignore
   target: null,
   bodies: [],
 };
@@ -34,6 +37,7 @@ describe('createSelectionState', () => {
   describe('clickSelect', () => {
 
     it('should set the selection to an array containing the clicked annotation', () => {
+      // @ts-ignore
       selectionState.clickSelect(testAnnotation1.id, undefined);
       expect(selectionState.isEmpty()).toBe(false);
       expect(selectionState.isSelected(testAnnotation1)).toBe(true);

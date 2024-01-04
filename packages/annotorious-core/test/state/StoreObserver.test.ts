@@ -217,10 +217,10 @@ describe('mergeChanges', () => {
     expect(dequal(merged.created, EXPECTED.created)).toBe(true);
     expect(dequal(merged.deleted, EXPECTED.deleted)).toBe(true);
 
-    expect(merged.updated.length).toBe(1);
+    expect(merged.updated!.length).toBe(1);
 
-    const mergedUpdate = merged.updated[0];
-    const expectedUpdate = EXPECTED.updated[0];
+    const mergedUpdate = merged.updated![0];
+    const expectedUpdate = EXPECTED.updated![0];
 
     expect(dequal(mergedUpdate.oldValue, expectedUpdate.oldValue)).toBe(true);
     expect(dequal(mergedUpdate.newValue, expectedUpdate.newValue)).toBe(true);
