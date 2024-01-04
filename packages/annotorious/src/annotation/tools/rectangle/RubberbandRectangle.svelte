@@ -13,13 +13,15 @@
 
   let lastPointerDown: number;
 
-  let origin: [x: number, y: number]; 
+  let origin: [x: number, y: number] | undefined; 
 
-  let anchor: [number, number];
+  let anchor: [number, number] | undefined;
 
   let x: number, y: number, w: number, h: number;
 
-  const onPointerDown = (evt: PointerEvent) => {
+  const onPointerDown = (event: Event) => {
+    const evt = event as PointerEvent;
+
     lastPointerDown = performance.now();
 
     if (drawingMode === 'drag') {
@@ -33,7 +35,9 @@
     }
   }
 
-  const onPointerMove = (evt: PointerEvent) => {
+  const onPointerMove = (event: Event) => {
+    const evt = event as PointerEvent;
+
     if (origin) {
       anchor = transform.elementToImage(evt.offsetX, evt.offsetY);
 
@@ -44,7 +48,9 @@
     }
   }
     
-  const onPointerUp = (evt: PointerEvent) => {
+  const onPointerUp = (event: Event) => {
+    const evt = event as PointerEvent;
+
     const timeDifference = performance.now() - lastPointerDown;
 
     if (drawingMode === 'click') {
@@ -71,8 +77,8 @@
         evt.stopPropagation();
         stopDrawing();
       } else {
-        origin = null;
-        anchor = null;
+        origin = undefined;
+        anchor = undefined;
       }
     }
   }
@@ -96,8 +102,8 @@
       dispatch('create', shape);
     }
     
-    origin = null;
-    anchor = null;
+    origin = undefined;
+    anchor = undefined;
   }
 
   onMount(() => {

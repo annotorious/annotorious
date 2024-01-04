@@ -13,6 +13,7 @@ export type DrawingToolOpts = {
 
 }
 
+// @ts-ignore
 const REGISTERED = new Map<DrawingTool, { tool: typeof SvelteComponent, opts?: DrawingToolOpts }>([
   ['rectangle', { tool: RubberbandRectangle }],
   ['polygon', { tool: RubberbandPolygon }]

@@ -80,9 +80,9 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   const annotationLayer = new SVGAnnotationLayer({
     target: container,
     props: { 
-      drawingEnabled: opts.drawingEnabled, 
+      drawingEnabled: Boolean(opts.drawingEnabled), 
       image: img, 
-      preferredDrawingMode: opts.drawingMode,
+      preferredDrawingMode: opts.drawingMode!,
       state, 
       style: opts.style, 
       user: currentUser

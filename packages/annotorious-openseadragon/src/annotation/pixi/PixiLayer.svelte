@@ -82,7 +82,7 @@
     canvas.height = offsetHeight;
     canvas.className = 'a9s-gl-canvas';
 
-    viewer.element.querySelector('.openseadragon-canvas').appendChild(canvas);
+    viewer.element.querySelector('.openseadragon-canvas')?.appendChild(canvas);
 
     // Create Pixi stage
     stage = createStage(viewer, canvas);
@@ -131,18 +131,18 @@
 
       stage.destroy();
 
-      canvas.parentNode.removeChild(canvas);
+      canvas.parentNode?.removeChild(canvas);
     }
   });
 
   store.observe(event => {
     const { created, updated, deleted } = event.changes;
 
-    created.forEach(annotation => stage.addAnnotation(annotation));
+    (created || []).forEach(annotation => stage.addAnnotation(annotation));
 
-    updated.forEach(({ oldValue, newValue }) => stage.updateAnnotation(oldValue, newValue));
+    (updated || []).forEach(({ oldValue, newValue }) => stage.updateAnnotation(oldValue, newValue));
 
-    deleted.forEach(annotation => stage.removeAnnotation(annotation));
+    (deleted || []).forEach(annotation => stage.removeAnnotation(annotation));
 
     if (currentViewportBounds) {
       const { x, y, width, height } = currentViewportBounds;

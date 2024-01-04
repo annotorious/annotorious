@@ -19,13 +19,13 @@
     const textEl = g.querySelector('text');
     const rectEl = g.querySelector('rect');
 
-    const width = textEl.getBBox().width + 10 / scale;
+    const width = textEl!.getBBox().width + 10 / scale;
 
     if (hAlign === 'CENTER') {
       g.setAttribute('style', `transform: translateX(-${width / 2}px)`);
     }
 
-    rectEl.setAttribute('width', `${width}`);
+    rectEl!.setAttribute('width', `${width}`);
   }
 </script>
 

@@ -23,10 +23,10 @@
 
     const cleanup: Function[] = [];
 
-    const addEventListener = (name: string, handler: (evt: PointerEvent) => void, capture?: boolean) => {
+    const addEventListener = (name: string, handler: (evt: Event) => void, capture?: boolean) => {
       // Attach to SVG element
-      svg.addEventListener(name, handler, capture);
-      cleanup.push(() => svg.removeEventListener(name, handler, capture));
+      svg?.addEventListener(name, handler, capture);
+      cleanup.push(() => svg?.removeEventListener(name, handler, capture));
 
       if (name === 'pointerup' || name === 'dblclick') {
         // OpenSeadragon, by design, stops the 'pointerup' event. In order to capture pointer up events,

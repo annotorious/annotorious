@@ -6,7 +6,7 @@
   /** Props **/
   export let annotation: ImageAnnotation;
   export let geom: Geometry;
-  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
+  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined;
 
   $: computedStyle = computeStyle(annotation, style);
 
