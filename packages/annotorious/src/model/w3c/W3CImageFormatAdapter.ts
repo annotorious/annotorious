@@ -46,9 +46,9 @@ export const parseW3CImageAnnotation = (
   const w3cSelector = Array.isArray(target.selector) ? target.selector[0] : target.selector;
 
   const selector = 
-    w3cSelector.type === 'FragmentSelector' ?
+    w3cSelector?.type === 'FragmentSelector' ?
       parseFragmentSelector(w3cSelector as FragmentSelector, invertY) :
-    w3cSelector.type === 'SvgSelector' ?
+    w3cSelector?.type === 'SvgSelector' ?
       parseSVGSelector(w3cSelector as SVGSelector) : undefined;
 
   return selector ? { 
@@ -65,7 +65,7 @@ export const parseW3CImageAnnotation = (
       }
     }
   } : {
-    error: Error(`Unknown selector type: ${w3cSelector.type}`)
+    error: Error(`Invalid selector: ${JSON.stringify(w3cSelector)}`)
   };
 
 }

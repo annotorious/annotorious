@@ -8,7 +8,7 @@ export const sampleBrightness = (imageOrCanvas: HTMLElement) => {
 
   if (imageOrCanvas.nodeName === 'CANVAS') {
     canvas = imageOrCanvas as HTMLCanvasElement;
-    context = canvas.getContext('2d', { willReadFrequently: true });
+    context = canvas.getContext('2d', { willReadFrequently: true })!;
   } else {
     const img = imageOrCanvas as HTMLImageElement;
     // Copy image to in-memory canvas for processing
@@ -16,7 +16,7 @@ export const sampleBrightness = (imageOrCanvas: HTMLElement) => {
     canvas.width = img.width;
     canvas.height = img.height;
 
-    context = canvas.getContext('2d', { willReadFrequently: true });
+    context = canvas.getContext('2d', { willReadFrequently: true })!;
     context.drawImage(img, 0, 0, img.width, img.height);
   }
 

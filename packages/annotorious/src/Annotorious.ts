@@ -68,14 +68,14 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   // Wrapper div has unwanted margin at the bottom otherwise!
   img.style.display = 'block';
 
-  img.parentNode.insertBefore(container, img);
+  img.parentNode!.insertBefore(container, img);
   container.appendChild(img);
 
   const keyboardCommands = initKeyboardCommands(undoStack);
 
   let currentUser: User = createAnonymousGuest();
 
-  _setTheme(img, container, opts.theme);
+  _setTheme(img, container, opts.theme!);
 
   const annotationLayer = new SVGAnnotationLayer({
     target: container,
@@ -109,8 +109,8 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     annotationLayer.$destroy();
 
     // Unwrap the image
-    container.parentNode.insertBefore(img, container);
-    container.parentNode.removeChild(container);
+    container.parentNode!.insertBefore(img, container);
+    container.parentNode!.removeChild(container);
 
     // Other cleanup actions
     keyboardCommands.destroy();
@@ -131,6 +131,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     if (!toolSpec)
       throw `No drawing tool named ${name}`;
 
+    // @ts-ignore
     annotationLayer.$set({ toolName: name })
   }
 

@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js';
 import type OpenSeadragon from 'openseadragon';
-import { ShapeType } from '@annotorious/annotorious/src';
+import { ShapeType } from '@annotorious/annotorious';
 import type { DrawingStyle, Filter, Selection } from '@annotorious/core';
-import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annotorious/annotorious/src';
+import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annotorious/annotorious';
 
 const DEFAULT_FILL = 0x1a73e8;
 const DEFAULT_ALPHA = 0.25;
@@ -55,7 +55,7 @@ const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (co
   const strokeGraphics = new PIXI.Graphics();
   strokeGraphics.lineStyle(strokeStyle.lineWidth / lastScale, 0xffffff, 1, 0.5, strokeStyle.lineWidth === 1);
   fn(shape, strokeGraphics); 
-  strokeGraphics.tint = strokeStyle.tint;
+  strokeGraphics.tint = strokeStyle.tint || 0xFFFFFF;
   strokeGraphics.alpha = strokeStyle.alpha;
 
   container.addChild(strokeGraphics);
@@ -178,7 +178,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
     const s = typeof style == 'function' ? style(annotation) : style;
 
-    let rendered: { fill: PIXI.Graphics, stroke: PIXI.Graphics, strokeWidth: number };
+    let rendered: { fill: PIXI.Graphics, stroke: PIXI.Graphics, strokeWidth: number } | undefined;
 
     if (selector.type === ShapeType.RECTANGLE) {
       rendered = drawRectangle(graphics, selector as Rectangle, s);
@@ -223,7 +223,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     renderer.render(graphics);
   }
 
-  const setFilter = (filter: Filter) => {
+  const setFilter = (filter?: Filter<ImageAnnotation>) => {
     // In case this filter adds annotations with stroke > 1
     fastRedraw = false; 
 
@@ -263,7 +263,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
         fill.tint = fillStyle.tint;
         fill.alpha = fillStyle.alpha;
 
-        stroke.tint = strokeStyle.tint;
+        stroke.tint = strokeStyle.tint || 0xFFFFFF;
         stroke.alpha = strokeStyle.alpha;
 
         annotationShapes.set(annotation.id, { annotation, fill, stroke, strokeWidth });
@@ -278,7 +278,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
         fill.tint = fillStyle.tint;
         fill.alpha = fillStyle.alpha;
 
-        stroke.tint = strokeStyle.tint;
+        stroke.tint = strokeStyle.tint || 0xFFFFFF;
         stroke.alpha = strokeStyle.alpha;
 
         annotationShapes.set(annotation.id, { annotation, fill, stroke, strokeWidth });

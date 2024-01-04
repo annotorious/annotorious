@@ -103,19 +103,18 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   });
 
   const presenceLayer = new SVGPresenceLayer({
-    target: viewer.element.querySelector('.openseadragon-canvas'),
+    target: viewer.element.querySelector('.openseadragon-canvas')!,
     props: { 
       store,
-      viewer, 
-      provider: null 
+      viewer
     }
   });
 
   const drawingLayer = new SVGDrawingLayer({
-    target: viewer.element.querySelector('.openseadragon-canvas'),
+    target: viewer.element.querySelector('.openseadragon-canvas')!,
     props: { 
-      drawingEnabled,
-      preferredDrawingMode: drawingMode,
+      drawingEnabled: Boolean(drawingEnabled),
+      preferredDrawingMode: drawingMode!,
       state,
       user: currentUser, 
       viewer
@@ -136,12 +135,12 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   viewer.element.addEventListener('pointerdown', (event: PointerEvent) => {
     if (hover.current) {
-      const hovered = store.getAnnotation(hover.current);
+      const hovered = store.getAnnotation(hover.current)!;
       lifecycle.emit('clickAnnotation', hovered, event);
     }
   });
   
-  _setTheme(viewer, opts.theme);
+  _setTheme(viewer, opts.theme!);
 
   /*************************/
   /*      External API     */
@@ -179,6 +178,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     if (!toolSpec)
       throw `No drawing tool named ${name}`;
     
+    // @ts-ignore
     drawingLayer.$set({ toolName: name });
   }
 
@@ -188,12 +188,14 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   }
 
   const setFilter = (filter: Filter) =>
+    // @ts-ignore
     displayLayer.$set({ filter });
 
   const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) =>
     displayLayer.$set({ style });
 
   const setPresenceProvider = (provider: PresenceProvider) =>
+    // @ts-ignore
     presenceLayer.$set({ provider });
 
   const setTheme = (theme: Theme) => _setTheme(viewer, theme);

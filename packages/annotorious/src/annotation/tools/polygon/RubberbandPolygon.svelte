@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
   import { onMount, createEventDispatcher } from 'svelte';
   import type { DrawingMode } from '../../../AnnotoriousOpts';
   import { boundsFromPoints, computeArea, ShapeType, type Polygon } from '../../../model';

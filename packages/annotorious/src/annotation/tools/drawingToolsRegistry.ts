@@ -9,7 +9,7 @@ export type DrawingToolOpts = {
 
   drawingMode?: DrawingMode;
 
-  [key: string]: string;
+  [key: string]: any;
 
 }
 

@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
   import type { DrawingStyle } from '@annotorious/core';
   import type { Geometry, ImageAnnotation, RectangleGeometry } from '../../model';
   import { computeStyle } from '../utils/styling';

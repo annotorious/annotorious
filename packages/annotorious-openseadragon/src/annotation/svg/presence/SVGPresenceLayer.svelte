@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
   import { onDestroy } from 'svelte';
   import type { PresenceProvider, PresentUser, StoreChangeEvent } from '@annotorious/core';
   import { ShapeType, type ImageAnnotation, type ImageAnnotationStore } from '@annotorious/annotorious';

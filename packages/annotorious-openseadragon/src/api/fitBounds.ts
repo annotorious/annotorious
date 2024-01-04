@@ -1,4 +1,4 @@
-import type { ImageAnnotationStore } from '@annotorious/annotorious/src';
+import type { ImageAnnotationStore } from '@annotorious/annotorious';
 import type OpenSeadragon from 'openseadragon';
 
 export interface FitboundsOptions {
@@ -46,6 +46,7 @@ const _fitBounds = (
 
   const rect = viewer.viewport.imageToViewportRectangle(padX, padY, padW, padH);
 
+  // @ts-ignore
   viewer.viewport[fn](rect, opts.immediately);
 } 
 

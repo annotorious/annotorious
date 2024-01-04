@@ -8,9 +8,9 @@
   import './PixiLayer.css';
 
   /** Props */
-  export let filter: Filter<ImageAnnotation> = undefined;
+  export let filter: Filter<ImageAnnotation> | undefined;
   export let state: ImageAnnotatorState;
-  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
+  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined;
   export let viewer: OpenSeadragon.Viewer;
 
   const { store, hover, selection, viewport } = state;
@@ -49,7 +49,7 @@
       canvas.classList.remove('hover');
 
       if ($hover)
-        hover.set(null);
+        hover.set(undefined);
     }
   }
 

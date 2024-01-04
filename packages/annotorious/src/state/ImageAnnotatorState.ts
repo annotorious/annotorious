@@ -44,11 +44,11 @@ export const createImageAnnotatorState = <E extends unknown>(
   const viewport = createViewportState();
 
   store.observe(({ changes }) => {
-    tree.set(changes.created.map(a => a.target as ImageAnnotationTarget), false);
+    tree.set((changes.created || []).map(a => a.target as ImageAnnotationTarget), false);
     
-    changes.deleted.forEach(a => tree.remove(a.target as ImageAnnotationTarget));
+    (changes.deleted || []).forEach(a => tree.remove(a.target as ImageAnnotationTarget));
     
-    changes.updated.forEach(({ oldValue, newValue }) =>
+    (changes.updated || []).forEach(({ oldValue, newValue }) =>
       tree.update(oldValue.target, newValue.target));
   });
 

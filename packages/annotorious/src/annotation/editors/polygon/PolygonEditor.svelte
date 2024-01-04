@@ -1,12 +1,12 @@
-<script type="ts">
+<script lang="ts">
   import { boundsFromPoints } from '../../../model';
-  import type { Polygon } from '../../../model';
+  import type { Polygon, PolygonGeometry, Shape } from '../../../model';
   import type { Transform } from '../../Transform';
   import { Editor, Handle } from '..';
 
   /** Props */
   export let shape: Polygon;
-  export let computedStyle: string = undefined;
+  export let computedStyle: string | undefined;
   export let transform: Transform;
   export let viewportScale: number = 1;
 
@@ -14,13 +14,15 @@
 
   $: handleSize = 10 / viewportScale;
 
-  const editor = (polygon: Polygon, handle: Handle, delta: [number, number]) => {
+  const editor = (polygon: Shape, handle: Handle, delta: [number, number]) => {
     let points: [number, number][];
 
+    const geom = (polygon.geometry) as PolygonGeometry;
+
     if (handle === Handle.SHAPE) {
-      points = polygon.geometry.points.map(([x, y]) => [x + delta[0], y + delta[1]]);
+      points = geom.points.map(([x, y]) => [x + delta[0], y + delta[1]]);
     } else {
-      points = polygon.geometry.points.map(([x, y], idx) =>
+      points = geom.points.map(([x, y], idx) =>
         handle === Handle(idx) ? [x + delta[0], y + delta[1]] : [x, y]
       );
     }

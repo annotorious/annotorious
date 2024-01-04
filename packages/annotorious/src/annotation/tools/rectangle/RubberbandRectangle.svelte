@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
   import type { DrawingMode } from '../../../AnnotoriousOpts';
   import { ShapeType, type Rectangle } from '../../../model';

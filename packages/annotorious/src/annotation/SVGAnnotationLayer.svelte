@@ -1,10 +1,10 @@
-<script type="ts">
-  import { onMount, type SvelteComponent } from 'svelte';
+<script lang="ts">
+  import { SvelteComponent, onMount } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import type { DrawingStyle, StoreChangeEvent, User } from '@annotorious/core';
   import { ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
-  import { getEditor, EditorMount } from './editors';
+  import { getEditor as _getEditor, EditorMount } from './editors';
   import { Ellipse, Polygon, Rectangle} from './shapes';
   import { getTool, listDrawingTools, ToolMount } from './tools';
   import { enableResponsive } from './utils';
@@ -18,11 +18,11 @@
   export let image: HTMLImageElement | HTMLCanvasElement;
   export let preferredDrawingMode: DrawingMode;
   export let state: SvelteImageAnnotatorState;
-  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
-  export let toolName: string = listDrawingTools().length > 0 ? listDrawingTools()[0] : undefined;
+  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined = undefined;
+  export let toolName: string = listDrawingTools()[0];
   export let user: User;
 
-  $: ({ tool, opts } = getTool(toolName));
+  $: ({ tool, opts } = getTool(toolName) || { tool: undefined, opts: undefined });
 
   $: drawingMode = opts?.drawingMode || preferredDrawingMode;
 
@@ -43,16 +43,17 @@
 
   $: ({ onPointerDown, onPointerUp } = addEventListeners(svgEl, store));
 
-  let storeObserver = null;
+  let storeObserver: (event: StoreChangeEvent<ImageAnnotation>) => void | undefined;
 
-  let editableAnnotations: ImageAnnotation[] = null;
+  let editableAnnotations: ImageAnnotation[] | undefined;
 
   $: isEditable = (a: ImageAnnotation) => $selection.selected.find(s => s.id === a.id && s.editable);
 
   $: trackSelection($selection.selected);
 
   const trackSelection = (selected: { id: string, editable?: boolean }[]) => {
-    store.unobserve(storeObserver);
+    if (storeObserver)
+      store.unobserve(storeObserver);
 
     // Track only editable annotations
     const editableIds = 
@@ -60,17 +61,17 @@
 
     if (editableIds.length > 0) {
       // Resolve selected IDs from the store
-      editableAnnotations = editableIds.map(id => store.getAnnotation(id));
+      editableAnnotations = editableIds.map(id => store.getAnnotation(id)!).filter(Boolean);
 
       // Track updates on the editable annotations
       storeObserver = (event: StoreChangeEvent<ImageAnnotation>) => {
         const { updated } = event.changes;
-        editableAnnotations = updated.map(change => change.newValue);
+        editableAnnotations = updated?.map(change => change.newValue);
       }   
       
       store.observe(storeObserver, { annotations: editableIds });
     } else {
-      editableAnnotations = null;
+      editableAnnotations = undefined;
     }
   }
 
@@ -108,10 +109,13 @@
       ...target,
       selector: event.detail,
       created: isUpdate ? target.created : new Date(),
-      updated: isUpdate ? new Date() : null,
-      updatedBy: isUpdate ? user : null
+      updated: isUpdate ? new Date() : undefined,
+      updatedBy: isUpdate ? user : undefined
     });
   }
+
+  // To get around lack of TypeScript support in Svelte markup
+  const getEditor = (shape: Shape): typeof SvelteComponent => _getEditor(shape)!;
 </script>
 
 <svg
