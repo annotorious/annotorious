@@ -116,8 +116,9 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
         // Remove annotations that were deselected
         ...initialSelection.filter(a => selectedIds.has(a.id)),
         // Add editable annotations that were selected
-        ...selected.filter(({ id }) => !initialIds.has(id))
-          .map(({ id }) => store.getAnnotation(id))
+        ...selected
+          .filter(({ id }) => !initialIds.has(id))
+          .map(({ id }) => store.getAnnotation(id)!)
       ];
     }
 

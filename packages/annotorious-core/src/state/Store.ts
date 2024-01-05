@@ -280,11 +280,14 @@ export const createStore = <T extends Annotation>() => {
   }
 
   const bulkUpdateBodies = (bodies: AnnotationBody[], origin = Origin.LOCAL) => {
-    const updated = bodies.map(b => updateOneBody({ id: b.id, annotation: b.annotation }, b));
+    const updated = bodies
+      .map(b => updateOneBody({ id: b.id, annotation: b.annotation }, b)!)
+      .filter(Boolean);
+
     emit(origin, { updated });
   }
 
-  const updateOneTarget = (target: AnnotationTarget): Update<T> => {
+  const updateOneTarget = (target: AnnotationTarget): Update<T> | undefined => {
     const oldValue = annotationIndex.get(target.annotation);
     
     if (oldValue) {
@@ -316,7 +319,8 @@ export const createStore = <T extends Annotation>() => {
   }
 
   const bulkUpdateTargets = (targets: AnnotationTarget[], origin = Origin.LOCAL) => {
-    const updated = targets.map(updateOneTarget).filter(val => val);
+    const updated = 
+      targets.map(t => updateOneTarget(t)!).filter(Boolean);
     if (updated.length > 0)
       emit(origin, { updated });
   }
