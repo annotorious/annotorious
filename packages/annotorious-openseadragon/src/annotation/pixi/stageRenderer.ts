@@ -53,7 +53,8 @@ const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (co
   container.addChild(fillGraphics);
     
   const strokeGraphics = new PIXI.Graphics();
-  strokeGraphics.lineStyle(strokeStyle.lineWidth / lastScale, 0xffffff, 1, 0.5, strokeStyle.lineWidth === 1);
+  const lineWidth = strokeStyle.lineWidth === 1 ? 1 : strokeStyle.lineWidth / lastScale;
+  strokeGraphics.lineStyle(lineWidth, 0xffffff, 1, 0.5, strokeStyle.lineWidth === 1);
   fn(shape, strokeGraphics); 
   strokeGraphics.tint = strokeStyle.tint || 0xFFFFFF;
   strokeGraphics.alpha = strokeStyle.alpha;
@@ -78,6 +79,12 @@ const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
   g.drawRect(x, y, w, h);
 });
 
+const getCurrentScale = (viewer: OpenSeadragon.Viewer) => {
+  const containerWidth = viewer.viewport.getContainerSize().x;
+  const zoom = viewer.viewport.getZoom(true);
+  return zoom * containerWidth / viewer.world.getContentFactor();
+}
+
 const redrawStage = (
   viewer: OpenSeadragon.Viewer, 
   graphics: PIXI.Graphics,
@@ -85,10 +92,7 @@ const redrawStage = (
   renderer: PIXI.AbstractRenderer
 ) => () => {
   const viewportBounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds(true));
-
-  const containerWidth = viewer.viewport.getContainerSize().x;
-  const zoom = viewer.viewport.getZoom(true);
-  const scale = zoom * containerWidth / viewer.world.getContentFactor();
+  const scale = getCurrentScale(viewer);
 
   if (scale !== lastScale && !fastRedraw) {
     fastRedraw = true;
@@ -169,6 +173,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
   // Current style (if any)
   let style: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined = undefined;
+
+  lastScale = getCurrentScale(viewer);
 
   const addAnnotation = (annotation: ImageAnnotation) => {
     // In case this annotation adds stroke > 1
