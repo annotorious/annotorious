@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
   import type { StoreChangeEvent, User } from '@annotorious/core';

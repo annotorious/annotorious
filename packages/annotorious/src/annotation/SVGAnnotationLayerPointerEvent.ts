@@ -1,7 +1,6 @@
 import { createEventDispatcher } from 'svelte';
 import type { SvelteImageAnnotationStore } from '../state';
 import type { ImageAnnotation } from '../model';
-import { isTouch } from './utils';
 
 export interface SVGAnnotationLayerPointerEvent {
     
@@ -51,5 +50,5 @@ const getSVGPoint = (evt: PointerEvent, svg: SVGSVGElement) => {
   pt.x = x + left;
   pt.y = y + top;
 
-  return pt.matrixTransform(svg.getScreenCTM().inverse());
+  return pt.matrixTransform(svg.getScreenCTM()!.inverse());
 }

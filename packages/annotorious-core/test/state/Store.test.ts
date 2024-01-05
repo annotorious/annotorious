@@ -124,7 +124,7 @@ describe('store', () => {
     store.addAnnotation(annotation);
 
     const retrievedBefore = store.getAnnotation(annotation.id);
-    expect(retrievedBefore.id).toBe(annotation.id);
+    expect(retrievedBefore!.id).toBe(annotation.id);
 
     store.clear();
 

@@ -10,7 +10,7 @@
   /** Props */
   export let annotation: ImageAnnotation;
   export let editor: typeof SvelteComponent;
-  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
+  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined;
   export let target: SVGGElement;
   export let transform: Transform;
   export let viewportScale: number;

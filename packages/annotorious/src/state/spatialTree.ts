@@ -40,7 +40,8 @@ export const createSpatialTree = () => {
 
   const remove = (target: ImageAnnotationTarget) => {
     const item = index.get(target.annotation);
-    tree.remove(item);
+    if (item)
+      tree.remove(item);
     index.delete(target.annotation);
   };
 
@@ -62,7 +63,7 @@ export const createSpatialTree = () => {
     tree.load(indexedTargets);
   };
 
-  const getAt = (x: number, y: number): ImageAnnotationTarget | null => {
+  const getAt = (x: number, y: number): ImageAnnotationTarget | undefined => {
     const idxHits = tree.search({
       minX: x,
       minY: y,

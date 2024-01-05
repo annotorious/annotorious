@@ -8,7 +8,6 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "ignoreDeprecations": "5.0",
-    "importsNotUsedAsValues": "error",
     "incremental": false,
     "isolatedModules": true,
     "module": "ESNext",
@@ -17,7 +16,8 @@
     "resolveJsonModule": true,
     "skipLibCheck": false,
     "sourceMap": true,
-    "target": "ESNext"
+    "target": "ESNext",
+    "verbatimModuleSyntax": true
   },
   "include": ["./src/**/*", "./test/**/*"],
   "exclude": ["./node_modules", "./dist"]

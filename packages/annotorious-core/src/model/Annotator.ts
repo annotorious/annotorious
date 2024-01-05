@@ -38,7 +38,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   redo(): void;
 
-  removeAnnotation(arg: E | string): E;
+  removeAnnotation(arg: E | string): E | undefined;
 
   setAnnotations(annotations: E[]): void;
 
@@ -113,7 +113,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
   const getSelected = () => {
     const selectedIds = selection.selected?.map(s => s.id) || [];
 
-    const selected = selectedIds.map(id => store.getAnnotation(id));
+    const selected = selectedIds.map(id => store.getAnnotation(id)!).filter(Boolean);
 
     return adapter 
       ? selected.map(adapter.serialize) 
@@ -128,16 +128,20 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
         return annotations;
       });
 
-  const removeAnnotation = (arg: E | string): E => {
+  const removeAnnotation = (arg: E | string): E | undefined => {
     if (typeof arg === 'string') {
       const annotation = store.getAnnotation(arg);
       store.deleteAnnotation(arg);
 
-      return adapter ? adapter.serialize(annotation) : annotation as unknown as E;
+      if (annotation)
+        return adapter ? adapter.serialize(annotation) : annotation as unknown as E;
     } else {
       const annotation = adapter ? adapter.parse(arg).parsed : (arg as unknown as I);
-      store.deleteAnnotation(annotation);
-      return arg;
+
+      if (annotation) {
+        store.deleteAnnotation(annotation);
+        return arg;
+      }
     }
   }
 
@@ -164,8 +168,8 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
 
   const updateAnnotation = (updated: E): E => {
     if (adapter) {
-      const crosswalked = adapter.parse(updated).parsed;
-      const previous = adapter.serialize(store.getAnnotation(crosswalked.id));
+      const crosswalked = adapter.parse(updated).parsed!;
+      const previous = adapter.serialize(store.getAnnotation(crosswalked.id)!);
       store.updateAnnotation(crosswalked);
       return previous;
     } else {

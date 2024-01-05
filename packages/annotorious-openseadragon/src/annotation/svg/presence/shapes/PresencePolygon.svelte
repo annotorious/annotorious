@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
   import type { PresentUser } from '@annotorious/core';
   import type { ImageAnnotation, PolygonGeometry } from '@annotorious/annotorious/src';
   import SVGPresenceLabel from '../SVGPresenceLabel.svelte';

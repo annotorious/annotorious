@@ -1,7 +1,6 @@
 import { dequal } from 'dequal/lite';
 import type { Annotation, AnnotatorState, FormatAdapter } from '../model';
 import { Origin, type ChangeSet, type UndoStack } from '../state';
-import type { ViewportState } from '../state';
 import type { LifecycleEvents } from './LifecycleEvents';
 
 export type Lifecycle<I extends Annotation, E extends unknown> = 
@@ -26,7 +25,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
 
   const on = <T extends keyof LifecycleEvents>(event: T, callback: LifecycleEvents<E>[T]) => {
     if (observers.has(event)) {
-      observers.get(event).push(callback);
+      observers.get(event)!.push(callback);
     } else {
       observers.set(event, [callback]);
     }
@@ -44,7 +43,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
   const emit = (event: keyof LifecycleEvents<E>, arg0: I | I[], arg1?: I | PointerEvent) => {
     if (observers.has(event)) {
       setTimeout(() => {
-        observers.get(event).forEach(callback => { 
+        observers.get(event)!.forEach(callback => { 
           if (adapter) {
             const serialized0 = Array.isArray(arg0) ? 
               arg0.map(a => adapter.serialize(a)) : adapter.serialize(arg0);
@@ -66,7 +65,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
 
     // User idle after activity - fire update events for selected
     // annotations that changed
-    const updatedSelected = selected.map(({ id }) => store.getAnnotation(id));
+    const updatedSelected = (selected || []).map(({ id }) => store.getAnnotation(id)!);
 
     updatedSelected.forEach(updated => {
       const initial = initialSelection.find(a => a.id === updated.id);
@@ -87,7 +86,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
 
     if (initialSelection.length === 0 && selected.length > 0) {
       // A new selection was made - store the editable annotation as initial state
-      initialSelection = selected.map(({ id }) => store.getAnnotation(id));
+      initialSelection = selected.map(({ id }) => store.getAnnotation(id)!);
     } else if (initialSelection.length > 0 && selected.length === 0) {
       // Deselect!
       initialSelection.forEach(initial => {
@@ -117,8 +116,9 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
         // Remove annotations that were deselected
         ...initialSelection.filter(a => selectedIds.has(a.id)),
         // Add editable annotations that were selected
-        ...selected.filter(({ id }) => !initialIds.has(id))
-          .map(({ id }) => store.getAnnotation(id))
+        ...selected
+          .filter(({ id }) => !initialIds.has(id))
+          .map(({ id }) => store.getAnnotation(id)!)
       ];
     }
 
@@ -127,19 +127,19 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
 
   hover.subscribe(id => {
     if (!currentHover && id) {
-      emit('mouseEnterAnnotation', store.getAnnotation(id));
+      emit('mouseEnterAnnotation', store.getAnnotation(id)!);
     } else if (currentHover && !id) {
-      emit('mouseLeaveAnnotation', store.getAnnotation(currentHover));
+      emit('mouseLeaveAnnotation', store.getAnnotation(currentHover)!);
     } else if (currentHover && id) {
-      emit('mouseLeaveAnnotation', store.getAnnotation(currentHover));
-      emit('mouseEnterAnnotation', store.getAnnotation(id));
+      emit('mouseLeaveAnnotation', store.getAnnotation(currentHover)!);
+      emit('mouseEnterAnnotation', store.getAnnotation(id)!);
     }
 
     currentHover = id;
   });
 
   viewport?.subscribe(ids => 
-    emit('viewportIntersect', ids.map(store.getAnnotation)));
+    emit('viewportIntersect', ids.map(id => store.getAnnotation(id)!)));
 
   store.observe(event => {
     // autoSave option triggers update events on idleness
@@ -152,11 +152,11 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
 
     // Local CREATE and DELETE events are applied immediately
     const { created, deleted } = event.changes;
-    created.forEach(a => emit('createAnnotation', a));
-    deleted.forEach(a => emit('deleteAnnotation', a));
+    (created || []).forEach(a => emit('createAnnotation', a));
+    (deleted || []).forEach(a => emit('deleteAnnotation', a));
 
     // Updates are only applied immediately if they involve body changes
-    const updatesWithBody = event.changes.updated.filter(u => [
+    const updatesWithBody = (event.changes.updated || []).filter(u => [
       ...(u.bodiesCreated || []),
       ...(u.bodiesDeleted || []),
       ...(u.bodiesUpdated || [])
@@ -179,7 +179,7 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
     if (initialSelection) {
       const selectedIds = new Set(initialSelection.map(a => a.id));
 
-      const relevantUpdates = event.changes.updated
+      const relevantUpdates = (event.changes.updated || [])
         .filter(({ newValue }) => selectedIds.has(newValue.id))
         .map(({ newValue }) => newValue);
 
@@ -194,13 +194,13 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
 
   const onUndoOrRedo = (undo: boolean) => (changes: ChangeSet<I>) => {
     const { created, deleted, updated } = changes;
-    created.forEach(a => emit('createAnnotation', a));
-    deleted.forEach(a => emit('deleteAnnotation', a));
+    (created || []).forEach(a => emit('createAnnotation', a));
+    (deleted || []).forEach(a => emit('deleteAnnotation', a));
 
     if (undo)
-      updated.forEach(t => emit('updateAnnotation', t.oldValue, t.newValue));
+      (updated || []).forEach(t => emit('updateAnnotation', t.oldValue, t.newValue));
     else
-      updated.forEach(t => emit('updateAnnotation', t.newValue, t.oldValue));
+      (updated || []).forEach(t => emit('updateAnnotation', t.newValue, t.oldValue));
   }
 
   undoStack.on('undo', onUndoOrRedo(true));

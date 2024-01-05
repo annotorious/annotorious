@@ -19,7 +19,7 @@ export const createSVGTransform = (svg: SVGSVGElement): Transform => ({
     pt.x = offsetX + bbox.x;
     pt.y = offsetY + bbox.y;
   
-    const { x, y } = pt.matrixTransform(svg.getScreenCTM().inverse());
+    const { x, y } = pt.matrixTransform(svg.getScreenCTM()!.inverse());
     return [x, y];
   }
 

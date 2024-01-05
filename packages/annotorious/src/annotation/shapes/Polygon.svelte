@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
   import type { DrawingStyle } from '@annotorious/core';
   import type { Geometry, ImageAnnotation, PolygonGeometry } from '../../model';
   import { computeStyle } from '../utils/styling';
@@ -6,7 +6,7 @@
   /** Props **/
   export let annotation: ImageAnnotation;
   export let geom: Geometry;
-  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) = undefined;
+  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined;
 
   $: computedStyle = computeStyle(annotation, style);
 

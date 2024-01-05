@@ -35,8 +35,10 @@ export const OpenSeadragonAnnotator = <E extends unknown>(props: OpenSeadragonAn
     if (viewer) {
       const anno = createOSDAnnotator<E>(viewer, opts);
 
-      if (props.tool)
-        anno.setDrawingTool(props.tool);
+      if (props.drawingEnabled !== undefined) anno.setDrawingEnabled(props.drawingEnabled);
+      if (props.filter) anno.setFilter(props.filter);
+      if (props.style) anno.setStyle(props.style);
+      if (props.tool) anno.setDrawingTool(props.tool);
 
       setAnno(anno);
 
@@ -46,10 +48,6 @@ export const OpenSeadragonAnnotator = <E extends unknown>(props: OpenSeadragonAn
       }
     }
   }, [viewer]);
-
-  useEffect(() => {
-    if (anno) anno.setDrawingTool(tool);
-  }, [tool]);
 
   useEffect(() => {
     if (anno) anno.setDrawingEnabled(props.drawingEnabled);
@@ -62,6 +60,10 @@ export const OpenSeadragonAnnotator = <E extends unknown>(props: OpenSeadragonAn
   useEffect(() => {
     if (anno) anno.setStyle(props.style);
   }, [props.style]);
+
+  useEffect(() => {
+    if (anno) anno.setDrawingTool(tool);
+  }, [tool]);
 
   return (
     <OpenSeadragonAnnotatorContext.Provider value={{ viewer, setViewer }}>

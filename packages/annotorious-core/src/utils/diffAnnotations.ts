@@ -18,7 +18,8 @@ const getChangedBodies = (oldValue: Annotation, newValue: Annotation) =>
       const oldBody = oldValue.bodies.find(b => b.id === newBody.id);
       return { newBody, oldBody: oldBody && !dequal(oldBody, newBody) ? oldBody : undefined }
     })
-    .filter(({ oldBody }) => oldBody);
+    .filter(({ oldBody }) => oldBody)
+    .map(({ oldBody, newBody }) => ({ oldBody: oldBody!, newBody }));
 
 const hasTargetChanged = (oldValue: Annotation, newValue: Annotation) => 
   !dequal(oldValue.target, newValue.target);
