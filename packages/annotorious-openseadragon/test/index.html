@@ -78,13 +78,12 @@
           adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c'),
           drawingEnabled: false,
           drawingMode: 'click',
-          style: function(annotation) {
-            return { 
-              fill: '#ff0000', 
-              fillOpacity: 0.1,
-              strokeOpacity: 0.9,
-              strokeWidth: 1
-            };
+          style: {
+            fill: '#ff0000', 
+            stroke: '#ff0000', 
+            fillOpacity: 0.1,
+            strokeOpacity: 0.9,
+            strokeWidth: 1
           }
         });
 

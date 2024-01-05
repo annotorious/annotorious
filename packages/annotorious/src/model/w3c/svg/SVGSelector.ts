@@ -21,9 +21,6 @@ const parseSVGXML = (value: string): Element => {
 
 const parseSVGPolygon = (value: string): Polygon => {
   const [a, b, str] = value.match(/(<polygon points=["|'])([^("|')]*)/) || [];
-
-  if (!str) return;
-
   const points = str.split(' ').map((p) => p.split(',').map(parseFloat));
 
   return {
@@ -38,10 +35,10 @@ const parseSVGPolygon = (value: string): Polygon => {
 const parseSVGEllipse = (value: string): Ellipse => {
   const doc = parseSVGXML(value);
 
-  const cx = parseFloat(doc.getAttribute('cx'));
-  const cy = parseFloat(doc.getAttribute('cy'));
-  const rx = parseFloat(doc.getAttribute('rx'));
-  const ry = parseFloat(doc.getAttribute('ry'));
+  const cx = parseFloat(doc.getAttribute('cx')!);
+  const cy = parseFloat(doc.getAttribute('cy')!);
+  const rx = parseFloat(doc.getAttribute('rx')!);
+  const ry = parseFloat(doc.getAttribute('ry')!);
 
   const bounds = {
     minX: cx - rx,
@@ -69,10 +66,12 @@ export const parseSVGSelector = <T extends Shape>(valueOrSelector: SVGSelector |
     return parseSVGPolygon(value) as unknown as T;
   else if (value.includes('<ellipse ')) 
     return parseSVGEllipse(value) as unknown as T;
+  else 
+    throw 'Unsupported SVG shape: ' + value;
 }
 
 export const serializeSVGSelector = (shape: Shape): SVGSelector => {
-  let value: string;
+  let value: string | undefined;
 
   if (shape.type === ShapeType.POLYGON) {
     const geom = shape.geometry as PolygonGeometry;

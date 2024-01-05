@@ -32,8 +32,7 @@ export const parseW3CImageAnnotation = (
   const { 
     creator,
     created,
-    updatedBy,
-    updated,
+    modified,
     body, 
     ...rest 
   } = annotation;
@@ -44,9 +43,9 @@ export const parseW3CImageAnnotation = (
   const w3cSelector = Array.isArray(w3cTarget.selector) ? w3cTarget.selector[0] : w3cTarget.selector;
 
   const selector = 
-    w3cSelector.type === 'FragmentSelector' ?
+    w3cSelector?.type === 'FragmentSelector' ?
       parseFragmentSelector(w3cSelector as FragmentSelector, invertY) :
-    w3cSelector.type === 'SvgSelector' ?
+    w3cSelector?.type === 'SvgSelector' ?
       parseSVGSelector(w3cSelector as SVGSelector) : undefined;
 
   return selector ? { 
@@ -57,13 +56,14 @@ export const parseW3CImageAnnotation = (
       target: {
         created: created ? new Date(created) : undefined,
         creator: parseW3CUser(creator),
+        updated: modified ? new Date(modified) : undefined,
         ...rest.target,
         annotation: annotationId,
         selector
       }
     }
   } : {
-    error: Error(`Unknown selector type: ${w3cSelector.type}`)
+    error: Error(`Invalid selector: ${JSON.stringify(w3cSelector)}`)
   };
 
 }
@@ -76,8 +76,8 @@ export const serializeW3CImageAnnotation = (
     selector, 
     creator, 
     created, 
-    updated, 
-    updatedBy, 
+    updated,
+    updatedBy, // Excluded from serialization
     ...rest 
   } = annotation.target;
 
@@ -92,12 +92,13 @@ export const serializeW3CImageAnnotation = (
     id: annotation.id,
     type: 'Annotation',
     body: serializeW3CBodies(annotation.bodies),
-    creator,
     created: created?.toISOString(),
+    creator,
+    modified: updated?.toISOString(),
     target: {
       ...rest,
       source,
       selector: w3CSelector
     }
-  };
-};
+  }
+}

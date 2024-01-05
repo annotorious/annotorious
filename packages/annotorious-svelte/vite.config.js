@@ -27,6 +27,7 @@ export default defineConfig({
       external: [...Object.keys(packageJson.peerDependencies)],
       output: {
         preserveModules: true,
+        assetFileNames: 'annotorious-svelte.[ext]',
         globals: {
           openseadragon: 'OpenSeadragon'
         }

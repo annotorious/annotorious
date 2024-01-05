@@ -26,7 +26,7 @@ const EMPTY: Selection = { selected: [] };
 
 export const createSelectionState = <T extends Annotation>(
   store: Store<T>,
-  selectAction: PointerSelectAction | ((a: Annotation) => PointerSelectAction) = PointerSelectAction.EDIT
+  selectAction: PointerSelectAction | ((a: T) => PointerSelectAction) = PointerSelectAction.EDIT
 ) => {
   const { subscribe, set } = writable<Selection>(EMPTY);
 
@@ -67,7 +67,7 @@ export const createSelectionState = <T extends Annotation>(
 
     // Remove invalid
     const annotations = 
-      ids.map(id => store.getAnnotation(id)).filter(a => a); 
+      ids.map(id => store.getAnnotation(id)!).filter(Boolean); 
 
     set({ selected: annotations.map(({ id }) => ({ id, editable })) });
     
@@ -90,7 +90,7 @@ export const createSelectionState = <T extends Annotation>(
 
   // Track store delete and update events
   store.observe(({ changes }) =>
-    removeFromSelection(changes.deleted.map(a => a.id)));
+    removeFromSelection((changes.deleted || []).map(a => a.id)));
 
   return { 
     clear, 
@@ -105,9 +105,9 @@ export const createSelectionState = <T extends Annotation>(
 
 }
 
-export const onPointerSelect = (
-  annotation: Annotation, 
-  action?: PointerSelectAction | ((a: Annotation) => PointerSelectAction)
+export const onPointerSelect = <T extends Annotation>(
+  annotation: T, 
+  action?: PointerSelectAction | ((a: T) => PointerSelectAction)
 ): PointerSelectAction => (typeof action === 'function') ?
     (action(annotation) || PointerSelectAction.EDIT) : 
     (action || PointerSelectAction.EDIT);

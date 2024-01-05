@@ -8,7 +8,13 @@ export interface W3CAnnotation {
 
   id: string;
 
-  body: W3CAnnotationBody | W3CAnnotationBody[]
+  created?: string;
+
+  creator?: W3CUser;
+
+  modified?: string;
+
+  body: W3CAnnotationBody | W3CAnnotationBody[];
 
   target: W3CAnnotationTarget | W3CAnnotationTarget[];
 
@@ -16,11 +22,21 @@ export interface W3CAnnotation {
 
 }
 
-export interface W3CAnnotationBody {
-
-  id?: string;
+export interface W3CUser {
 
   type?: string;
+
+  id: string;
+
+  name?: string;
+
+}
+
+export interface W3CAnnotationBody {
+
+  type?: string;
+
+  id?: string;
 
   purpose?: string;
 
@@ -28,17 +44,9 @@ export interface W3CAnnotationBody {
 
   source?: string;
 
-  created?: Date;
+  created?: string;
 
-  creator?: {
-
-    type?: string;
-
-    id: string;
-
-    name?: string;
-
-  };
+  creator?: W3CUser;
 
 }
 
@@ -59,9 +67,9 @@ const hashCode = (obj: Object): string => {
   let hash = 0;
 
   for (let i = 0, len = str.length; i < len; i++) {
-      let chr = str.charCodeAt(i);
-      hash = (hash << 5) - hash + chr;
-      hash |= 0; // Convert to 32bit integer
+    let chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
   }
 
   return `${hash}`;
@@ -76,7 +84,7 @@ export const parseW3CUser = (user?: any) => user
 export const parseW3CBodies = (
   body: W3CAnnotationBody | W3CAnnotationBody[],
   annotationId: string
-): AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(body => {
+) : AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(body => {
 
   // Exctract properties that conform to the internal model, but keep custom props
   const { id, type, purpose, value, created, creator, ...rest } = body;
@@ -102,11 +110,11 @@ export const parseW3CBodies = (
 /** Serialization helper to remove core-specific fields from the annotation body **/
 export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[] =>
   bodies.map(b => {
-    const w3c = { ...b };
+    const w3c = { ...b } as any;
     delete w3c.annotation;
 
     if (w3c.id?.startsWith('temp-'))
       delete w3c.id;
 
-    return w3c;
+    return { ...w3c, created: w3c.created?.toISOString() };
   });

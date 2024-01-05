@@ -6,20 +6,20 @@ export type HoverState<T extends Annotation> = ReturnType<typeof createHoverStat
 
 export const createHoverState = <T extends Annotation>(store: Store<T>) => {
 
-  const { subscribe, set } = writable<string>(null);
+  const { subscribe, set } = writable<string | undefined>();
 
-  let currentHover: string = null;
+  let currentHover: string | undefined;
 
   subscribe(updated => currentHover = updated);
 
   // Track store delete and update events
   store.observe(( { changes }) => {    
     if (currentHover) {
-      const isDeleted = changes.deleted.some(a => a.id === currentHover);
+      const isDeleted = (changes.deleted || []).some(a => a.id === currentHover);
       if (isDeleted)
-        set(null);
+        set(undefined);
     
-      const updated = changes.updated.find(({ oldValue }) => oldValue.id === currentHover);
+      const updated = (changes.updated || []).find(({ oldValue }) => oldValue.id === currentHover);
       if (updated)
         set(updated.newValue.id);
     }

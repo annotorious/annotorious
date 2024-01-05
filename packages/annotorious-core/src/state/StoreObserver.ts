@@ -95,7 +95,7 @@ export const shouldNotify = <T extends Annotation>(observer: StoreObserver<T>, e
     const { ignore } = observer.options;
 
     // Shorthand
-    const has = (arg: any[]) => arg?.length > 0;
+    const has = (arg: any[] | undefined) => arg && arg.length > 0;
 
     const hasAnnotationChanges =
       has(changes.created) || has(changes.deleted);
@@ -118,9 +118,9 @@ export const shouldNotify = <T extends Annotation>(observer: StoreObserver<T>, e
   if (observer.options.annotations) {
     // This observer has a filter set on specific annotations - check affected
     const affectedAnnotations = new Set([
-      ...changes.created.map(a => a.id),
-      ...changes.deleted.map(a => a.id),
-      ...changes.updated.map(({ oldValue }) => oldValue.id)
+      ...(changes.created || []).map(a => a.id),
+      ...(changes.deleted || []).map(a => a.id),
+      ...(changes.updated || []).map(({ oldValue }) => oldValue.id)
     ]);
 
     const observed = Array.isArray(observer.options.annotations) ?
@@ -134,7 +134,6 @@ export const shouldNotify = <T extends Annotation>(observer: StoreObserver<T>, e
 }
 
 export const mergeChanges = <T extends Annotation>(changes: ChangeSet<T>, toMerge: ChangeSet<T>) => {
-
   const previouslyCreatedIds = new Set((changes.created || []).map(a => a.id));
   const previouslyUpdatedIds = new Set((changes.updated || []).map(({ newValue })=> newValue.id));
 
@@ -155,7 +154,7 @@ export const mergeChanges = <T extends Annotation>(changes: ChangeSet<T>, toMerg
     ...(changes.created || [])
       .filter(a => !deletedIds.has(a.id))
       .map(a => updatedIds.has(a.id) 
-        ? toMerge.updated.find(({ oldValue }) => oldValue.id === a.id).newValue
+        ? toMerge.updated!.find(({ oldValue }) => oldValue.id === a.id)!.newValue
         : a),
     ...(toMerge.created || [])
   ];
@@ -181,7 +180,7 @@ export const mergeChanges = <T extends Annotation>(changes: ChangeSet<T>, toMerg
       .map(update => {
         const { oldValue, newValue } = update;
         if (updatedIds.has(newValue.id)) {
-          const updated = toMerge.updated.find(u => u.oldValue.id === newValue.id).newValue;
+          const updated = toMerge.updated!.find(u => u.oldValue.id === newValue.id)!.newValue;
           return diffAnnotations(oldValue, updated);
         } else {
           return update;

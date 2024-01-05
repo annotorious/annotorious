@@ -9,7 +9,9 @@ export const initKeyboardCommands = <T extends Annotation>(
 
   const el = container || document;
 
-  const onWinKeyDown = (event: KeyboardEvent) => {
+  const onWinKeyDown = (evt: Event) => {
+    const event = evt as KeyboardEvent;
+    
     if (event.key === 'Z' && event.ctrlKey) {
       undoStack.undo();
     } else if (event.key === 'Y' && event.ctrlKey) {
@@ -17,7 +19,9 @@ export const initKeyboardCommands = <T extends Annotation>(
     }
   };
 
-  const onMacKeyDown = (event: KeyboardEvent) => {
+  const onMacKeyDown = (evt: Event) => {
+    const event = evt as KeyboardEvent;
+
     if (event.key === 'z' && event.metaKey) {
       if (event.shiftKey) {
         undoStack.redo()

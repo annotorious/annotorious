@@ -24,13 +24,15 @@ export const parseAll =
   <A extends Annotation, T extends unknown>(adapter: FormatAdapter<A, T>) =>
     (serialized: T[]) => serialized.reduce((result, next) => {
       const { parsed, error } = adapter.parse(next);
-
+      
       return error ? {
         parsed: result.parsed,
         failed: [...result.failed, next ]
-      } : {
+      } : parsed ? {
         parsed: [...result.parsed, parsed ],
         failed: result.failed
+      } : {
+        ...result
       }
-    }, { parsed: [], failed: [] });
+    }, { parsed: [] as A[], failed: [] as T[]});
   

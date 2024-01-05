@@ -4,7 +4,8 @@ import type { Annotation } from '../../src/model';
 
 const testAnnotation: Annotation = {
   id: 'test-id-1',
-  target: null,
+  // @ts-ignore
+  target: undefined,
   bodies: [],
 };
 
@@ -21,7 +22,7 @@ describe('createHoverState', () => {
   });
 
   it('should update the selection when setting', () => {
-    let hover: string;
+    let hover: string | undefined;
 
     const mockObserver = vi.fn(id => hover = id);
     hoverState.subscribe(mockObserver);
@@ -35,7 +36,7 @@ describe('createHoverState', () => {
   it('should remove the hover when the annotation is deleted', () => {
     hoverState.set(testAnnotation.id);
 
-    let hover: string;
+    let hover: string | undefined;
 
     const mockObserver = vi.fn(id => hover = id);
     hoverState.subscribe(mockObserver);
@@ -43,7 +44,7 @@ describe('createHoverState', () => {
     store.deleteAnnotation(testAnnotation);
 
     expect(mockObserver).toHaveBeenCalled();
-    expect(hover).toBe(null);
+    expect(hover).toBeUndefined();
   });
 
 });

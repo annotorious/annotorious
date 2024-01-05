@@ -13,8 +13,7 @@ export const sanitize = (doc: Element | Document) => {
   // Remove script tags
   const scripts = doc.getElementsByTagName('script');
 
-  Array.from(scripts).reverse().forEach(el =>
-    el.parentNode.removeChild(el));
+  Array.from(scripts).reverse().forEach(el => el.parentNode!.removeChild(el));
 
   Array.from(doc.querySelectorAll('*')).forEach(cleanEl);
 

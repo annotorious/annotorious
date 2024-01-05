@@ -23,9 +23,9 @@
 
     const cleanup: Function[] = [];
 
-    const addEventListener = (name: string, handler: (evt: PointerEvent) => void, capture?: boolean) => {
-      svg.addEventListener(name, handler, capture);
-      cleanup.push(() => svg.removeEventListener(name, handler, capture));
+    const addEventListener = (name: keyof SVGSVGElementEventMap, handler: EventListenerOrEventListenerObject, capture?: boolean) => {
+      svg?.addEventListener(name, handler, capture);
+      cleanup.push(() => svg?.removeEventListener(name, handler, capture));
     }
 
     toolComponent = new tool({

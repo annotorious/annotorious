@@ -72,23 +72,23 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
 
   store.observe(onChange, { origin: Origin.LOCAL });
 
-  const undoCreated = (created: T[]) => 
-    created?.length > 0 && store.bulkDeleteAnnotation(created);
+  const undoCreated = (created?: T[]) => 
+    created && created.length > 0 && store.bulkDeleteAnnotation(created);
 
-  const redoCreated = (created: T[]) =>
-    created?.length > 0 && store.bulkAddAnnotation(created, false);
+  const redoCreated = (created?: T[]) =>
+    created && created.length > 0 && store.bulkAddAnnotation(created, false);
 
-  const undoUpdated = (updated: Update<T>[]) =>
-    updated?.length > 0 && store.bulkUpdateAnnotation(updated.map(({ oldValue }) => oldValue));
+  const undoUpdated = (updated?: Update<T>[]) =>
+    updated && updated.length > 0 && store.bulkUpdateAnnotation(updated.map(({ oldValue }) => oldValue));
       
-  const redoUpdated = (updated: Update<T>[]) =>
-    updated?.length > 0 && store.bulkUpdateAnnotation(updated.map(({ newValue }) => newValue));
+  const redoUpdated = (updated?: Update<T>[]) =>
+    updated && updated.length > 0 && store.bulkUpdateAnnotation(updated.map(({ newValue }) => newValue));
 
-  const undoDeleted = (deleted: T[]) => 
-    deleted?.length > 0 && store.bulkAddAnnotation(deleted, false);
+  const undoDeleted = (deleted?: T[]) => 
+    deleted && deleted.length > 0 && store.bulkAddAnnotation(deleted, false);
 
-  const redoDeleted = (deleted: T[]) =>
-    deleted?.length > 0 && store.bulkDeleteAnnotation(deleted);
+  const redoDeleted = (deleted?: T[]) =>
+    deleted && deleted.length > 0 && store.bulkDeleteAnnotation(deleted);
 
   const undo = () => {
     if (pointer > -1) {

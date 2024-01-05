@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import type { Shape } from '../../model';
   import type { Handle } from './Handle';
@@ -11,11 +11,11 @@
   export let editor: (shape: Shape, handle: Handle, delta: [number, number]) => Shape;
   export let transform: Transform;
 
-  let grabbedHandle: Handle = null;
+  let grabbedHandle: Handle | undefined;
 
   let origin: [number, number];
 
-  let initialShape: Shape = null;
+  let initialShape: Shape | undefined;
 
   const onGrab = (handle: Handle) => (evt: PointerEvent) => {
     grabbedHandle = handle;
@@ -34,7 +34,7 @@
 
       const delta: [number, number] = [x - origin[0], y - origin[1]];
 
-      shape = editor(initialShape, grabbedHandle, delta);
+      shape = editor(initialShape!, grabbedHandle, delta);
       
       dispatch('change', shape);
     }
@@ -44,7 +44,7 @@
     const target = evt.target as Element;
     target.releasePointerCapture(evt.pointerId);
 
-    grabbedHandle = null;
+    grabbedHandle = undefined;
 
     initialShape = shape;
     

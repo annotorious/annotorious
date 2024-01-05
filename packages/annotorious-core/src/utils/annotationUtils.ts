@@ -9,14 +9,14 @@ export const getContributors = (annotation: Annotation): User[] => {
   const { creator, updatedBy } = annotation.target;
 
   const bodyCollaborators = annotation.bodies.reduce((users, body) =>  (
-    [...users, body.creator, body.updatedBy]
+    [...users, body.creator, body.updatedBy].filter(Boolean) as User[]
   ), [] as User[]);
 
   return [
     creator,
     updatedBy,
     ...bodyCollaborators
-  ].filter(u => u); // Remove undefined
+  ].filter(u => u) as User[] // Remove undefined
 }
 
 export const createBody = (

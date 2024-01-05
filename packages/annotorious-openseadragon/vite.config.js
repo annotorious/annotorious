@@ -33,6 +33,7 @@ export default defineConfig({
       output: {
         assetFileNames: 'annotorious-openseadragon.[ext]',
         globals: {
+          '@annotorious/annotorious': 'Annotorious',
           openseadragon: 'OpenSeadragon'
         }
       }

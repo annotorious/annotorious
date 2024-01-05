@@ -42,7 +42,7 @@ export const enableResponsive = (image: HTMLImageElement | HTMLCanvasElement, sv
       set(scale);
     });
   
-    resizeObserver.observe(svg.parentElement);
+    resizeObserver.observe(svg.parentElement!);
   }
 
   const destroy = () => {

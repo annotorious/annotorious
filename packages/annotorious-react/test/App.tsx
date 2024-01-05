@@ -38,7 +38,7 @@ const IIIF_SAMPLE = {
 const OSD_OPTIONS: OpenSeadragon.Options = {
   prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@3.1/build/openseadragon/images/',
   tileSources: IIIF_SAMPLE,
-  // crossOriginPolicy: 'Anonymous',
+  crossOriginPolicy: 'Anonymous',
   gestureSettingsMouse: {
     clickToZoom: false
   }

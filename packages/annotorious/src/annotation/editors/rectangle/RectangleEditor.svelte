@@ -1,11 +1,11 @@
-<script type="ts">
-  import type { Rectangle } from '../../../model';
+<script lang="ts">
+  import type { Rectangle, Shape } from '../../../model';
   import type { Transform } from '../../Transform';
   import { Editor, Handle } from '..';
 
   /** Props */
   export let shape: Rectangle;
-  export let computedStyle: string = undefined;
+  export let computedStyle: string | undefined;
   export let transform: Transform;
   export let viewportScale: number = 1;
 
@@ -13,7 +13,7 @@
 
   $: handleSize = 10 / viewportScale;
 
-  const editor = (rectangle: Rectangle, handle: Handle, delta: [number, number]) => {
+  const editor = (rectangle: Shape, handle: Handle, delta: [number, number]) => {
     const initialBounds = rectangle.geometry.bounds;
 
     let [x0, y0] = [initialBounds.minX, initialBounds.minY];
