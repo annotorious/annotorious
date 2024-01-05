@@ -79,7 +79,7 @@ export const serializeW3CImageAnnotation = (
     creator, 
     created, 
     updated,
-    updatedBy: _updatedBy, // Excluded from serialization
+    updatedBy, // Excluded from serialization
     ...rest 
   } = annotation.target;
 
@@ -102,5 +102,5 @@ export const serializeW3CImageAnnotation = (
       source,
       selector: w3CSelector
     }
-  };
-};
+  }
+}

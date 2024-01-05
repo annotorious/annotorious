@@ -10,7 +10,7 @@ export interface W3CAnnotation {
 
   created?: string;
 
-  creator?: W3CAnnotationUser;
+  creator?: W3CUser;
 
   modified?: string;
 
@@ -19,6 +19,16 @@ export interface W3CAnnotation {
   target: W3CAnnotationTarget | W3CAnnotationTarget[];
 
   [key: string]: any;
+
+}
+
+export interface W3CUser {
+
+  type?: string;
+
+  id: string;
+
+  name?: string;
 
 }
 
@@ -36,7 +46,7 @@ export interface W3CAnnotationBody {
 
   created?: string;
 
-  creator?: W3CAnnotationUser;
+  creator?: W3CUser;
 
 }
 
@@ -55,15 +65,6 @@ export interface W3CSelector {
   conformsTo?: string;
 
   value: string;
-}
-
-export interface W3CAnnotationUser {
-
-  type?: string;
-
-  id: string;
-
-  name?: string;
 
 }
 
@@ -80,7 +81,7 @@ const hashCode = (obj: Object): string => {
   }
 
   return `${hash}`;
-};
+}
 
 export const parseW3CUser = (user?: any) => user
   ? typeof user === 'object' ? { ...user } : user : undefined;
@@ -91,7 +92,7 @@ export const parseW3CUser = (user?: any) => user
 export const parseW3CBodies = (
   body: W3CAnnotationBody | W3CAnnotationBody[],
   annotationId: string
-): AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(body => {
+) : AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(body => {
 
   // Exctract properties that conform to the internal model, but keep custom props
   const { id, type, purpose, value, created, creator, ...rest } = body;
@@ -110,7 +111,7 @@ export const parseW3CBodies = (
     created: created ? new Date(created) : undefined,
     creator: parseW3CUser(creator),
     ...rest
-  };
+  }
 
 });
 
