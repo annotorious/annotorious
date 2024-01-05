@@ -3,12 +3,11 @@ import { parseW3CUser, parseW3CBodies, serializeW3CBodies } from '@annotorious/c
 import type { FormatAdapter, ParseResult, W3CAnnotation } from '@annotorious/core';
 import { ShapeType } from '../core';
 import type { ImageAnnotation, RectangleGeometry } from '../core';
-import type { FragmentSelector } from './fragment';
 import { parseFragmentSelector, serializeFragmentSelector } from './fragment';
-import type { SVGSelector } from './svg';
 import { parseSVGSelector, serializeSVGSelector } from './svg';
+import type { FragmentSelector, SVGSelector, W3CImageAnnotation } from './W3CImageAnnotation';
 
-export type W3CImageFormatAdapter = FormatAdapter<ImageAnnotation, W3CAnnotation>;
+export type W3CImageFormatAdapter = FormatAdapter<ImageAnnotation, W3CImageAnnotation>;
 
 export const W3CImageFormat = (
   source: string,
@@ -40,9 +39,8 @@ export const parseW3CImageAnnotation = (
 
   const bodies = parseW3CBodies(body, annotationId);
 
-  const target = Array.isArray(annotation.target) ? annotation.target[0] : annotation.target;
-
-  const w3cSelector = Array.isArray(target.selector) ? target.selector[0] : target.selector;
+  const w3cTarget = Array.isArray(annotation.target) ? annotation.target[0] : annotation.target;
+  const w3cSelector = Array.isArray(w3cTarget.selector) ? w3cTarget.selector[0] : w3cTarget.selector;
 
   const selector = 
     w3cSelector?.type === 'FragmentSelector' ?
@@ -73,7 +71,7 @@ export const parseW3CImageAnnotation = (
 export const serializeW3CImageAnnotation = (
   annotation: ImageAnnotation, 
   source: string
-): W3CAnnotation => {
+): W3CImageAnnotation => {
   const { 
     selector, 
     creator, 

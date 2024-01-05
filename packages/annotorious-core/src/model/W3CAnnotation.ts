@@ -54,19 +54,11 @@ export interface W3CAnnotationTarget {
 
   source: string;
 
-  selector?: W3CSelector | W3CSelector[];
+  selector?: AbstractW3CSelector;
 
 }
 
-export interface W3CSelector {
-
-  type: string;
-
-  conformsTo?: string;
-
-  value: string;
-
-}
+export interface AbstractW3CSelector { }
 
 // https://stackoverflow.com/questions/6122571/simple-non-secure-hash-function-for-javascript
 const hashCode = (obj: Object): string => {

@@ -1,15 +1,7 @@
-import type { W3CSelector } from '@annotorious/core';
-import { boundsFromPoints, ShapeType } from '../../core';
 import type { Ellipse, EllipseGeometry, Polygon, PolygonGeometry, Shape } from '../../core';
-import { SVG_NAMESPACE, insertSVGNamespace, sanitize } from './SVG';
-
-export interface SVGSelector extends W3CSelector {
-
-  type: 'SvgSelector';
-
-  value: string;
-  
-}
+import { boundsFromPoints, ShapeType } from '../../core';
+import { insertSVGNamespace, sanitize, SVG_NAMESPACE } from './SVG';
+import type { SVGSelector } from '../W3CImageAnnotation';
 
 const parseSVGXML = (value: string): Element => {
   const parser = new DOMParser();
