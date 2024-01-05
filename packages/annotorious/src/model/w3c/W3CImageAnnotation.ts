@@ -1,4 +1,6 @@
 import type { W3CAnnotation, W3CAnnotationTarget } from '@annotorious/core';
+import type { FragmentSelector } from './fragment';
+import type { SVGSelector } from './svg';
 
 export interface W3CImageAnnotation extends W3CAnnotation {
 
@@ -9,24 +11,6 @@ export interface W3CImageAnnotation extends W3CAnnotation {
 export interface W3CImageAnnotationTarget extends W3CAnnotationTarget {
 
   selector: W3CImageSelector | W3CImageSelector[];
-
-}
-
-export interface FragmentSelector {
-
-  type: 'FragmentSelector';
-
-  conformsTo: 'http://www.w3.org/TR/media-frags/',
-
-  value: string;
-
-}
-
-export interface SVGSelector {
-
-  type: 'SvgSelector';
-
-  value: string;
 
 }
 

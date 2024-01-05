@@ -1,7 +1,14 @@
 import type { Ellipse, EllipseGeometry, Polygon, PolygonGeometry, Shape } from '../../core';
 import { boundsFromPoints, ShapeType } from '../../core';
 import { insertSVGNamespace, sanitize, SVG_NAMESPACE } from './SVG';
-import type { SVGSelector } from '../W3CImageAnnotation';
+
+export interface SVGSelector {
+
+  type: 'SvgSelector';
+
+  value: string;
+
+}
 
 const parseSVGXML = (value: string): Element => {
   const parser = new DOMParser();

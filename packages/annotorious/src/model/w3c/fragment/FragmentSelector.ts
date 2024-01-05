@@ -1,6 +1,15 @@
 import type { Rectangle, RectangleGeometry } from '../../core';
 import { ShapeType } from '../../core';
-import type { FragmentSelector } from '../W3CImageAnnotation';
+
+export interface FragmentSelector {
+
+  type: 'FragmentSelector';
+
+  conformsTo: 'http://www.w3.org/TR/media-frags/',
+
+  value: string;
+
+}
 
 export const parseFragmentSelector = (
   fragmentOrSelector: FragmentSelector | string,
@@ -36,7 +45,7 @@ export const parseFragmentSelector = (
       }
     }
   }
-};
+}
 
 export const serializeFragmentSelector = (geometry: RectangleGeometry): FragmentSelector => {
   const { x, y, w, h } = geometry;
@@ -46,4 +55,4 @@ export const serializeFragmentSelector = (geometry: RectangleGeometry): Fragment
     conformsTo: 'http://www.w3.org/TR/media-frags/',
     value: `xywh=pixel:${x},${y},${w},${h}`
   };
-};
+}
