@@ -19,6 +19,7 @@ import {
   fillDefaults, 
   getTool,
   initKeyboardCommands,
+  isTouch,
   listDrawingTools,
   registerTool,
   registerEditor
@@ -71,7 +72,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   const opts = fillDefaults<ImageAnnotation, E>(options, {
     drawingEnabled: false,
-    drawingMode: 'click',
+    drawingMode: isTouch ? 'drag' : 'click',
     pointerSelectAction: PointerSelectAction.EDIT,
     theme: 'light'
   });

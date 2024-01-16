@@ -77,7 +77,6 @@
         var anno = createOSDAnnotator(viewer, {
           adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c'),
           drawingEnabled: false,
-          drawingMode: 'click',
           style: {
             fill: '#ff0000', 
             stroke: '#ff0000', 
@@ -115,7 +114,7 @@
           }
 
           anno.setFilter(filters[filter]);
-          console.log('Changed filter: ' + filter);
+          // console.log('Changed filter: ' + filter);
         });
 
         anno.on('clickAnnotation', a => console.log('clicked', a));
@@ -123,7 +122,7 @@
         anno.on('deleteAnnotation', a => console.log('deleted', a));
         anno.on('selectionChanged', selected => console.log('selection', selected));
         anno.on('updateAnnotation', (a, previous) => console.log('updated', previous, 'with', a));
-        anno.on('viewportIntersect', visible => console.log('visible', visible));
+        // anno.on('viewportIntersect', visible => console.log('visible', visible));
       }
     </script>
   </body>

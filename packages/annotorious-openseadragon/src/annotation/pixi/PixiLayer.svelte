@@ -69,7 +69,11 @@
     dragged = false;
   }
 
-  const onCanvasDrag = () => dragged = true;
+  const onCanvasDrag = (evt: OpenSeadragon.CanvasDragEvent) => {
+    const {x, y} = evt.delta;
+    const dist = Math.sqrt(x * x + y * y);
+    dragged = dist > 5;
+  }
 
   let currentViewportBounds: { x: number, y: number, width: number, height: number };
 
