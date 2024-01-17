@@ -1,23 +1,22 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import type { Shape } from '../../model';
-  import type { Handle } from './Handle';
   import type { Transform } from '../Transform';
 
   const dispatch = createEventDispatcher<{ grab: undefined, release: undefined, change: Shape }>();
 
   /** Props */
   export let shape: Shape;
-  export let editor: (shape: Shape, handle: Handle, delta: [number, number]) => Shape;
+  export let editor: (shape: Shape, handle: string, delta: [number, number]) => Shape;
   export let transform: Transform;
 
-  let grabbedHandle: Handle | undefined;
+  let grabbedHandle: string | undefined;
 
   let origin: [number, number];
 
   let initialShape: Shape | undefined;
 
-  const onGrab = (handle: Handle) => (evt: PointerEvent) => {
+  const onGrab = (handle: string) => (evt: PointerEvent) => {
     grabbedHandle = handle;
     origin = transform.elementToImage(evt.offsetX, evt.offsetY);
     initialShape = shape;

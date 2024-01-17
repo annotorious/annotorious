@@ -118,6 +118,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
       drawingEnabled: Boolean(drawingEnabled),
       preferredDrawingMode: drawingMode!,
       state,
+      style: opts.style,
       user: currentUser, 
       viewer
     }
@@ -193,8 +194,10 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     // @ts-ignore
     displayLayer.$set({ filter });
 
-  const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) =>
+  const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) => {
     displayLayer.$set({ style });
+    drawingLayer.$set({ style });
+  }
 
   const setPresenceProvider = (provider: PresenceProvider) =>
     // @ts-ignore

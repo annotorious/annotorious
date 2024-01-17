@@ -2,7 +2,7 @@
   import { boundsFromPoints } from '../../../model';
   import type { Polygon, PolygonGeometry, Shape } from '../../../model';
   import type { Transform } from '../../Transform';
-  import { Editor, Handle } from '..';
+  import { Editor } from '..';
 
   /** Props */
   export let shape: Polygon;
@@ -14,16 +14,16 @@
 
   $: handleSize = 10 / viewportScale;
 
-  const editor = (polygon: Shape, handle: Handle, delta: [number, number]) => {
+  const editor = (polygon: Shape, handle: string, delta: [number, number]) => {
     let points: [number, number][];
 
     const geom = (polygon.geometry) as PolygonGeometry;
 
-    if (handle === Handle.SHAPE) {
+    if (handle === 'SHAPE') {
       points = geom.points.map(([x, y]) => [x + delta[0], y + delta[1]]);
     } else {
       points = geom.points.map(([x, y], idx) =>
-        handle === Handle(idx) ? [x + delta[0], y + delta[1]] : [x, y]
+        handle === `HANDLE-${idx}` ? [x + delta[0], y + delta[1]] : [x, y]
       );
     }
 
@@ -48,19 +48,19 @@
   <polygon
     class="a9s-outer"
     style={computedStyle ? 'display:none;' : undefined}
-    on:pointerdown={grab(Handle.SHAPE)}
+    on:pointerdown={grab('SHAPE')}
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
 
   <polygon
     class="a9s-inner a9s-shape-handle"
     style={computedStyle}
-    on:pointerdown={grab(Handle.SHAPE)}
+    on:pointerdown={grab('SHAPE')}
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
 
   {#each geom.points as point, idx}
     <rect 
       class="a9s-corner-handle"
-      on:pointerdown={grab(Handle(idx))}
+      on:pointerdown={grab(`HANDLE-${idx}`)}
       x={point[0] - handleSize / 2} y={point[1] - handleSize / 2} height={handleSize} width={handleSize} />
   {/each}
 </Editor>

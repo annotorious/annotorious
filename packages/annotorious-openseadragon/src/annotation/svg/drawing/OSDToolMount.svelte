@@ -31,7 +31,7 @@
       if (name === 'pointerup' || name === 'dblclick') {
         // OpenSeadragon, by design, stops the 'pointerup' event. In order to capture pointer up events,
         // we need to listen to the canvas-click event instead
-        const osdHandler = (event: OpenSeadragon.CanvasClickEvent) => {
+        const osdHandler = (event: OpenSeadragon.CanvasClickEvent | OpenSeadragon.CanvasDoubleClickEvent) => {
           const { originalEvent } = event;
           handler(originalEvent as PointerEvent);
         }

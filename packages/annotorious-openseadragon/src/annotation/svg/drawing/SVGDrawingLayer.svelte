@@ -1,9 +1,10 @@
 <script lang="ts">
+  import { SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
-  import type { StoreChangeEvent, User } from '@annotorious/core';
+  import type { DrawingStyle, StoreChangeEvent, User } from '@annotorious/core';
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
-  import { getEditor, getTool, listDrawingTools } from '@annotorious/annotorious';
+  import { getEditor as _getEditor, getTool, listDrawingTools } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
   import OSDLayer from '../OSDLayer.svelte';
   import OSDToolMount from './OSDToolMount.svelte';
@@ -12,11 +13,12 @@
   export let drawingEnabled: boolean;
   export let preferredDrawingMode: DrawingMode;
   export let state: ImageAnnotatorState;
-  export let toolName: string = listDrawingTools().length > 0 ? listDrawingTools()[0] : undefined;
+  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined = undefined;
+  export let toolName: string = listDrawingTools()[0];
   export let user: User;
   export let viewer: OpenSeadragon.Viewer;
 
-  $: ({ tool, opts } = getTool(toolName));
+  $: ({ tool, opts } = getTool(toolName) || { tool: undefined, opts: undefined });
 
   /** Drawing tool layer **/
   let drawingEl: SVGGElement;
@@ -31,9 +33,9 @@
   /** Selection tracking **/
   const { store, selection } = state;
 
-  let storeObserver = null;
+  let storeObserver: (event: StoreChangeEvent<ImageAnnotation>) => void;
 
-  let editableAnnotations: ImageAnnotation[] = null;
+  let editableAnnotations: ImageAnnotation[] | undefined;
  
   $: if ($selection.selected.length === 0 && drawingMode === 'drag' && drawingEnabled) { viewer.setMouseNavEnabled(false) }
 
@@ -48,17 +50,17 @@
 
     if (editableIds.length > 0) {
       // Resolve selected IDs from the store
-      editableAnnotations = editableIds.map(id => store.getAnnotation(id));
+      editableAnnotations = editableIds.map(id => store.getAnnotation(id)!);
 
       // Track updates on the selected annotations
       storeObserver = (event: StoreChangeEvent<ImageAnnotation>) => {
         const { updated } = event.changes;
-        editableAnnotations = updated.map(change => change.newValue);
+        editableAnnotations = (updated || []).map(change => change.newValue);
       }   
       
       store.observe(storeObserver, { annotations: editableIds });
     } else {
-      editableAnnotations = null;
+      editableAnnotations = undefined;
     }
   }
 
@@ -87,8 +89,8 @@
       ...target,
       selector: event.detail,
       created: isUpdate ? target.created : new Date(),
-      updated: isUpdate ? new Date() : null,
-      updatedBy: isUpdate ? user : null
+      updated: isUpdate ? new Date() : undefined,
+      updatedBy: isUpdate ? user : undefined
     });
   }
 
@@ -112,6 +114,9 @@
 
     viewer.setMouseNavEnabled(true);
   }
+
+  // To get around lack of TypeScript support in Svelte markup
+  const getEditor = (shape: Shape): typeof SvelteComponent => _getEditor(shape)!;
 </script>
 
 <OSDLayer viewer={viewer} let:transform let:scale>
@@ -129,6 +134,7 @@
               target={drawingEl}
               editor={getEditor(editable.target.selector)}
               annotation={editable}
+              style={style}
               transform={{ elementToImage: toolTransform }}
               viewportScale={scale}
               on:grab={onGrab} 

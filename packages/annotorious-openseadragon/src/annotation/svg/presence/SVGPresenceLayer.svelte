@@ -18,11 +18,11 @@
   
   export let viewer: OpenSeadragon.Viewer;
 
-  export let provider: PresenceProvider = null;
+  export let provider: PresenceProvider | undefined;
 
   let trackedAnnotations: TrackedAnnotation[] = [];
 
-  let storeObserver = null;
+  let storeObserver: (event: StoreChangeEvent<ImageAnnotation>) => void;
 
   $: if (provider) provider.on('selectionChange', onSelectionChange);
 
@@ -32,7 +32,7 @@
         .filter(({ selectedBy }) => selectedBy.presenceKey !== p.presenceKey),
       ...(selection || []).map(id => ({ 
           // Warning - could be undefined!
-          annotation: store.getAnnotation(id),
+          annotation: store.getAnnotation(id)!,
           selectedBy: p
         }))
     ].filter(({ annotation }) => {
@@ -49,14 +49,14 @@
     storeObserver = (event: StoreChangeEvent<ImageAnnotation>) => {      
       const { deleted, updated } = event.changes;
 
-      const deletedIds = new Set(deleted.map(a => a.id));
+      const deletedIds = new Set((deleted || []).map(a => a.id));
 
       const next: TrackedAnnotation[] = trackedAnnotations
         // Remove deleted
         .filter(({ annotation }) => !deletedIds.has(annotation.id))
         // Replace updated
         .map(tracked => {
-          const u = updated.find(update => update.oldValue.id === tracked.annotation.id);
+          const u = (updated || []).find(update => update.oldValue.id === tracked.annotation.id);
           if (u) {
             return { selectedBy: tracked.selectedBy, annotation: u.newValue }; 
           } else {
