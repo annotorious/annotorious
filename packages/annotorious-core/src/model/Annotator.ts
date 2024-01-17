@@ -42,7 +42,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   setAnnotations(annotations: E[]): void;
 
-  setFilter(filter: Filter): void;
+  setFilter(filter: Filter | undefined): void;
 
   setPresenceProvider?(provider: PresenceProvider): void;
 

@@ -5,7 +5,7 @@
   import { computeStyle } from '../utils/styling';
   import type { Transform } from '../Transform';
 
-  const dispatch = createEventDispatcher<{ grab: undefined, release: undefined, change: Shape }>();
+  const dispatch = createEventDispatcher<{ grab: PointerEvent, release: PointerEvent, change: Shape }>();
 
   /** Props */
   export let annotation: ImageAnnotation;

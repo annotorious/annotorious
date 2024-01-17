@@ -2,7 +2,7 @@
   import { SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
-  import type { DrawingStyle, StoreChangeEvent, User } from '@annotorious/core';
+  import type { DrawingStyle, Filter, StoreChangeEvent, User } from '@annotorious/core';
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
   import { getEditor as _getEditor, getTool, listDrawingTools } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
@@ -11,6 +11,7 @@
 
   /** Props **/
   export let drawingEnabled: boolean;
+  export let filter: Filter<ImageAnnotation> | undefined;
   export let preferredDrawingMode: DrawingMode;
   export let state: ImageAnnotatorState;
   export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined = undefined;
@@ -31,11 +32,13 @@
   $: drawingEnabled && selection.clear();
 
   /** Selection tracking **/
-  const { store, selection } = state;
+  const { store, selection, hover } = state;
 
   let storeObserver: (event: StoreChangeEvent<ImageAnnotation>) => void;
 
   let editableAnnotations: ImageAnnotation[] | undefined;
+
+  let grabbedAt: number | undefined;
  
   $: if ($selection.selected.length === 0 && drawingMode === 'drag' && drawingEnabled) { viewer.setMouseNavEnabled(false) }
 
@@ -70,9 +73,32 @@
     return [x, y];
   }
 
-  const onGrab = () => viewer.setMouseNavEnabled(false);
-  
-  const onRelease = () => viewer.setMouseNavEnabled(true);
+  const onGrab = (evt: CustomEvent<PointerEvent>) => {
+    viewer.setMouseNavEnabled(false);
+
+    // Record timestamp, so we can differentiate between actual
+    // grab (edit) and click (possibly select overlapping shape)
+    grabbedAt = evt.timeStamp;
+  }
+
+  const onRelease = (evt: CustomEvent<PointerEvent>) => { 
+    viewer.setMouseNavEnabled(true);
+
+    const timeDifference = performance.now() - (grabbedAt || 0);
+    if (timeDifference < 300) {
+      // Click - check if another shape needs selecting
+      const { offsetX, offsetY } = evt.detail;
+      const [x, y] = toolTransform(offsetX, offsetY);
+
+      const hit = store.getAt(x, y);
+      const isVisibleHit = hit && (!filter || filter(hit));
+
+      if (isVisibleHit && !editableAnnotations!.find(e => e.id === hit.id)) {
+        hover.set(hit.id);
+        selection.setSelected(hit.id);
+      }
+    }
+  }
 
   const onChangeSelected = (annotation: ImageAnnotation) => (event: CustomEvent<Shape>) => {  
     const { target } = annotation;

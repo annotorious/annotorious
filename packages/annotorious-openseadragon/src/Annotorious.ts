@@ -117,6 +117,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     target: viewer.element.querySelector('.openseadragon-canvas')!,
     props: { 
       drawingEnabled: Boolean(drawingEnabled),
+      filter: undefined,
       preferredDrawingMode: drawingMode!,
       state,
       style: opts.style,
@@ -191,9 +192,12 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     drawingLayer.$set({ drawingEnabled });
   }
 
-  const setFilter = (filter: Filter) =>
+  const setFilter = (filter: Filter | undefined) => {
     // @ts-ignore
     displayLayer.$set({ filter });
+    // @ts-ignore
+    drawingLayer.$set({ filter });
+  }
 
   const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) => {
     displayLayer.$set({ style });

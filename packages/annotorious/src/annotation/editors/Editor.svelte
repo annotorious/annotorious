@@ -3,7 +3,7 @@
   import type { Shape } from '../../model';
   import type { Transform } from '../Transform';
 
-  const dispatch = createEventDispatcher<{ grab: undefined, release: undefined, change: Shape }>();
+  const dispatch = createEventDispatcher<{ grab: PointerEvent, release: PointerEvent, change: Shape }>();
 
   /** Props */
   export let shape: Shape;
@@ -24,7 +24,7 @@
     const target = evt.target as Element;
     target.setPointerCapture(evt.pointerId);
 
-    dispatch('grab');
+    dispatch('grab', evt);
   }
 
   const onPointerMove = (evt: PointerEvent) => {
@@ -47,7 +47,7 @@
 
     initialShape = shape;
     
-    dispatch('release');
+    dispatch('release', evt);
   }
 </script>
 
