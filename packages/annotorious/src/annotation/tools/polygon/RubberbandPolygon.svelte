@@ -19,9 +19,16 @@
   
   let cursor: [number, number] | undefined;
 
+  // Keep track of the user keeping the finger
+  // in place. Long pauses will be interpreted like a 
+  // double click and close the shape.
+  let touchPauseTimer: number | undefined;
+
   let isClosable: boolean = false;
 
   const CLOSE_DISTANCE = 20;
+
+  const TOUCH_PAUSE_LIMIT = 1500;
 
   $: handleSize = 10 / viewportScale;
 
@@ -45,12 +52,20 @@
   const onPointerMove = (event: Event) => {
     const evt = event as PointerEvent;
 
+    if (touchPauseTimer) clearTimeout(touchPauseTimer);
+
     if (points.length > 0) {
       cursor = transform.elementToImage(evt.offsetX, evt.offsetY);
 
       if (points.length >  2) {
         const d = distance(cursor, points[0]) * viewportScale;
         isClosable = d < CLOSE_DISTANCE;
+      }
+
+      if (evt.pointerType === 'touch') {
+        touchPauseTimer = setTimeout(() => {
+          onDblClick();
+        }, TOUCH_PAUSE_LIMIT);
       }
     }
   }
@@ -105,9 +120,11 @@
   }
 
   const onDblClick = () => {
+    if (!cursor) return;
+
     // Require min 3 points (incl. cursor) and minimum
     // polygon area
-    const p = [...points, cursor!];
+    const p = [...points, cursor];
 
     const shape: Polygon = {
       type: ShapeType.POLYGON, 
