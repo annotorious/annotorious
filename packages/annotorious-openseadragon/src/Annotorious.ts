@@ -107,6 +107,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const presenceLayer = new SVGPresenceLayer({
     target: viewer.element.querySelector('.openseadragon-canvas')!,
     props: { 
+      provider: undefined,
       store,
       viewer
     }
