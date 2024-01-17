@@ -11,8 +11,8 @@ div[data-theme="dark"] .a9s-annotationlayer .a9s-inner {
   stroke-width: 1px;
 }
 
-rect.a9s-corner-handle,
-div[data-theme="dark"] rect.a9s-corner-handle {
+rect.a9s-handle,
+div[data-theme="dark"] rect.a9s-handle {
   fill: #000;
   rx: 2px;
 }

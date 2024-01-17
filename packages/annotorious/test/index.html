@@ -56,27 +56,21 @@
       
         anno.on('createAnnotation', function (annotation) {
           console.log('created', annotation);
-          console.log('can undo?', anno.canUndo());
-          console.log('can redo?', anno.canRedo());
         });
 
         anno.on('updateAnnotation', function(annotation, previous) {
           console.log('updated', previous, 'with', annotation);
-          console.log('can undo?', anno.canUndo());
-          console.log('can redo?', anno.canRedo());
         });
 
         anno.on('deleteAnnotation', function(annotation) {
           console.log('deleted', annotation);
-          console.log('can undo?', anno.canUndo());
-          console.log('can redo?', anno.canRedo());
         });
 
         anno.on('selectionChanged', function(selected) {
           // console.log('selected', selected);
         });
 
-        // anno.setDrawingTool('polygon');
+        anno.setDrawingTool('polygon');
       }
     </script>
   </body>

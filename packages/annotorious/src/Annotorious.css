@@ -37,7 +37,7 @@
   cursor: move;
 }
 
-.a9s-corner-handle {
+.a9s-handle {
   cursor: move;
 }
 
@@ -57,18 +57,18 @@
   cursor: w-resize;
 }
 
-.a9s-corner-handle.a9s-corner-handle-topleft {
+.a9s-handle.a9s-corner-handle-topleft {
   cursor: nw-resize;
 }
 
-.a9s-corner-handle.a9s-corner-handle-topright {
+.a9s-handle.a9s-corner-handle-topright {
   cursor: ne-resize;
 }
 
-.a9s-corner-handle.a9s-corner-handle-bottomright {
+.a9s-handle.a9s-corner-handle-bottomright {
   cursor: se-resize; 
 }
 
-.a9s-corner-handle.a9s-corner-handle-bottomleft {
+.a9s-handle.a9s-corner-handle-bottomleft {
   cursor: sw-resize;
 }

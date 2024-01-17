@@ -1,5 +1,5 @@
 <script lang="ts">
-  import EditorHandle from '../Handle.svelte';
+  import Handle from '../Handle.svelte';
   import type { Rectangle, Shape } from '../../../model';
   import type { Transform } from '../../Transform';
   import { Editor } from '..';
@@ -11,8 +11,6 @@
   export let viewportScale: number = 1;
 
   $: geom = shape.geometry;
-
-  $: handleSize = 10 / viewportScale;
 
   const editor = (rectangle: Shape, handle: string, delta: [number, number]) => {
     const initialBounds = rectangle.geometry.bounds;
@@ -122,24 +120,27 @@
     on:pointerdown={grab('LEFT')}
     x={geom.x} y={geom.y} height={geom.h} width={1} />
 
-  <EditorHandle
-    class="a9s-corner-handle a9s-corner-handle-topleft"
+  <Handle
+    class="a9s-corner-handle-topleft"
     on:pointerdown={grab('TOP_LEFT')}
     x={geom.x} y={geom.y}
     scale={viewportScale} /> 
 
-  <rect 
-    class="a9s-corner-handle a9s-corner-handle-topright"
+  <Handle
+    class="a9s-corner-handle-topright"
     on:pointerdown={grab('TOP_RIGHT')}
-    x={geom.x + geom.w - handleSize / 2} y={geom.y - handleSize / 2} height={handleSize} width={handleSize} />
+    x={geom.x + geom.w} y={geom.y} 
+    scale={viewportScale} />
   
-  <rect 
-    class="a9s-corner-handle a9s-corner-handle-bottomright"
+  <Handle 
+    class="a9s-corner-handle-bottomright"
     on:pointerdown={grab('BOTTOM_RIGHT')}
-    x={geom.x + geom.w - handleSize / 2} y={geom.y + geom.h - handleSize / 2} height={handleSize} width={handleSize} />
+    x={geom.x + geom.w} y={geom.y + geom.h} 
+    scale={viewportScale} />
     
-  <rect 
-    class="a9s-corner-handle a9s-corner-handle-bottomleft"
+  <Handle 
+    class="a9s-corner-handle-bottomleft"
     on:pointerdown={grab('BOTTOM_LEFT')}
-    x={geom.x - handleSize / 2} y={geom.y + geom.h - handleSize / 2} height={handleSize} width={handleSize} />
+    x={geom.x} y={geom.y + geom.h} 
+    scale={viewportScale} />
 </Editor>

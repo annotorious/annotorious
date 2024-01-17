@@ -12,9 +12,9 @@ export const initKeyboardCommands = <T extends Annotation>(
   const onWinKeyDown = (evt: Event) => {
     const event = evt as KeyboardEvent;
     
-    if (event.key === 'Z' && event.ctrlKey) {
+    if (event.key === 'z' && event.ctrlKey) {
       undoStack.undo();
-    } else if (event.key === 'Y' && event.ctrlKey) {
+    } else if (event.key === 'y' && event.ctrlKey) {
       undoStack.redo()
     }
   };

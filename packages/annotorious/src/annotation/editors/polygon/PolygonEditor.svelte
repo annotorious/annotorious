@@ -2,7 +2,7 @@
   import { boundsFromPoints } from '../../../model';
   import type { Polygon, PolygonGeometry, Shape } from '../../../model';
   import type { Transform } from '../../Transform';
-  import { Editor } from '..';
+  import { Editor, Handle } from '..';
 
   /** Props */
   export let shape: Polygon;
@@ -11,8 +11,6 @@
   export let viewportScale: number = 1;
 
   $: geom = shape.geometry;
-
-  $: handleSize = 10 / viewportScale;
 
   const editor = (polygon: Shape, handle: string, delta: [number, number]) => {
     let points: [number, number][];
@@ -58,9 +56,9 @@
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
 
   {#each geom.points as point, idx}
-    <rect 
-      class="a9s-corner-handle"
+    <Handle 
       on:pointerdown={grab(`HANDLE-${idx}`)}
-      x={point[0] - handleSize / 2} y={point[1] - handleSize / 2} height={handleSize} width={handleSize} />
+      x={point[0]} y={point[1]} 
+      scale={viewportScale} />
   {/each}
 </Editor>

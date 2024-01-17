@@ -13,8 +13,8 @@ div[data-theme="light"] .a9s-annotationlayer .a9s-inner {
   stroke-width: 1.5px;
 }
 
-rect.a9s-corner-handle,
-div[data-theme="light"] rect.a9s-corner-handle {
+rect.a9s-handle,
+div[data-theme="light"] rect.a9s-handle {
   fill: #fff;
   rx: 1px;
   stroke: rgba(0, 0, 0, 0.45);
