@@ -14,7 +14,7 @@
       touched = true;
   }
 
-  const onPointerUp = (event: PointerEvent) =>
+  const onPointerUp = () =>
     touched = false;
 
   $: handleSize = 10 / scale;
@@ -48,7 +48,8 @@
     x={x - handleSize / 2} 
     y={y - handleSize / 2} 
     width={handleSize} 
-    height={handleSize} />
+    height={handleSize} 
+    on:pointerdown />
 {/if}
 
 <style>
