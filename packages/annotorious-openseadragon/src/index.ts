@@ -38,6 +38,7 @@ export type {
   AnnotoriousOpts,
   DrawingMode,
   DrawingTool,
+  FragmentSelector,
   ImageAnnotator as AnnotoriousImageAnnotator,
   ImageAnnotation,
   ImageAnnotator,
@@ -46,7 +47,10 @@ export type {
   PolygonGeometry,
   Rectangle,
   RectangleGeometry,
-  Shape
+  Shape,
+  SVGSelector,
+  W3CImageAnnotation,
+  W3CImageAnnotationTarget
 } from '@annotorious/annotorious';
 
 import {   
