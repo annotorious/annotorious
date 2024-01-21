@@ -38,7 +38,7 @@ anno.on('createAnnotation', function(annotation) {
 });
 ```
 
-### Script Import via CDN
+#### Script Import via CDN
 
 ```html
 <html>
@@ -96,7 +96,7 @@ window.onload = function() {
 }
 ```
 
-### Script Import via CDN
+#### Script Import via CDN
 
 ```html
 <html>
