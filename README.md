@@ -6,7 +6,7 @@
 
 # Annotorious 3.0 Beta
 
-Add image annotation functionality to any Web page with a few lines of JavaScript.
+Add image annotation functionality to any web page with a few lines of JavaScript.
 
 - [Getting Started](#getting-started)
 - [Using with OpenSeadragon](#using-with-openseadragon)
