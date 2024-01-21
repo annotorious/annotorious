@@ -1,4 +1,4 @@
-## Contributing
+# Contributing
 
 Annotorious aims to be a community project - we welcome your involvement!
 

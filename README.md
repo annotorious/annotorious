@@ -8,11 +8,18 @@
 
 Add image annotation functionality to any Web page with a few lines of JavaScript.
 
+- [Getting Started](#getting-started)
+- [Using with OpenSeadragon](#using-with-openseadragon)
+- [Using in React](#using-in-react)
+- [Contributing](#contributing)
+
+Support this project with a one-time or recurring donation on [SteadyHQ](https://steadyhq.com/rainer-simon).
+
+## Getting Started
+
 ```sh
 npm install --save @annotorious/annotorious
 ```
-
-## Getting Started
 
 ```js
 import { createImageAnnotator } from '@annotorious/annotorious';
@@ -46,34 +53,90 @@ anno.on('createAnnotation', function(annotation) {
     <script>
       window.onload = function() {
         var anno = Annotorious.createImageAnnotator('my-image');
-        
-        anno.loadAnnotations('./annotations.w3c.json');
-      
-        anno.on('createAnnotation', function (annotation) {
-          console.log('created', annotation);
-        });
       }
     </script>
   </body>
 </html>
 ```
 
-[Full API documentation](docs/api.md)
+## Using with OpenSeadragon
+
+Annotorious provides seamless integration with the [OpenSeadragon](https://openseadragon.github.io/)
+viewer for zoomable images and IIIF. __Note that Annotorious requires OpenSeadragon 3 or higher__.
+
+```sh
+npm install @annotorious/openseadragon
+```
+
+```js
+import { createOSDAnnotator } from '@annotorious/openseadragon';
+
+// Import essential CSS styles
+import '@annotorious/annotorious/annotorious-openseadragon.css';
+
+// Create OpenSeadragon viewer first
+window.onload = function() {
+  var viewer = OpenSeadragon({
+    id: 'openseadragon',
+    tileSources: {
+      type: 'image',
+      url:  '/my-image.jpg'
+    }
+  });
+
+  // Create Annotorious
+  var anno = createOSDAnnotator(viewer);
+
+  // Load annotations in W3C Web Annotation format
+  anno.loadAnnotations('./annotations.w3c.json');
+       
+  // Attach listeners to handle annotation events
+  anno.on('createAnnotation', function(annotation) {
+    console.log('created', annotation);
+  });
+}
+```
+
+### Script Import via CDN
+
+```html
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@annotorious/openseadragon@latest/dist/annotorious-openseadragon.css">
+    <script src="https://cdn.jsdelivr.net/npm/@annotorious/openseadragon@latest/dist/annotorious-openseadragon.js"></script>
+  </head>
+  <body>
+    <div id="openseadragon"></div>
+
+    <script>
+      window.onload = function() {
+        var viewer = OpenSeadragon({
+          id: 'openseadragon',
+          tileSources: {
+            type: 'image',
+            url:  '/my-image.jpg'
+          }
+        });
+        
+        var anno = AnnotoriousOSD.createOSDAnnotator(viewer);
+      }
+    </script>
+  </body>
+</html>
+```
 
 ## Using with React
 
-Install Annotorious React binding.
+Annotorious provides React bindings for both the standard and the OpenSeadragon module.
 
 ```sh
-npm install --save @annotorious/react
+npm install @annotorious/react
 ```
-
-Import Annotorious CSS style and wrap your image with the `ImageAnnotator` component to make it annotatable. 
 
 ```jsx
 import { Annotorious, ImageAnnotator } from '@annotorious/react';
 
-import '@annotorious/annotorious/dist/annotorious.css';
+import '@annotorious/react/annotorious-react.css';
 
 export function AnnotatableImage() => {
 
@@ -88,17 +151,11 @@ export function AnnotatableImage() => {
 }
 ```
 
-[Full React API documentation](docs/react.md)
-
-## Support this Project
-
-You can support by work with a one-time or recurring donation on [SteadyHQ](https://steadyhq.com/rainer-simon).
-
 ## Contributing
 
 Want to help make Annotorious better? There are many ways to get involved - including some that require little
 or no coding experience!
 
-Check the list of current [open issues](https://github.com/annotorious/annotorious-v3/issues), in particular those with the [help wanted](https://github.com/annotorious/annotorious-v3/issues?q=is%3Aissue+is%3Aopen+label%3A"help+wanted") or [hacktoberfest](https://github.com/annotorious/annotorious-v3/issues?q=is%3Aissue+is%3Aopen+label%3Ahacktoberfest) tags. See the [Contribution Guide](contributing.md) to learn more.
+Check the list of current [open issues](https://github.com/annotorious/annotorious/issues), in particular those with the [help wanted](https://github.com/annotorious/annotorious-v3/issues?q=is%3Aissue+is%3Aopen+label%3A"help+wanted") tag. See the [Contribution Guide](contributing.md) to learn more.
 
 
