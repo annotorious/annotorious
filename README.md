@@ -123,7 +123,7 @@ window.onload = function() {
 </html>
 ```
 
-## Using with React
+## Using in React
 
 Annotorious provides React bindings for both the standard and the OpenSeadragon module.
 
