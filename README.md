@@ -12,8 +12,6 @@ Add image annotation functionality to any Web page with a few lines of JavaScrip
 - [Using with OpenSeadragon](#using-with-openseadragon)
 - [Using in React](#using-in-react)
 
-Support this project with a one-time or recurring donation on [SteadyHQ](https://steadyhq.com/rainer-simon).
-
 ## Getting Started
 
 ```sh
@@ -61,7 +59,7 @@ anno.on('createAnnotation', function(annotation) {
 ## Using with OpenSeadragon
 
 Annotorious provides seamless integration with the [OpenSeadragon](https://openseadragon.github.io/)
-viewer for zoomable images and IIIF. __Note that Annotorious requires OpenSeadragon 3 or higher__.
+viewer for zoomable images and IIIF. Note that Annotorious requires OpenSeadragon 3 or higher.
 
 ```sh
 npm install @annotorious/openseadragon
