@@ -18,6 +18,8 @@ Add image annotation functionality to any web page with a few lines of JavaScrip
 npm install --save @annotorious/annotorious
 ```
 
+Create an annotator instance on an existing Image element.
+
 ```js
 import { createImageAnnotator } from '@annotorious/annotorious';
 
@@ -59,11 +61,14 @@ anno.on('createAnnotation', function(annotation) {
 ## Using with OpenSeadragon
 
 Annotorious provides seamless integration with the [OpenSeadragon](https://openseadragon.github.io/)
-viewer for zoomable images and IIIF. Note that Annotorious requires OpenSeadragon 3 or higher.
+viewer for zoomable images and IIIF. 
 
 ```sh
 npm install @annotorious/openseadragon
 ```
+
+Set up your OpenSeadragon viewer first, and then create an annotator instance for the viewer.
+Note that Annotorious requires OpenSeadragon 3 or higher.
 
 ```js
 import { createOSDAnnotator } from '@annotorious/openseadragon';
@@ -71,7 +76,6 @@ import { createOSDAnnotator } from '@annotorious/openseadragon';
 // Import essential CSS styles
 import '@annotorious/annotorious/annotorious-openseadragon.css';
 
-// Create OpenSeadragon viewer first
 window.onload = function() {
   var viewer = OpenSeadragon({
     id: 'openseadragon',
@@ -81,13 +85,10 @@ window.onload = function() {
     }
   });
 
-  // Create Annotorious
   var anno = createOSDAnnotator(viewer);
 
-  // Load annotations in W3C Web Annotation format
   anno.loadAnnotations('./annotations.w3c.json');
        
-  // Attach listeners to handle annotation events
   anno.on('createAnnotation', function(annotation) {
     console.log('created', annotation);
   });
@@ -129,6 +130,10 @@ Annotorious provides React bindings for both the standard and the OpenSeadragon 
 ```sh
 npm install @annotorious/react
 ```
+
+The `<Annotorious>` component provides a root context for all Annotorious utility hooks.
+Use `<ImageAnnotator>` or `<OpenSeadragonAnnotator>` to attach annotation layers on images
+or OpenSeadragon.
 
 ```jsx
 import { Annotorious, ImageAnnotator } from '@annotorious/react';
