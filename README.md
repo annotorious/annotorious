@@ -11,7 +11,6 @@ Add image annotation functionality to any Web page with a few lines of JavaScrip
 - [Getting Started](#getting-started)
 - [Using with OpenSeadragon](#using-with-openseadragon)
 - [Using in React](#using-in-react)
-- [Contributing](#contributing)
 
 Support this project with a one-time or recurring donation on [SteadyHQ](https://steadyhq.com/rainer-simon).
 
@@ -150,12 +149,4 @@ export function AnnotatableImage() => {
 
 }
 ```
-
-## Contributing
-
-Want to help make Annotorious better? There are many ways to get involved - including some that require little
-or no coding experience!
-
-Check the list of current [open issues](https://github.com/annotorious/annotorious/issues), in particular those with the [help wanted](https://github.com/annotorious/annotorious-v3/issues?q=is%3Aissue+is%3Aopen+label%3A"help+wanted") tag. See the [Contribution Guide](contributing.md) to learn more.
-
 
