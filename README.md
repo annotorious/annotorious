@@ -4,28 +4,24 @@
 > are looking for the most recent official release, [visit the main project homepage](https://annotorious.github.io). 
 > Documentation in this Readme __is only for the upcoming alpha release__ and __will not work with Annotorious 2.7.x!__ 
 
-# Annotorious 3
+# Annotorious 3.0 Beta
 
-Add image annotation functionality to any Web page with a few lines of JavaScript. 🚀 Easy to integrate
-🎨 fully customizable 🪶 weighs less than 100kB.
-
-## Getting Started
-
-Install from npm.
+Add image annotation functionality to any Web page with a few lines of JavaScript.
 
 ```sh
 npm install --save @annotorious/annotorious
 ```
 
-Import CSS style and initialize Annotorious.
+## Getting Started
 
 ```js
-import { Annotorious } from '@annotorious/annotorious';
+import { createImageAnnotator } from '@annotorious/annotorious';
 
-import '@annotorious/annotorious/dist/annotorious.css';
+// Import essential CSS styles
+import '@annotorious/annotorious/annotorious.css';
 
 // Image element ID or DOM element
-const anno = Annotorious('sample-image');
+const anno = createImageAnnotator('sample-image');
 
 // Load annotations in W3C Web Annotation format
 anno.loadAnnotations('./annotations.w3c.json');
@@ -34,6 +30,32 @@ anno.loadAnnotations('./annotations.w3c.json');
 anno.on('createAnnotation', function(annotation) {
   console.log('created', annotation);
 });
+```
+
+### Script Import via CDN
+
+```html
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@annotorious/annotorious@latest/dist/annotorious.css">
+    <script src="https://cdn.jsdelivr.net/npm/@annotorious/annotorious@latest/dist/annotorious.js"></script>
+  </head>
+  <body>
+    <img id="my-image" src="my-image.jpg" />
+
+    <script>
+      window.onload = function() {
+        var anno = Annotorious.createImageAnnotator('my-image');
+        
+        anno.loadAnnotations('./annotations.w3c.json');
+      
+        anno.on('createAnnotation', function (annotation) {
+          console.log('created', annotation);
+        });
+      }
+    </script>
+  </body>
+</html>
 ```
 
 [Full API documentation](docs/api.md)
