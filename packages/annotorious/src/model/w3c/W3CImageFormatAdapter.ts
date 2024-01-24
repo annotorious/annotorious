@@ -62,7 +62,7 @@ export const parseW3CImageAnnotation = (
         created: created ? new Date(created) : undefined,
         creator: parseW3CUser(creator),
         updated: modified ? new Date(modified) : undefined,
-        ...rest.target,
+        ...(Array.isArray(rest.target) ? rest.target[0] : rest.target),
         annotation: annotationId,
         selector
       }
@@ -91,7 +91,7 @@ export const serializeW3CImageAnnotation = (
       serializeFragmentSelector(selector.geometry as RectangleGeometry) :
       serializeSVGSelector(selector);
 
-  return {
+  const serialized = {
     ...annotation,
     '@context': 'http://www.w3.org/ns/anno.jsonld',
     id: annotation.id,
@@ -105,5 +105,13 @@ export const serializeW3CImageAnnotation = (
       source,
       selector: w3CSelector
     }
-  }
+  } as W3CImageAnnotation;
+
+  // Remove core properties that should not appear in the W3C annotation
+  delete serialized.bodies;
+  
+  if ('annotation' in serialized.target)
+    delete serialized.target.annotation;
+
+  return serialized;
 }
