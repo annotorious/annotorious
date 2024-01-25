@@ -26,7 +26,8 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "tsc && vite build"
+    "build": "tsc && vite build",
+    "test": "echo 'Skipping tests in @annotorious/annotorious-react-manifold package'"
   },
   "devDependencies": {
     "@types/react": "^18.2.48",
