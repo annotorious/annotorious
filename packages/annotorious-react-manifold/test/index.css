@@ -1,0 +1,18 @@
+.container {
+  display: grid;
+  gap: 1.5vh;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+  width: 100%;
+}
+
+.viewer-tile {
+  background-color: green;
+  height: 48vh;
+  position: relative;
+}
+
+.osd-container {
+  height: 100%;
+  width: 100%;
+}
