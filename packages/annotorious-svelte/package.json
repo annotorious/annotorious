@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/svelte",
-  "version": "3.0.0-rc.18",
+  "version": "3.0.0-rc.19",
   "description": "Annotorious Svelte bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -18,12 +18,12 @@
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
     "@tsconfig/svelte": "^5.0.2",
     "@types/openseadragon": "^3.0.10",
-    "svelte": "^4.2.8",
-    "svelte-check": "^3.6.2",
+    "svelte": "^4.2.9",
+    "svelte-check": "^3.6.3",
     "tslib": "^2.6.2",
     "typescript": "^5.3.3",
-    "vite": "^5.0.10",
-    "vite-plugin-dts": "^3.7.0"
+    "vite": "^5.0.12",
+    "vite-plugin-dts": "^3.7.2"
   },
   "peerDependencies": {
     "@annotorious/annotorious": "*",
