@@ -73,6 +73,8 @@
   const onPointerUp = (event: Event) => {
     const evt = event as PointerEvent;
 
+    if (touchPauseTimer) clearTimeout(touchPauseTimer);
+
     if (drawingMode === 'click') {
       const timeDifference = evt.timeStamp - lastPointerDown.timeStamp;
 
