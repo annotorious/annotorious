@@ -19,7 +19,7 @@
 
   let stage: ReturnType<typeof createStage>;
 
-  let dragged = false;
+  let lastPress: { x: number, y: number } | undefined;
 
   $: stage?.setFilter(filter);
 
@@ -32,6 +32,11 @@
     const offsetXY = new OpenSeadragon.Point(xy.x, xy.y);
     const {x, y} = viewer.viewport.pointFromPixel(offsetXY);
     return viewer.viewport.viewportToImageCoordinates(x, y);
+  }
+
+  const onCanvasPress = (evt: OpenSeadragon.CanvasPressEvent) => {
+    const { x, y } = evt.position;
+    lastPress = { x, y };
   }
 
   const onPointerMove = (canvas: HTMLCanvasElement) => (evt: PointerEvent) => {
@@ -56,7 +61,13 @@
   const onCanvasRelease = (evt: OpenSeadragon.CanvasReleaseEvent) => {
     const originalEvent = evt.originalEvent as PointerEvent;
 
-    if (!dragged) {
+    const { x, y } = evt.position;
+    const dx = x - lastPress!.x;
+    const dy = y - lastPress!.y;
+
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < 5) {
       const {x, y} = getImageXY(evt.position);
       const annotation = store.getAt(x, y);
 
@@ -66,13 +77,7 @@
         dispatch('click', { originalEvent });
     }
 
-    dragged = false;
-  }
-
-  const onCanvasDrag = (evt: OpenSeadragon.CanvasDragEvent) => {
-    const {x, y} = evt.delta;
-    const dist = Math.sqrt(x * x + y * y);
-    dragged = dist > 5;
+    lastPress = undefined;
   }
 
   let currentViewportBounds: { x: number, y: number, width: number, height: number };
@@ -120,7 +125,7 @@
       viewport.set(intersecting.map(a => a.id));
     }
 
-    viewer.addHandler('canvas-drag', onCanvasDrag);
+    viewer.addHandler('canvas-press', onCanvasPress);
     viewer.addHandler('canvas-release', onCanvasRelease);
     viewer.addHandler('update-viewport', stage.redraw);
     viewer.addHandler('animation-finish', updateViewportState);
@@ -128,7 +133,7 @@
     return () => {
       canvas.removeEventListener('pointermove', moveHandler);
 
-      viewer.removeHandler('canvas-drag', onCanvasDrag);
+      viewer.removeHandler('canvas-press', onCanvasPress);
       viewer.removeHandler('canvas-release', onCanvasRelease);
       viewer.removeHandler('update-viewport', stage.redraw);
       viewer.removeHandler('animation-finish', updateViewportState);
