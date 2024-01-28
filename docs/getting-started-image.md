@@ -50,18 +50,16 @@ anno.on('createAnnotation', function(annotation) {
 </html>
 ```
 
-## API
+## createImageAnnotator(image, options?)
 
-### `createImageAnnotator(image, options?)`
-
-Create a new image annotator instance on an image. Returns [ImageAnnotator](api/imageannotator).
+`createImageAnnotator` creates a new [ImageAnnotator](api/ImageAnnotator.md) instance on an existing HTML image element.
 
 | Arg     | Type                                  | Description               |
 |---------|---------------------------------------|---------------------------|
 | `image`   | `string` \| `HTMLImageElement`      | DOM element ID or element |
 | `options` | [AnnotoriousOpts](#annotoriousopts) | Init options (optional)   |
 
-### AnnotoriousOpts
+## AnnotoriousOpts
 
 | Arg                   | Type                                            | Default       |
 |-----------------------|-------------------------------------------------|---------------|
@@ -73,7 +71,7 @@ Create a new image annotator instance on an image. Returns [ImageAnnotator](api/
 | `style`               | [StyleDefinition](#style)                       | -             |
 | `theme`               | `'dark'` \| `'light'` \| `'auto'`               | `'light'`     |
 
-### FormatAdapter
+## FormatAdapter
 
 The `adapter` prop is an optional object that introduces crosswalk functionality between Annotorious' internal annotation data model and different standards. This allows seamless integration of external annotation standards, such as the [W3C Web Annotation standard](https://www.w3.org/TR/annotation-model/), into Annotorious. The adapter will handle the process of parsing and serializing annotations between Annotorious' internal format and the chosen external standard for you. 
 
@@ -87,7 +85,7 @@ const anno = createImageAnnotator('sample-image', {
 });
 ```
 
-### PointerSelectAction
+## PointerSelectAction
 
 The `pointerSelectAction` prop controls the behavior when a user clicks or taps on an annotation. Valid values for pointerSelectAction are `EDIT`, `SELECT`, and `NONE`.
 
@@ -126,7 +124,7 @@ __Note:__
 
 For TypeScript users, the valid values for `pointerSelectAction` are provided as enums for type safety. However, in plain JavaScript, you can use the string values ('EDIT', 'SELECT', 'NONE') directly.
 
-### Style
+## Style
 
 The `style` argument allows you to customize the visual appearance of annotations. You can define a style as either an object or a function.
 
