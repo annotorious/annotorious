@@ -1,7 +1,9 @@
 > This is documentation for the upcoming v3 of Annotorious. For the latest official v2.x release see the [Annotorious project website](_https://annotorious.github.io_)
 
 # Getting Started: React
+
 ## Installation
+
 To use Annotorious with React, install the React integration package. The package contains React bindings for both standard images and OpenSeadragon. 
 
 ```bash
@@ -57,7 +59,7 @@ When using a format adapter, it impacts all methods of the vanilla `anno` Annota
 import { Annotorious, ImageAnnotator, W3CImageFormat } from '@annotorious/react';
 
 <Annotorious>
-  <ImageAnnotator adapter={W3CImageFormat}>
+  <ImageAnnotator adapter={W3CImageFormat()}>
     <img src="example.jpg" />
   </ImageAnnotator>
 </Annotorious>
@@ -132,7 +134,7 @@ The `style` prop allows you to customize the visual appearance of annotations. Y
 The object should have the following shape:
 
 ```tsx
-const style: DrawingStyle = {
+const style = {
   fill: '#ff2222',     // Fill color in hex format
   fillOpacity: 0.25,   // Fill opacity (0 to 1)
   stroke: '#ff0000',   // Stroke color in hex format

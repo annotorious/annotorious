@@ -1,3 +1,0 @@
-# Annotorious React
-
-TODO
