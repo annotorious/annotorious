@@ -2,8 +2,6 @@ import { ImageAnnotation } from '@annotorious/annotorious';
 import OpenSeadragon from 'openseadragon';
 
 const getAnnotationDomRect = (viewer: OpenSeadragon.Viewer, annotation: ImageAnnotation) => {
-  const viewerBounds = viewer.element.getBoundingClientRect();
-  
   // Annotation bounds (image coordinates)
   const { minX, minY, maxX, maxY } = annotation.target.selector.geometry.bounds;
 
@@ -13,11 +11,11 @@ const getAnnotationDomRect = (viewer: OpenSeadragon.Viewer, annotation: ImageAnn
 
   // Account for viewer element offset
   return {
-    x: topLeft.x + viewerBounds.x,
-    right: bottomRight.x + viewerBounds.x,
-    y: topLeft.y + viewerBounds.y,
-    bottom: bottomRight.y + viewerBounds.y,
-    width: bottomRight.x - topLeft.x,
+    x: topLeft.x,
+    right: bottomRight.x,
+    y: topLeft.y, 
+    bottom: bottomRight.y,
+    width: bottomRight.x  - topLeft.x,
     height: bottomRight.y - topLeft.y,
   };
 }
