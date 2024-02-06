@@ -326,24 +326,24 @@ export const createStore = <T extends Annotation>() => {
   }
 
 	return {
-    addAnnotation,
-    addBody,
-    all,
-    bulkAddAnnotation,
-    bulkDeleteAnnotation,
-    bulkUpdateAnnotation,
-    bulkUpdateBodies,
-    bulkUpdateTargets,
-    clear,
-    deleteAnnotation,
-    deleteBody,
     getAnnotation,
+    addAnnotation,
+    bulkAddAnnotation,
+    updateAnnotation,
+    bulkUpdateAnnotation,
+    deleteAnnotation,
+    bulkDeleteAnnotation,
     getBody,
+    addBody,
+    updateBody,
+    bulkUpdateBodies,
+    deleteBody,
+    updateTarget,
+    bulkUpdateTargets,
+    all,
+    clear,
     observe,
     unobserve,
-    updateAnnotation,
-    updateBody,
-    updateTarget
 	};
 
 }
