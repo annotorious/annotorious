@@ -4,7 +4,7 @@ export interface Annotation {
 
   id: string;
 
-  target: AnnotationTarget;
+  targets: AnnotationTarget[];
 
   bodies: AnnotationBody[];
 
@@ -17,6 +17,8 @@ export interface Annotation {
 }
 
 export interface AnnotationTarget {
+
+  id: string;
 
   annotation: string;
 
