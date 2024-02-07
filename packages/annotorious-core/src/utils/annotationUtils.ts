@@ -1,22 +1,17 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { Annotation, AnnotationBody } from '../model/Annotation';
-import type {  User } from '../model/User';
+import type { Annotation, AnnotationBody, User } from '../model';
+
 /**
  * Returns all users listed as creators or updaters in any parts of this
  * annotation.
  */
 export const getContributors = (annotation: Annotation): User[] => {
-  const { creator, updatedBy } = annotation.target;
+  const isUser = (u: unknown): u is User => !!u;
 
-  const bodyCollaborators = annotation.bodies.reduce((users, body) =>  (
-    [...users, body.creator, body.updatedBy].filter(Boolean) as User[]
-  ), [] as User[]);
+  const targetCollaborators = annotation.targets.flatMap(target => [target.creator, target.updatedBy]).filter(isUser);
+  const bodyCollaborators = annotation.bodies.flatMap(body => [body.creator, body.updatedBy]).filter(isUser);
 
-  return [
-    creator,
-    updatedBy,
-    ...bodyCollaborators
-  ].filter(u => u) as User[] // Remove undefined
+  return [...new Set(targetCollaborators), ... new Set(bodyCollaborators)];
 }
 
 export const createBody = (
