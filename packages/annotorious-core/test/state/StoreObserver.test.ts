@@ -11,7 +11,7 @@ const EXPECTED = {
       "bodies": [],
       "targets": [
         {
-          "id": "temp--537192084",
+          "id": "temp--537192090",
           "annotation": "98fe2de2-ed9a-4dc0-808d-5cebf611e4be",
           "selector": {
             "type": "RECTANGLE",
@@ -61,7 +61,7 @@ const EXPECTED = {
         ],
         "targets": [
           {
-            "id": "temp--537192085",
+            "id": "temp--537192087",
             "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
             "selector": {
               "type": "RECTANGLE",
@@ -125,7 +125,7 @@ const EXPECTED = {
         ],
         "targets": [
           {
-            "id": "temp--537192085",
+            "id": "temp--537192087",
             "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
             "selector": {
               "type": "RECTANGLE",
@@ -172,10 +172,10 @@ const EXPECTED = {
           }
         ]
       },
-      "targetsUpdating": {
-        "oldTargets": [
-          {
-            "id": "temp--537192085",
+      "targetsUpdated": [
+        {
+          "oldTarget": {
+            "id": "temp--537192087",
             "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
             "selector": {
               "type": "RECTANGLE",
@@ -192,11 +192,9 @@ const EXPECTED = {
                 }
               }
             }
-          }
-        ],
-        "newTargets": [
-          {
-            "id": "temp--537192085",
+          },
+          "newTarget": {
+            "id": "temp--537192087",
             "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
             "selector": {
               "type": "RECTANGLE",
@@ -219,8 +217,8 @@ const EXPECTED = {
               "id": "pSmekFNpfoQ5ZYTQ9Tx4"
             }
           }
-        ]
-      }
+        }
+      ]
     }
   ],
   "deleted": []

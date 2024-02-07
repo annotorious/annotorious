@@ -7,11 +7,6 @@ const getAddedBodies = (oldValue: Annotation, newValue: Annotation) => {
   return newValue.bodies.filter(b => !oldBodyIds.has(b.id));
 }
 
-const getRemovedBodies = (oldValue: Annotation, newValue: Annotation) => {
-  const newBodyIds = new Set(newValue.bodies.map(b => b.id));
-  return oldValue.bodies.filter(b => !newBodyIds.has(b.id));
-}
-
 const getChangedBodies = (oldValue: Annotation, newValue: Annotation) => 
   newValue.bodies
     .map(newBody => {
@@ -21,20 +16,33 @@ const getChangedBodies = (oldValue: Annotation, newValue: Annotation) =>
     .filter(({ oldBody }) => oldBody)
     .map(({ oldBody, newBody }) => ({ oldBody: oldBody!, newBody }));
 
-const hasTargetChanged = (oldValue: Annotation, newValue: Annotation) => 
-  !dequal(oldValue.target, newValue.target);
+const getRemovedBodies = (oldValue: Annotation, newValue: Annotation) => {
+  const newBodyIds = new Set(newValue.bodies.map(b => b.id));
+  return oldValue.bodies.filter(b => !newBodyIds.has(b.id));
+}
+
+const getChangedTargets = (oldValue: Annotation, newValue: Annotation) =>
+  newValue.targets
+    .map(newTarget => {
+      const oldTarget = oldValue.targets.find(t => t.id === newTarget.id);
+      return { newTarget, oldTarget: oldTarget && !dequal(oldTarget, newTarget) ? oldTarget : undefined }
+    })
+    .filter(({ oldTarget }) => oldTarget)
+    .map(({ oldTarget, newTarget }) => ({ oldTarget: oldTarget!, newTarget }));
 
 export const diffAnnotations = <T extends Annotation = Annotation>(oldValue: T, newValue: T): Update<T> => {
   const bodiesCreated = getAddedBodies(oldValue, newValue);
   const bodiesDeleted = getRemovedBodies(oldValue, newValue);
   const bodiesUpdated = getChangedBodies(oldValue, newValue);
 
+  const targetsUpdated = getChangedTargets(oldValue, newValue);
+
   return {
-    oldValue, 
+    oldValue,
     newValue,
     bodiesCreated: bodiesCreated.length > 0 ? bodiesCreated : undefined,
     bodiesDeleted: bodiesDeleted.length > 0 ? bodiesDeleted : undefined,
     bodiesUpdated: bodiesUpdated.length > 0 ? bodiesUpdated : undefined,
-    targetUpdated: hasTargetChanged(oldValue, newValue) ? { oldTarget: oldValue.target, newTarget: newValue.target } : undefined
-  }
-}
+    targetsUpdated: targetsUpdated.length > 0 ? targetsUpdated : undefined
+  };
+};

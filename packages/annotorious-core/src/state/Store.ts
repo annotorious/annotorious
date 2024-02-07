@@ -334,7 +334,7 @@ export const createStore = <T extends Annotation>() => {
       return {
         oldValue: oldAnnotation,
         newValue: newAnnotation,
-        targetUpdated: { oldTarget, newTarget }
+        targetsUpdated: [{ oldTarget, newTarget }]
       };
     } else {
       console.warn(`Attempt to update target on missing annotation: ${oldTargetId.annotation}`);

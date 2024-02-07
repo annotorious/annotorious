@@ -105,7 +105,7 @@ export const shouldNotify = <T extends Annotation>(observer: StoreObserver<T>, e
         changes.updated?.some(u => has(u.bodiesCreated) || has(u.bodiesDeleted) || has(u.bodiesUpdated));
     
       const hasTargetChanges = 
-        changes.updated?.some(u => u.targetUpdated);
+        changes.updated?.some(u => has(u.targetsUpdated));
 
       if (ignore === Ignore.BODY_ONLY && hasBodyChanges && !hasTargetChanges)
         return false;
@@ -135,16 +135,16 @@ export const shouldNotify = <T extends Annotation>(observer: StoreObserver<T>, e
 
 export const mergeChanges = <T extends Annotation>(changes: ChangeSet<T>, toMerge: ChangeSet<T>) => {
   const previouslyCreatedIds = new Set((changes.created || []).map(a => a.id));
-  const previouslyUpdatedIds = new Set((changes.updated || []).map(({ newValue })=> newValue.id));
+  const previouslyUpdatedIds = new Set((changes.updated || []).map(({ newValue }) => newValue.id));
 
   const createdIds = new Set((toMerge.created || []).map(a => a.id));
   const deletedIds = new Set((toMerge.deleted || []).map(a => a.id));
   const updatedIds = new Set((toMerge.updated || []).map(({ oldValue }) => oldValue.id));
 
   // Updates that will be merged into create or previous update events
-  const mergeableUpdates = new Set((toMerge.updated || [])
+  const mergeableUpdates = new Set((toMerge.updated || [])
     .filter(({ oldValue }) => previouslyCreatedIds.has(oldValue.id) || previouslyUpdatedIds.has(oldValue.id))
-    .map(({ oldValue }) => oldValue.id ));
+    .map(({ oldValue }) => oldValue.id));
 
   // * created *
   // - drop created that were then deleted
@@ -153,7 +153,7 @@ export const mergeChanges = <T extends Annotation>(changes: ChangeSet<T>, toMerg
   const created = [
     ...(changes.created || [])
       .filter(a => !deletedIds.has(a.id))
-      .map(a => updatedIds.has(a.id) 
+      .map(a => updatedIds.has(a.id)
         ? toMerge.updated!.find(({ oldValue }) => oldValue.id === a.id)!.newValue
         : a),
     ...(toMerge.created || [])
@@ -166,9 +166,9 @@ export const mergeChanges = <T extends Annotation>(changes: ChangeSet<T>, toMerg
   const deleted = [
     ...(changes.deleted || [])
       .filter(a => !createdIds.has(a.id)),
-    ...(toMerge.deleted || []) 
+    ...(toMerge.deleted || [])
       .filter(a => !previouslyCreatedIds.has(a.id))
-  ] 
+  ];
 
   // * updated *
   // - drop updates on deleted annotations
@@ -187,7 +187,7 @@ export const mergeChanges = <T extends Annotation>(changes: ChangeSet<T>, toMerg
         }
       }),
     ...(toMerge.updated || []).filter(({ oldValue }) => !mergeableUpdates.has(oldValue.id))
-  ]
+  ];
 
   return { created, deleted, updated };
-}
+};
