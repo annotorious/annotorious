@@ -106,7 +106,7 @@ Alternatively, you can use a function that dynamically determines the `pointerSe
 
 ```tsx
 const dynamicSelectAction = (annotation: Annotation) => {
-  const isMine = annotation.target.creator.id == 'me';
+  const isMine = annotation.targets[0].creator.id == 'me';
   return isMine ? PointerSelectAction.EDIT : PointerSelectAction.SELECT;
 };
 
