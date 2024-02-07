@@ -180,7 +180,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     // In case this annotation adds stroke > 1
     fastRedraw = false; 
 
-    const { selector } = annotation.target;
+    const { selector } = annotation.targets[0];
 
     const s = typeof style == 'function' ? style(annotation) : style;
 
