@@ -1,4 +1,4 @@
-import type { AnnotationBody } from './Annotation';
+import type { AnnotationBody, AnnotationTarget } from './Annotation';
 
 export interface W3CAnnotation {
 
@@ -52,6 +52,8 @@ export interface W3CAnnotationBody {
 
 export interface W3CAnnotationTarget {
 
+  id?: string;
+
   source: string;
 
   selector?: AbstractW3CSelector;
@@ -61,7 +63,7 @@ export interface W3CAnnotationTarget {
 export interface AbstractW3CSelector { }
 
 // https://stackoverflow.com/questions/6122571/simple-non-secure-hash-function-for-javascript
-const hashCode = (obj: Object): string => {
+export const hashCode = (obj: Object): string => {
   const str = JSON.stringify(obj);
 
   let hash = 0;

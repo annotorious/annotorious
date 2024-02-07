@@ -14,9 +14,9 @@ describe('parseW3CImageAnnotation', () => {
 
     const [polygon, ellipse, rectangle] = parsed;
 
-    expect(polygon.parsed?.target.selector.type).toBe(ShapeType.POLYGON);
-    expect(ellipse.parsed?.target.selector.type).toBe(ShapeType.ELLIPSE);
-    expect(rectangle.parsed?.target.selector.type).toBe(ShapeType.RECTANGLE);
+    expect(polygon.parsed?.targets[0].selector.type).toBe(ShapeType.POLYGON);
+    expect(ellipse.parsed?.targets[0].selector.type).toBe(ShapeType.ELLIPSE);
+    expect(rectangle.parsed?.targets[0].selector.type).toBe(ShapeType.RECTANGLE);
   });
 });
 
