@@ -4,7 +4,7 @@ import { Origin, shouldNotify, type Update, type ChangeSet } from './StoreObserv
 import type { StoreObserver, StoreChangeEvent, StoreObserveOptions } from './StoreObserver';
 
 // Shorthand
-type AnnotationBodyIdentifier = { id: string, annotation: string }; 
+type AnnotationLinkedEntityIdentifier = { id: string, annotation: string };
 
 export type Store<T extends Annotation> = ReturnType<typeof createStore<T>>;
 
@@ -14,7 +14,9 @@ export const createStore = <T extends Annotation>() => {
 
   const annotationIndex = new Map<string, T>();
 
+  // Bounds the body/target id to the annotation id
   const bodyIndex = new Map<string, string>();
+  const targetIndex = new Map<string, string>();
 
   const observers: StoreObserver<T>[] = [];
 
@@ -53,6 +55,7 @@ export const createStore = <T extends Annotation>() => {
       annotationIndex.set(annotation.id, annotation);
 
       annotation.bodies.forEach(b => bodyIndex.set(b.id, annotation.id));
+      annotation.targets.forEach(t => targetIndex.set(t.id, annotation.id));
       emit(origin, { created: [annotation] });
     }
   }
@@ -129,6 +132,7 @@ export const createStore = <T extends Annotation>() => {
 
     annotationIndex.clear();
     bodyIndex.clear();
+    targetIndex.clear();
 
     emit(origin, { deleted: all });
   }
@@ -139,10 +143,12 @@ export const createStore = <T extends Annotation>() => {
       const deleted = [...annotationIndex.values()];
       annotationIndex.clear();
       bodyIndex.clear();
+      targetIndex.clear();
 
       annotations.forEach(annotation => {
         annotationIndex.set(annotation.id, annotation);
         annotation.bodies.forEach(b => bodyIndex.set(b.id, annotation.id));
+        annotation.targets.forEach(t => targetIndex.set(t.id, annotation.id));
       });
 
       emit(origin, { created: annotations, deleted });
@@ -159,6 +165,7 @@ export const createStore = <T extends Annotation>() => {
       annotations.forEach(annotation => {
         annotationIndex.set(annotation.id, annotation);
         annotation.bodies.forEach(b => bodyIndex.set(b.id, annotation.id));
+        annotation.targets.forEach(t => targetIndex.set(t.id, annotation.id));
       });
 
       emit(origin, { created: annotations });
@@ -172,6 +179,7 @@ export const createStore = <T extends Annotation>() => {
     if (existing) {
       annotationIndex.delete(id);
       existing.bodies.forEach(b => bodyIndex.delete(b.id));
+      existing.targets.forEach(t => targetIndex.delete(t.id));
       return existing;
     } else {
       console.warn(`Attempt to delete missing annotation: ${id}`);
@@ -194,7 +202,7 @@ export const createStore = <T extends Annotation>() => {
       emit(origin, { deleted });
   }
  
-  const deleteBody = (body: AnnotationBodyIdentifier, origin = Origin.LOCAL) => {
+  const deleteBody = (body: AnnotationLinkedEntityIdentifier, origin = Origin.LOCAL) => {
     const oldAnnotation = annotationIndex.get(body.annotation);
 
     if (oldAnnotation) {
@@ -243,7 +251,7 @@ export const createStore = <T extends Annotation>() => {
     }
   }
 
-  const updateOneBody = (oldBodyId: AnnotationBodyIdentifier, newBody: AnnotationBody) => {
+  const updateOneBody = (oldBodyId: AnnotationLinkedEntityIdentifier, newBody: AnnotationBody): Update<T> | undefined => {
     if (oldBodyId.annotation !== newBody.annotation)
       throw 'Annotation integrity violation: annotation ID must be the same when updating bodies';
 
@@ -269,11 +277,11 @@ export const createStore = <T extends Annotation>() => {
         bodiesUpdated: [{ oldBody, newBody }]
       }
     } else {
-      console.warn(`Attempt to add body to missing annotation ${oldBodyId.annotation}`);
+      console.warn(`Attempt to update body on missing annotation ${oldBodyId.annotation}`);
     }
   }
 
-  const updateBody = (oldBodyId: AnnotationBodyIdentifier, newBody: AnnotationBody, origin = Origin.LOCAL) => {
+  const updateBody = (oldBodyId: AnnotationLinkedEntityIdentifier, newBody: AnnotationBody, origin = Origin.LOCAL) => {
     const update = updateOneBody(oldBodyId, newBody);
     if (update)
       emit(origin, { updated: [ update ]} );
@@ -284,43 +292,66 @@ export const createStore = <T extends Annotation>() => {
       .map(b => updateOneBody({ id: b.id, annotation: b.annotation }, b)!)
       .filter(Boolean);
 
-    emit(origin, { updated });
+    if (updated.length > 0)
+      emit(origin, { updated });
   }
 
-  const updateOneTarget = (target: AnnotationTarget): Update<T> | undefined => {
-    const oldValue = annotationIndex.get(target.annotation);
-    
-    if (oldValue) {
-      const newValue = { 
-        ...oldValue, 
-        target: {
-          ...oldValue.target,
-          ...target 
-        }
-      };
-
-      annotationIndex.set(oldValue.id, newValue);
-
-      return {
-        oldValue, newValue, targetUpdated: { 
-          oldTarget: oldValue.target,
-          newTarget: target
-        }
-      };
+  const getTarget = (id: string): AnnotationTarget | undefined => {
+    const annotationId = targetIndex.get(id);
+    if (annotationId) {
+      const annotation = getAnnotation(annotationId);
+      const target = annotation!.targets.find(t => t.id === id);
+      if (target) {
+        return target;
+      } else {
+        console.error(`Store integrity error: target ${id} in index, but not in annotation`);
+      }
     } else {
-      console.warn(`Attempt to update target on missing annotation: ${target.annotation}`);
+      console.warn(`Attempt to retrieve missing target: ${id}`);
     }
   }
 
-  const updateTarget = (target: AnnotationTarget, origin = Origin.LOCAL) => {
-    const update = updateOneTarget(target);
+  const updateOneTarget = (oldTargetId: AnnotationLinkedEntityIdentifier, newTarget: AnnotationTarget): Update<T> | undefined => {
+    if (oldTargetId.annotation !== newTarget.annotation)
+      throw 'Annotation integrity violation: annotation ID must be the same when updating targets';
+
+    const oldAnnotation = annotationIndex.get(oldTargetId.annotation);
+    if (oldAnnotation) {
+      const oldTarget = oldAnnotation.targets.find(t => t.id === oldTargetId.id)!;
+
+      const newAnnotation = {
+        ...oldAnnotation,
+        targets: oldAnnotation.targets.map(t => t.id === oldTarget.id ? newTarget : t)
+      };
+
+      annotationIndex.set(oldAnnotation.id, newAnnotation);
+
+      if (oldTarget.id !== newTarget.id) {
+        targetIndex.delete(oldTarget.id);
+        targetIndex.set(newTarget.id, newAnnotation.id);
+      }
+
+      return {
+        oldValue: oldAnnotation,
+        newValue: newAnnotation,
+        targetUpdated: { oldTarget, newTarget }
+      };
+    } else {
+      console.warn(`Attempt to update target on missing annotation: ${oldTargetId.annotation}`);
+    }
+  }
+
+  const updateTarget = (oldTargetId: AnnotationLinkedEntityIdentifier, newTarget: AnnotationTarget, origin = Origin.LOCAL) => {
+    const update = updateOneTarget(oldTargetId, newTarget);
     if (update)
       emit(origin, { updated: [ update ]} );
   }
 
   const bulkUpdateTargets = (targets: AnnotationTarget[], origin = Origin.LOCAL) => {
-    const updated = 
-      targets.map(t => updateOneTarget(t)!).filter(Boolean);
+    const updated = targets
+      .map(t => updateOneTarget({ id: t.id, annotation: t.annotation }, t)!)
+      .filter(Boolean);
+
     if (updated.length > 0)
       emit(origin, { updated });
   }
@@ -338,6 +369,7 @@ export const createStore = <T extends Annotation>() => {
     updateBody,
     bulkUpdateBodies,
     deleteBody,
+    getTarget,
     updateTarget,
     bulkUpdateTargets,
     all,
