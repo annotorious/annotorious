@@ -11,7 +11,7 @@ const EXPECTED = {
       "bodies": [],
       "targets": [
         {
-          "id": "temp--203715342",
+          "id": "temp--537192084",
           "annotation": "98fe2de2-ed9a-4dc0-808d-5cebf611e4be",
           "selector": {
             "type": "RECTANGLE",
@@ -37,186 +37,192 @@ const EXPECTED = {
       ]
     }
   ],
-  "updated": [{
-    "oldValue": {
-      "@context": "http://www.w3.org/ns/anno.jsonld",
-      "id": "#a88b22d0-6106-4872-9435-c78b5e89fede",
-      "type": "Annotation",
-      "body": [
-        {
-          "type": "TextualBody",
-          "value": "It's Hallstatt in Upper Austria"
-        },
-        {
-          "type": "TextualBody",
-          "purpose": "tagging",
-          "value": "Hallstatt"
-        },
-        {
-          "type": "TextualBody",
-          "purpose": "tagging",
-          "value": "Upper Austria"
-        }
-      ],
-      "targets": [
-        {
-          "id": "temp--30253632",
-          "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
-          "selector": {
-            "type": "RECTANGLE",
-            "geometry": {
-              "x": 273,
-              "y": 171,
-              "w": 123,
-              "h": 94,
-              "bounds": {
-                "minX": 273,
-                "minY": 171,
-                "maxX": 396,
-                "maxY": 265
-              }
-            }
-          }
-        }
-      ],
-      "bodies": [
-        {
-          "id": "temp--490253676",
-          "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
-          "type": "TextualBody",
-          "value": "It's Hallstatt in Upper Austria"
-        },
-        {
-          "id": "temp--604705042",
-          "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
-          "type": "TextualBody",
-          "purpose": "tagging",
-          "value": "Hallstatt"
-        },
-        {
-          "id": "temp--1305583970",
-          "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
-          "type": "TextualBody",
-          "purpose": "tagging",
-          "value": "Upper Austria"
-        }
-      ]
-    },
-    "newValue": {
-      "@context": "http://www.w3.org/ns/anno.jsonld",
-      "id": "#a88b22d0-6106-4872-9435-c78b5e89fede",
-      "type": "Annotation",
-      "body": [
-        {
-          "type": "TextualBody",
-          "value": "It's Hallstatt in Upper Austria"
-        },
-        {
-          "type": "TextualBody",
-          "purpose": "tagging",
-          "value": "Hallstatt"
-        },
-        {
-          "type": "TextualBody",
-          "purpose": "tagging",
-          "value": "Upper Austria"
-        }
-      ],
-      "targets": [
-        {
-          "id": "temp--30253632",
-          "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
-          "selector": {
-            "type": "RECTANGLE",
-            "geometry": {
-              "x": 487.109375,
-              "y": 31.7109375,
-              "w": 123,
-              "h": 94,
-              "bounds": {
-                "minX": 487.109375,
-                "minY": 31.7109375,
-                "maxX": 610.109375,
-                "maxY": 125.7109375
-              }
-            }
+  "updated": [
+    {
+      "oldValue": {
+        "@context": "http://www.w3.org/ns/anno.jsonld",
+        "id": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+        "type": "Annotation",
+        "body": [
+          {
+            "type": "TextualBody",
+            "value": "It's Hallstatt in Upper Austria"
           },
-          "updated": "2023-12-06T14:43:32.922Z",
-          "updatedBy": {
-            "isGuest": true,
-            "id": "pSmekFNpfoQ5ZYTQ9Tx4"
+          {
+            "type": "TextualBody",
+            "purpose": "tagging",
+            "value": "Hallstatt"
+          },
+          {
+            "type": "TextualBody",
+            "purpose": "tagging",
+            "value": "Upper Austria"
           }
-        }
-      ],
-      "bodies": [
-        {
-          "id": "temp--490253676",
-          "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
-          "type": "TextualBody",
-          "value": "It's Hallstatt in Upper Austria"
-        },
-        {
-          "id": "temp--604705042",
-          "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
-          "type": "TextualBody",
-          "purpose": "tagging",
-          "value": "Hallstatt"
-        },
-        {
-          "id": "temp--1305583970",
-          "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
-          "type": "TextualBody",
-          "purpose": "tagging",
-          "value": "Upper Austria"
-        }
-      ]
-    },
-    "targetsUpdated": [{
-      "oldTarget": {
-        "id": "temp--30253632",
-        "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
-        "selector": {
-          "type": "RECTANGLE",
-          "geometry": {
-            "x": 273,
-            "y": 171,
-            "w": 123,
-            "h": 94,
-            "bounds": {
-              "minX": 273,
-              "minY": 171,
-              "maxX": 396,
-              "maxY": 265
+        ],
+        "targets": [
+          {
+            "id": "temp--537192085",
+            "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+            "selector": {
+              "type": "RECTANGLE",
+              "geometry": {
+                "x": 273,
+                "y": 171,
+                "w": 123,
+                "h": 94,
+                "bounds": {
+                  "minX": 273,
+                  "minY": 171,
+                  "maxX": 396,
+                  "maxY": 265
+                }
+              }
             }
           }
-        }
+        ],
+        "bodies": [
+          {
+            "id": "temp--490253676",
+            "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+            "type": "TextualBody",
+            "value": "It's Hallstatt in Upper Austria"
+          },
+          {
+            "id": "temp--604705042",
+            "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+            "type": "TextualBody",
+            "purpose": "tagging",
+            "value": "Hallstatt"
+          },
+          {
+            "id": "temp--1305583970",
+            "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+            "type": "TextualBody",
+            "purpose": "tagging",
+            "value": "Upper Austria"
+          }
+        ]
       },
-      "newTarget": {
-        "id": "temp--30253632",
-        "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
-        "selector": {
-          "type": "RECTANGLE",
-          "geometry": {
-            "x": 487.109375,
-            "y": 31.7109375,
-            "w": 123,
-            "h": 94,
-            "bounds": {
-              "minX": 487.109375,
-              "minY": 31.7109375,
-              "maxX": 610.109375,
-              "maxY": 125.7109375
+      "newValue": {
+        "@context": "http://www.w3.org/ns/anno.jsonld",
+        "id": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+        "type": "Annotation",
+        "body": [
+          {
+            "type": "TextualBody",
+            "value": "It's Hallstatt in Upper Austria"
+          },
+          {
+            "type": "TextualBody",
+            "purpose": "tagging",
+            "value": "Hallstatt"
+          },
+          {
+            "type": "TextualBody",
+            "purpose": "tagging",
+            "value": "Upper Austria"
+          }
+        ],
+        "targets": [
+          {
+            "id": "temp--537192085",
+            "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+            "selector": {
+              "type": "RECTANGLE",
+              "geometry": {
+                "x": 487.109375,
+                "y": 31.7109375,
+                "w": 123,
+                "h": 94,
+                "bounds": {
+                  "minX": 487.109375,
+                  "minY": 31.7109375,
+                  "maxX": 610.109375,
+                  "maxY": 125.7109375
+                }
+              }
+            },
+            "updated": "2023-12-06T14:43:32.922Z",
+            "updatedBy": {
+              "isGuest": true,
+              "id": "pSmekFNpfoQ5ZYTQ9Tx4"
             }
           }
-        },
-        "updated": "2023-12-06T14:43:32.922Z",
-        "updatedBy": {
-          "isGuest": true,
-          "id": "pSmekFNpfoQ5ZYTQ9Tx4"
-        }
+        ],
+        "bodies": [
+          {
+            "id": "temp--490253676",
+            "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+            "type": "TextualBody",
+            "value": "It's Hallstatt in Upper Austria"
+          },
+          {
+            "id": "temp--604705042",
+            "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+            "type": "TextualBody",
+            "purpose": "tagging",
+            "value": "Hallstatt"
+          },
+          {
+            "id": "temp--1305583970",
+            "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+            "type": "TextualBody",
+            "purpose": "tagging",
+            "value": "Upper Austria"
+          }
+        ]
+      },
+      "targetsUpdating": {
+        "oldTargets": [
+          {
+            "id": "temp--537192085",
+            "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+            "selector": {
+              "type": "RECTANGLE",
+              "geometry": {
+                "x": 273,
+                "y": 171,
+                "w": 123,
+                "h": 94,
+                "bounds": {
+                  "minX": 273,
+                  "minY": 171,
+                  "maxX": 396,
+                  "maxY": 265
+                }
+              }
+            }
+          }
+        ],
+        "newTargets": [
+          {
+            "id": "temp--537192085",
+            "annotation": "#a88b22d0-6106-4872-9435-c78b5e89fede",
+            "selector": {
+              "type": "RECTANGLE",
+              "geometry": {
+                "x": 487.109375,
+                "y": 31.7109375,
+                "w": 123,
+                "h": 94,
+                "bounds": {
+                  "minX": 487.109375,
+                  "minY": 31.7109375,
+                  "maxX": 610.109375,
+                  "maxY": 125.7109375
+                }
+              }
+            },
+            "updated": "2023-12-06T14:43:32.922Z",
+            "updatedBy": {
+              "isGuest": true,
+              "id": "pSmekFNpfoQ5ZYTQ9Tx4"
+            }
+          }
+        ]
       }
-    }]
-  }],
+    }
+  ],
   "deleted": []
 } as unknown as ChangeSet<Annotation>;
 
@@ -237,8 +243,7 @@ describe('mergeChanges', () => {
 
     expect(dequal(mergedUpdate.oldValue, expectedUpdate.oldValue)).toBe(true);
     expect(dequal(mergedUpdate.newValue, expectedUpdate.newValue)).toBe(true);
-    expect(dequal(mergedUpdate.targetUpdated, expectedUpdate.targetUpdated)).toBe(true);
+    expect(dequal(mergedUpdate.targetsUpdated, expectedUpdate.targetsUpdated)).toBe(true);
   });
-
 
 });
