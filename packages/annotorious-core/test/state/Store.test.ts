@@ -7,10 +7,13 @@ describe('store', () => {
 
   const annotation = {
     id,
-    target: {
-      annotation: id,
-      selector: {},
-    },
+    targets: [
+      {
+        id: 'target-1',
+        annotation: id,
+        selector: {},
+      }
+    ],
     bodies: [
       {
         id: 'body-1',
@@ -84,10 +87,13 @@ describe('store', () => {
       annotation,
       {
         id: 'annotation-2',
-        target: {
-          annotation: 'annotation-2',
-          selector: {},
-        },
+        targets: [
+          {
+            id: 'target-2',
+            annotation: 'annotation-2',
+            selector: {},
+          }
+        ],
         bodies: [],
       },
     ];
@@ -166,10 +172,13 @@ describe('store', () => {
     
     store.addAnnotation({
       id: 'annotation-2',
-      target: {
-        annotation: 'annotation-2',
-        selector: {},
-      },
+      targets: [
+        {
+          id: 'target-2',
+          annotation: 'annotation-2',
+          selector: {},
+        }
+      ],
       bodies: [],
     });
 

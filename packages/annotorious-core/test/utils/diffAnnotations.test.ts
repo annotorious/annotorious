@@ -5,13 +5,15 @@ const created = new Date();
 
 const annotation1: Annotation = {
   id: '1',
-  targets: [{
-    id: 'target-1',
-    annotation: '1',
-    selector: {},
-    creator: { id: 'user1' },
-    created
-  }],
+  targets: [
+    {
+      id: 'target-1',
+      annotation: '1',
+      selector: {},
+      creator: { id: 'user1' },
+      created
+    }
+  ],
   bodies: [
     { id: 'body-1', annotation: '1', value: 'body-1', creator: { id: 'user1' }, created },
     { id: 'body-2', annotation: '1', value: 'body-2', creator: { id: 'user2' }, created }
@@ -20,13 +22,15 @@ const annotation1: Annotation = {
 
 const annotation2: Annotation = {
   id: '1',
-  targets: [{
-    id: 'target-1',
-    annotation: '1',
-    selector: {},
-    creator: { id: 'user1' },
-    created: created
-  }],
+  targets: [
+    {
+      id: 'target-1',
+      annotation: '1',
+      selector: {},
+      creator: { id: 'user1' },
+      created: created
+    }
+  ],
   bodies: [
     { id: 'body-1', annotation: '1', value: 'body-1-changed', creator: { id: 'user1' }, created },
     { id: 'body-3', annotation: '1', value: 'body-3', creator: { id: 'user3' }, created }
