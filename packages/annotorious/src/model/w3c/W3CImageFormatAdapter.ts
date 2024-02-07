@@ -105,8 +105,8 @@ export const serializeW3CImageAnnotation = (
     creator, 
     created, 
     updated,
-    updatedBy, // Excluded from serialization
-    ...rest 
+    updatedBy,// Excluded from serialization
+    ...rest
   } = annotation.targets[0];
 
   const w3CSelector =
@@ -132,7 +132,8 @@ export const serializeW3CImageAnnotation = (
 
   // Remove core properties that should not appear in the W3C annotation
   delete serialized.bodies;
-  
+  delete serialized.targets;
+
   if ('annotation' in serialized.target)
     delete serialized.target.annotation;
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ShapeType } from '../../../src/model';
-import { parseW3CImageAnnotation, serializeW3CImageAnnotation} from '../../../src/model';
+import { parseW3CImageAnnotation, serializeW3CImageAnnotation } from '../../../src/model';
 
 import { annotations } from './fixtures';
 
