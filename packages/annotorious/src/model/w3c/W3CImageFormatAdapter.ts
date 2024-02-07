@@ -28,7 +28,7 @@ export const W3CImageFormat = (
 const parseW3CImageTargets = (
   annotation: W3CAnnotation,
   invertY = false
-)  =>{
+) => {
   const {
     id: annotationId,
     creator,

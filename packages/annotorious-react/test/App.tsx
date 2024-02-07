@@ -46,8 +46,8 @@ const OSD_OPTIONS: OpenSeadragon.Options = {
 
 const FILTERS = [ 
   { key: 'SHOW_ALL', filter: undefined },
-  { key: 'SHOW_RECTANGLES', filter: (a: ImageAnnotation) => a.target.selector.type === 'RECTANGLE' },
-  { key: 'SHOW_POLYGONS', filter: (a: ImageAnnotation) => a.target.selector.type === 'POLYGON' }
+  { key: 'SHOW_RECTANGLES', filter: (a: ImageAnnotation) => a.targets[0].selector.type === 'RECTANGLE' },
+  { key: 'SHOW_POLYGONS', filter: (a: ImageAnnotation) => a.targets[0].selector.type === 'POLYGON' }
 ];
 
 const STYLE: DrawingStyle = {

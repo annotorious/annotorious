@@ -3,7 +3,7 @@ import OpenSeadragon from 'openseadragon';
 
 const getAnnotationDomRect = (viewer: OpenSeadragon.Viewer, annotation: ImageAnnotation) => {
   // Annotation bounds (image coordinates)
-  const { minX, minY, maxX, maxY } = annotation.target.selector.geometry.bounds;
+  const { minX, minY, maxX, maxY } = annotation.targets[0].selector.geometry.bounds;
 
   // Annotation coordinates - viewer element coordinates
   const topLeft = viewer.viewport.imageToViewerElementCoordinates(new OpenSeadragon.Point(minX, minY));
