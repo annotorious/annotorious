@@ -37,7 +37,7 @@
         // Just a weird dummy select action that makes
         // Polygons editable, but rectangles read-only
         const pointerSelectAction = a => {
-          if (a.target.selector.type === 'RECTANGLE') {
+          if (a.targets[0].selector.type === 'RECTANGLE') {
             return 'NONE';
           } else {
             return 'EDIT';
@@ -48,7 +48,7 @@
           adapter: W3CImageFormat('sample-image'),
           autoSave: true,
           style: function(annotation) {
-            return annotation.target.selector.type === 'RECTANGLE' ? { fill: 'red' } : { fill: 'blue' };
+            return annotation.targets[0].selector.type === 'RECTANGLE' ? { fill: 'red' } : { fill: 'blue' };
           }
         });
 

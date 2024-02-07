@@ -76,17 +76,21 @@
   }
 
   const onSelectionCreated = <T extends Shape>(evt: CustomEvent<T>) => {
-    const id = uuidv4();
+    const annoId = uuidv4();
+    const targetId = uuidv4();
 
     const annotation: ImageAnnotation = {
-      id,
+      id: annoId,
       bodies: [],
-      target: {
-        annotation: id,
-        selector: evt.detail,
-        creator: user,
-        created: new Date()
-      }
+      targets: [
+        {
+          id: targetId,
+          annotation: annoId,
+          selector: evt.detail,
+          creator: user,
+          created: new Date()
+        }
+      ]
     };
 
     store.addAnnotation(annotation);
@@ -94,8 +98,8 @@
     selection.setSelected(annotation.id);
   }
 
-  const onChangeSelected = (annotation: ImageAnnotation) => (event: CustomEvent<Shape>) => {  
-    const { target } = annotation;
+  const onChangeSelected = (annotation: ImageAnnotation) => (event: CustomEvent<Shape>) => {
+    const target = annotation.targets[0];
 
     // We don't consider a shape edit an 'update' if it happens within 10mins
     const GRACE_PERIOD = 10 * 60 * 1000;
@@ -105,13 +109,16 @@
       !target.created ||
       new Date().getTime() - target.created.getTime() > GRACE_PERIOD;
 
-    store.updateTarget({
-      ...target,
-      selector: event.detail,
-      created: isUpdate ? target.created : new Date(),
-      updated: isUpdate ? new Date() : undefined,
-      updatedBy: isUpdate ? user : undefined
-    });
+    store.updateTarget(
+      { id: target.id, annotation: target.annotation },
+      {
+        ...target,
+        selector: event.detail,
+        created: isUpdate ? target.created : new Date(),
+        updated: isUpdate ? new Date() : undefined,
+        updatedBy: isUpdate ? user : undefined
+      }
+    );
   }
 
   // To get around lack of TypeScript support in Svelte markup
@@ -128,7 +135,7 @@
   <g>
     {#each $store as annotation}
       {#if !isEditable(annotation)}
-        {@const selector = annotation.target.selector}
+        {@const selector = annotation.targets[0].selector}
         {#key annotation.id}
           {#if (selector.type === ShapeType.ELLIPSE)}
             <Ellipse annotation={annotation} geom={selector.geometry} style={style} />
@@ -151,7 +158,7 @@
           {#key editable.id}
             <EditorMount
               target={drawingEl}
-              editor={getEditor(editable.target.selector)}
+              editor={getEditor(editable.targets[0].selector)}
               annotation={editable}
               style={style}
               transform={transform}
