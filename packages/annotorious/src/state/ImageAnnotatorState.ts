@@ -44,12 +44,12 @@ export const createImageAnnotatorState = <E extends unknown>(
   const viewport = createViewportState();
 
   store.observe(({ changes }) => {
-    tree.set((changes.created || []).map(a => a.target as ImageAnnotationTarget), false);
+    tree.set((changes.created || []).map(a => a.targets[0] as ImageAnnotationTarget), false);
     
-    (changes.deleted || []).forEach(a => tree.remove(a.target as ImageAnnotationTarget));
+    (changes.deleted || []).forEach(a => tree.remove(a.targets[0] as ImageAnnotationTarget));
     
     (changes.updated || []).forEach(({ oldValue, newValue }) =>
-      tree.update(oldValue.target, newValue.target));
+      tree.update(oldValue.targets[0], newValue.targets[0]));
   });
 
   const getAt = (x: number, y: number): ImageAnnotation | undefined => {
@@ -85,4 +85,3 @@ export const createSvelteImageAnnotatorState = <E extends unknown>(
   }
 
 }
-  
