@@ -4,8 +4,7 @@ import type { Annotation } from '../../src/model';
 
 const testAnnotation: Annotation = {
   id: 'test-id-1',
-  // @ts-ignore
-  target: undefined,
+  targets: [],
   bodies: [],
 };
 
