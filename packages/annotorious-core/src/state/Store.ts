@@ -14,7 +14,7 @@ export const createStore = <T extends Annotation>() => {
 
   const annotationIndex = new Map<string, T>();
 
-  // Bounds the body/target id to the annotation id
+  // Binds the body/target id to the annotation id
   const bodyIndex = new Map<string, string>();
   const targetIndex = new Map<string, string>();
 
