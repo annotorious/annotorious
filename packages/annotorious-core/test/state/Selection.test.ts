@@ -4,22 +4,19 @@ import type { Annotation } from '../../src/model';
 
 const testAnnotation1: Annotation = {
   id: 'test-id-1',
-  // @ts-ignore
-  target: null,
+  targets: [],
   bodies: [],
 };
 
 const testAnnotation2: Annotation = {
   id: 'test-id-2',
-  // @ts-ignore
-  target: null,
+  targets: [],
   bodies: [],
 }
 
 const testAnnotation3: Annotation = {
   id: 'test-id-3',
-  // @ts-ignore
-  target: null,
+  targets: [],
   bodies: [],
 };
 
