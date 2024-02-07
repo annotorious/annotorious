@@ -33,8 +33,8 @@
 
       var filters = {
         'SHOW_ALL': undefined,
-        'SHOW_RECTANGLES': a => a.target.selector.type === 'RECTANGLE',
-        'SHOW_POLYGONS': a => a.target.selector.type === 'POLYGON'
+        'SHOW_RECTANGLES': a => a.targets[0].selector.type === 'RECTANGLE',
+        'SHOW_POLYGONS': a => a.targets[0].selector.type === 'POLYGON'
       };
 
       window.onload = function() {

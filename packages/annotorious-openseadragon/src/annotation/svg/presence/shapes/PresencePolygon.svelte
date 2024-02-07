@@ -9,7 +9,7 @@
 
   export let scale: number;
 
-  $: geom = annotation.target.selector.geometry as PolygonGeometry;
+  $: geom = annotation.targets[0].selector.geometry as PolygonGeometry;
 
   $: origin = getHighestPoint(geom);
 

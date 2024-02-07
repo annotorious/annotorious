@@ -88,12 +88,12 @@
       <g transform={transform}>
         {#if trackedAnnotations.length > 0}
           {#each trackedAnnotations as tracked}
-            {#if (tracked.annotation.target.selector.type === ShapeType.RECTANGLE)}
+            {#if (tracked.annotation.targets[0].selector.type === ShapeType.RECTANGLE)}
               <SVGPresenceRectangle
                 annotation={tracked.annotation} 
                 user={tracked.selectedBy}
                 scale={scale} />
-            {:else if (tracked.annotation.target.selector.type === ShapeType.POLYGON)}
+            {:else if (tracked.annotation.targets[0].selector.type === ShapeType.POLYGON)}
               <SVGPresencePolygon
                 annotation={tracked.annotation} 
                 user={tracked.selectedBy}

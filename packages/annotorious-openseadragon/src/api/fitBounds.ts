@@ -34,7 +34,7 @@ const _fitBounds = (
   pb = pb / containerBounds.height;
   pl = pl / containerBounds.width;
 
-  const { minX, minY, maxX, maxY } = annotation.target.selector.geometry.bounds;
+  const { minX, minY, maxX, maxY } = annotation.targets[0].selector.geometry.bounds;
 
   const w = maxX - minX;
   const h = maxY - minY;

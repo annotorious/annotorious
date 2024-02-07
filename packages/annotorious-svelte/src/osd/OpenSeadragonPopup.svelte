@@ -55,7 +55,7 @@
     const selectedId = selection.selected[0].id;
     const annotation = store.getAnnotation(selectedId);
 
-    const { minX, minY, maxX, maxY } = annotation.target.selector.geometry.bounds;
+    const { minX, minY, maxX, maxY } = annotation.targets[0].selector.geometry.bounds;
 
     const PADDING = 14;
 

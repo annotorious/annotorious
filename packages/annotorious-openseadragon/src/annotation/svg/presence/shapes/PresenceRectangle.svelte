@@ -9,7 +9,7 @@
 
   export let scale: number;
 
-  $: geom = annotation.target.selector.geometry as RectangleGeometry;
+  $: geom = annotation.targets[0].selector.geometry as RectangleGeometry;
 </script>
 
 <g class="a9s-presence-overlay">
