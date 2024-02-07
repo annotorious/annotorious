@@ -3,7 +3,8 @@ import type { Shape } from './Shape';
 
 export interface ImageAnnotation extends Annotation {
 
-  target: ImageAnnotationTarget;
+  // ImageAnnotation handles only a single target
+  targets: ImageAnnotationTarget[];
 
 }
 
