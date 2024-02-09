@@ -79,6 +79,9 @@ export const createStore = <T extends Annotation>() => {
       oldValue.bodies.forEach(b => bodyIndex.delete(b.id));
       updated.bodies.forEach(b => bodyIndex.set(b.id, updated.id));
 
+      oldValue.targets.forEach(t => targetIndex.delete(t.id));
+      updated.targets.forEach(t => targetIndex.set(t.id, updated.id));
+
       return update;
     } else {
       console.warn(`Cannot update annotation ${oldId} - does not exist`);
