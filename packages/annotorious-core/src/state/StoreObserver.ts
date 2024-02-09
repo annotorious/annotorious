@@ -43,7 +43,11 @@ export interface Update<T extends Annotation> {
 
   bodiesUpdated?: Array<{ oldBody: AnnotationBody, newBody: AnnotationBody }>;
 
-  targetsUpdated?: Array<{ oldTarget: AnnotationTarget, newTarget: AnnotationTarget}>;
+  targetsCreated?: AnnotationTarget[];
+
+  targetsDeleted?: AnnotationBody[];
+
+  targetsUpdated?: Array<{ oldTarget: AnnotationTarget, newTarget: AnnotationTarget }>;
 
 }
 

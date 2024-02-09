@@ -4,7 +4,7 @@ import { Origin, shouldNotify, type Update, type ChangeSet } from './StoreObserv
 import type { StoreObserver, StoreChangeEvent, StoreObserveOptions } from './StoreObserver';
 
 // Shorthand
-type AnnotationLinkedEntityIdentifier = { id: string, annotation: string };
+export type AnnotationLinkedEntityIdentifier = { id: string, annotation: string };
 
 export type Store<T extends Annotation> = ReturnType<typeof createStore<T>>;
 
@@ -311,6 +311,28 @@ export const createStore = <T extends Annotation>() => {
     }
   }
 
+  const addTarget = (target: AnnotationTarget, origin = Origin.LOCAL) => {
+    const oldValue = annotationIndex.get(target.annotation);
+    if (oldValue) {
+      const newValue = {
+        ...oldValue,
+        targets: [ ...oldValue.targets, target ]
+      };
+
+      annotationIndex.set(oldValue.id, newValue);
+
+      targetIndex.set(target.id, newValue.id);
+
+      const update: Update<T> = {
+        oldValue, newValue, targetsCreated: [ target ]
+      };
+
+      emit(origin, { updated: [update] });
+    } else {
+      console.warn(`Attempt to add target to missing annotation: ${target.annotation}`);
+    }
+  }
+
   const updateOneTarget = (oldTargetId: AnnotationLinkedEntityIdentifier, newTarget: AnnotationTarget): Update<T> | undefined => {
     if (oldTargetId.annotation !== newTarget.annotation)
       throw 'Annotation integrity violation: annotation ID must be the same when updating targets';
@@ -356,6 +378,35 @@ export const createStore = <T extends Annotation>() => {
       emit(origin, { updated });
   }
 
+  const deleteTarget = (target: AnnotationLinkedEntityIdentifier, origin = Origin.LOCAL) => {
+    const oldAnnotation = annotationIndex.get(target.annotation);
+
+    if (oldAnnotation) {
+      const oldTarget = oldAnnotation.targets.find(t => t.id === target.id);
+
+      if (oldTarget) {
+        targetIndex.delete(oldTarget.id);
+
+        const newAnnotation = {
+          ...oldAnnotation,
+          targets: oldAnnotation.targets.filter(t => t.id !== target.id)
+        };
+
+        annotationIndex.set(oldAnnotation.id, newAnnotation);
+
+        const update: Update<T> = {
+          oldValue: oldAnnotation, newValue: newAnnotation, targetsDeleted: [oldTarget]
+        };
+
+        emit(origin, { updated: [update] });
+      } else {
+        console.warn(`Attempt to delete missing target ${target.id} from annotation ${target.annotation}`);
+      }
+    } else {
+      console.warn(`Attempt to delete target from missing annotation ${target.annotation}`);
+    }
+  }
+
 	return {
     getAnnotation,
     addAnnotation,
@@ -370,8 +421,10 @@ export const createStore = <T extends Annotation>() => {
     bulkUpdateBodies,
     deleteBody,
     getTarget,
+    addTarget,
     updateTarget,
     bulkUpdateTargets,
+    deleteTarget,
     all,
     clear,
     observe,
