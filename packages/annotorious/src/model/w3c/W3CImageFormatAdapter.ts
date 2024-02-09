@@ -48,16 +48,14 @@ const parseW3CImageTargets = (
       w3cSelector?.type === 'SvgSelector' ?
         parseSVGSelector(w3cSelector as SVGSelector) : undefined;
 
-  const { id, ...rest } = w3cTarget;
-
   return selector ? {
     parsed: [
       {
-        ...rest,
-        id: id || `temp-${hashCode(w3cTarget)}`,
+        ...w3cTarget,
+        id: w3cTarget.id || `temp-${hashCode(w3cTarget)}`,
         annotation: annotationId,
-        created: created ? new Date(created) : undefined,
         creator: parseW3CUser(creator),
+        created: created ? new Date(created) : undefined,
         updated: modified ? new Date(modified) : undefined,
         selector,
       }
