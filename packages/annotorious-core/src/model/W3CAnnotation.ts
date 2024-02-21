@@ -52,6 +52,8 @@ export interface W3CAnnotationBody {
 
 export interface W3CAnnotationTarget {
 
+  id?: string;
+
   source: string;
 
   selector?: AbstractW3CSelector;
