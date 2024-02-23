@@ -1,4 +1,4 @@
-import type { Annotation, AnnotationBody, AnnotationTarget } from '../model';
+import type { Annotation } from '../model';
 import { diffAnnotations } from '../utils';
 import { Origin, shouldNotify, type Update, type ChangeSet } from './StoreObserver';
 import type { StoreObserver, StoreChangeEvent, StoreObserveOptions } from './StoreObserver';
@@ -100,7 +100,7 @@ export const createStore = <T extends Annotation>() => {
       emit(origin, { updated });
   }
 
-  const addBody = (body: AnnotationBody, origin = Origin.LOCAL) => {
+  const addBody = (body: T['bodies'][number], origin = Origin.LOCAL) => {
     const oldValue = annotationIndex.get(body.annotation);
     if (oldValue) {
       const newValue = { 
@@ -228,7 +228,7 @@ export const createStore = <T extends Annotation>() => {
     return a ? {...a} : undefined;
   }
 
-  const getBody = (id: string): AnnotationBody | undefined => {
+  const getBody = (id: string): T['bodies'][number] | undefined => {
     const annotationId = bodyIndex.get(id);
     if (annotationId) {
       const annotation = getAnnotation(annotationId);
@@ -243,7 +243,7 @@ export const createStore = <T extends Annotation>() => {
     }
   }
 
-  const updateOneBody = (oldBodyId: AnnotationBodyIdentifier, newBody: AnnotationBody) => {
+  const updateOneBody = (oldBodyId: AnnotationBodyIdentifier, newBody: T['bodies'][number]) => {
     if (oldBodyId.annotation !== newBody.annotation)
       throw 'Annotation integrity violation: annotation ID must be the same when updating bodies';
 
@@ -273,13 +273,13 @@ export const createStore = <T extends Annotation>() => {
     }
   }
 
-  const updateBody = (oldBodyId: AnnotationBodyIdentifier, newBody: AnnotationBody, origin = Origin.LOCAL) => {
+  const updateBody = (oldBodyId: AnnotationBodyIdentifier, newBody: T['bodies'][number], origin = Origin.LOCAL) => {
     const update = updateOneBody(oldBodyId, newBody);
     if (update)
       emit(origin, { updated: [ update ]} );
   }
 
-  const bulkUpdateBodies = (bodies: AnnotationBody[], origin = Origin.LOCAL) => {
+  const bulkUpdateBodies = (bodies: Array<T['bodies'][number]>, origin = Origin.LOCAL) => {
     const updated = bodies
       .map(b => updateOneBody({ id: b.id, annotation: b.annotation }, b)!)
       .filter(Boolean);
@@ -287,7 +287,7 @@ export const createStore = <T extends Annotation>() => {
     emit(origin, { updated });
   }
 
-  const updateOneTarget = (target: AnnotationTarget): Update<T> | undefined => {
+  const updateOneTarget = (target: T['target']): Update<T> | undefined => {
     const oldValue = annotationIndex.get(target.annotation);
     
     if (oldValue) {
@@ -312,13 +312,13 @@ export const createStore = <T extends Annotation>() => {
     }
   }
 
-  const updateTarget = (target: AnnotationTarget, origin = Origin.LOCAL) => {
+  const updateTarget = (target: T['target'], origin = Origin.LOCAL) => {
     const update = updateOneTarget(target);
     if (update)
       emit(origin, { updated: [ update ]} );
   }
 
-  const bulkUpdateTargets = (targets: AnnotationTarget[], origin = Origin.LOCAL) => {
+  const bulkUpdateTargets = (targets: Array<T['target']>, origin = Origin.LOCAL) => {
     const updated = 
       targets.map(t => updateOneTarget(t)!).filter(Boolean);
     if (updated.length > 0)
