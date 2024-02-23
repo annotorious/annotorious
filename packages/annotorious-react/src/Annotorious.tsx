@@ -113,7 +113,7 @@ export const useAnnotator = <T extends Annotator<any, unknown>>() => {
   return anno as T;
 }
 
-export const useAnnotationStore = <T extends Store<Annotation>>() => {
+export const useAnnotationStore = <T extends unknown = Store<Annotation>>() => {
   const { anno } = useContext(AnnotoriousContext);
   return anno?.state.store as T | undefined;
 }
