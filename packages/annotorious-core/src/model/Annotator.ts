@@ -8,9 +8,9 @@ import type { DrawingStyle } from './DrawingStyle';
 import type { Filter } from './Filter';
 
 /**
- * Base annotator interface.
- * I ... internal core data model 
- * E ... external adapted representation
+ * Base annotator interface
+ * @template I - internal core data model
+ * @template E - external adapted representation
  */
 export interface Annotator<I extends Annotation = Annotation, E extends unknown = Annotation> {
 
