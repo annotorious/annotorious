@@ -123,13 +123,13 @@ const _useAnnotations = <T extends Annotation>() => {
   return annotations as T[];
 }
 
-const _useAnnotationsDebouced = <T extends Annotation>(debounce: number) => {
+const _useAnnotationsDebounced = <T extends Annotation>(debounce: number) => {
   const { annotations } = useContext(AnnotoriousContext);
   return useDebounce(annotations, debounce) as T[];
 }
 
 export const useAnnotations = <T extends Annotation>(debounce?: number) =>
-  debounce ? _useAnnotationsDebouced<T>(debounce) : _useAnnotations<T>();
+  debounce ? _useAnnotationsDebounced<T>(debounce) : _useAnnotations<T>();
 
 export const useSelection = <T extends Annotation>() => {
   const { selection } = useContext(AnnotoriousContext);
