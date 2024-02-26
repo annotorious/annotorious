@@ -2,12 +2,12 @@ import { useEffect } from 'react';
 import { Annotator } from '@annotorious/annotorious';
 import { useAnnotator } from './Annotorious';
 
-export type AnnotoriousPlugin<T extends unknown = Annotator<any, unknown>> =
+export type AnnotatorPlugin<T extends unknown = Annotator<any, unknown>> =
   (anno: T, opts?: Object) => ({ unmount?: () => void }) | void;
 
 export interface AnnotoriousPluginProps<T extends unknown = Annotator<any, unknown>> {
 
-  plugin: AnnotoriousPlugin<T>;
+  plugin: AnnotatorPlugin<T>;
 
   opts?: Object;
 
