@@ -2,18 +2,18 @@ import { useEffect } from 'react';
 import { Annotator } from '@annotorious/annotorious';
 import { useAnnotator } from './Annotorious';
 
-export type Plugin<T extends unknown = Annotator<any, unknown>> =
+export type AnnotoriousPlugin<T extends unknown = Annotator<any, unknown>> =
   (anno: T, opts?: Object) => ({ unmount?: () => void }) | void;
 
-export interface AnnotatorPluginProps<T extends unknown = Annotator<any, unknown>> {
+export interface AnnotoriousPluginProps<T extends unknown = Annotator<any, unknown>> {
 
-  plugin: Plugin<T>;
+  plugin: AnnotoriousPlugin<T>;
 
   opts?: Object;
 
 }
 
-export const AnnotatorPlugin = <T extends unknown = Annotator<any, unknown>>(props: AnnotatorPluginProps<T>) => {
+export const AnnotoriousPlugin = <T extends unknown = Annotator<any, unknown>>(props: AnnotoriousPluginProps<T>) => {
   const { plugin, opts } = props;
 
   const anno = useAnnotator<T>();

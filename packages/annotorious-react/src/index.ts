@@ -1,5 +1,5 @@
 export * from './Annotorious';
-export * from './AnnotatorPlugin';
+export * from './AnnotoriousPlugin';
 export * from './AnnotoriousPopup';
 export * from './ImageAnnotator';
 
