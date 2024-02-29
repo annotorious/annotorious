@@ -34,7 +34,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   getUser(): User;
 
-  loadAnnotations(url: string): Promise<E[]>;
+  loadAnnotations(url: string, replace?: boolean): Promise<E[]>;
 
   redo(): void;
 
@@ -120,11 +120,11 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       : selected as unknown as E[];
   }
 
-  const loadAnnotations = (url: string) =>
+  const loadAnnotations = (url: string, replace = true) =>
     fetch(url)
       .then((response) => response.json())
       .then((annotations) => {
-        setAnnotations(annotations);
+        setAnnotations(annotations, replace);
         return annotations;
       });
 
