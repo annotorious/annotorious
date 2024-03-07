@@ -24,7 +24,7 @@ export const AnnotoriousPlugin = <I extends Annotation = Annotation, E extends u
           p.unmount();
       }
     }
-  }, [anno]);
+  }, [anno, plugin]);
 
   return null;
 
