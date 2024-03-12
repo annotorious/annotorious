@@ -56,8 +56,7 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
 
       // Keeps annotations in sync with a React state,
       // so clients can render components the usual React way.
-      const onStoreChange = (event: StoreChangeEvent<Annotation>) =>
-        setAnnotations(() => store.all());
+      const onStoreChange = () => setAnnotations(() => store.all());
 
       store.observe(onStoreChange);
 
