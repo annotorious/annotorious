@@ -39,14 +39,12 @@
     "react-dom": "16.8.0 || >=17.x || >=18.x"
   },
   "peerDependenciesMeta": {
-    "@annotorious/openseadragon": {
-      "optional": true
-    },
     "openseadragon": {
       "optional": true
     }
   },
   "dependencies": {
+    "@annotorious/openseadragon": "*",
     "@neodrag/react": "^2.0.3"
   },
   "sideEffects": false
