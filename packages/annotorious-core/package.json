@@ -25,6 +25,7 @@
     "dist"
   ],
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.0.2",
     "@tsconfig/svelte": "^5.0.2",
     "@types/deep-equal": "^1.0.4",
     "@types/uuid": "^9.0.7",
