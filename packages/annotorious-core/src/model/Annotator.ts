@@ -34,13 +34,13 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   getUser(): User;
 
-  loadAnnotations(url: string): Promise<E[]>;
+  loadAnnotations(url: string, replace?: boolean): Promise<E[]>;
 
   redo(): void;
 
   removeAnnotation(arg: E | string): E | undefined;
 
-  setAnnotations(annotations: E[]): void;
+  setAnnotations(annotations: E[], replace?: boolean): void;
 
   setFilter(filter: Filter | undefined): void;
 
@@ -120,11 +120,11 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       : selected as unknown as E[];
   }
 
-  const loadAnnotations = (url: string) =>
+  const loadAnnotations = (url: string, replace = true) =>
     fetch(url)
       .then((response) => response.json())
       .then((annotations) => {
-        setAnnotations(annotations);
+        setAnnotations(annotations, replace);
         return annotations;
       });
 
@@ -145,16 +145,16 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
-  const setAnnotations = (annotations: E[]) => {
+  const setAnnotations = (annotations: E[], replace = true) => {
     if (adapter) {
       const { parsed, failed } = parseAll(adapter)(annotations);
 
       if (failed.length > 0)
         console.warn(`Discarded ${failed.length} invalid annotations`, failed);
 
-      store.bulkAddAnnotation(parsed, true, Origin.REMOTE);
+      store.bulkAddAnnotation(parsed, replace, Origin.REMOTE);
     } else {
-      store.bulkAddAnnotation(annotations as unknown as I[], true, Origin.REMOTE);
+      store.bulkAddAnnotation(annotations as unknown as I[], replace, Origin.REMOTE);
     }
   }
 
