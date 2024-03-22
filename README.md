@@ -58,7 +58,7 @@ anno.on('createAnnotation', function(annotation) {
 </html>
 ```
 
-## Using with OpenSeadragon
+## Using with OpenSeadragon 
 
 Annotorious provides seamless integration with the [OpenSeadragon](https://openseadragon.github.io/)
 viewer for zoomable images and IIIF. 
