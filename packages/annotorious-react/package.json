@@ -24,13 +24,13 @@
     "./annotorious-react.css": "./dist/annotorious-react.css"
   },
   "devDependencies": {
-    "@types/react": "^18.2.48",
-    "@types/react-dom": "^18.2.18",
+    "@types/react": "^18.2.67",
+    "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.12",
-    "vite-plugin-dts": "^3.7.2",
-    "vite-tsconfig-paths": "^4.3.1"
+    "typescript": "^5.4.3",
+    "vite": "^5.2.2",
+    "vite-plugin-dts": "^3.7.3",
+    "vite-tsconfig-paths": "^4.3.2"
   },
   "peerDependencies": {
     "openseadragon": "^3.0.0 || ^4.0.0",
