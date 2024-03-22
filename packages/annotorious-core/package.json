@@ -39,7 +39,7 @@
   "dependencies": {
     "dequal": "^2.0.3",
     "nanoevents": "^9.0.0",
-    "nanoid": "^5.0.4",
+    "nanoid": "^5.0.6",
     "uuid": "^9.0.1"
   }
 }
