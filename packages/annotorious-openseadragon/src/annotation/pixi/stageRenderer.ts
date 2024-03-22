@@ -27,12 +27,12 @@ interface AnnotationShape {
 
 const getGraphicsStyle = (style?: DrawingStyle) => {
   const fillStyle = {
-    tint: style?.fill ? PIXI.utils.string2hex(style.fill) : DEFAULT_FILL,
+    tint: style?.fill ? new PIXI.Color(style.fill).toNumber() : DEFAULT_FILL,
     alpha: style?.fillOpacity === undefined ? DEFAULT_ALPHA : Math.min(style.fillOpacity, 1)
   };
 
   const strokeStyle = {
-    tint: style?.stroke && PIXI.utils.string2hex(style.stroke),
+    tint: style?.stroke && new PIXI.Color(style.stroke).toNumber(),
     alpha: style?.strokeOpacity === undefined ? (style?.stroke ? 1 : 0) : Math.min(style.strokeOpacity, 1),
     lineWidth: style?.stroke ? style?.strokeWidth || 1 : 0
   }
@@ -89,7 +89,7 @@ const redrawStage = (
   viewer: OpenSeadragon.Viewer, 
   graphics: PIXI.Graphics,
   shapes: Map<String, AnnotationShape>,
-  renderer: PIXI.AbstractRenderer
+  renderer: PIXI.IRenderer<PIXI.ICanvas>
 ) => () => {
   const viewportBounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds(true));
   const scale = getCurrentScale(viewer);

@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/svelte",
-  "version": "3.0.0-rc.19",
+  "version": "3.0.0-rc.20",
   "description": "Annotorious Svelte bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -22,7 +22,7 @@
     "svelte-check": "^3.6.8",
     "svelte-preprocess": "^5.1.3",
     "tslib": "^2.6.2",
-    "typescript": "^5.4.3",
+    "typescript": "^5.3.3",
     "vite": "^5.2.2",
     "vite-plugin-dts": "^3.7.3"
   },
