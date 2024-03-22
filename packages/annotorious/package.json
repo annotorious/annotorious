@@ -35,9 +35,6 @@
     "./annotorious.css": "./dist/annotorious.css",
     "./src": "./src/index.ts"
   },
-  "peerDependencies": {
-    "@annotorious/core": "*"
-  },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
     "@tsconfig/svelte": "^5.0.2",

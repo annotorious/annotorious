@@ -39,7 +39,6 @@
     "vite-tsconfig-paths": "^4.3.1"
   },
   "peerDependencies": {
-    "@annotorious/react": "*",
     "openseadragon": "^3.0.0 || ^4.0.0",
     "react": "16.8.0 || >=17.x || >=18.x",
     "react-dom": "16.8.0 || >=17.x || >=18.x"
