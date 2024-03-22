@@ -193,9 +193,9 @@ export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
   }, { origin: Origin.REMOTE });
 
   const onUndoOrRedo = (undo: boolean) => (changes: ChangeSet<I>) => {
-    const { created, deleted, updated } = changes;
-    (created || []).forEach(a => emit('createAnnotation', a));
-    (deleted || []).forEach(a => emit('deleteAnnotation', a));
+    // Undo/redo of created/delete will cause lifecycle events automatically,
+    // but we need to handle udpates specifically!
+    const { updated } = changes;
 
     if (undo)
       (updated || []).forEach(t => emit('updateAnnotation', t.oldValue, t.newValue));

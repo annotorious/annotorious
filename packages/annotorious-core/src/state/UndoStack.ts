@@ -72,7 +72,7 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
 
   store.observe(onChange, { origin: Origin.LOCAL });
 
-  const undoCreated = (created?: T[]) => 
+  const undoCreated = (created?: T[]) =>
     created && created.length > 0 && store.bulkDeleteAnnotation(created);
 
   const redoCreated = (created?: T[]) =>

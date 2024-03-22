@@ -23,6 +23,8 @@
       <div class="buttons" style="position:absolute; top: 10px; right: 10px; z-index: 1;">
         <button id="filter">Toggle Filter</button>
         <button id="move-or-draw">Move</button>
+        <button id="undo">Undo</button>
+        <button id="redo">Redo</button>
       </div>
     </div>
 
@@ -75,6 +77,7 @@
         });
 
         var anno = createOSDAnnotator(viewer, {
+          autoSave: true,
           adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c'),
           drawingEnabled: false,
           style: {
@@ -115,6 +118,14 @@
 
           anno.setFilter(filters[filter]);
           // console.log('Changed filter: ' + filter);
+        });
+
+        document.getElementById('undo').addEventListener('click', function() {
+          anno.undo();
+        });
+
+        document.getElementById('redo').addEventListener('click', function() {
+          anno.redo();
         });
 
         anno.on('clickAnnotation', a => console.log('clicked', a));
