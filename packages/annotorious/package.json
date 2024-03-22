@@ -48,7 +48,7 @@
     "vitest": "^1.4.0"
   },
   "dependencies": {
-    "@annotorious/core": "*",
+    "@annotorious/core": "3.0.0-rc.19",
     "rbush": "^3.0.1",
     "uuid": "^9.0.1"
   }
