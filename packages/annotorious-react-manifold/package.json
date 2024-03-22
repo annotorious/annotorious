@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/react-manifold",
-  "version": "3.0.0-rc.20",
+  "version": "3.0.0-rc.21",
   "description": "A utility to manage multiple parallel Annotorious instances more efficiently",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
