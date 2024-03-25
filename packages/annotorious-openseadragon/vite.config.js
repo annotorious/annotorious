@@ -25,7 +25,8 @@ export default defineConfig({
     rollupOptions: {
       external: [
         ...Object.keys(packageJson.peerDependencies),
-        /@annotorious\/(core|annotorious)/
+        '@annotorious/core',
+        '@annotorious/annotorious'
       ],
       output: {
         assetFileNames: 'annotorious-openseadragon.[ext]',
