@@ -8,11 +8,7 @@ import * as packageJson from './package.json';
 export default defineConfig({
   plugins: [
     svelte({ preprocess: sveltePreprocess() }),
-    dts({
-      insertTypesEntry: true,
-      include: ['./src/'],
-      entryRoot: './src'
-    })
+    dts({ insertTypesEntry: true, include: ['./src/'], entryRoot: './src' })
   ],
   server: {
     open: '/test/index.html'
@@ -28,7 +24,8 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [
-        ...Object.keys(packageJson.peerDependencies)
+        ...Object.keys(packageJson.peerDependencies),
+        /@annotorious\/(core|annotorious)/
       ],
       output: {
         assetFileNames: 'annotorious-openseadragon.[ext]',
