@@ -24,11 +24,11 @@
     "./annotorious-react.css": "./dist/annotorious-react.css"
   },
   "devDependencies": {
-    "@types/react": "^18.2.67",
+    "@types/react": "^18.2.70",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
     "typescript": "^5.3.3",
-    "vite": "^5.2.2",
+    "vite": "^5.2.6",
     "vite-plugin-dts": "^3.7.3",
     "vite-tsconfig-paths": "^4.3.2"
   },
@@ -43,9 +43,9 @@
     }
   },
   "dependencies": {
-    "@annotorious/core": "^3.0.0-rc.20",
-    "@annotorious/annotorious": "^3.0.0-rc.20",
-    "@annotorious/openseadragon": "^3.0.0-rc.20",
+    "@annotorious/core": "^3.0.0-rc.21",
+    "@annotorious/annotorious": "^3.0.0-rc.21",
+    "@annotorious/openseadragon": "^3.0.0-rc.21",
     "@neodrag/react": "^2.0.3"
   },
   "sideEffects": false

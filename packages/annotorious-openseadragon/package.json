@@ -49,8 +49,8 @@
     "openseadragon": "^3.0.0 || ^4.0.0"
   },
   "dependencies": {
-    "@annotorious/core": "^3.0.0-rc.20",
-    "@annotorious/annotorious": "^3.0.0-rc.20",
+    "@annotorious/core": "^3.0.0-rc.21",
+    "@annotorious/annotorious": "^3.0.0-rc.21",
     "pixi.js": "^7.4.2",
     "uuid": "^9.0.1"
   }
