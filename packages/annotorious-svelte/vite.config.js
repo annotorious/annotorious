@@ -30,11 +30,7 @@ export default defineConfig({
       ],
       output: {
         preserveModules: true,
-        assetFileNames: 'annotorious-svelte.[ext]',
-        globals: {
-          '@annotorious/annotorious': 'Annotorious',
-          openseadragon: 'OpenSeadragon'
-        }
+        assetFileNames: 'annotorious-svelte.[ext]'
       }
     },
     sourcemap: true

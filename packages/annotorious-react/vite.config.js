@@ -30,12 +30,7 @@ export default defineConfig({
       ],
       output: {
         preserveModules: true,
-        assetFileNames: 'annotorious-react.[ext]',
-        globals: {
-          react: 'React',
-          '@annotorious/annotorious': 'Annotorious',
-          openseadragon: 'OpenSeadragon'
-        }
+        assetFileNames: 'annotorious-react.[ext]'
       }
     },
     sourcemap: true
