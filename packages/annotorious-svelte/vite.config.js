@@ -24,11 +24,15 @@ export default defineConfig({
       fileName: (format) => `annotorious-svelte.${format}.js`
     },
     rollupOptions: {
-      external: [...Object.keys(packageJson.peerDependencies)],
+      external: [
+        ...Object.keys(packageJson.peerDependencies),
+        /@annotorious\/(core|annotorious|openseadragon)/
+      ],
       output: {
         preserveModules: true,
         assetFileNames: 'annotorious-svelte.[ext]',
         globals: {
+          '@annotorious/annotorious': 'Annotorious',
           openseadragon: 'OpenSeadragon'
         }
       }
