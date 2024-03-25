@@ -25,13 +25,15 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [
-        ...Object.keys(packageJson.peerDependencies)
+        ...Object.keys(packageJson.peerDependencies),
+        /@annotorious\/(core|annotorious|openseadragon)/
       ],
       output: {
         preserveModules: true,
         assetFileNames: 'annotorious-react.[ext]',
         globals: {
           react: 'React',
+          '@annotorious/annotorious': 'Annotorious',
           openseadragon: 'OpenSeadragon'
         }
       }
