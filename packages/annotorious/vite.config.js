@@ -21,15 +21,9 @@ export default defineConfig({
         format === 'umd' ? `annotorious.js` : `annotorious.es.js`
     },
     rollupOptions: {
-      external: [
-        '@annotorious/core',
-        'test/*'
-      ],
+      external: ['test/*'],
       output: {
-        assetFileNames: 'annotorious.[ext]',
-        globals: {
-          '@annotorious/core': 'AnnotoriousCore'
-        }
+        assetFileNames: 'annotorious.[ext]'
       }
     }
   }

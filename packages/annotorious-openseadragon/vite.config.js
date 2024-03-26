@@ -23,16 +23,10 @@ export default defineConfig({
         format === 'umd' ? `annotorious-openseadragon.js` : `annotorious-openseadragon.es.js` 
     },
     rollupOptions: {
-      external: [
-        ...Object.keys(packageJson.peerDependencies),
-        '@annotorious/core',
-        '@annotorious/annotorious'
-      ],
+      external: Object.keys(packageJson.peerDependencies),
       output: {
         assetFileNames: 'annotorious-openseadragon.[ext]',
         globals: {
-          '@annotorious/core': 'AnnotoriousCore',
-          '@annotorious/annotorious': 'Annotorious',
           openseadragon: 'OpenSeadragon'
         }
       }
