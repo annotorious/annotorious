@@ -26,13 +26,15 @@ const updateVersionNumbers = (filePath, newVersion) => {
 
     packageData.version = newVersion;
 
-    if (packageData.dependencies) {
-      for (const dep in packageData.dependencies) {
-        if (dep.startsWith('@annotorious/')) {
-          packageData.dependencies[dep] = newVersion;
-        }
+    ['dependencies', 'peerDependencies'].forEach(depType => {
+      if (packageData[depType]) {
+          for (const dep in packageData[depType]) {
+              if (dep.startsWith('@annotorious/')) {
+                  packageData[depType][dep] = newVersion;
+              }
+          }
       }
-    }
+    });
 
     fs.writeFileSync(filePath, JSON.stringify(packageData, null, 2), 'utf8');
     console.log(`Updated ${filePath}`);
