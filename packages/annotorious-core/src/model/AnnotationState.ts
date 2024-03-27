@@ -1,10 +1,10 @@
 export interface AnnotationState {
 
-  selected: boolean;
+  selected?: boolean;
 
-  hover: boolean;
+  hover?: boolean;
 
-  custom: {
+  custom?: {
 
     [key: string]: any
 
