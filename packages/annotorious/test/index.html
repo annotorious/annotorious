@@ -44,7 +44,7 @@
           }
         }
 
-        const anno = createImageAnnotator('sample-image', {
+        var anno = createImageAnnotator('sample-image', {
           adapter: W3CImageFormat('sample-image'),
           autoSave: true,
           style: function(annotation) {
@@ -71,6 +71,10 @@
         });
 
         anno.setDrawingTool('polygon');
+
+        // Make this global, so we can manipulate in the
+        // browser console.
+        window.anno = anno;
       }
     </script>
   </body>

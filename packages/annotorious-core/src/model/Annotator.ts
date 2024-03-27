@@ -52,6 +52,8 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   setUser(user: User): void;
 
+  setVisible(visible: boolean): void;
+
   undo(): void;
 
   updateAnnotation(annotation: E): E;
