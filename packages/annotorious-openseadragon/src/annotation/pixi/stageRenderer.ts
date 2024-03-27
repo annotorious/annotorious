@@ -295,6 +295,13 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
     renderer.render(graphics);
   }
+
+  const setVisible = (visible: boolean) => {
+    if (visible)
+      canvas.classList.remove('hidden');
+    else 
+      canvas.classList.add('hidden');
+  }
   
   const destroy = () => renderer.destroy();
 
@@ -307,6 +314,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     setFilter,
     setSelected,
     setStyle,
+    setVisible,
     updateAnnotation
   }
   

@@ -21,7 +21,7 @@
   export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined = undefined;
   export let toolName: string = listDrawingTools()[0];
   export let user: User;
-  export let visible: boolean = true;
+  export let visible = true;
 
   $: ({ tool, opts } = getTool(toolName) || { tool: undefined, opts: undefined });
 

@@ -6,6 +6,10 @@ canvas.a9s-gl-canvas {
   width: 100%;
 }
 
+canvas.a9s-gl-canvas.hidden {
+  display: none;
+}
+
 canvas.a9s-gl-canvas.hover {
   cursor: pointer !important;
 }

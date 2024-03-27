@@ -215,6 +215,10 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     drawingLayer.$set({ user });
   }
 
+  const setVisible = (visible: boolean) =>
+    // @ts-ignore
+    displayLayer.$set({ visible });
+
   return {
     ...base,
     destroy,
@@ -233,6 +237,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     setStyle,
     setTheme,
     setUser,
+    setVisible,
     state,
     viewer
   }
