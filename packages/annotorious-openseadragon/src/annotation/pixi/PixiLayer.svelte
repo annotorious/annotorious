@@ -1,7 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
   import OpenSeadragon from 'openseadragon';
-  import type { DrawingStyle, Filter, ImageAnnotation, ImageAnnotatorState } from '@annotorious/annotorious';
+  import type { DrawingStyleExpression } from '@annotorious/core';
+  import type { Filter, ImageAnnotation, ImageAnnotatorState } from '@annotorious/annotorious';
   import type { PixiLayerClickEvent } from './PixiLayerClickEvent';
   import { createStage } from './stageRenderer';
 
@@ -10,7 +11,7 @@
   /** Props */
   export let filter: Filter<ImageAnnotation> | undefined;
   export let state: ImageAnnotatorState;
-  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined;
+  export let style: DrawingStyleExpression<ImageAnnotation> | undefined;
   export let viewer: OpenSeadragon.Viewer;
   export let visible = true;
 

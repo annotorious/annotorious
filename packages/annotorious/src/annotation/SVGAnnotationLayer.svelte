@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SvelteComponent, onMount } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-  import type { DrawingStyle, StoreChangeEvent, User } from '@annotorious/core';
+  import type { DrawingStyleExpression, StoreChangeEvent, User } from '@annotorious/core';
   import { ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
   import { getEditor as _getEditor, EditorMount } from './editors';
@@ -18,7 +18,7 @@
   export let image: HTMLImageElement | HTMLCanvasElement;
   export let preferredDrawingMode: DrawingMode;
   export let state: SvelteImageAnnotatorState;
-  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined = undefined;
+  export let style: DrawingStyleExpression<ImageAnnotation> | undefined = undefined;
   export let toolName: string = listDrawingTools()[0];
   export let user: User;
   export let visible = true;

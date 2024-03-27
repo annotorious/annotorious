@@ -1,5 +1,6 @@
 import type { SvelteComponent } from 'svelte';
-import { PointerSelectAction, type Annotator, type DrawingStyle, type Filter, type User } from '@annotorious/core';
+import { PointerSelectAction } from '@annotorious/core';
+import type { Annotator, DrawingStyleExpression, Filter, User } from '@annotorious/core';
 import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver, createUndoStack } from '@annotorious/core';
 import { registerEditor } from './annotation/editors';
 import { getTool, registerTool, listDrawingTools, type DrawingTool } from './annotation/tools';
@@ -142,7 +143,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     console.warn('Filter not implemented yet');
   }
 
-  const setStyle = (style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined) =>
+  const setStyle = (style: DrawingStyleExpression<ImageAnnotation> | undefined) =>
     annotationLayer.$set({ style });
 
   const setTheme = (theme: Theme) => _setTheme(img, container, theme);

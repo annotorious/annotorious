@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { DrawingStyle } from '@annotorious/core';
+  import type { DrawingStyleExpression } from '@annotorious/core';
   import type { Geometry, EllipseGeometry, ImageAnnotation } from '../../model';
   import { computeStyle } from '../utils/styling';
   
   /** Props */
   export let annotation: ImageAnnotation;
   export let geom: Geometry;
-  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined;
+  export let style: DrawingStyleExpression<ImageAnnotation> | undefined;
 
   $: computedStyle = computeStyle(annotation, style);
 

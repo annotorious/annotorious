@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { DrawingStyle } from '@annotorious/core';
+  import type { DrawingStyleExpression } from '@annotorious/core';
   import { createEventDispatcher, onMount, type SvelteComponent } from 'svelte';
   import type { ImageAnnotation, Shape } from '../../model';
   import { computeStyle } from '../utils/styling';
@@ -10,7 +10,7 @@
   /** Props */
   export let annotation: ImageAnnotation;
   export let editor: typeof SvelteComponent;
-  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined;
+  export let style: DrawingStyleExpression<ImageAnnotation> | undefined;
   export let target: SVGGElement;
   export let transform: Transform;
   export let viewportScale: number;

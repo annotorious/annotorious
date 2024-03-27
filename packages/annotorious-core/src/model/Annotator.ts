@@ -4,7 +4,7 @@ import type { PresenceProvider } from '../presence/PresenceProvider';
 import { Origin, type HoverState, type SelectionState, type Store, type UndoStack, type ViewportState } from '../state';
 import type { LifecycleEvents } from '../lifecycle/LifecycleEvents';
 import { parseAll, type FormatAdapter } from './FormatAdapter';
-import type { DrawingStyle } from './DrawingStyle';
+import type { DrawingStyleExpression } from './DrawingStyle';
 import type { Filter } from './Filter';
 
 /**
@@ -48,7 +48,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   setSelected(arg?: string | string[]): void;
 
-  setStyle(arg: DrawingStyle | ((annotation: I) => DrawingStyle) | undefined): void;
+  setStyle(style: DrawingStyleExpression<I> | undefined): void;
 
   setUser(user: User): void;
 
