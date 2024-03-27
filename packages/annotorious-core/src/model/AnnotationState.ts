@@ -2,7 +2,7 @@ export interface AnnotationState {
 
   selected?: boolean;
 
-  hover?: boolean;
+  hovered?: boolean;
 
   custom?: {
 
