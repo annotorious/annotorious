@@ -29,10 +29,7 @@ export default defineConfig({
       ],
       output: {
         preserveModules: true,
-        assetFileNames: 'annotorious-react-manifold.[ext]',
-        globals: {
-          react: 'React'
-        }
+        assetFileNames: 'annotorious-react-manifold.[ext]'
       }
     },
     sourcemap: true

@@ -6,11 +6,7 @@ import dts from 'vite-plugin-dts';
 export default defineConfig({
   plugins: [
     svelte({ preprocess: sveltePreprocess() }),
-    dts({ 
-      insertTypesEntry: true,
-      include: ['./src/'],
-      entryRoot: './src'
-    })
+    dts({ insertTypesEntry: true, include: ['./src/'], entryRoot: './src' })
   ],
   server: {
     open: '/test/index.html'
@@ -21,14 +17,14 @@ export default defineConfig({
       entry: './src/index.ts',
       name: 'Annotorious',
       formats: ['es', 'umd'],
-      fileName: (format) => 
-        format === 'umd' ? `annotorious.js` : `annotorious.es.js` 
+      fileName: (format) =>
+        format === 'umd' ? `annotorious.js` : `annotorious.es.js`
     },
     rollupOptions: {
+      external: ['test/*'],
       output: {
         assetFileNames: 'annotorious.[ext]'
-      },
-      external: [ 'test/*' ]
+      }
     }
   }
 });
