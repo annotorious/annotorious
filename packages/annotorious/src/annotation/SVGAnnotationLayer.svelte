@@ -21,6 +21,7 @@
   export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined = undefined;
   export let toolName: string = listDrawingTools()[0];
   export let user: User;
+  export let visible = true;
 
   $: ({ tool, opts } = getTool(toolName) || { tool: undefined, opts: undefined });
 
@@ -122,6 +123,7 @@
   bind:this={svgEl}
   class="a9s-annotationlayer"
   class:drawing={tool}
+  class:hidden={!visible}
   on:pointerup={onPointerUp}
   on:pointerdown={onPointerDown}>
   

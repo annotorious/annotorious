@@ -19,6 +19,10 @@
           user-select: none;
 }
 
+.a9s-annotationlayer.hidden {
+  display: none;
+}
+
 .a9s-annotationlayer ellipse, 
 .a9s-annotationlayer polygon,
 .a9s-annotationlayer rect  {

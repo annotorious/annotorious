@@ -152,6 +152,10 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     annotationLayer.$set({ user });
   }
 
+  const setVisible = (visible: boolean) =>
+    // @ts-ignore
+    annotationLayer.$set({ visible });
+
   return {
     ...base,
     destroy,
@@ -167,6 +171,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     setStyle,
     setTheme,
     setUser,
+    setVisible,
     state
   }
 
