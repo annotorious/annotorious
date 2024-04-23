@@ -52,13 +52,17 @@
     if (isVisibleHit) {
       canvas.classList.add('hover');
 
-      if ($hover !== hit.id)
+      if ($hover !== hit.id) {
         hover.set(hit.id);
+        stage.setHovered(hit.id);
+      }
     } else {
       canvas.classList.remove('hover');
 
-      if ($hover)
+      if ($hover) {
         hover.set(undefined);
+        stage.setHovered(undefined);
+      }
     }
   }
 

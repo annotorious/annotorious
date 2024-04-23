@@ -80,12 +80,16 @@
           autoSave: true,
           adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c'),
           drawingEnabled: false,
-          style: {
-            fill: '#ff0000', 
-            stroke: '#ff0000', 
-            fillOpacity: 0.1,
-            strokeOpacity: 0.9,
-            strokeWidth: 1
+          style: function(a, state) {
+            const { hovered, selected } = state || {};
+
+            return {
+              fill: hovered ? '#00ff00' : '#ff0000', 
+              stroke: '#ff0000', 
+              fillOpacity: 0.1,
+              strokeOpacity: 0.9,
+              strokeWidth: hovered ? 3 : 1
+            }
           }
         });
 
@@ -133,7 +137,7 @@
         anno.on('deleteAnnotation', a => console.log('deleted', a));
         anno.on('selectionChanged', selected => console.log('selection', selected));
         anno.on('updateAnnotation', (a, previous) => console.log('updated', previous, 'with', a));
-        anno.on('viewportIntersect', visible => console.log('visible', visible));
+        // anno.on('viewportIntersect', visible => console.log('visible', visible));
 
         // Make it global, so we can manipulate in the browser console.
         window.anno = anno;

@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import type OpenSeadragon from 'openseadragon';
 import { ShapeType } from '@annotorious/annotorious';
-import type { DrawingStyle, DrawingStyleExpression, Filter, Selection } from '@annotorious/core';
+import type { AnnotationState, DrawingStyle, DrawingStyleExpression, Filter, Selection } from '@annotorious/core';
 import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annotorious/annotorious';
 
 const DEFAULT_FILL = 0x1a73e8;
@@ -171,18 +171,21 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   // Current selection (if any)
   let selectedIds = new Set<string>();
 
+  // Current hover (if any)
+  let hovered: string | undefined;
+
   // Current style (if any)
-  let style: DrawingStyle | ((a: ImageAnnotation) => DrawingStyle) | undefined = undefined;
+  let style: DrawingStyleExpression<ImageAnnotation> | undefined = undefined;
 
   lastScale = getCurrentScale(viewer);
 
-  const addAnnotation = (annotation: ImageAnnotation) => {
+  const addAnnotation = (annotation: ImageAnnotation, state?: AnnotationState) => {
     // In case this annotation adds stroke > 1
     fastRedraw = false; 
 
     const { selector } = annotation.target;
 
-    const s = typeof style == 'function' ? style(annotation) : style;
+    const s = typeof style == 'function' ? style(annotation, state) : style;
 
     let rendered: { fill: PIXI.Graphics, stroke: PIXI.Graphics, strokeWidth: number } | undefined;
 
@@ -209,7 +212,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     }
   }
 
-  const updateAnnotation = (oldValue: ImageAnnotation, newValue: ImageAnnotation) => {
+  const updateAnnotation = (oldValue: ImageAnnotation, newValue: ImageAnnotation, state?: AnnotationState) => {
     // In case this annotation adds stroke > 1
     fastRedraw = false; 
     
@@ -220,7 +223,18 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       rendered.fill.destroy();
       rendered.stroke.destroy();
 
-      addAnnotation(newValue)
+      addAnnotation(newValue, state);
+    }
+  }
+
+  const redrawAnnotation = (id: string, state?: AnnotationState) => {
+    const rendered = annotationShapes.get(id);
+    if (rendered) {
+      annotationShapes.delete(id); 
+      rendered.fill.destroy();
+      rendered.stroke.destroy();
+
+      addAnnotation(rendered.annotation, state);
     }
   }
 
@@ -253,9 +267,37 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     renderer.render(graphics);
   }
 
+  const setHovered = (annotationId?: string) => {
+    if (hovered === annotationId) return;
+    
+    // Unhover current, if any
+    if (hovered)
+      redrawAnnotation(hovered, { selected: selectedIds.has(hovered) });
+
+    // Set next hover
+    if (annotationId)
+      redrawAnnotation(annotationId, { selected: selectedIds.has(annotationId), hovered: true });
+
+    hovered = annotationId;
+
+    renderer.render(graphics);
+  }
+
   const setSelected = (selection: Selection) => {
-    const { selected } = selection;
-    selectedIds = new Set(selected.map(t => t.id));
+    const nextIds = selection.selected.map(s => s.id);
+
+    const toSelect = 
+      nextIds.filter(id => !selectedIds.has(id));
+
+    const toDeselect = [...selectedIds]
+      .filter(id => !nextIds.includes(id));
+
+    [...toSelect, ...toDeselect].forEach(id => 
+      redrawAnnotation(id, { selected: nextIds.includes(id), hovered: id === hovered }));
+
+    selectedIds = new Set(nextIds);
+
+    renderer.render(graphics);
   }
 
   const setStyle = (s?: DrawingStyleExpression<ImageAnnotation>) => {
@@ -312,6 +354,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     removeAnnotation,
     resize,
     setFilter,
+    setHovered,
     setSelected,
     setStyle,
     setVisible,
