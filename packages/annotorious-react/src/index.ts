@@ -20,6 +20,7 @@ export type {
   AppearanceProvider,
   Color,
   DrawingStyle,
+  DrawingStyleExpression,
   Filter,
   FormatAdapter,
   HoverState,

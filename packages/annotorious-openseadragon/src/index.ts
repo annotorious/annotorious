@@ -9,6 +9,7 @@ export type {
   AnnotatorState,
   Color,
   DrawingStyle,
+  DrawingStyleExpression,
   FormatAdapter,
   HoverState,
   Selection,

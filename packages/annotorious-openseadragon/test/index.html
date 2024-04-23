@@ -80,6 +80,7 @@
           autoSave: true,
           adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c'),
           drawingEnabled: false,
+          pointerSelectAction: 'SELECT',
           style: function(a, state) {
             const { hovered, selected } = state || {};
 
@@ -88,7 +89,7 @@
               stroke: '#ff0000', 
               fillOpacity: 0.1,
               strokeOpacity: 0.9,
-              strokeWidth: hovered ? 3 : 1
+              strokeWidth: selected ? 3 : 1
             }
           }
         });

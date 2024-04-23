@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
-import { DrawingStyle, ImageAnnotation, W3CImageFormat } from '@annotorious/openseadragon';
+import { DrawingStyleExpression, ImageAnnotation, W3CImageFormat } from '@annotorious/openseadragon';
 import { useAnnotator, AnnotoriousOpenSeadragonAnnotator } from '../src';
 import {
   OpenSeadragonViewer, 
@@ -50,13 +50,13 @@ const FILTERS = [
   { key: 'SHOW_POLYGONS', filter: (a: ImageAnnotation) => a.target.selector.type === 'POLYGON' }
 ];
 
-const STYLE: DrawingStyle = {
-  fill: '#ff0000',
+const STYLE: DrawingStyleExpression<ImageAnnotation> = (a, state) => ({
+  fill: state?.hovered ? '#00ff00': '#ff0000',
   stroke: '#00ff00',
   fillOpacity: 0.2,
   strokeOpacity: 0.9,
   strokeWidth: 3
-}
+});
 
 export const App = () => {
 
