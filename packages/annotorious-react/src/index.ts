@@ -13,6 +13,7 @@ import '@annotorious/openseadragon/annotorious-openseadragon.css';
 export type {
   Annotation,
   AnnotationBody,
+  AnnotationState,
   AnnotationTarget,
   Annotator,
   AnnotatorState,
