@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/openseadragon",
-  "version": "3.0.0-rc.22",
+  "version": "3.0.0-rc.23",
   "description": "Annotorious for OpenSeadragon",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -34,23 +34,23 @@
     "./annotorious-openseadragon.css": "./dist/annotorious-openseadragon.css"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.0.2",
+    "@sveltejs/vite-plugin-svelte": "^3.1.0",
     "@tsconfig/svelte": "^5.0.4",
     "@types/openseadragon": "^3.0.10",
     "@types/rbush": "^3.0.3",
     "@types/uuid": "^9.0.8",
-    "svelte": "^4.2.12",
-    "svelte-preprocess": "^5.1.3",
-    "typescript": "^5.4.3",
-    "vite": "^5.2.6",
-    "vite-plugin-dts": "^3.7.3"
+    "svelte": "^4.2.15",
+    "svelte-preprocess": "^5.1.4",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.10",
+    "vite-plugin-dts": "^3.9.0"
   },
   "peerDependencies": {
     "openseadragon": "^3.0.0 || ^4.0.0"
   },
   "dependencies": {
-    "@annotorious/core": "3.0.0-rc.22",
-    "@annotorious/annotorious": "3.0.0-rc.22",
+    "@annotorious/core": "3.0.0-rc.23",
+    "@annotorious/annotorious": "3.0.0-rc.23",
     "pixi.js": "^7.4.2",
     "uuid": "^9.0.1"
   }
