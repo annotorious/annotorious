@@ -193,8 +193,8 @@ export const createStore = <T extends Annotation>() => {
     if (deleted.length > 0)
       emit(origin, { deleted });
   }
- 
-  const deleteBody = (body: AnnotationBodyIdentifier, origin = Origin.LOCAL) => {
+
+  const deleteOneBody = (body: AnnotationBodyIdentifier) => {
     const oldAnnotation = annotationIndex.get(body.annotation);
 
     if (oldAnnotation) {
@@ -214,13 +214,28 @@ export const createStore = <T extends Annotation>() => {
           oldValue: oldAnnotation, newValue: newAnnotation, bodiesDeleted: [oldBody]
         };
 
-        emit(origin, { updated: [update] });
+        return update;
       } else {
         console.warn(`Attempt to delete missing body ${body.id} from annotation ${body.annotation}`);
       }
     } else {
       console.warn(`Attempt to delete body from missing annotation ${body.annotation}`);
     }
+  }
+ 
+  const deleteBody = (body: AnnotationBodyIdentifier, origin = Origin.LOCAL) => {
+    const updated = deleteOneBody(body);
+    if (updated)
+      emit(origin, { updated: [ updated  ]});
+  }
+
+  const bulkDeleteBodies = (bodies: AnnotationBodyIdentifier[], origin = Origin.LOCAL) => {
+    const updated = bodies
+      .map(b => deleteOneBody(b)!)
+      .filter(Boolean);
+
+    if (updated.length > 0)
+      emit(origin, { updated });
   }
 
   const getAnnotation = (id: string): T | undefined => {
@@ -331,6 +346,7 @@ export const createStore = <T extends Annotation>() => {
     all,
     bulkAddAnnotation,
     bulkDeleteAnnotation,
+    bulkDeleteBodies,
     bulkUpdateAnnotation,
     bulkUpdateBodies,
     bulkUpdateTargets,
