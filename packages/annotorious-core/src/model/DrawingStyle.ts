@@ -23,5 +23,5 @@ export interface DrawingStyle {
 
 }
 
-export type DrawingStyleExpression<T extends Annotation> =
+export type DrawingStyleExpression<T extends Annotation = Annotation> =
   DrawingStyle | ((annotation: T, state?: AnnotationState) => DrawingStyle);
