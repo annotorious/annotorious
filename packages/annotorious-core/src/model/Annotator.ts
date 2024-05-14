@@ -1,11 +1,12 @@
 import type { Annotation } from './Annotation';
 import type { User } from './User';
-import type { PresenceProvider } from '../presence/PresenceProvider';
+import type { PresenceProvider } from '../presence';
 import { Origin, type HoverState, type SelectionState, type Store, type UndoStack, type ViewportState } from '../state';
-import type { LifecycleEvents } from '../lifecycle/LifecycleEvents';
+import type { LifecycleEvents } from '../lifecycle';
 import { parseAll, type FormatAdapter } from './FormatAdapter';
 import type { DrawingStyleExpression } from './DrawingStyle';
 import type { Filter } from './Filter';
+import type { Sorter } from './Sorter';
 
 /**
  * Base annotator interface
@@ -43,6 +44,8 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
   setAnnotations(annotations: E[], replace?: boolean): void;
 
   setFilter(filter: Filter | undefined): void;
+
+  setSorter(sorter: Sorter | undefined): void;
 
   setPresenceProvider?(provider: PresenceProvider): void;
 

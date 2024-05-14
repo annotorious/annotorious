@@ -19,6 +19,7 @@ export type {
   Color,
   DrawingStyle,
   Filter,
+  Sorter,
   FormatAdapter,
   HoverState,
   LifecycleEvents,
