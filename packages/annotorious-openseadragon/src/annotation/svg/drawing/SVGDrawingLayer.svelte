@@ -2,7 +2,7 @@
   import { SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
-  import type { DrawingStyle, DrawingStyleExpression, Filter, StoreChangeEvent, User } from '@annotorious/core';
+  import type { DrawingStyleExpression, Filter, StoreChangeEvent, User } from '@annotorious/core';
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
   import { getEditor as _getEditor, getTool, listDrawingTools } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
@@ -18,6 +18,9 @@
   export let toolName: string = listDrawingTools()[0];
   export let user: User;
   export let viewer: OpenSeadragon.Viewer;
+
+  // I hate you
+  const isFirefox = navigator.userAgent.match(/firefox|fxios/i);
 
   $: ({ tool, opts } = getTool(toolName) || { tool: undefined, opts: undefined });
 
@@ -62,6 +65,22 @@
       }   
       
       store.observe(storeObserver, { annotations: editableIds });
+
+      if (isFirefox) {
+        // As of May 16, 2024 Firefox has the following fun bug: despite the SVG elements
+        // being properly in the markup, FF DOES NOT RENDER THEM VISIBLY on the screen.
+        // This doesn't always happen. I can't figure out a reliable pattern, but timing
+        // must play a role. (It doesn't happen in the simple examples. But happens in 
+        // the Recogito React-based interface.) 
+        //
+        // As soon as the first re-render is triggered, FF wakes up, and the shapes display
+        // correctly. One reliable way of 'waking up' the FF renderer is to change the
+        // transform attribute on an SVG element. By panning OpenSeadragon by one tenth of a 
+        // pixel (!), we're triggering such a refresh without causing a change that's visible
+        // to the user. *sigh* 
+        const { width } = viewer.viewport.viewerElementToViewportRectangle(new OpenSeadragon.Rect(0, 0, 1, 1));
+        viewer.viewport.panBy(new OpenSeadragon.Point(Math.abs(width / 10), 0));
+      }
     } else {
       editableAnnotations = undefined;
     }
