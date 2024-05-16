@@ -8,9 +8,9 @@ export interface W3CAnnotation {
 
   id: string;
 
-  created?: string;
-
   creator?: W3CUser;
+
+  created?: string;
 
   modified?: string;
 
@@ -44,9 +44,11 @@ export interface W3CAnnotationBody {
 
   source?: string;
 
+  creator?: W3CUser;
+
   created?: string;
 
-  creator?: W3CUser;
+  modified?: string;
 
 }
 
@@ -89,7 +91,7 @@ export const parseW3CBodies = (
 ) : AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(body => {
 
   // Exctract properties that conform to the internal model, but keep custom props
-  const { id, type, purpose, value, created, creator, ...rest } = body;
+  const { id, type, purpose, value, created, modified, creator, ...rest } = body;
 
   // The internal model strictly requires IDs. (Because multi-user scenarios
   // will have problems without them.) In the W3C model, bodys *may* have IDs.
@@ -102,8 +104,9 @@ export const parseW3CBodies = (
     type,
     purpose,
     value,
-    created: created ? new Date(created) : undefined,
     creator: parseW3CUser(creator),
+    created: created ? new Date(created) : undefined,
+    updated: modified ? new Date(modified) : undefined,
     ...rest
   }
 
@@ -112,11 +115,16 @@ export const parseW3CBodies = (
 /** Serialization helper to remove core-specific fields from the annotation body **/
 export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[] =>
   bodies.map(b => {
-    const w3c = { ...b } as any;
-    delete w3c.annotation;
+    const { annotation: _a, created, updated, ...bodyRest } = b;
 
-    if (w3c.id?.startsWith('temp-'))
-      delete w3c.id;
+    const w3cBody: W3CAnnotationBody =  {
+      ...bodyRest,
+      created: created?.toISOString(),
+      modified: updated?.toISOString()
+    }
+    if (w3cBody.id?.startsWith('temp-')) {
+      delete w3cBody.id;
+    }
 
-    return { ...w3c, created: w3c.created?.toISOString() };
+    return w3cBody;
   });
