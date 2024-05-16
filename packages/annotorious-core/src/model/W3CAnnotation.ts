@@ -115,15 +115,16 @@ export const parseW3CBodies = (
 /** Serialization helper to remove core-specific fields from the annotation body **/
 export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[] =>
   bodies.map(b => {
-    const w3c = { ...b } as any;
-    delete w3c.annotation;
+    const { annotation: _a, created, updated, ...bodyRest } = b;
 
-    if (w3c.id?.startsWith('temp-'))
-      delete w3c.id;
+    const w3cBody: W3CAnnotationBody =  {
+      ...bodyRest,
+      created: created?.toISOString(),
+      modified: updated?.toISOString()
+    }
+    if (w3cBody.id?.startsWith('temp-')) {
+      delete w3cBody.id;
+    }
 
-    return {
-      ...w3c,
-      created: w3c.created?.toISOString(),
-      modified: w3c.updated?.toISOString()
-    };
+    return w3cBody;
   });
