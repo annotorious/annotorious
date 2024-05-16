@@ -1,6 +1,6 @@
 import { createContext, forwardRef, ReactNode} from 'react';
 import { useContext, useEffect, useImperativeHandle, useState } from 'react';
-import { Annotation, Annotator, Store, StoreChangeEvent } from '@annotorious/annotorious';
+import { Annotation, Annotator, Store, StoreChangeEvent, User } from '@annotorious/annotorious';
 import { useDebounce } from './useDebounce';
 
 interface Selection<T extends Annotation = Annotation> {
@@ -135,7 +135,7 @@ export const useSelection = <T extends Annotation>() => {
   return selection as Selection<T>;
 }
 
-export const useAnnotatorUser = () => {
+export const useAnnotatorUser = (): User => {
   const { anno } = useContext(AnnotoriousContext);
   return anno?.getUser();
 }
