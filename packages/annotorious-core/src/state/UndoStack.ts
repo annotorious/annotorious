@@ -73,22 +73,11 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
 
   store.observe(onChange, { origin: Origin.LOCAL });
 
-  const reassignIDs = (annotations: T[]): T[] => annotations.map(a => {
-    const id = uuidv4();
-
-    return {
-      ...a,
-      bodies: a.bodies.map(b => ({ ...b, annotation: id })),
-      target: {...a.target, annotation: id },
-      id
-    }
-  });
-
   const undoCreated = (created?: T[]) =>
     created && created.length > 0 && store.bulkDeleteAnnotation(created);
 
   const redoCreated = (created?: T[]) =>
-    created && created.length > 0 && store.bulkAddAnnotation(reassignIDs(created), false);
+    created && created.length > 0 && store.bulkAddAnnotation(created, false);
 
   const undoUpdated = (updated?: Update<T>[]) =>
     updated && updated.length > 0 && store.bulkUpdateAnnotation(updated.map(({ oldValue }) => oldValue));
@@ -97,7 +86,7 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
     updated && updated.length > 0 && store.bulkUpdateAnnotation(updated.map(({ newValue }) => newValue));
 
   const undoDeleted = (deleted?: T[]) => 
-    deleted && deleted.length > 0 && store.bulkAddAnnotation(reassignIDs(deleted), false);
+    deleted && deleted.length > 0 && store.bulkAddAnnotation(deleted, false);
 
   const redoDeleted = (deleted?: T[]) =>
     deleted && deleted.length > 0 && store.bulkDeleteAnnotation(deleted);
