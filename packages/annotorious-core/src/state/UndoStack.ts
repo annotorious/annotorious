@@ -73,10 +73,16 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
 
   store.observe(onChange, { origin: Origin.LOCAL });
 
-  const reassignIDs = (annotations: T[]) => annotations.map(a => ({
-    ...a,
-    id: uuidv4()
-  }));
+  const reassignIDs = (annotations: T[]): T[] => annotations.map(a => {
+    const id = uuidv4();
+
+    return {
+      ...a,
+      bodies: a.bodies.map(b => ({ ...b, annotation: id })),
+      target: {...a.target, annotation: id },
+      id
+    }
+  });
 
   const undoCreated = (created?: T[]) =>
     created && created.length > 0 && store.bulkDeleteAnnotation(created);
