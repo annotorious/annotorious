@@ -1,4 +1,5 @@
 import { createNanoEvents, type Unsubscribe } from 'nanoevents';
+import { v4 as uuidv4 } from 'uuid';
 import type { Annotation } from '../model';
 import type { Store } from './Store';
 import { Origin } from './StoreObserver';
@@ -72,11 +73,16 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
 
   store.observe(onChange, { origin: Origin.LOCAL });
 
+  const reassignIDs = (annotations: T[]) => annotations.map(a => ({
+    ...a,
+    id: uuidv4()
+  }));
+
   const undoCreated = (created?: T[]) =>
     created && created.length > 0 && store.bulkDeleteAnnotation(created);
 
   const redoCreated = (created?: T[]) =>
-    created && created.length > 0 && store.bulkAddAnnotation(created, false);
+    created && created.length > 0 && store.bulkAddAnnotation(reassignIDs(created), false);
 
   const undoUpdated = (updated?: Update<T>[]) =>
     updated && updated.length > 0 && store.bulkUpdateAnnotation(updated.map(({ oldValue }) => oldValue));
@@ -85,7 +91,7 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
     updated && updated.length > 0 && store.bulkUpdateAnnotation(updated.map(({ newValue }) => newValue));
 
   const undoDeleted = (deleted?: T[]) => 
-    deleted && deleted.length > 0 && store.bulkAddAnnotation(deleted, false);
+    deleted && deleted.length > 0 && store.bulkAddAnnotation(reassignIDs(deleted), false);
 
   const redoDeleted = (deleted?: T[]) =>
     deleted && deleted.length > 0 && store.bulkDeleteAnnotation(deleted);
