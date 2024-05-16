@@ -2,7 +2,7 @@
   import { SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
-  import type { DrawingStyle, Filter, StoreChangeEvent, User } from '@annotorious/core';
+  import type { DrawingStyle, DrawingStyleExpression, Filter, StoreChangeEvent, User } from '@annotorious/core';
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
   import { getEditor as _getEditor, getTool, listDrawingTools } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
@@ -14,7 +14,7 @@
   export let filter: Filter<ImageAnnotation> | undefined;
   export let preferredDrawingMode: DrawingMode;
   export let state: ImageAnnotatorState;
-  export let style: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle) | undefined = undefined;
+  export let style: DrawingStyleExpression<ImageAnnotation> | undefined = undefined;
   export let toolName: string = listDrawingTools()[0];
   export let user: User;
   export let viewer: OpenSeadragon.Viewer;

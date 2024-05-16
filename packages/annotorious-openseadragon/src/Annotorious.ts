@@ -126,7 +126,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     }
   });
 
-  displayLayer.$on('click', (evt: CustomEvent<PixiLayerClickEvent>) => {
+  displayLayer.$on('click', (evt: CustomEvent<PixiLayerClickEvent>) => {    
     const { originalEvent, annotation } = evt.detail;
 
     // Ignore click event if drawing is currently active with mode  'click'
