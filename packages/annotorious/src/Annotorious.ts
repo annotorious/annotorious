@@ -139,7 +139,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   const setDrawingEnabled = (enabled: boolean) =>
     annotationLayer.$set({ drawingEnabled: enabled });
   
-  const setFilter = (filter: Filter) => {
+  const setFilter = (_: Filter) => {
     console.warn('Filter not implemented yet');
   }
 

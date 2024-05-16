@@ -1,4 +1,4 @@
-import type { Annotation, DrawingStyle, FormatAdapter, PointerSelectAction } from '@annotorious/core';
+import type { Annotation, DrawingStyle, DrawingStyleExpression, FormatAdapter, PointerSelectAction } from '@annotorious/core';
 import type { ImageAnnotation } from './model';
 
 export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation> {
@@ -15,7 +15,7 @@ export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E exten
 
   pointerSelectAction?: PointerSelectAction | ((a: I) => PointerSelectAction);
 
-  style?: DrawingStyle | ((annotation: I) => DrawingStyle);
+  style?: DrawingStyleExpression<ImageAnnotation>;
 
   theme?: Theme;
 
