@@ -141,6 +141,8 @@
     return () => {
       canvas.removeEventListener('pointermove', moveHandler);
 
+      observer.disconnect();
+
       viewer.removeHandler('canvas-press', onCanvasPress);
       viewer.removeHandler('canvas-release', onCanvasRelease);
       viewer.removeHandler('update-viewport', stage.redraw);
