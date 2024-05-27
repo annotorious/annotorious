@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/react-manifold",
-  "version": "3.0.0-rc.25",
+  "version": "3.0.0-rc.26",
   "description": "A utility to manage multiple parallel Annotorious instances more efficiently",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -30,16 +30,16 @@
     "test": "echo 'Skipping tests in @annotorious/annotorious-react-manifold package'"
   },
   "devDependencies": {
-    "@types/react": "^18.3.2",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.0",
     "typescript": "^5.4.5",
     "vite": "^5.2.11",
     "vite-plugin-dts": "^3.9.1",
     "vite-tsconfig-paths": "^4.3.2"
   },
   "peerDependencies": {
-    "@annotorious/react": "3.0.0-rc.25",
+    "@annotorious/react": "3.0.0-rc.26",
     "openseadragon": "^3.0.0 || ^4.0.0",
     "react": "16.8.0 || >=17.x || >=18.x",
     "react-dom": "16.8.0 || >=17.x || >=18.x"
