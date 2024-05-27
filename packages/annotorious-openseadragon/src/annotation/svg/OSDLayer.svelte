@@ -22,7 +22,9 @@
     
     const scaleY = zoom * containerWidth / viewer.world.getContentFactor();
     const scaleX = flipped ? - scaleY : scaleY;
-    const rotation = viewer.viewport.getRotation();
+
+    // @ts-ignore note: getRotation(true <- realtime value) only since OSD 4!
+    const rotation = viewer.viewport.getRotation(true);
 
     layerTransform = `translate(${p.x}, ${p.y}) scale(${scaleX}, ${scaleY}) rotate(${rotation})`;
 
