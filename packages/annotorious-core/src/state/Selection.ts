@@ -62,14 +62,23 @@ export const createSelectionState = <T extends Annotation>(
     }
   }
 
-  const setSelected = (idOrIds: string | string[], editable: boolean = true) => {
+  const setSelected = (idOrIds: string | string[], editable?: boolean) => {
     const ids = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
 
     // Remove invalid
     const annotations = 
       ids.map(id => store.getAnnotation(id)!).filter(Boolean); 
 
-    set({ selected: annotations.map(({ id }) => ({ id, editable })) });
+    set({ 
+      selected: annotations.map(annotation => { 
+        // If editable is not set, use default behavior
+        const isEditable = editable === undefined
+          ? onPointerSelect(annotation, selectAction) === PointerSelectAction.EDIT
+          : editable;
+
+        return { id: annotation.id, editable: isEditable }
+      })
+    });
     
     if (annotations.length !== ids.length)
       console.warn('Invalid selection', idOrIds);
