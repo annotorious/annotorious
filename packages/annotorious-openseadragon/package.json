@@ -34,15 +34,15 @@
     "./annotorious-openseadragon.css": "./dist/annotorious-openseadragon.css"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.1.0",
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
     "@tsconfig/svelte": "^5.0.4",
     "@types/openseadragon": "^3.0.10",
     "@types/rbush": "^3.0.3",
     "@types/uuid": "^9.0.8",
-    "svelte": "^4.2.17",
+    "svelte": "^4.2.18",
     "svelte-preprocess": "^5.1.4",
     "typescript": "^5.4.5",
-    "vite": "^5.2.11",
+    "vite": "^5.2.13",
     "vite-plugin-dts": "^3.9.1"
   },
   "peerDependencies": {
@@ -52,6 +52,6 @@
     "@annotorious/core": "3.0.0-rc.27",
     "@annotorious/annotorious": "3.0.0-rc.27",
     "pixi.js": "^7.4.2",
-    "uuid": "^9.0.1"
+    "uuid": "^10.0.0"
   }
 }
