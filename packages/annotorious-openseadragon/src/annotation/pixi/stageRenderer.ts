@@ -319,7 +319,12 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
         if (strokeWidth > 1)
           fastRedraw = false;
 
-        const { fillStyle, strokeStyle } = getGraphicsStyle(s(annotation));
+        const state = {
+          selected: selectedIds.has(annotation.id),
+          hovered: hovered === annotation.id
+        };
+
+        const { fillStyle, strokeStyle } = getGraphicsStyle(s(annotation, state));
 
         fill.tint = fillStyle.tint;
         fill.alpha = fillStyle.alpha;
