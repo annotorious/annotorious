@@ -4,9 +4,9 @@ import { Origin, type ChangeSet, type UndoStack } from '../state';
 import type { LifecycleEvents } from './LifecycleEvents';
 
 export type Lifecycle<I extends Annotation, E extends unknown> = 
-  ReturnType<typeof createLifecyleObserver<I, E>>;
+  ReturnType<typeof createLifecycleObserver<I, E>>;
 
-export const createLifecyleObserver = <I extends Annotation, E extends unknown>(
+export const createLifecycleObserver = <I extends Annotation, E extends unknown>(
   state: AnnotatorState<I>,
   undoStack: UndoStack<I>,
   adapter?: FormatAdapter<I, E>,
