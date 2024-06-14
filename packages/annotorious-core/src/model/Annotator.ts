@@ -46,7 +46,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   setPresenceProvider?(provider: PresenceProvider): void;
 
-  setSelected(arg?: string | string[]): void;
+  setSelected(arg?: string | string[], editable?: boolean): void;
 
   setStyle(style: DrawingStyleExpression<I> | undefined): void;
 
@@ -160,9 +160,9 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
-  const setSelected = (arg?: string | string[]) => {
+  const setSelected = (arg?: string | string[], editable?: boolean) => {
     if (arg) {
-      selection.setSelected(arg);
+      selection.setSelected(arg, editable);
     } else {
       selection.clear();
     }

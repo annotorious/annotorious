@@ -39,6 +39,7 @@ const OSD_OPTIONS: OpenSeadragon.Options = {
   prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@3.1/build/openseadragon/images/',
   tileSources: IIIF_SAMPLE,
   crossOriginPolicy: 'Anonymous',
+  showRotationControl: true,
   gestureSettingsMouse: {
     clickToZoom: false
   }

@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/core",
-  "version": "3.0.0-rc.25",
+  "version": "3.0.0-rc.28",
   "description": "Annotorious core types and functions",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -25,14 +25,14 @@
     "dist"
   ],
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.1.0",
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
     "@tsconfig/svelte": "^5.0.4",
     "@types/deep-equal": "^1.0.4",
     "@types/uuid": "^9.0.8",
-    "svelte": "^4.2.17",
+    "svelte": "^4.2.18",
     "svelte-preprocess": "^5.1.4",
     "typescript": "^5.4.5",
-    "vite": "^5.2.11",
+    "vite": "^5.2.13",
     "vite-plugin-dts": "^3.9.1",
     "vitest": "^1.6.0"
   },
@@ -40,6 +40,6 @@
     "dequal": "^2.0.3",
     "nanoevents": "^9.0.0",
     "nanoid": "^5.0.7",
-    "uuid": "^9.0.1"
+    "uuid": "^10.0.0"
   }
 }

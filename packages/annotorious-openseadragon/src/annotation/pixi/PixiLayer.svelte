@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
   import OpenSeadragon from 'openseadragon';
-  import type { DrawingStyleExpression } from '@annotorious/core';
+  import type { DrawingStyleExpression, StoreChangeEvent } from '@annotorious/core';
   import type { Filter, ImageAnnotation, ImageAnnotatorState } from '@annotorious/annotorious';
   import type { PixiLayerClickEvent } from './PixiLayerClickEvent';
   import { createStage } from './stageRenderer';
@@ -138,38 +138,44 @@
     viewer.addHandler('update-viewport', stage.redraw);
     viewer.addHandler('animation-finish', updateViewportState);
 
+    const onStoreChange = (event: StoreChangeEvent<ImageAnnotation>) => {
+      const { created, updated, deleted } = event.changes;
+
+      (created || []).forEach(annotation => stage.addAnnotation(annotation));
+
+      (updated || []).forEach(({ oldValue, newValue }) => stage.updateAnnotation(oldValue, newValue));
+
+      (deleted || []).forEach(annotation => stage.removeAnnotation(annotation));
+
+      if (currentViewportBounds) {
+        const { x, y, width, height } = currentViewportBounds;
+
+        const intersecting = store.getIntersecting(x, y, width, height);
+        viewport.set(intersecting.map(a => a.id));
+      } else {
+        viewport.set(store.all().map(a => a.id));
+      }
+      
+      stage.redraw();
+    }
+
+    store.observe(onStoreChange);
+
     return () => {
       canvas.removeEventListener('pointermove', moveHandler);
+
+      observer.disconnect();
 
       viewer.removeHandler('canvas-press', onCanvasPress);
       viewer.removeHandler('canvas-release', onCanvasRelease);
       viewer.removeHandler('update-viewport', stage.redraw);
       viewer.removeHandler('animation-finish', updateViewportState);
 
+      store.unobserve(onStoreChange);
+
       stage.destroy();
 
       canvas.parentNode?.removeChild(canvas);
     }
-  });
-
-  store.observe(event => {
-    const { created, updated, deleted } = event.changes;
-
-    (created || []).forEach(annotation => stage.addAnnotation(annotation));
-
-    (updated || []).forEach(({ oldValue, newValue }) => stage.updateAnnotation(oldValue, newValue));
-
-    (deleted || []).forEach(annotation => stage.removeAnnotation(annotation));
-
-    if (currentViewportBounds) {
-      const { x, y, width, height } = currentViewportBounds;
-
-      const intersecting = store.getIntersecting(x, y, width, height);
-      viewport.set(intersecting.map(a => a.id));
-    } else {
-      viewport.set(store.all().map(a => a.id));
-    }
-    
-    stage.redraw();
   });
 </script>

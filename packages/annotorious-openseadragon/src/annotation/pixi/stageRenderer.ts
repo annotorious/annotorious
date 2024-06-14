@@ -123,9 +123,22 @@ const redrawStage = (
 
   lastScale = scale;
 
-  const rotation = Math.PI * viewer.viewport.getRotation() / 180;
+  const flipped = viewer.viewport.getFlip();
 
-  const dx = - viewportBounds.x * scale;
+  // @ts-ignore note: getRotation(true <- realtime value) only since OSD 4!
+  let rotation = Math.PI * viewer.viewport.getRotation(true) / 180;
+
+  if (rotation < 0)
+    rotation += 2 * Math.PI;
+  
+  if (rotation > 2 * Math.PI)
+    rotation -= 2 * Math.PI;
+
+  const dx = flipped ? 
+    // @ts-ignore
+    viewer.viewport._containerInnerSize.x + viewportBounds.x * scale :
+    - viewportBounds.x * scale;
+
   const dy = - viewportBounds.y * scale;
 
   let offsetX: number, offsetY: number;
@@ -143,10 +156,10 @@ const redrawStage = (
     offsetX = 0;
     offsetY = 0;
   }
-    
+
   graphics.position.x = offsetX + dx * Math.cos(rotation) - dy * Math.sin(rotation);
   graphics.position.y = offsetY + dx * Math.sin(rotation) + dy * Math.cos(rotation);
-  graphics.scale.set(scale, scale);
+  graphics.scale.set(flipped ? - scale : scale, scale);
   graphics.rotation = rotation;
   
   renderer.render(graphics);
@@ -306,7 +319,12 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
         if (strokeWidth > 1)
           fastRedraw = false;
 
-        const { fillStyle, strokeStyle } = getGraphicsStyle(s(annotation));
+        const state = {
+          selected: selectedIds.has(annotation.id),
+          hovered: hovered === annotation.id
+        };
+
+        const { fillStyle, strokeStyle } = getGraphicsStyle(s(annotation, state));
 
         fill.tint = fillStyle.tint;
         fill.alpha = fillStyle.alpha;
