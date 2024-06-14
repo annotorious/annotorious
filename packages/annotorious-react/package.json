@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/react",
-  "version": "3.0.0-rc.28",
+  "version": "3.0.0-rc.29",
   "description": "Annotorious React bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -28,7 +28,7 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "typescript": "^5.4.5",
-    "vite": "^5.2.13",
+    "vite": "^5.3.1",
     "vite-plugin-dts": "^3.9.1",
     "vite-tsconfig-paths": "^4.3.2"
   },
@@ -43,9 +43,9 @@
     }
   },
   "dependencies": {
-    "@annotorious/core": "3.0.0-rc.28",
-    "@annotorious/annotorious": "3.0.0-rc.28",
-    "@annotorious/openseadragon": "3.0.0-rc.28",
+    "@annotorious/core": "3.0.0-rc.29",
+    "@annotorious/annotorious": "3.0.0-rc.29",
+    "@annotorious/openseadragon": "3.0.0-rc.29",
     "@neodrag/react": "^2.0.4"
   },
   "sideEffects": false

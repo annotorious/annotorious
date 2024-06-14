@@ -1,7 +1,7 @@
 <script lang="ts">
   import { setContext } from 'svelte';
-  import { SvelteAnnotator, SvelteAnnotatorState, toSvelteStore } from '@annotorious/core';
-  import { createOSDAnnotator, ImageAnnotation } from '@annotorious/openseadragon';
+  import { type SvelteAnnotator, type SvelteAnnotatorState, toSvelteStore } from '@annotorious/core';
+  import { createOSDAnnotator, type ImageAnnotation } from '@annotorious/openseadragon';
   import type OpenSeadragon from 'openseadragon';
 
   /** props **/
