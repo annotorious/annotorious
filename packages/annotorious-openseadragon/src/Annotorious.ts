@@ -3,7 +3,7 @@ import type { SvelteComponent } from 'svelte';
 import { 
   createAnonymousGuest, 
   createBaseAnnotator, 
-  createLifecyleObserver, 
+  createLifecycleObserver,
   createUndoStack, 
   PointerSelectAction
 } from '@annotorious/core';
@@ -83,7 +83,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
 
   const undoStack = createUndoStack(store);
 
-  const lifecycle = createLifecyleObserver(
+  const lifecycle = createLifecycleObserver(
     state, undoStack, opts.adapter, opts.autoSave);
 
   let currentUser: User = createAnonymousGuest();

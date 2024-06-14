@@ -1,7 +1,7 @@
 import type { SvelteComponent } from 'svelte';
 import { PointerSelectAction } from '@annotorious/core';
 import type { Annotator, DrawingStyleExpression, Filter, User } from '@annotorious/core';
-import { createAnonymousGuest, createBaseAnnotator, createLifecyleObserver, createUndoStack } from '@annotorious/core';
+import { createAnonymousGuest, createBaseAnnotator, createLifecycleObserver, createUndoStack } from '@annotorious/core';
 import { registerEditor } from './annotation/editors';
 import { getTool, registerTool, listDrawingTools, type DrawingTool } from './annotation/tools';
 import { SVGAnnotationLayer } from './annotation';
@@ -57,7 +57,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
 
   const undoStack = createUndoStack(store);
 
-  const lifecycle = createLifecyleObserver<ImageAnnotation, E>(
+  const lifecycle = createLifecycleObserver<ImageAnnotation, E>(
     state, undoStack, opts.adapter, opts.autoSave
   );
 
