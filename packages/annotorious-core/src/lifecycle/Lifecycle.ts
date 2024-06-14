@@ -35,8 +35,8 @@ export const createLifecycleObserver = <I extends Annotation, E extends unknown>
     const callbacks = observers.get(event);
     if (callbacks) {
       const idx = callbacks.indexOf(callback);
-      if (idx > 0)
-        callbacks.splice(callbacks.indexOf(callback), 1);
+      if (idx !== -1)
+        callbacks.splice(idx, 1);
     }
   }
 
