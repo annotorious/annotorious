@@ -2,7 +2,7 @@
 
 # Getting Started
 
-This guide is for the vanilla JavaScript version of Annotorious. For React documentation, [see here](react/image-annotator)
+This guide is for the vanilla JavaScript version of Annotorious. For React documentation, [see here](react/image-annotator.md)
 
 ## Installation
 
