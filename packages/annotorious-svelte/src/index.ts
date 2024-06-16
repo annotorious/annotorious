@@ -19,7 +19,6 @@ export type {
   LifecycleEvents,
   ParseResult,
   PresentUser,
-  Purpose,
   Selection,
   SelectionState,
   Store,

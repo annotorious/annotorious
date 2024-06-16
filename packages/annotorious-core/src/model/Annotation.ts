@@ -42,7 +42,7 @@ export interface AnnotationBody {
 
   type?: string;
 
-  purpose?: Purpose | string;
+  purpose?: typeof PurposeValues[number] | string & {};
 
   value?: string;
 
@@ -57,17 +57,18 @@ export interface AnnotationBody {
 }
 
 // Pre-defined purposes from https://www.w3.org/TR/annotation-model/#motivation-and-purpose
-export type Purpose = 
-  'assessing' |
-  'bookmarking' |
-  'classifying' |
-  'commenting' |
-  'describing' |
-  'editing' |
-  'highlighting' |
-  'identifying' |
-  'linking' |
-  'moderating' |
-  'questioning' |
-  'replying' |
-  'tagging';
+const PurposeValues = [ 
+  'assessing',
+  'bookmarking',
+  'classifying',
+  'commenting',
+  'describing',
+  'editing',
+  'highlighting',
+  'identifying',
+  'linking',
+  'moderating',
+  'questioning',
+  'replying',
+  'tagging'
+] as const;
