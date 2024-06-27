@@ -20,13 +20,13 @@ export const getContributors = (annotation: Annotation): User[] => {
 }
 
 export const createBody = (
-  annotation: Annotation, 
+  annotationOrId: string | Annotation, 
   payload: { [key: string]: any },
   created?: Date,
   creator?: User
 ): AnnotationBody => ({
   id: uuidv4(),
-  annotation: annotation.id,
+  annotation: typeof annotationOrId === 'string' ? annotationOrId : annotationOrId.id,
   created: created || new Date(),
   creator,
   ...payload
