@@ -58,7 +58,17 @@
       if (timeDifference > 300)
         return;
 
-      evt.stopPropagation();
+      // This statement caused a weird bug on OSD: when starting
+      // to draw with a quick drag (<300ms), OSD got stuck in mouseNav 
+      // mode. The image still moved with the mouse cursor, even though 
+      // button was no longer pressed. 
+      // I'm commenting out this statement as a fix. But there must have
+      // been a reason I put it here in the first place. Keep an eye ou
+      // for regressions.
+      // 
+      // And if you are ever tempted to un-comment the statement: beware!
+      
+      // evt.stopPropagation();
 
       if (origin) {
         stopDrawing();
