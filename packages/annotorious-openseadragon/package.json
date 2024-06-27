@@ -38,10 +38,10 @@
     "@tsconfig/svelte": "^5.0.4",
     "@types/openseadragon": "^3.0.10",
     "@types/rbush": "^3.0.3",
-    "@types/uuid": "^9.0.8",
+    "@types/uuid": "^10.0.0",
     "svelte": "^4.2.18",
     "svelte-preprocess": "^6.0.1",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "vite": "^5.3.1",
     "vite-plugin-dts": "^3.9.1"
   },
