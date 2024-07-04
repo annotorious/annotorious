@@ -76,8 +76,9 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
         selectionStoreObserver = event => {
           const { updated } = event.changes;
 
-          setSelection(({ selected }) => ({
-            selected: selected.map(({ annotation, editable }) => {
+          setSelection((selection) => ({
+            ...selection,
+            selected: selection.selected.map(({ annotation, editable }) => {
               const next = updated.find(u => u.oldValue.id === annotation.id);
               return next ? { annotation: next.newValue, editable } : { annotation, editable };
             })
