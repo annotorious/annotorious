@@ -2,11 +2,13 @@ import { writable } from 'svelte/store';
 import type {  Annotation } from '../model';
 import type { Store } from './Store';
    
-export type Selection = {
+export interface Selection {
 
   selected: { id: string, editable?: boolean }[],
 
   pointerEvent?: PointerEvent;
+
+  [key: string]: any; // Allow for additional properties to be added by plugins
 
 }
 
