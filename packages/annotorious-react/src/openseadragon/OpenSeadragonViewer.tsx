@@ -1,4 +1,4 @@
-import { forwardRef, useContext, useImperativeHandle, useLayoutEffect, useRef } from 'react';
+import { forwardRef, useContext, useEffect, useImperativeHandle, useRef } from 'react';
 import OpenSeadragon from 'openseadragon';
 import { OpenSeadragonAnnotatorContext } from './OpenSeadragonAnnotator';
 
@@ -18,7 +18,7 @@ export const OpenSeadragonViewer = forwardRef<OpenSeadragon.Viewer, OpenSeadrago
 
   const { viewer, setViewer } = useContext(OpenSeadragonAnnotatorContext);
 
-  useLayoutEffect(() => {    
+  useEffect(() => {    
     if (element.current) {
       const v = OpenSeadragon({...options, element: element.current });
 
@@ -28,10 +28,10 @@ export const OpenSeadragonViewer = forwardRef<OpenSeadragon.Viewer, OpenSeadrago
         setViewer(v);
 
       return () => {
-        v.destroy();
-
-        if (setViewer) 
+        if (setViewer)
           setViewer(undefined);
+
+        v.destroy();
       }
     }
   }, [JSON.stringify(options)]);

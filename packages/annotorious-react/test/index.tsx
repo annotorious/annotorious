@@ -5,7 +5,9 @@ import { Annotorious } from '../src';
 
 const root = createRoot(document.getElementById('root') as Element);
 root.render(
-  <Annotorious>
-    <App />
-  </Annotorious>
+  <React.StrictMode>
+    <Annotorious>
+      <App />
+    </Annotorious>
+  </React.StrictMode>
 );
