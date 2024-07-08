@@ -37,7 +37,7 @@ export const createImageAnnotatorState = <E extends unknown>(
 
   const tree = createSpatialTree();
 
-  const selection = createSelectionState(store, opts.pointerSelectAction);
+  const selection = createSelectionState(store, opts.selectAction);
 
   const hover = createHoverState(store);
 
@@ -85,4 +85,3 @@ export const createSvelteImageAnnotatorState = <E extends unknown>(
   }
 
 }
-  

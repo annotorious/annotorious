@@ -1,5 +1,5 @@
 import type { SvelteComponent } from 'svelte';
-import { PointerSelectAction } from '@annotorious/core';
+import { SelectAction } from '@annotorious/core';
 import type { Annotator, DrawingStyleExpression, Filter, User } from '@annotorious/core';
 import { createAnonymousGuest, createBaseAnnotator, createLifecycleObserver, createUndoStack } from '@annotorious/core';
 import { registerEditor } from './annotation/editors';
@@ -41,13 +41,14 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   if (!image)
     throw 'Missing argument: image';
 
-  const img = (typeof image === 'string' ? 
-    document.getElementById(image) : image) as HTMLImageElement | HTMLCanvasElement;
+  const img = (
+    typeof image === 'string' ? document.getElementById(image) : image
+  ) as HTMLImageElement | HTMLCanvasElement;
 
   const opts = fillDefaults<ImageAnnotation, E>(options, {
     drawingEnabled: true,
     drawingMode: 'drag',
-    pointerSelectAction: PointerSelectAction.EDIT,
+    selectAction: SelectAction.EDIT,
     theme: 'light'
   });
 
@@ -93,7 +94,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   annotationLayer.$on('click', (evt: CustomEvent<SVGAnnotationLayerPointerEvent>) => {
     const { originalEvent, annotation } = evt.detail;
     if (annotation)
-      selection.clickSelect(annotation.id, originalEvent);
+      selection.eventSelect(annotation.id, originalEvent);
     else if (!selection.isEmpty())
       selection.clear();
   });
