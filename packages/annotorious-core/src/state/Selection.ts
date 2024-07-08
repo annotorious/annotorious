@@ -111,7 +111,8 @@ export const createSelectionState = <T extends Annotation>(
     isEmpty, 
     isSelected, 
     setSelected, 
-    subscribe 
+    subscribe,
+    set
   };
 
 }
