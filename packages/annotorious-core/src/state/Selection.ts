@@ -87,30 +87,29 @@ export const createSelectionState = <T extends Annotation>(
   }
 
   const removeFromSelection = (ids: string[]) => {
-    if (currentSelection.selected.length === 0)
-      return false;
+    if (isEmpty()) return false;
 
     const { selected } = currentSelection;
 
     // Checks which of the given annotations are actually in the selection
-    const toRemove = selected.filter(({ id  }) => ids.includes(id))
-
-    if (toRemove.length > 0)
+    const shouldRemove = selected.some(({ id }) => ids.includes(id));
+    if (shouldRemove)
       set({ selected: selected.filter(({ id }) => !ids.includes(id)) });
   }
 
   // Track store delete and update events
-  store.observe(({ changes }) =>
-    removeFromSelection((changes.deleted || []).map(a => a.id)));
+  store.observe(
+    ({ changes }) => removeFromSelection((changes.deleted || []).map(a => a.id))
+  );
 
-  return { 
-    clear, 
-    clickSelect, 
+  return {
+    clear,
+    clickSelect,
     get selected() { return currentSelection ? [...currentSelection.selected ] : null},
     get pointerEvent() { return currentSelection ? currentSelection.pointerEvent : null },
-    isEmpty, 
-    isSelected, 
-    setSelected, 
+    isEmpty,
+    isSelected,
+    setSelected,
     subscribe,
     set
   };
