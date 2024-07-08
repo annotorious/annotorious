@@ -5,7 +5,7 @@ import {
   createBaseAnnotator, 
   createLifecycleObserver,
   createUndoStack, 
-  PointerSelectAction
+  SelectAction
 } from '@annotorious/core';
 import type { 
   Annotator, 
@@ -73,7 +73,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const opts = fillDefaults<ImageAnnotation, E>(options, {
     drawingEnabled: false,
     drawingMode: isTouch ? 'drag' : 'click',
-    pointerSelectAction: PointerSelectAction.EDIT,
+    selectAction: SelectAction.EDIT,
     theme: 'light'
   });
 
@@ -133,7 +133,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     const blockEvent = drawingMode === 'click' && drawingEnabled;
 
     if (annotation && !blockEvent)
-      selection.clickSelect(annotation.id, originalEvent);
+      selection.eventSelect(annotation.id, originalEvent);
     else if (!selection.isEmpty())
       selection.clear();
   });
