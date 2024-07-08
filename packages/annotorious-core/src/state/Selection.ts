@@ -1,12 +1,12 @@
 import { writable } from 'svelte/store';
-import type {  Annotation } from '../model';
+import type { Annotation } from '../model';
 import type { Store } from './Store';
-   
+
 export interface Selection {
 
   selected: { id: string, editable?: boolean }[],
 
-  pointerEvent?: PointerEvent;
+  event?: PointerEvent | KeyboardEvent;
 
   [key: string]: any; // Allow for additional properties to be added by plugins
 
@@ -14,10 +14,10 @@ export interface Selection {
 
 export type SelectionState<T extends Annotation> = ReturnType<typeof createSelectionState<T>>;
 
-export enum PointerSelectAction {
+export enum SelectAction {
 
   EDIT = 'EDIT', // Make annotation target(s) editable on pointer select
-  
+
   SELECT = 'SELECT',  // Just select, but don't make editable
 
   NONE = 'NONE' // Click won't select - annotation is completely inert
@@ -28,7 +28,7 @@ const EMPTY: Selection = { selected: [] };
 
 export const createSelectionState = <T extends Annotation>(
   store: Store<T>,
-  selectAction: PointerSelectAction | ((a: T) => PointerSelectAction) = PointerSelectAction.EDIT
+  selectAction: SelectAction | ((a: T) => SelectAction) = SelectAction.EDIT
 ) => {
   const { subscribe, set } = writable<Selection>(EMPTY);
 
@@ -41,7 +41,7 @@ export const createSelectionState = <T extends Annotation>(
   const isEmpty = () => currentSelection.selected?.length === 0;
 
   const isSelected = (annotationOrId: T | string) => {
-    if (currentSelection.selected.length === 0)
+    if (isEmpty())
       return false;
 
     const id = typeof annotationOrId === 'string' ? annotationOrId : annotationOrId.id;
@@ -49,18 +49,23 @@ export const createSelectionState = <T extends Annotation>(
   }
 
   // TODO enable CTRL select
-  const clickSelect = (id: string, pointerEvent: PointerEvent) => {
+  const eventSelect = (id: string, event: Selection['event']) => {
     const annotation = store.getAnnotation(id);
-    if (annotation) {
-      const action = onPointerSelect(annotation, selectAction);
-      if (action === PointerSelectAction.EDIT)
-        set({ selected: [{ id, editable: true }], pointerEvent }); 
-      else if (action === PointerSelectAction.SELECT)
-        set({ selected: [{ id }], pointerEvent }); 
-      else
-        set({ selected: [], pointerEvent });
-    } else {
+    if (!annotation) {
       console.warn('Invalid selection: ' + id);
+      return;
+    }
+
+    const action = onSelect(annotation, selectAction);
+    switch (action) {
+      case SelectAction.EDIT:
+        set({ selected: [{ id, editable: true }], event });
+        break;
+      case SelectAction.SELECT:
+        set({ selected: [{ id }], event });
+        break;
+      default:
+        set({ selected: [], event });
     }
   }
 
@@ -76,7 +81,7 @@ export const createSelectionState = <T extends Annotation>(
       selected: annotations.map(annotation => {
         // If editable is not set, use default behavior
         const isEditable = editable === undefined
-          ? onPointerSelect(annotation, selectAction) === PointerSelectAction.EDIT
+          ? onSelect(annotation, selectAction) === SelectAction.EDIT
           : editable;
 
         return { id: annotation.id, editable: isEditable }
@@ -88,7 +93,8 @@ export const createSelectionState = <T extends Annotation>(
   }
 
   const removeFromSelection = (ids: string[]) => {
-    if (isEmpty()) return false;
+    if (isEmpty())
+      return false;
 
     const { selected } = currentSelection;
 
@@ -104,22 +110,24 @@ export const createSelectionState = <T extends Annotation>(
   );
 
   return {
-    clear,
-    clickSelect,
-    get selected() { return currentSelection ? [...currentSelection.selected ] : null},
-    get pointerEvent() { return currentSelection ? currentSelection.pointerEvent : null },
-    isEmpty,
     isSelected,
     setSelected,
+    eventSelect,
+    get selected() {
+      return currentSelection ? [...currentSelection.selected] : null;
+    },
+    get event() {
+      return currentSelection ? currentSelection.event : null;
+    },
+    clear,
+    isEmpty,
     subscribe,
     set
   };
 
 }
 
-export const onPointerSelect = <T extends Annotation>(
-  annotation: T, 
-  action?: PointerSelectAction | ((a: T) => PointerSelectAction)
-): PointerSelectAction => (typeof action === 'function') ?
-    (action(annotation) || PointerSelectAction.EDIT) : 
-    (action || PointerSelectAction.EDIT);
+export const onSelect = <T extends Annotation>(
+  annotation: T,
+  action?: SelectAction | ((a: T) => SelectAction)
+): SelectAction => (typeof action === 'function') ? action(annotation) : (action || SelectAction.EDIT);
