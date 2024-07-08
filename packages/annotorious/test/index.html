@@ -70,6 +70,14 @@
           // console.log('selected', selected);
         });
 
+        anno.on('mouseEnterAnnotation', function(annotation) {
+          console.log('enter', annotation);
+        });
+
+        anno.on('mouseLeaveAnnotation', function(annotation) {
+          console.log('leave', annotation);
+        });
+
         anno.setDrawingTool('polygon');
 
         // Make it global, so we can manipulate in the browser console.

@@ -9,7 +9,7 @@
   import { getTool, listDrawingTools, ToolMount } from './tools';
   import { enableResponsive } from './utils';
   import { createSVGTransform } from './Transform';
-  import { addEventListeners } from './SVGAnnotationLayerPointerEvent';
+  import { addEventListeners, getSVGPoint } from './SVGAnnotationLayerPointerEvent';
   import type { SvelteImageAnnotatorState } from 'src/state';
   import type { DrawingMode } from 'src/AnnotoriousOpts';
 
@@ -40,7 +40,7 @@
   $: transform = createSVGTransform(svgEl);
 
   /** Selection tracking */
-  const { selection, store } = state;
+  const { hover, selection, store } = state;
 
   $: ({ onPointerDown, onPointerUp } = addEventListeners(svgEl, store));
 
@@ -115,6 +115,19 @@
     });
   }
 
+  const onPointerMove = (evt: PointerEvent) => {
+    const { x, y } = getSVGPoint(evt, svgEl);
+
+    const hit = store.getAt(x, y);
+    if (hit) {
+      if ($hover !== hit.id) {
+        hover.set(hit.id);
+      }
+    } else {
+      hover.set(undefined);
+    }
+  }
+
   // To get around lack of TypeScript support in Svelte markup
   const getEditor = (shape: Shape): typeof SvelteComponent => _getEditor(shape)!;
 </script>
@@ -124,8 +137,10 @@
   class="a9s-annotationlayer"
   class:drawing={tool}
   class:hidden={!visible}
+  class:hover={$hover}
   on:pointerup={onPointerUp}
-  on:pointerdown={onPointerDown}>
+  on:pointerdown={onPointerDown}
+  on:pointermove={onPointerMove}>
   
   <g>
     {#each $store as annotation}
@@ -133,11 +148,20 @@
         {@const selector = annotation.target.selector}
         {#key annotation.id}
           {#if (selector.type === ShapeType.ELLIPSE)}
-            <Ellipse annotation={annotation} geom={selector.geometry} style={style} />
+            <Ellipse 
+              annotation={annotation} 
+              geom={selector.geometry} 
+              style={style} />
           {:else if (selector.type === ShapeType.RECTANGLE)}
-            <Rectangle annotation={annotation} geom={selector.geometry} style={style} />
+            <Rectangle 
+              annotation={annotation} 
+              geom={selector.geometry} 
+              style={style} />
           {:else if (selector.type === ShapeType.POLYGON)}
-            <Polygon annotation={annotation} geom={selector.geometry} style={style} />
+            <Polygon 
+              annotation={annotation} 
+              geom={selector.geometry} 
+              style={style} />
           {/if}
         {/key}
       {/if}

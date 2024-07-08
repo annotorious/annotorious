@@ -39,7 +39,7 @@ export const addEventListeners = (svg: SVGSVGElement, store: SvelteImageAnnotati
   return { onPointerDown, onPointerUp };
 }
 
-const getSVGPoint = (evt: PointerEvent, svg: SVGSVGElement) => {
+export const getSVGPoint = (evt: PointerEvent, svg: SVGSVGElement) => {
   const pt = svg.createSVGPoint();
   const bbox = svg.getBoundingClientRect();
 
