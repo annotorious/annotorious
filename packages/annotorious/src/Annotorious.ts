@@ -19,6 +19,8 @@ import './themes/light/index.css';
 
 export interface ImageAnnotator<E extends unknown = ImageAnnotation> extends Annotator<ImageAnnotation, E> { 
 
+  element: HTMLDivElement;
+
   listDrawingTools(): string[];
 
   registerDrawingTool(name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts): void;
@@ -62,7 +64,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   );
 
   // We'll wrap the image in a container DIV.
-  const container = document.createElement('DIV');
+  const container = document.createElement('DIV') as HTMLDivElement;
   container.style.position = 'relative';
   container.style.display = 'inline-block';
 
@@ -173,6 +175,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     setTheme,
     setUser,
     setVisible,
+    element: container,
     state
   }
 
