@@ -133,7 +133,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     const blockEvent = drawingMode === 'click' && drawingEnabled;
 
     if (annotation && !blockEvent)
-      selection.eventSelect(annotation.id, originalEvent);
+      selection.userSelect(annotation.id, originalEvent);
     else if (!selection.isEmpty())
       selection.clear();
   });

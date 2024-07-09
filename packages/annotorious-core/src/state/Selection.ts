@@ -49,7 +49,7 @@ export const createSelectionState = <T extends Annotation>(
   }
 
   // TODO enable CTRL select
-  const eventSelect = (id: string, event: Selection['event']) => {
+  const userSelect = (id: string, event?: Selection['event']) => {
     const annotation = store.getAnnotation(id);
     if (!annotation) {
       console.warn('Invalid selection: ' + id);
@@ -112,7 +112,7 @@ export const createSelectionState = <T extends Annotation>(
   return {
     isSelected,
     setSelected,
-    eventSelect,
+    userSelect,
     get selected() {
       return currentSelection ? [...currentSelection.selected] : null;
     },

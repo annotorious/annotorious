@@ -94,7 +94,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   annotationLayer.$on('click', (evt: CustomEvent<SVGAnnotationLayerPointerEvent>) => {
     const { originalEvent, annotation } = evt.detail;
     if (annotation)
-      selection.eventSelect(annotation.id, originalEvent);
+      selection.userSelect(annotation.id, originalEvent);
     else if (!selection.isEmpty())
       selection.clear();
   });
