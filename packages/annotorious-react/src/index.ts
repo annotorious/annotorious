@@ -44,14 +44,14 @@ import {
   createBody as _createBody,
   defaultColorProvider as _defaultColorProvider,
   Origin as _Origin,
-  SelectAction as _SelectAction
+  UserSelectAction as _UserSelectAction
 } from '@annotorious/core';
 
 export { _createAnonymousGuest as createAnonymousGuest };
 export { _createBody as createBody };
 export { _defaultColorProvider as defaultColorProvider };
 export { _Origin as Origin };
-export { _SelectAction as SelectAction };
+export { _UserSelectAction as UserSelectAction };
 
 // Essential re-exports from @annotorious/annotorious 
 export type {

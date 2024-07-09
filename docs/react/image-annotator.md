@@ -37,18 +37,18 @@ This component provides context for all parts of an annotation layer on an image
 #### ImageAnnotator
 This component wraps an image component and applies an annotation layer to it.
 
-| Prop             | Type                                     | Default       |
-|------------------|------------------------------------------|---------------|
-| `adapter`        | [FormatAdapter](#formatadapter)          | -             |
-| `autoSave`       | `boolean`                                | `false`       |
-| `drawingEnabled` | `boolean`                                | `true`        |
-| `drawingMode`    | `'click'` \| `'drag'`                    | `'drag'`      |
-| `filter`         | [FilterDefinition](#filter)              | -             |
-| `selectAction`   | [selectDefinition](#selectaction)        | `'EDIT'`      |
-| `style`          | [StyleDefinition](#style)                | -             |
-| `theme`          | `'dark'` \| `'light'` \| `'auto'`        | `'light'`     |
-| `tool`           | `'rectangle'` \| `'light'`               | `'rectangle'` |
- 
+| Prop               | Type                                            | Default       |
+|--------------------|-------------------------------------------------|---------------|
+| `adapter`          | [FormatAdapter](#formatadapter)                 | -             |
+| `autoSave`         | `boolean`                                       | `false`       |
+| `drawingEnabled`   | `boolean`                                       | `true`        |
+| `drawingMode`      | `'click'` \| `'drag'`                           | `'drag'`      |
+| `filter`           | [FilterDefinition](#filter)                     | -             |
+| `userSelectAction` | [UserSelectActionDefinition](#userselectaction) | `'EDIT'`      |
+| `style`            | [StyleDefinition](#style)                       | -             |
+| `theme`            | `'dark'` \| `'light'` \| `'auto'`               | `'light'`     |
+| `tool`             | `'rectangle'` \| `'light'`                      | `'rectangle'` |
+
 #### FormatAdapter
 
 The `adapter` prop is an optional object that introduces crosswalk functionality between Annotorious' internal annotation data model and different standards. This allows seamless integration of external annotation standards, such as the [W3C Web Annotation standard](https://www.w3.org/TR/annotation-model/), into Annotorious. The adapter will handle the process of parsing and serializing annotations between Annotorious' internal format and the chosen external standard for you. 
@@ -82,9 +82,9 @@ const showImportantFilter = (annotation: Annotation) => {
 </ImageAnnotator>;
 ```
 
-#### selectAction
+#### UserSelectAction
 
-The `selectAction` prop controls the behavior when a user clicks or taps on an annotation. Valid values for selectAction are `EDIT`, `SELECT`, and `NONE`.
+The `userSelectAction` prop controls the behavior when a user clicks or taps on an annotation. Valid values for userSelectAction are `EDIT`, `SELECT`, and `NONE`.
 
 - __EDIT__ makes the annotation editable, allowing the users to modify its shape.
 
@@ -92,36 +92,36 @@ The `selectAction` prop controls the behavior when a user clicks or taps on an a
 
 - __NONE__ renders the annotation inert. Clicking on it will have no effect.
 
-You can directly assign one of these values to selectAction. For example:
+You can directly assign one of these values to userSelectAction. For example:
 
 ```tsx
-import { SelectAction } from '@annotorious/react'; 
+import { UserSelectAction } from '@annotorious/react'; 
 
-<ImageAnnotator selectAction={SelectAction.EDIT}>
+<ImageAnnotator userSelectAction={UserSelectAction.EDIT}>
   <img src="example.jpg" />
 </ImageAnnotator>
 ```
 
-Alternatively, you can use a function that dynamically determines the `selectAction`` based on annotation properties or other conditions:
+Alternatively, you can use a function that dynamically determines the `userSelectAction`` based on annotation properties or other conditions:
 
 ```tsx
 const dynamicSelectAction = (annotation: Annotation) => {
   const isMine = annotation.target.creator.id == 'me';
-  return isMine ? SelectAction.EDIT : SelectAction.SELECT;
+  return isMine ? UserSelectAction.EDIT : UserSelectAction.SELECT;
 };
 
-<ImageAnnotator selectAction={dynamicSelectAction}>
+<ImageAnnotator userSelectAction={dynamicSelectAction}>
   <img src="example.jpg" />
 </ImageAnnotator>
 ```
 
 __Note:__
 
-For TypeScript users, the valid values for `selectAction` are provided as enums for type safety. However, in plain JavaScript, you can use the string values ('EDIT', 'SELECT', 'NONE') directly.
+For TypeScript users, the valid values for `userSelectAction` are provided as enums for type safety. However, in plain JavaScript, you can use the string values ('EDIT', 'SELECT', 'NONE') directly.
 
 ```ts 
 // TypeScript
-const action: SelectAction = SelectAction.EDIT;
+const action: UserSelectAction = UserSelectAction.EDIT;
 
 // JavaScript
 const action = 'EDIT';

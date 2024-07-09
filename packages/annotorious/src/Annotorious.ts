@@ -1,5 +1,5 @@
 import type { SvelteComponent } from 'svelte';
-import { SelectAction } from '@annotorious/core';
+import { UserSelectAction } from '@annotorious/core';
 import type { Annotator, DrawingStyleExpression, Filter, User } from '@annotorious/core';
 import { createAnonymousGuest, createBaseAnnotator, createLifecycleObserver, createUndoStack } from '@annotorious/core';
 import { registerEditor } from './annotation/editors';
@@ -48,7 +48,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   const opts = fillDefaults<ImageAnnotation, E>(options, {
     drawingEnabled: true,
     drawingMode: 'drag',
-    selectAction: SelectAction.EDIT,
+    userSelectAction: UserSelectAction.EDIT,
     theme: 'light'
   });
 

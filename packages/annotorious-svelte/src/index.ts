@@ -37,7 +37,7 @@ import {
   createBody as _createBody,
   defaultColorProvider as _defaultColorProvider,
   Origin as _Origin,
-  SelectAction as _SelectAction
+  UserSelectAction as _UserSelectAction
 } from '@annotorious/core';
 
 export {
@@ -45,7 +45,7 @@ export {
   _createBody as createBody,
   _defaultColorProvider as defaultColorProvider,
   _Origin as Origin,
-  _SelectAction as SelectAction
+  _UserSelectAction as UserSelectAction
 }
 
 // Essential re-exports from @annotorious/annotorious 

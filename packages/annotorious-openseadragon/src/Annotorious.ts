@@ -5,7 +5,7 @@ import {
   createBaseAnnotator, 
   createLifecycleObserver,
   createUndoStack, 
-  SelectAction
+  UserSelectAction
 } from '@annotorious/core';
 import type { 
   Annotator, 
@@ -73,7 +73,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   const opts = fillDefaults<ImageAnnotation, E>(options, {
     drawingEnabled: false,
     drawingMode: isTouch ? 'drag' : 'click',
-    selectAction: SelectAction.EDIT,
+    userSelectAction: UserSelectAction.EDIT,
     theme: 'light'
   });
 

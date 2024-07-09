@@ -14,7 +14,7 @@ export interface Selection {
 
 export type SelectionState<T extends Annotation> = ReturnType<typeof createSelectionState<T>>;
 
-export enum SelectAction {
+export enum UserSelectAction {
 
   EDIT = 'EDIT', // Make annotation target(s) editable on pointer select
 
@@ -28,7 +28,7 @@ const EMPTY: Selection = { selected: [] };
 
 export const createSelectionState = <T extends Annotation>(
   store: Store<T>,
-  selectAction: SelectAction | ((a: T) => SelectAction) = SelectAction.EDIT
+  userSelectAction: UserSelectAction | ((a: T) => UserSelectAction) = UserSelectAction.EDIT
 ) => {
   const { subscribe, set } = writable<Selection>(EMPTY);
 
@@ -56,12 +56,12 @@ export const createSelectionState = <T extends Annotation>(
       return;
     }
 
-    const action = onSelect(annotation, selectAction);
+    const action = onUserSelect(annotation, userSelectAction);
     switch (action) {
-      case SelectAction.EDIT:
+      case UserSelectAction.EDIT:
         set({ selected: [{ id, editable: true }], event });
         break;
-      case SelectAction.SELECT:
+      case UserSelectAction.SELECT:
         set({ selected: [{ id }], event });
         break;
       default:
@@ -81,7 +81,7 @@ export const createSelectionState = <T extends Annotation>(
       selected: annotations.map(annotation => {
         // If editable is not set, use default behavior
         const isEditable = editable === undefined
-          ? onSelect(annotation, selectAction) === SelectAction.EDIT
+          ? onUserSelect(annotation, userSelectAction) === UserSelectAction.EDIT
           : editable;
 
         return { id: annotation.id, editable: isEditable }
@@ -127,7 +127,7 @@ export const createSelectionState = <T extends Annotation>(
 
 }
 
-export const onSelect = <T extends Annotation>(
+export const onUserSelect = <T extends Annotation>(
   annotation: T,
-  action?: SelectAction | ((a: T) => SelectAction)
-): SelectAction => (typeof action === 'function') ? action(annotation) : (action || SelectAction.EDIT);
+  action?: UserSelectAction | ((a: T) => UserSelectAction)
+): UserSelectAction => (typeof action === 'function') ? action(annotation) : (action || UserSelectAction.EDIT);

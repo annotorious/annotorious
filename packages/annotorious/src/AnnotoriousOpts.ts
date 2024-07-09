@@ -1,4 +1,4 @@
-import type { Annotation, DrawingStyle, DrawingStyleExpression, FormatAdapter, SelectAction } from '@annotorious/core';
+import type { Annotation, DrawingStyle, DrawingStyleExpression, FormatAdapter, UserSelectAction } from '@annotorious/core';
 import type { ImageAnnotation } from './model';
 
 export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation> {
@@ -13,7 +13,7 @@ export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E exten
   // 'drag': starts drawing on drag, single click always selects
   drawingMode?: DrawingMode;
 
-  selectAction?: SelectAction | ((a: I) => SelectAction);
+  userSelectAction?: UserSelectAction | ((a: I) => UserSelectAction);
 
   style?: DrawingStyleExpression<ImageAnnotation>;
 
@@ -32,7 +32,7 @@ export const fillDefaults = <I extends ImageAnnotation = ImageAnnotation, E exte
   ...opts,
   drawingEnabled: opts.drawingEnabled === undefined ? defaults.drawingEnabled : opts.drawingEnabled,
   drawingMode: opts.drawingMode || defaults.drawingMode,
-  selectAction: opts.selectAction || defaults.selectAction,
+  userSelectAction: opts.userSelectAction || defaults.userSelectAction,
   theme: opts.theme || defaults.theme
 });
 

@@ -28,13 +28,13 @@ export type {
 import { 
   createBody as _createBody,
   defaultColorProvider as _defaultColorProvider,
-  SelectAction as _SelectAction
+  UserSelectAction as _UserSelectAction
 } from '@annotorious/core'; 
 
 export {
   _createBody as createBody,
   _defaultColorProvider as defaultColorProvider,
-  _SelectAction as SelectAction
+  _UserSelectAction as UserSelectAction
 }
 
 // Essential re-exports from @annotorious/annotorious 
