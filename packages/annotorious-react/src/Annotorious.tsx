@@ -1,13 +1,11 @@
 import { createContext, forwardRef, ReactNode} from 'react';
 import { useContext, useEffect, useImperativeHandle, useState } from 'react';
-import { Annotation, Annotator, Store, StoreChangeEvent, User } from '@annotorious/annotorious';
+import type { Annotation, Annotator, Store, StoreChangeEvent, User, Selection as CoreSelection } from '@annotorious/annotorious';
 import { useDebounce } from './useDebounce';
 
-interface Selection<T extends Annotation = Annotation> {
+interface Selection<T extends Annotation = Annotation> extends Omit<CoreSelection, 'selected'> {
 
   selected: { annotation: T, editable?: boolean }[];
-
-  pointerEvent?: PointerEvent;
 
 }
 
