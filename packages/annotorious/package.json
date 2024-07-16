@@ -41,11 +41,11 @@
     "@types/rbush": "^3.0.3",
     "jsdom": "^24.1.0",
     "svelte": "^4.2.18",
-    "svelte-preprocess": "^6.0.1",
-    "typescript": "^5.5.2",
-    "vite": "^5.3.1",
+    "svelte-preprocess": "^6.0.2",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.4",
     "vite-plugin-dts": "^3.9.1",
-    "vitest": "^1.6.0"
+    "vitest": "^2.0.3"
   },
   "dependencies": {
     "@annotorious/core": "3.0.0-rc.30",
