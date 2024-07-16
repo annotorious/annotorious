@@ -1,13 +1,11 @@
 import { createContext, forwardRef, ReactNode} from 'react';
 import { useContext, useEffect, useImperativeHandle, useState } from 'react';
-import { Annotation, Annotator, Store, StoreChangeEvent, User } from '@annotorious/annotorious';
+import type { Annotation, Annotator, Store, StoreChangeEvent, User, Selection as CoreSelection } from '@annotorious/annotorious';
 import { useDebounce } from './useDebounce';
 
-interface Selection<T extends Annotation = Annotation> {
+interface Selection<T extends Annotation = Annotation> extends Omit<CoreSelection, 'selected'> {
 
   selected: { annotation: T, editable?: boolean }[];
-
-  pointerEvent?: PointerEvent;
 
 }
 
@@ -64,14 +62,14 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
       // from IDs to annotations automatically, for convenience
       let selectionStoreObserver: (event: StoreChangeEvent<Annotation>) => void;
 
-      const unsubscribeSelection = selection.subscribe(({ selected, pointerEvent }) => {
+      const unsubscribeSelection = selection.subscribe(({ selected, ...rest }) => {
         if (selectionStoreObserver) 
           store.unobserve(selectionStoreObserver);
 
         const resolved = (selected || [])
           .map(({ id, editable }) => ({ annotation: store.getAnnotation(id), editable }));
 
-        setSelection({ selected: resolved, pointerEvent });
+        setSelection({ selected: resolved, ...rest });
 
         selectionStoreObserver = event => {
           const { updated } = event.changes;

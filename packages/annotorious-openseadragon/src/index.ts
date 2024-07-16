@@ -28,12 +28,14 @@ export type {
 import { 
   createBody as _createBody,
   defaultColorProvider as _defaultColorProvider,
-  PointerSelectAction as _PointerSelectAction
+  UserSelectAction as _UserSelectAction
 } from '@annotorious/core'; 
 
-export const defaultColorProvider = _defaultColorProvider;
-export const PointerSelectAction = _PointerSelectAction;
-export const createBody = _createBody;
+export {
+  _createBody as createBody,
+  _defaultColorProvider as defaultColorProvider,
+  _UserSelectAction as UserSelectAction
+}
 
 // Essential re-exports from @annotorious/annotorious 
 export type {

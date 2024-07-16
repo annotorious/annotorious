@@ -34,11 +34,11 @@ describe('createSelectionState', () => {
     selectionState = createSelectionState(store);
   });
 
-  describe('clickSelect', () => {
+  describe('userSelect', () => {
 
     it('should set the selection to an array containing the clicked annotation', () => {
       // @ts-ignore
-      selectionState.clickSelect(testAnnotation1.id, undefined);
+      selectionState.userSelect(testAnnotation1.id);
       expect(selectionState.isEmpty()).toBe(false);
       expect(selectionState.isSelected(testAnnotation1)).toBe(true);
     });

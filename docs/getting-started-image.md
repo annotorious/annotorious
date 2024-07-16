@@ -61,15 +61,15 @@ anno.on('createAnnotation', function(annotation) {
 
 ## AnnotoriousOpts
 
-| Arg                   | Type                                            | Default       |
-|-----------------------|-------------------------------------------------|---------------|
-| `adapter`             | [FormatAdapter](#formatadapter)                 | -             |
-| `autoSave`            | `boolean`                                       | `false`       |
-| `drawingEnabled`      | `boolean`                                       | `true`        |
-| `drawingMode`         | `'click'` \| `'drag'`                           | `'drag'`      |
-| `pointerSelectAction` | [PointerSelectDefinition](#pointerselectaction) | `'EDIT'`      |
-| `style`               | [StyleDefinition](#style)                       | -             |
-| `theme`               | `'dark'` \| `'light'` \| `'auto'`               | `'light'`     |
+| Arg                | Type                                            | Default       |
+|--------------------|-------------------------------------------------|---------------|
+| `adapter`          | [FormatAdapter](#formatadapter)                 | -             |
+| `autoSave`         | `boolean`                                       | `false`       |
+| `drawingEnabled`   | `boolean`                                       | `true`        |
+| `drawingMode`      | `'click'` \| `'drag'`                           | `'drag'`      |
+| `userSelectAction` | [UserSelectActionDefinition](#userselectaction) | `'EDIT'`      |
+| `style`            | [StyleDefinition](#style)                       | -             |
+| `theme`            | `'dark'` \| `'light'` \| `'auto'`               | `'light'`     |
 
 ## FormatAdapter
 
@@ -85,9 +85,9 @@ const anno = createImageAnnotator('sample-image', {
 });
 ```
 
-## PointerSelectAction
+## UserSelectAction
 
-The `pointerSelectAction` prop controls the behavior when a user clicks or taps on an annotation. Valid values for pointerSelectAction are `EDIT`, `SELECT`, and `NONE`.
+The `userSelectAction` prop controls the behavior when a user clicks or taps on an annotation. Valid values for selectAction are `EDIT`, `SELECT`, and `NONE`.
 
 - __EDIT__ makes the annotation editable, allowing the users to modify its shape.
 
@@ -95,34 +95,34 @@ The `pointerSelectAction` prop controls the behavior when a user clicks or taps 
 
 - __NONE__ renders the annotation inert. Clicking on it will have no effect.
 
-You can directly assign one of these values to pointerSelectAction. For example:
+You can directly assign one of these values to userSelectAction. For example:
 
 ```ts
-import { createImageAnnotator, PointerSelectionAction, W3CImageFormat } from '@annotorious/annotorious';
+import { createImageAnnotator, UserSelectAction, W3CImageFormat } from '@annotorious/annotorious';
 
 const anno = createImageAnnotator('sample-image', {
-  pointerSelectAction: PointerSelectAction.EDIT
+  userSelectAction: SelectAction.EDIT
 });
 ```
 
-Alternatively, you can use a function that dynamically determines the `pointerSelectAction`` based on annotation properties or other conditions:
+Alternatively, you can use a function that dynamically determines the `userSelectAction`` based on annotation properties or other conditions:
 
 ```ts
-import { createImageAnnotator, PointerSelectionAction, W3CImageFormat } from '@annotorious/annotorious';
+import { createImageAnnotator, UserSelectAction, W3CImageFormat } from '@annotorious/annotorious';
 
 const dynamicSelectAction = (annotation: Annotation) => {
   const isMine = annotation.target.creator.id == 'me';
-  return isMine ? PointerSelectAction.EDIT : PointerSelectAction.SELECT;
+  return isMine ? UserSelectAction.EDIT : UserSelectAction.SELECT;
 };
 
 const anno = createImageAnnotator('sample-image', {
-  pointerSelectAction: dynamicSelectAction
+  userSelectAction: dynamicSelectAction
 });
 ```
 
 __Note:__
 
-For TypeScript users, the valid values for `pointerSelectAction` are provided as enums for type safety. However, in plain JavaScript, you can use the string values ('EDIT', 'SELECT', 'NONE') directly.
+For TypeScript users, the valid values for `userSelectAction` are provided as enums for type safety. However, in plain JavaScript, you can use the string values ('EDIT', 'SELECT', 'NONE') directly.
 
 ## Style
 

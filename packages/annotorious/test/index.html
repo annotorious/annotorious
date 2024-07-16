@@ -36,7 +36,7 @@
       window.onload = function() {
         // Just a weird dummy select action that makes
         // Polygons editable, but rectangles read-only
-        const pointerSelectAction = a => {
+        const userSelectAction = a => {
           if (a.target.selector.type === 'RECTANGLE') {
             return 'NONE';
           } else {

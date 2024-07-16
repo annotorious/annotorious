@@ -194,7 +194,7 @@ export const createLifecycleObserver = <I extends Annotation, E extends unknown>
 
   const onUndoOrRedo = (undo: boolean) => (changes: ChangeSet<I>) => {
     // Undo/redo of created/delete will cause lifecycle events automatically,
-    // but we need to handle udpates specifically!
+    // but we need to handle updates specifically!
     const { updated } = changes;
 
     if (undo)
