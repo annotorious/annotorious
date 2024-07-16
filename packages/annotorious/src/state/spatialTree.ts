@@ -54,10 +54,16 @@ export const createSpatialTree = () => {
     if (replace) 
       clear();
 
-    const indexedTargets = targets.map(target => {
-      const { minX, minY, maxX, maxY } = target.selector.geometry.bounds;
-      return { minX, minY, maxX, maxY, target };
-    });
+    const indexedTargets = targets.reduce<IndexedTarget[]>((all, target) => {
+      if (target.selector?.geometry?.bounds) {
+        // In case the host app injects any custom annotations, the 
+        // spatial index should simply ignore them. 
+        const { minX, minY, maxX, maxY } = target.selector.geometry.bounds;
+        return [...all, { minX, minY, maxX, maxY, target }];
+      } else {
+        return all;
+      }
+    }, []);
 
     indexedTargets.forEach(t => index.set(t.target.annotation, t));
     tree.load(indexedTargets);

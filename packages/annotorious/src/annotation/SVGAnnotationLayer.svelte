@@ -147,17 +147,17 @@
       {#if !isEditable(annotation)}
         {@const selector = annotation.target.selector}
         {#key annotation.id}
-          {#if (selector.type === ShapeType.ELLIPSE)}
+          {#if (selector?.type === ShapeType.ELLIPSE)}
             <Ellipse 
               annotation={annotation} 
-              geom={selector.geometry} 
+              geom={selector?.geometry} 
               style={style} />
-          {:else if (selector.type === ShapeType.RECTANGLE)}
+          {:else if (selector?.type === ShapeType.RECTANGLE)}
             <Rectangle 
               annotation={annotation} 
               geom={selector.geometry} 
               style={style} />
-          {:else if (selector.type === ShapeType.POLYGON)}
+          {:else if (selector?.type === ShapeType.POLYGON)}
             <Polygon 
               annotation={annotation} 
               geom={selector.geometry} 
