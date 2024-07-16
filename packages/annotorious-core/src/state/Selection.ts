@@ -32,6 +32,8 @@ export const createSelectionState = <T extends Annotation>(
 ) => {
   const { subscribe, set } = writable<Selection>(EMPTY);
 
+  let currentUserSelectAction = userSelectAction;
+
   let currentSelection: Selection = EMPTY;
 
   subscribe(updated => currentSelection = updated);
@@ -56,7 +58,7 @@ export const createSelectionState = <T extends Annotation>(
       return;
     }
 
-    const action = onUserSelect(annotation, userSelectAction);
+    const action = onUserSelect(annotation, currentUserSelectAction);
     switch (action) {
       case UserSelectAction.EDIT:
         set({ selected: [{ id, editable: true }], event });
@@ -81,7 +83,7 @@ export const createSelectionState = <T extends Annotation>(
       selected: annotations.map(annotation => {
         // If editable is not set, use default behavior
         const isEditable = editable === undefined
-          ? onUserSelect(annotation, userSelectAction) === UserSelectAction.EDIT
+          ? onUserSelect(annotation, currentUserSelectAction) === UserSelectAction.EDIT
           : editable;
 
         return { id: annotation.id, editable: isEditable }
@@ -104,24 +106,28 @@ export const createSelectionState = <T extends Annotation>(
       set({ selected: selected.filter(({ id }) => !ids.includes(id)) });
   }
 
+  const setUserSelectAction = (action: UserSelectAction | ((a: T) => UserSelectAction)) =>
+    currentUserSelectAction = action;
+
   // Track store delete and update events
   store.observe(
     ({ changes }) => removeFromSelection((changes.deleted || []).map(a => a.id))
   );
 
   return {
-    isSelected,
-    setSelected,
-    userSelect,
-    get selected() {
-      return currentSelection ? [...currentSelection.selected] : null;
-    },
     get event() {
       return currentSelection ? currentSelection.event : null;
     },
+    get selected() {
+      return currentSelection ? [...currentSelection.selected] : null;
+    },
     clear,
     isEmpty,
-    subscribe
+    isSelected,
+    setSelected,
+    setUserSelectAction,
+    subscribe,
+    userSelect
   };
 
 }

@@ -1,7 +1,7 @@
 import type { Annotation } from './Annotation';
 import type { User } from './User';
 import type { PresenceProvider } from '../presence/PresenceProvider';
-import { Origin, type HoverState, type SelectionState, type Store, type UndoStack, type ViewportState } from '../state';
+import { Origin, UserSelectAction, type HoverState, type SelectionState, type Store, type UndoStack, type ViewportState } from '../state';
 import type { LifecycleEvents } from '../lifecycle/LifecycleEvents';
 import { parseAll, type FormatAdapter } from './FormatAdapter';
 import type { DrawingStyleExpression } from './DrawingStyle';
@@ -51,6 +51,8 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
   setStyle(style: DrawingStyleExpression<I> | undefined): void;
 
   setUser(user: User): void;
+
+  setUserSelectAction(action: UserSelectAction | ((a: I) => UserSelectAction)): void;
 
   setVisible(visible: boolean): void;
 
@@ -168,6 +170,10 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
+  const setUserSelectAction = (action: UserSelectAction | ((a: I) => UserSelectAction)) =>
+    selection.setUserSelectAction(action);
+
+
   const updateAnnotation = (updated: E): E => {
     if (adapter) {
       const crosswalked = adapter.parse(updated).parsed!;
@@ -198,6 +204,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     removeAnnotation,
     setAnnotations,
     setSelected,
+    setUserSelectAction,
     undo: undoStack.undo,
     updateAnnotation
   }
