@@ -1,5 +1,4 @@
 import { createNanoEvents, type Unsubscribe } from 'nanoevents';
-import { v4 as uuidv4 } from 'uuid';
 import type { Annotation } from '../model';
 import type { Store } from './Store';
 import { Origin } from './StoreObserver';
