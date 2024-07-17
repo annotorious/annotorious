@@ -170,9 +170,10 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
-  const setUserSelectAction = (action: UserSelectAction | ((a: I) => UserSelectAction)) =>
+  const setUserSelectAction = (action: UserSelectAction | ((a: I) => UserSelectAction)) => {
+    selection.clear();
     selection.setUserSelectAction(action);
-
+  }
 
   const updateAnnotation = (updated: E): E => {
     if (adapter) {
