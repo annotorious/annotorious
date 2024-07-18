@@ -39,7 +39,7 @@ export const parseW3CImageAnnotation = (
     ...rest 
   } = annotation;
 
-  const bodies = parseW3CBodies(body, annotationId);
+  const bodies = parseW3CBodies(body || [], annotationId);
 
   const w3cTarget = Array.isArray(annotation.target) 
     ? annotation.target[0] : annotation.target;
