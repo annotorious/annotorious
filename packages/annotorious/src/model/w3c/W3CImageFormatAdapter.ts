@@ -11,25 +11,31 @@ import type { W3CImageAnnotation } from './W3CImageAnnotation';
 
 export type W3CImageFormatAdapter = FormatAdapter<ImageAnnotation, W3CImageAnnotation>;
 
+export interface W3CImageFormatAdapterOpts {
+
+  strict: boolean;
+
+  invertY: boolean;
+
+}
+
 export const W3CImageFormat = (
   source: string,
-  strict = true,
-  invertY = false
+  opts: W3CImageFormatAdapterOpts = { strict: true, invertY: false }
 ): W3CImageFormatAdapter => {
 
   const parse = (serialized: W3CAnnotation) =>
-    parseW3CImageAnnotation(serialized, strict, invertY);
+    parseW3CImageAnnotation(serialized, opts);
 
   const serialize = (annotation: ImageAnnotation) =>
-    serializeW3CImageAnnotation(annotation, source, strict);
+    serializeW3CImageAnnotation(annotation, source, opts);
 
   return { parse, serialize }
 }
 
 export const parseW3CImageAnnotation = (
   annotation: W3CAnnotation, 
-  strict: boolean,
-  invertY: boolean
+  opts: W3CImageFormatAdapterOpts
 ): ParseResult<ImageAnnotation> => {
   const annotationId = annotation.id || uuidv4();
 
@@ -51,11 +57,11 @@ export const parseW3CImageAnnotation = (
 
   const selector = 
     w3cSelector?.type === 'FragmentSelector' ?
-      parseFragmentSelector(w3cSelector as FragmentSelector, invertY) :
+      parseFragmentSelector(w3cSelector as FragmentSelector, opts.invertY) :
     w3cSelector?.type === 'SvgSelector' ?
       parseSVGSelector(w3cSelector as SVGSelector) : undefined;
 
-  return (selector || !strict) ? { 
+  return (selector || !opts.strict) ? { 
     parsed: {
       ...rest,
       id: annotationId,
@@ -77,7 +83,7 @@ export const parseW3CImageAnnotation = (
 export const serializeW3CImageAnnotation = (
   annotation: ImageAnnotation, 
   source: string,
-  strict = true
+  opts: W3CImageFormatAdapterOpts
 ): W3CImageAnnotation => {
   const { 
     selector, 
@@ -95,7 +101,7 @@ export const serializeW3CImageAnnotation = (
       serializeFragmentSelector(selector.geometry as RectangleGeometry) :
       serializeSVGSelector(selector);
   } catch (error) {
-    if (strict)
+    if (opts.strict)
       throw error;
     else 
      w3cSelector = selector;
