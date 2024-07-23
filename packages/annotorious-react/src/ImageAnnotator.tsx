@@ -43,6 +43,10 @@ export const ImageAnnotator = <E extends unknown>(props: ImageAnnotatorProps<E>)
   useEffect(() => {
     if (anno) anno.setStyle(props.style);
   }, [props.style]);
+
+  useEffect(() => {
+    if (anno) anno.setUserSelectAction(props.userSelectAction);
+  }, [props.userSelectAction]);
  
   return <>{cloneElement(child, { onLoad }  as Partial<HTMLImageElement>)}</>
 
