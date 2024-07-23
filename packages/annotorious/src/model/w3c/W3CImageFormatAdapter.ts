@@ -11,23 +11,31 @@ import type { W3CImageAnnotation } from './W3CImageAnnotation';
 
 export type W3CImageFormatAdapter = FormatAdapter<ImageAnnotation, W3CImageAnnotation>;
 
+export interface W3CImageFormatAdapterOpts {
+
+  strict: boolean;
+
+  invertY: boolean;
+
+}
+
 export const W3CImageFormat = (
   source: string,
-  invertY: boolean = false
+  opts: W3CImageFormatAdapterOpts = { strict: true, invertY: false }
 ): W3CImageFormatAdapter => {
 
   const parse = (serialized: W3CAnnotation) =>
-    parseW3CImageAnnotation(serialized, invertY);
+    parseW3CImageAnnotation(serialized, opts);
 
   const serialize = (annotation: ImageAnnotation) =>
-    serializeW3CImageAnnotation(annotation, source);
+    serializeW3CImageAnnotation(annotation, source, opts);
 
   return { parse, serialize }
 }
 
 export const parseW3CImageAnnotation = (
   annotation: W3CAnnotation, 
-  invertY: boolean = false
+  opts: W3CImageFormatAdapterOpts
 ): ParseResult<ImageAnnotation> => {
   const annotationId = annotation.id || uuidv4();
 
@@ -39,7 +47,7 @@ export const parseW3CImageAnnotation = (
     ...rest 
   } = annotation;
 
-  const bodies = parseW3CBodies(body, annotationId);
+  const bodies = parseW3CBodies(body || [], annotationId);
 
   const w3cTarget = Array.isArray(annotation.target) 
     ? annotation.target[0] : annotation.target;
@@ -49,11 +57,11 @@ export const parseW3CImageAnnotation = (
 
   const selector = 
     w3cSelector?.type === 'FragmentSelector' ?
-      parseFragmentSelector(w3cSelector as FragmentSelector, invertY) :
+      parseFragmentSelector(w3cSelector as FragmentSelector, opts.invertY) :
     w3cSelector?.type === 'SvgSelector' ?
       parseSVGSelector(w3cSelector as SVGSelector) : undefined;
 
-  return selector ? { 
+  return (selector || !opts.strict) ? { 
     parsed: {
       ...rest,
       id: annotationId,
@@ -64,18 +72,18 @@ export const parseW3CImageAnnotation = (
         updated: modified ? new Date(modified) : undefined,
         ...(Array.isArray(rest.target) ? rest.target[0] : rest.target),
         annotation: annotationId,
-        selector
+        selector: selector || w3cSelector
       }
     }
   } : {
     error: Error(`Invalid selector: ${JSON.stringify(w3cSelector)}`)
   };
-
 }
 
 export const serializeW3CImageAnnotation = (
   annotation: ImageAnnotation, 
-  source: string
+  source: string,
+  opts: W3CImageFormatAdapterOpts
 ): W3CImageAnnotation => {
   const { 
     selector, 
@@ -86,10 +94,18 @@ export const serializeW3CImageAnnotation = (
     ...rest 
   } = annotation.target;
 
-  const w3CSelector =
-    selector.type == ShapeType.RECTANGLE ?
+  let w3cSelector: FragmentSelector | SVGSelector | unknown;
+
+  try {
+    w3cSelector = selector.type == ShapeType.RECTANGLE ?
       serializeFragmentSelector(selector.geometry as RectangleGeometry) :
       serializeSVGSelector(selector);
+  } catch (error) {
+    if (opts.strict)
+      throw error;
+    else 
+     w3cSelector = selector;
+  }
 
   const serialized = {
     ...annotation,
@@ -103,7 +119,7 @@ export const serializeW3CImageAnnotation = (
     target: {
       ...rest,
       source,
-      selector: w3CSelector
+      selector: w3cSelector
     }
   } as W3CImageAnnotation;
 
