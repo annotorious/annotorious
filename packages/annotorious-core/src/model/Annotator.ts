@@ -154,9 +154,9 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       const { parsed, failed } = parseAll(adapter)(annotations);
 
       if (failed.length > 0)
-        console.warn(`Discarded ${failed.length} invalid annotations`, failed);
+        console.debug(`Skipped conversion for ${failed.length} annotations`, failed);
 
-      store.bulkAddAnnotation(parsed, replace, Origin.REMOTE);
+      store.bulkAddAnnotation([...parsed, ...(failed as unknown as I[])], replace, Origin.REMOTE);
     } else {
       store.bulkAddAnnotation(annotations as unknown as I[], replace, Origin.REMOTE);
     }
