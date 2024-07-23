@@ -13,21 +13,23 @@ export type W3CImageFormatAdapter = FormatAdapter<ImageAnnotation, W3CImageAnnot
 
 export const W3CImageFormat = (
   source: string,
-  invertY: boolean = false
+  strict = true,
+  invertY = false
 ): W3CImageFormatAdapter => {
 
   const parse = (serialized: W3CAnnotation) =>
-    parseW3CImageAnnotation(serialized, invertY);
+    parseW3CImageAnnotation(serialized, strict, invertY);
 
   const serialize = (annotation: ImageAnnotation) =>
-    serializeW3CImageAnnotation(annotation, source);
+    serializeW3CImageAnnotation(annotation, source, strict);
 
   return { parse, serialize }
 }
 
 export const parseW3CImageAnnotation = (
   annotation: W3CAnnotation, 
-  invertY: boolean = false
+  strict: boolean,
+  invertY: boolean
 ): ParseResult<ImageAnnotation> => {
   const annotationId = annotation.id || uuidv4();
 
@@ -53,7 +55,7 @@ export const parseW3CImageAnnotation = (
     w3cSelector?.type === 'SvgSelector' ?
       parseSVGSelector(w3cSelector as SVGSelector) : undefined;
 
-  return selector ? { 
+  return (selector || !strict) ? { 
     parsed: {
       ...rest,
       id: annotationId,
@@ -64,18 +66,18 @@ export const parseW3CImageAnnotation = (
         updated: modified ? new Date(modified) : undefined,
         ...(Array.isArray(rest.target) ? rest.target[0] : rest.target),
         annotation: annotationId,
-        selector
+        selector: selector || w3cSelector
       }
     }
   } : {
     error: Error(`Invalid selector: ${JSON.stringify(w3cSelector)}`)
   };
-
 }
 
 export const serializeW3CImageAnnotation = (
   annotation: ImageAnnotation, 
-  source: string
+  source: string,
+  strict = true
 ): W3CImageAnnotation => {
   const { 
     selector, 
@@ -86,10 +88,18 @@ export const serializeW3CImageAnnotation = (
     ...rest 
   } = annotation.target;
 
-  const w3CSelector =
-    selector.type == ShapeType.RECTANGLE ?
+  let w3cSelector: FragmentSelector | SVGSelector | unknown;
+
+  try {
+    w3cSelector = selector.type == ShapeType.RECTANGLE ?
       serializeFragmentSelector(selector.geometry as RectangleGeometry) :
       serializeSVGSelector(selector);
+  } catch (error) {
+    if (strict)
+      throw error;
+    else 
+     w3cSelector = selector;
+  }
 
   const serialized = {
     ...annotation,
@@ -103,7 +113,7 @@ export const serializeW3CImageAnnotation = (
     target: {
       ...rest,
       source,
-      selector: w3CSelector
+      selector: w3cSelector
     }
   } as W3CImageAnnotation;
 
