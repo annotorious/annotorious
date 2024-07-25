@@ -3,7 +3,7 @@ import { Annotator } from '@annotorious/annotorious';
 import { useAnnotator } from './Annotorious';
 
 export type AnnotatorPlugin<T extends unknown = Annotator<any, unknown>> =
-  (anno: T, opts?: Object) => ({ unmount?: () => void }) | void;
+  (anno: T, opts?: Object) => ({ destroy?: () => void }) | void;
 
 export interface AnnotoriousPluginProps<T extends unknown = Annotator<any, unknown>> {
 
@@ -22,10 +22,9 @@ export const AnnotoriousPlugin = <T extends unknown = Annotator<any, unknown>>(p
     if (!anno) return;
 
     const p = plugin(anno, opts);
-    return () => {
-      if (p && 'unmount' in p)
-        p.unmount();
-    };
+    if (p && 'destroy' in p) {
+      return () => p.destroy();
+    }
   }, [anno]);
 
   return null;
