@@ -140,7 +140,7 @@ import { Annotorious, ImageAnnotator } from '@annotorious/react';
 
 import '@annotorious/react/annotorious-react.css';
 
-export function AnnotatableImage() => {
+export function AnnotatableImage() {
 
   return (
     <Annotorious>
