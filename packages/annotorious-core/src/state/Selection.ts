@@ -24,11 +24,13 @@ export enum UserSelectAction {
 
 }
 
+export type UserSelectActionExpression<T extends Annotation> = UserSelectAction | ((a: T) => UserSelectAction);
+
 const EMPTY: Selection = { selected: [] };
 
 export const createSelectionState = <T extends Annotation>(
   store: Store<T>,
-  userSelectAction: UserSelectAction | ((a: T) => UserSelectAction) = UserSelectAction.EDIT
+  userSelectAction: UserSelectActionExpression<T> = UserSelectAction.EDIT
 ) => {
   const { subscribe, set } = writable<Selection>(EMPTY);
 
@@ -106,7 +108,7 @@ export const createSelectionState = <T extends Annotation>(
       set({ selected: selected.filter(({ id }) => !ids.includes(id)) });
   }
 
-  const setUserSelectAction = (action: UserSelectAction | ((a: T) => UserSelectAction)) =>
+  const setUserSelectAction = (action: UserSelectActionExpression<T>) =>
     currentUserSelectAction = action;
 
   // Track store delete and update events
@@ -134,5 +136,5 @@ export const createSelectionState = <T extends Annotation>(
 
 export const onUserSelect = <T extends Annotation>(
   annotation: T,
-  action?: UserSelectAction | ((a: T) => UserSelectAction)
+  action?: UserSelectActionExpression<T>
 ): UserSelectAction => (typeof action === 'function') ? action(annotation) : (action || UserSelectAction.EDIT);

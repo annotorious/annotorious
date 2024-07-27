@@ -1,4 +1,4 @@
-import { createContext, forwardRef, ReactNode, useContext, useEffect, useImperativeHandle, useState } from 'react';
+import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, useState, type ReactNode } from 'react';
 import type {
   Annotation,
   Annotator,
@@ -7,7 +7,7 @@ import type {
   StoreChangeEvent,
   User
 } from '@annotorious/annotorious';
-import { StoreObserveOptions } from '@annotorious/core';
+import type { StoreObserveOptions } from '@annotorious/core';
 
 import { useDebounce } from './useDebounce';
 

@@ -1,9 +1,17 @@
 import type { Annotation } from './Annotation';
 import type { User } from './User';
-import type { PresenceProvider } from '../presence/PresenceProvider';
-import { Origin, UserSelectAction, type HoverState, type SelectionState, type Store, type UndoStack, type ViewportState } from '../state';
-import type { LifecycleEvents } from '../lifecycle/LifecycleEvents';
-import { parseAll, type FormatAdapter } from './FormatAdapter';
+import type { PresenceProvider } from '../presence';
+import {
+  type HoverState,
+  Origin,
+  type SelectionState,
+  type Store,
+  type UndoStack,
+  type UserSelectActionExpression,
+  type ViewportState
+} from '../state';
+import type { LifecycleEvents } from '../lifecycle';
+import { type FormatAdapter, parseAll } from './FormatAdapter';
 import type { DrawingStyleExpression } from './DrawingStyle';
 import type { Filter } from './Filter';
 
@@ -52,7 +60,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   setUser(user: User): void;
 
-  setUserSelectAction(action: UserSelectAction | ((a: I) => UserSelectAction)): void;
+  setUserSelectAction(action: UserSelectActionExpression<I>): void;
 
   setVisible(visible: boolean): void;
 
@@ -170,7 +178,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
-  const setUserSelectAction = (action: UserSelectAction | ((a: I) => UserSelectAction)) => {
+  const setUserSelectAction = (action: UserSelectActionExpression<I>) => {
     selection.clear();
     selection.setUserSelectAction(action);
   }
