@@ -1,4 +1,4 @@
-import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, useState, type ReactNode } from 'react';
+import { createContext, forwardRef, type ReactNode, useContext, useEffect, useImperativeHandle, useState } from 'react';
 import type {
   Annotation,
   Annotator,
@@ -7,7 +7,12 @@ import type {
   StoreChangeEvent,
   User
 } from '@annotorious/annotorious';
-import type { StoreObserveOptions } from '@annotorious/core';
+import {
+  onUserSelect,
+  type StoreObserveOptions,
+  UserSelectAction,
+  type UserSelectActionExpression
+} from '@annotorious/core';
 
 import { useDebounce } from './useDebounce';
 
@@ -159,6 +164,11 @@ export const useAnnotation = <T extends Annotation>(id: string, options?: Omit<S
   }, []);
 
   return annotation;
+}
+
+export const useAnnotationSelectAction = <T extends Annotation>(id: string, action: UserSelectActionExpression<T>) => {
+  const annotation = useAnnotation(id);
+  return annotation ? onUserSelect(annotation, action) : undefined;
 }
 
 export const useSelection = <T extends Annotation>() => {
