@@ -1,6 +1,14 @@
-import { createContext, forwardRef, ReactNode} from 'react';
-import { useContext, useEffect, useImperativeHandle, useState } from 'react';
-import type { Annotation, Annotator, Store, StoreChangeEvent, User, Selection as CoreSelection } from '@annotorious/annotorious';
+import { createContext, forwardRef, ReactNode, useContext, useEffect, useImperativeHandle, useState } from 'react';
+import type {
+  Annotation,
+  Annotator,
+  Selection as CoreSelection,
+  Store,
+  StoreChangeEvent,
+  User
+} from '@annotorious/annotorious';
+import { StoreObserveOptions } from '@annotorious/core';
+
 import { useDebounce } from './useDebounce';
 
 interface Selection<T extends Annotation = Annotation> extends Omit<CoreSelection, 'selected'> {
@@ -128,6 +136,30 @@ const _useAnnotationsDebounced = <T extends Annotation>(debounce: number) => {
 
 export const useAnnotations = <T extends Annotation>(debounce?: number) =>
   debounce ? _useAnnotationsDebounced<T>(debounce) : _useAnnotations<T>();
+
+export const useAnnotation = <T extends Annotation>(id: string, options?: Omit<StoreObserveOptions, 'annotations'>) => {
+  const store = useAnnotationStore<Store<T>>();
+
+  const [annotation, setAnnotation] = useState<T | undefined>(
+    store?.getAnnotation(id)
+  );
+
+  useEffect(() => {
+    if (!store) return;
+
+    const handleChange = (event: StoreChangeEvent<T>) => {
+      const updated = event.changes.updated[0];
+      if (updated) {
+        setAnnotation(updated.newValue);
+      }
+    };
+
+    store.observe(handleChange, { ...options, annotations: id });
+    return () => store.unobserve(handleChange);
+  }, []);
+
+  return annotation;
+}
 
 export const useSelection = <T extends Annotation>() => {
   const { selection } = useContext(AnnotoriousContext);
