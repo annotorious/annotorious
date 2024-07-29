@@ -174,16 +174,19 @@
     {#if drawingEl}
       {#if editableAnnotations}
         {#each editableAnnotations as editable}
-          {#key editable.id}
-            <EditorMount
-              target={drawingEl}
-              editor={getEditor(editable.target.selector)}
-              annotation={editable}
-              style={style}
-              transform={transform}
-              viewportScale={$scale}
-              on:change={onChangeSelected(editable)} />
-          {/key}
+          {@const editor = getEditor(editable.target.selector)}
+          {#if editor}
+            {#key editable.id}        
+              <EditorMount
+                target={drawingEl}
+                editor={getEditor(editable.target.selector)}
+                annotation={editable}
+                style={style}
+                transform={transform}
+                viewportScale={$scale}
+                on:change={onChangeSelected(editable)} />
+            {/key}
+          {/if}
         {/each}
       {:else if (tool && drawingEnabled)} 
         {#key toolName}
