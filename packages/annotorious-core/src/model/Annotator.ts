@@ -1,15 +1,15 @@
 import type { Annotation } from './Annotation';
 import type { User } from './User';
 import type { PresenceProvider } from '../presence';
-import {
-  type HoverState,
-  Origin,
-  type SelectionState,
-  type Store,
-  type UndoStack,
-  type UserSelectActionExpression,
-  type ViewportState
+import type {
+  HoverState,
+  SelectionState,
+  Store,
+  UndoStack,
+  UserSelectActionExpression,
+  ViewportState
 } from '../state';
+import { Origin } from '../state';
 import type { LifecycleEvents } from '../lifecycle';
 import { type FormatAdapter, parseAll } from './FormatAdapter';
 import type { DrawingStyleExpression } from './DrawingStyle';

@@ -10,7 +10,6 @@ import type {
 import {
   onUserSelect,
   type StoreObserveOptions,
-  UserSelectAction,
   type UserSelectActionExpression
 } from '@annotorious/core';
 
