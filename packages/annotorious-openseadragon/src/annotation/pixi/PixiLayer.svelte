@@ -67,11 +67,13 @@
   }
 
   const onCanvasRelease = (evt: OpenSeadragon.CanvasReleaseEvent) => {
+    if (!lastPress) return;
+
     const originalEvent = evt.originalEvent as PointerEvent;
 
     const { x, y } = evt.position;
-    const dx = x - lastPress!.x;
-    const dy = y - lastPress!.y;
+    const dx = x - lastPress.x;
+    const dy = y - lastPress.y;
 
     const dist = Math.sqrt(dx * dx + dy * dy);
 
