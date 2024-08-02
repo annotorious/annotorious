@@ -28,13 +28,10 @@ export type UserSelectActionExpression<T extends Annotation> = UserSelectAction 
 
 const EMPTY: Selection = { selected: [] };
 
-export const createSelectionState = <T extends Annotation>(
-  store: Store<T>,
-  userSelectAction: UserSelectActionExpression<T> = UserSelectAction.EDIT
-) => {
+export const createSelectionState = <T extends Annotation>(store: Store<T>) => {
   const { subscribe, set } = writable<Selection>(EMPTY);
 
-  let currentUserSelectAction = userSelectAction;
+  let currentUserSelectAction: UserSelectActionExpression<T> | undefined;
 
   let currentSelection: Selection = EMPTY;
 
@@ -108,7 +105,7 @@ export const createSelectionState = <T extends Annotation>(
       set({ selected: selected.filter(({ id }) => !ids.includes(id)) });
   }
 
-  const setUserSelectAction = (action: UserSelectActionExpression<T>) =>
+  const setUserSelectAction = (action: UserSelectActionExpression<T> | undefined) =>
     currentUserSelectAction = action;
 
   // Track store delete and update events
@@ -122,6 +119,9 @@ export const createSelectionState = <T extends Annotation>(
     },
     get selected() {
       return currentSelection ? [...currentSelection.selected] : null;
+    },
+    get userSelectAction() {
+      return currentUserSelectAction;
     },
     clear,
     isEmpty,
