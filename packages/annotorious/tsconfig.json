@@ -5,8 +5,6 @@
     "baseUrl": ".",
     "checkJs": true,
     "composite": true,
-    "declaration": true,
-    "declarationMap": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "ignoreDeprecations": "5.0",
