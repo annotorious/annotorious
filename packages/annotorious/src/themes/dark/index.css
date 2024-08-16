@@ -1,4 +1,4 @@
-/** A simple black theme that works best on ligh backgrounds **/
+/** A simple black theme that works best on light backgrounds **/
 .a9s-annotationlayer .a9s-outer,
 div[data-theme="dark"] .a9s-annotationlayer .a9s-outer {
   display: none;
