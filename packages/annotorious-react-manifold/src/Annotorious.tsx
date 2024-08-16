@@ -32,7 +32,7 @@ const AnnotoriousInstanceShim = <I extends Annotation = Annotation, E extends { 
 }
 
 /**
- * An alternative <Annotorious /> component that mimicks the original
+ * An alternative <Annotorious /> component that mimics the original
  * from @annotorious/react, but injects the shim component, which connects
  * the Annotator to the Manifold.
  */

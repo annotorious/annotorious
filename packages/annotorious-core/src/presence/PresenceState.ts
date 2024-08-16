@@ -3,7 +3,7 @@ import { createNanoEvents, type Unsubscribe } from 'nanoevents';
 import type { User } from '../model/User';
 import type { PresentUser } from './PresentUser';
 import type { PresenceEvents } from './PresenceEvents';
-import { createDefaultAppearenceProvider } from './AppearanceProvider';
+import { createDefaultAppearanceProvider } from './AppearanceProvider';
 import type { AppearanceProvider } from './AppearanceProvider';
 
 export interface PresenceState {
@@ -32,7 +32,7 @@ const isListEqual = (listA: any[], listB: any[]) =>
 export const PRESENCE_KEY = nanoid();
 
 export const createPresenceState = (
-  appearanceProvider: AppearanceProvider = createDefaultAppearenceProvider()
+  appearanceProvider: AppearanceProvider = createDefaultAppearanceProvider()
 ): PresenceState => {
 
   const emitter = createNanoEvents<PresenceEvents>();

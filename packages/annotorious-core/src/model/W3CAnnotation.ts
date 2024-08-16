@@ -90,7 +90,7 @@ export const parseW3CBodies = (
   annotationId: string
 ) : AnnotationBody[] => (Array.isArray(body) ? body : [body]).map(body => {
 
-  // Exctract properties that conform to the internal model, but keep custom props
+  // Extract properties that conform to the internal model, but keep custom props
   const { id, type, purpose, value, created, modified, creator, ...rest } = body;
 
   // The internal model strictly requires IDs. (Because multi-user scenarios

@@ -34,7 +34,7 @@ type OpenSeadragonViewerProps = OpenSeadragonViewerInstanceProps & {
 };
 
 /**
- * An alternative <OpenSeadragonViewer /> component that mimicks the original
+ * An alternative <OpenSeadragonViewer /> component that mimics the original
  * from @annotorious/react, but injects a shim component that connects
  * the Viewer to the ViewerManifold.
  */

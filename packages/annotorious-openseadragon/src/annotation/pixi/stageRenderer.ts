@@ -70,8 +70,8 @@ const drawEllipse = drawShape((ellipse: Ellipse, g: PIXI.Graphics) => {
 });
 
 const drawPolygon = drawShape((polygon: Polygon, g: PIXI.Graphics) => {
-  const flattend = polygon.geometry.points.reduce((flat, xy) => ([...flat, ...xy]), []);   
-  g.drawPolygon(flattend);
+  const flattened = polygon.geometry.points.reduce((flat, xy) => ([...flat, ...xy]), []);   
+  g.drawPolygon(flattened);
 });
 
 const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {

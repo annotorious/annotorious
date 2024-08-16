@@ -31,7 +31,7 @@ export const defaultColorProvider = () => {
 
 }
 
-export const createDefaultAppearenceProvider = () => {
+export const createDefaultAppearanceProvider = () => {
 
   const colorProvider = defaultColorProvider();
 

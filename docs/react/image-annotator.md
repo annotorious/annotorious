@@ -179,7 +179,7 @@ Access to the vanilla `anno` Annotator instance.
 // pointerEvent: PointerEvent
 const { selected, pointerEvent } = useSelection();
 ```
-Returns the current selection state. If selection happend via a user pointer event, the event is included.
+Returns the current selection state. If selection happened via a user pointer event, the event is included.
 
 #### useAnnotatorUser
 Returns the current annotator user set via the `anno.setUser()` method, if any.
