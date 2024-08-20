@@ -1,4 +1,15 @@
-import { createContext, forwardRef, type ReactNode, useContext, useEffect, useImperativeHandle, useState } from 'react';
+import { onUserSelect } from '@annotorious/core';
+import type { StoreObserveOptions, UserSelectActionExpression} from '@annotorious/core';
+import { useDebounce } from './useDebounce';
+import { 
+  createContext, 
+  forwardRef, 
+  type ReactNode, 
+  useContext, 
+  useEffect, 
+  useImperativeHandle, 
+  useState 
+} from 'react';
 import type {
   Annotation,
   Annotator,
@@ -7,13 +18,6 @@ import type {
   StoreChangeEvent,
   User
 } from '@annotorious/annotorious';
-import {
-  onUserSelect,
-  type StoreObserveOptions,
-  type UserSelectActionExpression
-} from '@annotorious/core';
-
-import { useDebounce } from './useDebounce';
 
 interface Selection<T extends Annotation = Annotation> extends Omit<CoreSelection, 'selected'> {
 
@@ -21,11 +25,11 @@ interface Selection<T extends Annotation = Annotation> extends Omit<CoreSelectio
 
 }
 
-export interface AnnotoriousContextState {
+export interface AnnotoriousContextState<E extends unknown = Annotation> {
 
   anno: Annotator;
 
-  setAnno(anno: Annotator<Annotation, unknown>): void;
+  setAnno(anno: Annotator<Annotation, E>): void;
 
   annotations: Annotation[];
 
@@ -33,7 +37,7 @@ export interface AnnotoriousContextState {
 
 }
 
-export const AnnotoriousContext = createContext({ 
+export const AnnotoriousContext = createContext<AnnotoriousContextState>({ 
 
   anno: undefined, 
 
