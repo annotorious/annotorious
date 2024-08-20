@@ -1,4 +1,6 @@
 import { writable } from 'svelte/store';
+import { dequal } from 'dequal/lite';
+
 import type { Annotation } from '../model';
 import type { Store } from './Store';
 
@@ -40,7 +42,11 @@ export const createSelectionState = <T extends Annotation>(
 
   subscribe(updated => currentSelection = updated);
 
-  const clear = () => set(EMPTY);
+  const clear = () => {
+    if (!dequal(currentSelection, EMPTY)) {
+      set(EMPTY);
+    }
+  };
 
   const isEmpty = () => currentSelection.selected?.length === 0;
 
