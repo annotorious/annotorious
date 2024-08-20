@@ -1,4 +1,4 @@
-![Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious](/docs/images/splash-image.jpg "Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious")
+![Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious](/images/splash-image.jpg "Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious")
 
 > __IMPORTANT__ This repository is work in progress. I am building the next major release of Annotorious. If you 
 > are looking for the most recent official release, [visit the main project homepage](https://annotorious.github.io). 
