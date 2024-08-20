@@ -142,7 +142,7 @@ export const mergeChanges = <T extends Annotation>(changes: ChangeSet<T>, toMerg
   const updatedIds = new Set((toMerge.updated || []).map(({ oldValue }) => oldValue.id));
 
   // Updates that will be merged into create or previous update events
-  const mergeableUpdates = new Set((toMerge.updated || [])
+  const mergeableUpdates = new Set((toMerge.updated || [])
     .filter(({ oldValue }) => previouslyCreatedIds.has(oldValue.id) || previouslyUpdatedIds.has(oldValue.id))
     .map(({ oldValue }) => oldValue.id ));
 
