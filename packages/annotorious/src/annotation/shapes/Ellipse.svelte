@@ -13,7 +13,7 @@
   const { cx, cy, rx, ry } = geom as EllipseGeometry;
 </script>
 
-<g data-id={annotation.id}>
+<g class="a9s-annotation" data-id={annotation.id}>
   <ellipse
     class="a9s-outer"
     style={computedStyle ? 'display:none;' : undefined}

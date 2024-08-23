@@ -13,7 +13,7 @@
   const { points } = geom as PolygonGeometry;
 </script>
 
-<g data-id={annotation.id}>
+<g class="a9s-annotation" data-id={annotation.id}>
   <polygon 
     class="a9s-outer"
     style={computedStyle ? 'display:none;' : undefined}

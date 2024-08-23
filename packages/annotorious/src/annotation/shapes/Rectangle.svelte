@@ -13,7 +13,7 @@
   $: ({ x, y, w, h } = geom as RectangleGeometry);
 </script>
 
-<g data-id={annotation.id}>
+<g class="a9s-annotation" data-id={annotation.id}>
   <rect
     class="a9s-outer"
     style={computedStyle ? 'display:none;' : undefined}
