@@ -4,8 +4,9 @@ import { ShapeType } from '@annotorious/annotorious';
 import type { AnnotationState, DrawingStyle, DrawingStyleExpression, Filter, Selection } from '@annotorious/core';
 import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annotorious/annotorious';
 
-const DEFAULT_FILL = 0x1a73e8;
-const DEFAULT_ALPHA = 0.25;
+const DEFAULT_FILL = 0xffffff;
+const DEFAULT_FILL_ALPHA = 0.25;
+const DEFAULT_STROKE = 0xffffff;
 
 // Fast redraws skip counter-scaling operations
 let fastRedraw = false;
@@ -28,13 +29,13 @@ interface AnnotationShape {
 const getGraphicsStyle = (style?: DrawingStyle) => {
   const fillStyle = {
     tint: style?.fill ? new PIXI.Color(style.fill).toNumber() : DEFAULT_FILL,
-    alpha: style?.fillOpacity === undefined ? DEFAULT_ALPHA : Math.min(style.fillOpacity, 1)
+    alpha: style?.fillOpacity === undefined ? DEFAULT_FILL_ALPHA : Math.min(style.fillOpacity, 1)
   };
 
   const strokeStyle = {
-    tint: style?.stroke && new PIXI.Color(style.stroke).toNumber(),
-    alpha: style?.strokeOpacity === undefined ? (style?.stroke ? 1 : 0) : Math.min(style.strokeOpacity, 1),
-    lineWidth: style?.stroke ? style?.strokeWidth || 1 : 0
+    tint: style?.stroke ? new PIXI.Color(style.stroke).toNumber() : DEFAULT_STROKE,
+    alpha: style?.strokeOpacity === undefined ? 1 : Math.min(style.strokeOpacity, 1),
+    lineWidth: style?.strokeWidth || 0
   }
 
   return { fillStyle, strokeStyle };
