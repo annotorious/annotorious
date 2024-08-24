@@ -35,7 +35,7 @@ export const W3CImageFormat = (
 
 export const parseW3CImageAnnotation = (
   annotation: W3CAnnotation, 
-  opts: W3CImageFormatAdapterOpts
+  opts: W3CImageFormatAdapterOpts = { strict: true, invertY: false }
 ): ParseResult<ImageAnnotation> => {
   const annotationId = annotation.id || uuidv4();
 
@@ -83,7 +83,7 @@ export const parseW3CImageAnnotation = (
 export const serializeW3CImageAnnotation = (
   annotation: ImageAnnotation, 
   source: string,
-  opts: W3CImageFormatAdapterOpts
+  opts: W3CImageFormatAdapterOpts = { strict: true, invertY: false }
 ): W3CImageAnnotation => {
   const { 
     selector, 

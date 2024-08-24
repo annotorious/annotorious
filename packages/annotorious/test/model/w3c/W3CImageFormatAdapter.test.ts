@@ -1,13 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { ShapeType } from '../../../src/model';
-import { parseW3CImageAnnotation, serializeW3CImageAnnotation} from '../../../src/model';
+import { W3CAnnotation } from '@annotorious/core';
+import { parseW3CImageAnnotation, serializeW3CImageAnnotation, ShapeType } from '../../../src/model';
 
 import { annotations } from './fixtures';
 
 describe('parseW3CImageAnnotation', () => {
   it('should parse the sample annotations correctly', () => {
-    // @ts-ignore
-    const parsed = annotations.map(a => parseW3CImageAnnotation(a));
+    const parsed = (annotations as W3CAnnotation[]).map(a => parseW3CImageAnnotation(a));
 
     expect(parsed[0].error).toBe(undefined);
     expect(parsed[1].error).toBe(undefined);
@@ -22,8 +21,7 @@ describe('parseW3CImageAnnotation', () => {
 
 describe('serializeW3CImageAnnotation', () => {
   it('should serialize the sample annotations correctly', () => {
-    // @ts-ignore
-    const parsed = annotations.map(a => parseW3CImageAnnotation(a));
+    const parsed = (annotations as W3CAnnotation[]).map(a => parseW3CImageAnnotation(a));
 
     const core = parsed.map(result => result.parsed!).filter(Boolean);
     expect(core.length).toBe(parsed.length);

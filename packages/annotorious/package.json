@@ -36,20 +36,20 @@
     "./src": "./src/index.ts"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.1.1",
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tsconfig/svelte": "^5.0.4",
-    "@types/rbush": "^3.0.3",
+    "@types/rbush": "^3.0.4",
     "jsdom": "^24.1.1",
-    "svelte": "^4.2.18",
+    "svelte": "^4.2.19",
     "svelte-preprocess": "^6.0.2",
     "typescript": "5.5.4",
-    "vite": "^5.4.1",
+    "vite": "^5.4.2",
     "vite-plugin-dts": "^4.0.3",
     "vitest": "^2.0.5"
   },
   "dependencies": {
     "@annotorious/core": "3.0.0-rc.31",
-    "rbush": "^4.0.0",
+    "rbush": "^4.0.1",
     "uuid": "^10.0.0"
   }
 }

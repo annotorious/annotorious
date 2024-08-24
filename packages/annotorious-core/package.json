@@ -25,14 +25,14 @@
     "dist"
   ],
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.1.1",
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tsconfig/svelte": "^5.0.4",
     "@types/deep-equal": "^1.0.4",
     "@types/uuid": "^10.0.0",
-    "svelte": "^4.2.18",
+    "svelte": "^4.2.19",
     "svelte-preprocess": "^6.0.2",
     "typescript": "5.5.4",
-    "vite": "^5.4.1",
+    "vite": "^5.4.2",
     "vite-plugin-dts": "^4.0.3",
     "vitest": "^2.0.5"
   },

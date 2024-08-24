@@ -25,19 +25,7 @@ interface Selection<T extends Annotation = Annotation> extends Omit<CoreSelectio
 
 }
 
-export interface AnnotoriousContextState<E extends unknown = Annotation> {
-
-  anno: Annotator;
-
-  setAnno(anno: Annotator<Annotation, E>): void;
-
-  annotations: Annotation[];
-
-  selection: Selection;
-
-}
-
-export const AnnotoriousContext = createContext<AnnotoriousContextState>({ 
+export const AnnotoriousContext = createContext({ 
 
   anno: undefined, 
 
