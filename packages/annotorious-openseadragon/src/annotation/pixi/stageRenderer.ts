@@ -7,6 +7,7 @@ import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annot
 const DEFAULT_FILL = 0xffffff;
 const DEFAULT_FILL_ALPHA = 0.25;
 const DEFAULT_STROKE = 0xffffff;
+const DEFAULT_STROKE_WIDTH = 1.5;
 
 // Fast redraws skip counter-scaling operations
 let fastRedraw = false;
@@ -35,7 +36,7 @@ const getGraphicsStyle = (style?: DrawingStyle) => {
   const strokeStyle = {
     tint: style?.stroke ? new PIXI.Color(style.stroke).toNumber() : DEFAULT_STROKE,
     alpha: style?.strokeOpacity === undefined ? 1 : Math.min(style.strokeOpacity, 1),
-    lineWidth: style?.strokeWidth || 0
+    lineWidth: style?.strokeWidth === undefined ? DEFAULT_STROKE_WIDTH : style.strokeWidth
   }
 
   return { fillStyle, strokeStyle };
