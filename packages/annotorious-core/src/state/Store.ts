@@ -7,7 +7,7 @@ import type { StoreObserver, StoreChangeEvent, StoreObserveOptions } from './Sto
 // Shorthand
 type AnnotationBodyIdentifier = { id: string, annotation: string }; 
 
-const sanitize = <T extends Annotation>(a: T): T => {
+const sanitize = <T extends Annotation>(a: Partial<T>): T => {
   const id = a.id === undefined ? uuidv4() : a.id;
 
   return {
@@ -21,7 +21,7 @@ const sanitize = <T extends Annotation>(a: T): T => {
       ...a.target,
       annotation: id
     }
-  }
+  } as T;
 }
 
 export type Store<T extends Annotation> = ReturnType<typeof createStore<T>>;
@@ -62,8 +62,8 @@ export const createStore = <T extends Annotation>() => {
     });
   }
 
-  const addAnnotation = (annotation: T, origin = Origin.LOCAL) => {
-    const existing = annotationIndex.get(annotation.id);
+  const addAnnotation = (annotation: Partial<T>, origin = Origin.LOCAL) => {
+    const existing = annotation.id && annotationIndex.get(annotation.id);
 
     if (existing) {
       throw Error(`Cannot add annotation ${annotation.id} - exists already`);
@@ -76,11 +76,11 @@ export const createStore = <T extends Annotation>() => {
     }
   }
 
-  const updateOneAnnotation = (arg1: string | T, arg2?: T | Origin) => {
-    const updated: T = typeof arg1 === 'string' ? sanitize(arg2 as T) : arg1;
+  const updateOneAnnotation = (arg1: string | Partial<T>, arg2?: Partial<T> | Origin) => {
+    const updated: T = typeof arg1 === 'string' ? sanitize(arg2 as Partial<T>) : sanitize(arg1);
 
-    const oldId: string = typeof arg1 === 'string' ? arg1 : arg1.id;
-    const oldValue = annotationIndex.get(oldId);
+    const oldId: string | undefined = typeof arg1 === 'string' ? arg1 : arg1.id;
+    const oldValue = oldId && annotationIndex.get(oldId);
 
     if (oldValue) {
       const update: Update<T> = diffAnnotations(oldValue, updated);
@@ -152,7 +152,7 @@ export const createStore = <T extends Annotation>() => {
     emit(origin, { deleted: all });
   }
 
-  const bulkAddAnnotation = (annotations: T[], replace = true, origin = Origin.LOCAL) => {
+  const bulkAddAnnotation = (annotations: Partial<T>[], replace = true, origin = Origin.LOCAL) => {
     const sanitized = annotations.map(sanitize);
 
     if (replace) {
@@ -170,7 +170,7 @@ export const createStore = <T extends Annotation>() => {
     } else {
       // Don't allow overwriting of existing annotations
       const existing = annotations.reduce((all, next) => {
-        const existing = annotationIndex.get(next.id);
+        const existing = next.id && annotationIndex.get(next.id);
         return existing ? [...all, existing ] : all;
       }, [] as T[]);
 
