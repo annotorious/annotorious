@@ -22,7 +22,7 @@ import type { Filter } from './Filter';
  */
 export interface Annotator<I extends Annotation = Annotation, E extends unknown = Annotation> {
 
-  addAnnotation(annotation: E): void;
+  addAnnotation(annotation: Partial<E>): void;
 
   cancelSelected(): void;
 
@@ -46,9 +46,9 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   redo(): void;
 
-  removeAnnotation(arg: E | string): E | undefined;
+  removeAnnotation(arg: Partial<E> | string): E | undefined;
 
-  setAnnotations(annotations: E[], replace?: boolean): void;
+  setAnnotations(annotations: Partial<E>[], replace?: boolean): void;
 
   setFilter(filter: Filter | undefined): void;
 
@@ -66,7 +66,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   undo(): void;
 
-  updateAnnotation(annotation: E): E;
+  updateAnnotation(annotation: Partial<E>): E;
   
   on<T extends keyof LifecycleEvents<E>>(event: T, callback: LifecycleEvents<E>[T]): void;
 
