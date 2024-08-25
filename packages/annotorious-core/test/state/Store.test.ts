@@ -1,29 +1,44 @@
 import { describe, it, expect, vi } from 'vitest';
 import { dequal } from 'dequal/lite';
 import { createStore, Origin } from '../../src/state';
+import type { Annotation } from 'src';
 
 describe('store', () => {
-  const id = 'annotation-1';
+  const id1 = 'annotation-1';
+  const id2 = 'annotation-2';
 
   const annotation = {
-    id,
+    id: id1,
     target: {
-      annotation: id,
+      annotation: id1,
       selector: {},
     },
     bodies: [
       {
         id: 'body-1',
-        annotation: id,
+        annotation: id1,
         value: 'This is the body text',
       },
     ],
   };
 
+  const lazyAnnotation1 = {
+    id: id2,
+    target: {
+      selector: {}
+    }
+  }
+
+  const lazyAnnotation2 = {
+    target: {
+      selector: {}
+    }
+  }
+
   it('should properly run addAnnotation', () => {
     const store = createStore();
     store.addAnnotation(annotation);
-    expect(dequal(store.getAnnotation(id), annotation)).toBe(true);
+    expect(dequal(store.getAnnotation(id1), annotation)).toBe(true);
   });
 
   it('should properly run updateAnnotation', () => {
@@ -56,8 +71,12 @@ describe('store', () => {
     store.updateAnnotation(annotation.id, withChangedId);
 
     expect(store.getAnnotation(annotation.id)).toBeUndefined();
-    expect(dequal(store.getAnnotation('annotation-2'), withChangedId)).toBe(true);
     expect(store.all().length).toBe(1);
+
+    const updated = store.getAnnotation('annotation-2')!;
+    expect(updated.id).toBe('annotation-2');
+    expect(updated.target.annotation).toBe('annotation-2');
+    expect(updated.bodies[0].annotation).toBe('annotation-2');
   })
 
   it('should properly run addBody', () => {
@@ -66,12 +85,12 @@ describe('store', () => {
 
     const newBody = {
       id: 'body-2',
-      annotation: id,
+      annotation: id1,
       value: 'This is the second body text',
     };
     store.addBody(newBody);
 
-    const updatedAnnotation = store.getAnnotation(id);
+    const updatedAnnotation = store.getAnnotation(id1);
 
     expect(updatedAnnotation?.bodies.length === 2);
     expect(updatedAnnotation?.bodies.map(b => b.id)).toContain('body-2');
@@ -102,10 +121,10 @@ describe('store', () => {
     const store = createStore();
     store.addAnnotation(annotation);
 
-    expect(store.getAnnotation(id)).toBeDefined();
+    expect(store.getAnnotation(id1)).toBeDefined();
 
-    store.deleteAnnotation(id);
-    expect(store.getAnnotation(id)).toBeUndefined();
+    store.deleteAnnotation(id1);
+    expect(store.getAnnotation(id1)).toBeUndefined();
   });
 
   it('should properly run deleteBody', () => {
@@ -115,7 +134,7 @@ describe('store', () => {
     const bodyToDelete = annotation.bodies[0];
     store.deleteBody(bodyToDelete);
 
-    const updatedAnnotation = store.getAnnotation(id);
+    const updatedAnnotation = store.getAnnotation(id1);
     expect(updatedAnnotation?.bodies.length).toBe(0);
   });
 
@@ -146,7 +165,7 @@ describe('store', () => {
     };
     store.updateBody(oldBody, newBody);
 
-    const updatedAnnotation = store.getAnnotation(id);
+    const updatedAnnotation = store.getAnnotation(id1);
 
     expect(updatedAnnotation?.bodies.length).toBe(1);
     expect(updatedAnnotation?.bodies[0].value).toBe('This is the updated body text');
@@ -187,4 +206,32 @@ describe('store', () => {
     expect(mockObserver.mock.calls[0][0].origin).toBe(Origin.LOCAL);
   });
   
+  it('should properly handle annotations without `bodies` and `annotation` fields', () => {
+    const store = createStore();
+    store.addAnnotation(lazyAnnotation1 as unknown as Annotation);
+
+    const inserted = store.getAnnotation(id2);
+
+    expect(inserted?.id).toBe(id2);
+    expect(inserted?.bodies).toBeDefined();
+    expect(inserted?.bodies.length).toBe(0);
+    expect(inserted?.target.annotation).toBe(id2);
+  });
+
+  it('should auto-generate an ID for annotations that don\'t have one', () => {
+    const store = createStore();
+    store.addAnnotation(lazyAnnotation2 as unknown as Annotation);
+
+    expect(store.all().length).toBe(1);
+
+    const inserted = store.all()[0];
+
+    const autoId = inserted.id;
+
+    expect(autoId).toBeDefined()
+    expect(inserted?.bodies).toBeDefined();
+    expect(inserted?.bodies.length).toBe(0);
+    expect(inserted?.target.annotation).toBe(autoId);
+  });
+
 });
