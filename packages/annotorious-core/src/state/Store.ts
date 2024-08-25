@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import type { Annotation } from '../model';
 import { diffAnnotations } from '../utils';
 import { Origin, shouldNotify, type Update, type ChangeSet } from './StoreObserver';
@@ -5,6 +6,23 @@ import type { StoreObserver, StoreChangeEvent, StoreObserveOptions } from './Sto
 
 // Shorthand
 type AnnotationBodyIdentifier = { id: string, annotation: string }; 
+
+const sanitize = <T extends Annotation>(a: T): T => {
+  const id = a.id === undefined ? uuidv4() : a.id;
+
+  return {
+    ...a,
+    id,
+    bodies: a.bodies === undefined ? [] : a.bodies.map(b => ({
+      ...b,
+      annotation: id 
+    })),
+    target: {
+      ...a.target,
+      annotation: id
+    }
+  }
+}
 
 export type Store<T extends Annotation> = ReturnType<typeof createStore<T>>;
 
@@ -50,15 +68,16 @@ export const createStore = <T extends Annotation>() => {
     if (existing) {
       throw Error(`Cannot add annotation ${annotation.id} - exists already`);
     } else {
-      annotationIndex.set(annotation.id, annotation);
+      const sanitized = sanitize(annotation);
 
-      annotation.bodies.forEach(b => bodyIndex.set(b.id, annotation.id));
-      emit(origin, { created: [annotation] });
+      annotationIndex.set(sanitized.id, sanitized);
+      sanitized.bodies.forEach(b => bodyIndex.set(b.id, sanitized.id));
+      emit(origin, { created: [sanitized] });
     }
   }
 
   const updateOneAnnotation = (arg1: string | T, arg2?: T | Origin) => {
-    const updated: T = typeof arg1 === 'string' ? arg2 as T : arg1;
+    const updated: T = typeof arg1 === 'string' ? sanitize(arg2 as T) : arg1;
 
     const oldId: string = typeof arg1 === 'string' ? arg1 : arg1.id;
     const oldValue = annotationIndex.get(oldId);
@@ -134,18 +153,20 @@ export const createStore = <T extends Annotation>() => {
   }
 
   const bulkAddAnnotation = (annotations: T[], replace = true, origin = Origin.LOCAL) => {
+    const sanitized = annotations.map(sanitize);
+
     if (replace) {
       // Delete existing first
       const deleted = [...annotationIndex.values()];
       annotationIndex.clear();
       bodyIndex.clear();
 
-      annotations.forEach(annotation => {
+      sanitized.forEach(annotation => {
         annotationIndex.set(annotation.id, annotation);
         annotation.bodies.forEach(b => bodyIndex.set(b.id, annotation.id));
       });
 
-      emit(origin, { created: annotations, deleted });
+      emit(origin, { created: sanitized, deleted });
     } else {
       // Don't allow overwriting of existing annotations
       const existing = annotations.reduce((all, next) => {
@@ -156,12 +177,12 @@ export const createStore = <T extends Annotation>() => {
       if (existing.length > 0)
         throw Error(`Bulk insert would overwrite the following annotations: ${existing.map(a => a.id).join(', ')}`);
 
-      annotations.forEach(annotation => {
+      sanitized.forEach(annotation => {
         annotationIndex.set(annotation.id, annotation);
         annotation.bodies.forEach(b => bodyIndex.set(b.id, annotation.id));
       });
 
-      emit(origin, { created: annotations });
+      emit(origin, { created: sanitized });
     }
   }
 
