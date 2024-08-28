@@ -1,8 +1,8 @@
-<script lang="ts">
+<script lang="ts" generics="T extends Annotation">
   import { SvelteComponent, onMount } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-  import type { DrawingStyleExpression, StoreChangeEvent, User } from '@annotorious/core';
-  import { ShapeType } from '../model';
+  import type { Annotation, DrawingStyleExpression, StoreChangeEvent, User } from '@annotorious/core';
+  import { isImageAnnotation, ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
   import { getEditor as _getEditor, EditorMount } from './editors';
   import { Ellipse, Polygon, Rectangle} from './shapes';
@@ -17,7 +17,7 @@
   export let drawingEnabled: boolean;
   export let image: HTMLImageElement | HTMLCanvasElement;
   export let preferredDrawingMode: DrawingMode;
-  export let state: SvelteImageAnnotatorState;
+  export let state: SvelteImageAnnotatorState<T>;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined = undefined;
   export let toolName: string = listDrawingTools()[0];
   export let user: User;
@@ -44,7 +44,7 @@
 
   $: ({ onPointerDown, onPointerUp } = addEventListeners(svgEl, store));
 
-  let storeObserver: (event: StoreChangeEvent<ImageAnnotation>) => void | undefined;
+  let storeObserver: (event: StoreChangeEvent<T>) => void | undefined;
 
   let editableAnnotations: ImageAnnotation[] | undefined;
 
@@ -62,12 +62,14 @@
 
     if (editableIds.length > 0) {
       // Resolve selected IDs from the store
-      editableAnnotations = editableIds.map(id => store.getAnnotation(id)!).filter(Boolean);
+      editableAnnotations = editableIds
+        .map(id => store.getAnnotation(id)!)
+        .filter(a => a && isImageAnnotation(a));
 
       // Track updates on the editable annotations
-      storeObserver = (event: StoreChangeEvent<ImageAnnotation>) => {
+      storeObserver = (event: StoreChangeEvent<T>) => {
         const { updated } = event.changes;
-        editableAnnotations = updated?.map(change => change.newValue);
+        editableAnnotations = updated?.map(change => change.newValue) as unknown as ImageAnnotation[];
       }   
       
       store.observe(storeObserver, { annotations: editableIds });
@@ -76,7 +78,7 @@
     }
   }
 
-  const onSelectionCreated = <T extends Shape>(evt: CustomEvent<T>) => {
+  const onSelectionCreated = <S extends Shape>(evt: CustomEvent<S>) => {
     const id = uuidv4();
 
     const annotation: ImageAnnotation = {
@@ -90,7 +92,7 @@
       }
     };
 
-    store.addAnnotation(annotation);
+    store.addAnnotation(annotation as unknown as Partial<T>);
 
     selection.setSelected(annotation.id);
   }
@@ -143,8 +145,8 @@
   on:pointermove={onPointerMove}>
   
   <g>
-    {#each $store as annotation}
-      {#if !isEditable(annotation)}
+    {#each $store.filter(a => isImageAnnotation(a)) as annotation}
+      {#if isImageAnnotation(annotation) && !isEditable(annotation)}
         {@const selector = annotation.target.selector}
         {#key annotation.id}
           {#if (selector?.type === ShapeType.ELLIPSE)}

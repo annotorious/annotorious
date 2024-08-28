@@ -12,3 +12,14 @@ export interface ImageAnnotationTarget extends AnnotationTarget {
   selector: Shape
 
 }
+
+export const isImageAnnotation = <T extends Annotation>(
+  a: T | ImageAnnotation
+): a is ImageAnnotation =>
+  isImageAnnotationTarget(a.target);
+
+ export const isImageAnnotationTarget = <T extends AnnotationTarget>(
+  t: T | ImageAnnotationTarget
+): t is ImageAnnotationTarget =>
+  t?.annotation !== undefined &&
+ (t as ImageAnnotationTarget)?.selector?.geometry?.bounds !== undefined;

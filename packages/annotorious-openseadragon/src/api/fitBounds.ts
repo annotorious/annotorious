@@ -1,4 +1,5 @@
-import type { ImageAnnotationStore } from '@annotorious/annotorious';
+import { isImageAnnotation} from '@annotorious/annotorious';
+import type { Annotation, ImageAnnotationStore } from '@annotorious/annotorious';
 import type OpenSeadragon from 'openseadragon';
 
 export interface FitboundsOptions {
@@ -9,16 +10,16 @@ export interface FitboundsOptions {
 
 }
 
-const _fitBounds = (
+const _fitBounds = <I extends Annotation>(
   viewer: OpenSeadragon.Viewer,
-  store: ImageAnnotationStore,
+  store: ImageAnnotationStore<I>,
   fn: string
 ) => (arg: { id: string } | string, opts: FitboundsOptions = {}) => {
   const id = typeof arg === 'string' ? arg : arg.id;
 
   const annotation = store.getAnnotation(id);
-  if  (!annotation)
-    return;
+
+  if  (!annotation || !isImageAnnotation(annotation)) return;
 
   const containerBounds = viewer.container.getBoundingClientRect();
 
@@ -50,12 +51,12 @@ const _fitBounds = (
   viewer.viewport[fn](rect, opts.immediately);
 } 
 
-export const fitBounds = (
+export const fitBounds = <I extends Annotation>(
   viewer: OpenSeadragon.Viewer,
-  store: ImageAnnotationStore
+  store: ImageAnnotationStore<I>
 ) => _fitBounds(viewer, store, 'fitBounds');
 
-export const fitBoundsWithConstraints = (
+export const fitBoundsWithConstraints = <I extends Annotation>(
   viewer: OpenSeadragon.Viewer,
-  store: ImageAnnotationStore
+  store: ImageAnnotationStore<I>
 ) => _fitBounds(viewer, store, 'fitBoundsWithConstraints');

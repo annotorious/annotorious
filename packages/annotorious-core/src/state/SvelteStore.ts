@@ -29,7 +29,7 @@ export interface SvelteAnnotator<T extends Annotation> extends Annotator<T> {
  * convenient for everyone using Svelte, as well as for the
  * basic (Svelte-based) Annotorious standard implementation.
  */
-export const toSvelteStore = <T extends Annotation>(store: Store<T>): SvelteStore<T> => {
+export const toSvelteStore = <T extends Annotation = Annotation>(store: Store<T>): SvelteStore<T> => {
 
   const subscribe = (onChange: Subscriber<T>) => {
 

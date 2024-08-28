@@ -8,6 +8,7 @@ import {
   UserSelectAction
 } from '@annotorious/core';
 import type { 
+  Annotation,
   Annotator, 
   DrawingStyleExpression, 
   Filter, 
@@ -43,7 +44,7 @@ import {
 
 import '@annotorious/annotorious/annotorious.css';
 
-export interface OpenSeadragonAnnotator<E extends unknown = ImageAnnotation> extends Annotator<ImageAnnotation, E> {
+export interface OpenSeadragonAnnotator<I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation> extends Annotator<I, E> {
 
   viewer: OpenSeadragon.Viewer;
 
@@ -65,25 +66,25 @@ export interface OpenSeadragonAnnotator<E extends unknown = ImageAnnotation> ext
 
 }
 
-export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
+export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation>(
   viewer: OpenSeadragon.Viewer, 
-  options: AnnotoriousOpts<ImageAnnotation, E> = {}
-): OpenSeadragonAnnotator<E> => {
+  options: AnnotoriousOpts<I, E> = {}
+): OpenSeadragonAnnotator<I, E> => {
 
-  const opts = fillDefaults<ImageAnnotation, E>(options, {
+  const opts = fillDefaults<I, E>(options, {
     drawingEnabled: false,
     drawingMode: isTouch ? 'drag' : 'click',
     userSelectAction: UserSelectAction.EDIT,
     theme: 'light'
   });
 
-  const state = createImageAnnotatorState(opts);
+  const state = createImageAnnotatorState<I, E>(opts);
 
   const { hover, selection, store } = state;
 
   const undoStack = createUndoStack(store);
 
-  const lifecycle = createLifecycleObserver(
+  const lifecycle = createLifecycleObserver<I, E>(
     state, undoStack, opts.adapter, opts.autoSave);
 
   let currentUser: User = createAnonymousGuest();
@@ -152,7 +153,7 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
   /******++++++*************/
 
   // Most of the external API functions are covered in the base annotator
-  const base = createBaseAnnotator<ImageAnnotation, E>(state, undoStack, opts.adapter);
+  const base = createBaseAnnotator<I, E>(state, undoStack, opts.adapter);
 
   const destroy = () => {
     // Destroy Svelte layers
@@ -199,9 +200,9 @@ export const createOSDAnnotator = <E extends unknown = ImageAnnotation>(
     drawingLayer.$set({ filter });
   }
 
-  const setStyle = (style: DrawingStyleExpression<ImageAnnotation> | undefined) => {
-    displayLayer.$set({ style });
-    drawingLayer.$set({ style });
+  const setStyle = (style: DrawingStyleExpression<I> | undefined) => {
+    displayLayer.$set({ style: style as DrawingStyleExpression<ImageAnnotation> });
+    drawingLayer.$set({ style: style as DrawingStyleExpression<ImageAnnotation> });
   }
 
   const setPresenceProvider = (provider: PresenceProvider) =>

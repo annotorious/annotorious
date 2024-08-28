@@ -25,7 +25,7 @@ export type DrawingMode = 'click' | 'drag';
 
 export type Theme = 'dark' | 'light' | 'auto';
 
-export const fillDefaults = <I extends ImageAnnotation = ImageAnnotation, E extends unknown = ImageAnnotation> (
+export const fillDefaults = <I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation> (
   opts: AnnotoriousOpts<I, E>,
   defaults: AnnotoriousOpts<I, E>
 ): AnnotoriousOpts<I, E> => ({

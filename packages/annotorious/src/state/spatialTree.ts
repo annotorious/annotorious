@@ -1,6 +1,7 @@
 import RBush from 'rbush';
-import { ShapeType,computeArea, intersects } from '../model';
+import { ShapeType,computeArea, intersects, isImageAnnotationTarget } from '../model';
 import type { ImageAnnotationTarget } from '../model';
+import type { AnnotationTarget } from '@annotorious/core';
 
 interface IndexedTarget {
 
@@ -29,7 +30,9 @@ export const createSpatialTree = () => {
     index.clear();
   }
 
-  const insert = (target: ImageAnnotationTarget) => {
+  const insert = (target: AnnotationTarget) => {
+    if (!isImageAnnotationTarget(target)) return;
+
     const { minX, minY, maxX, maxY } = target.selector.geometry.bounds;
 
     const t = { minX, minY, maxX, maxY, target };
@@ -38,28 +41,30 @@ export const createSpatialTree = () => {
     index.set(target.annotation, t);
   };
 
-  const remove = (target: ImageAnnotationTarget) => {
+  const remove = (target: AnnotationTarget) => {
+    if (!isImageAnnotationTarget(target)) return;
+
     const item = index.get(target.annotation);
     if (item)
       tree.remove(item);
     index.delete(target.annotation);
   };
 
-  const update = (previous: ImageAnnotationTarget, updated: ImageAnnotationTarget) => {
+  const update = (previous: AnnotationTarget, updated: AnnotationTarget) => {
     remove(previous);
     insert(updated);
   };
 
-  const set = (targets: ImageAnnotationTarget[], replace: boolean = true) => {
+  const set = (targets: AnnotationTarget[], replace: boolean = true) => {
     if (replace) 
       clear();
 
     const indexedTargets = targets.reduce<IndexedTarget[]>((all, target) => {
-      if (target.selector?.geometry?.bounds) {
+      if (isImageAnnotationTarget(target)) {
         // In case the host app injects any custom annotations, the 
         // spatial index should simply ignore them. 
         const { minX, minY, maxX, maxY } = target.selector.geometry.bounds;
-        return [...all, { minX, minY, maxX, maxY, target }];
+        return [...all, { minX, minY, maxX, maxY, target } as IndexedTarget];
       } else {
         return all;
       }

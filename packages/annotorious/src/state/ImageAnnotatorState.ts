@@ -4,6 +4,7 @@ import { createSpatialTree } from './spatialTree';
 import { 
   createViewportState,
   toSvelteStore,
+  type Annotation,
   type AnnotatorState, 
   type HoverState,
   type SelectionState
@@ -19,9 +20,9 @@ import type {
   SvelteImageAnnotatorState
 } from './ImageAnnotationStore';
 
-export type ImageAnnotatorState<T extends ImageAnnotationStore = ImageAnnotationStore> = AnnotatorState<ImageAnnotation> & {
+export type ImageAnnotatorState<I extends Annotation> = AnnotatorState<I> & {
 
-  store: T;
+  store: ImageAnnotationStore<I>;
 
   selection: SelectionState<ImageAnnotation>;
 
@@ -29,15 +30,15 @@ export type ImageAnnotatorState<T extends ImageAnnotationStore = ImageAnnotation
 
 }
 
-export const createImageAnnotatorState = <E extends unknown>(
-  opts: AnnotoriousOpts<ImageAnnotation, E>
-): ImageAnnotatorState<ImageAnnotationStore> => {
+export const createImageAnnotatorState = <I extends Annotation, E extends unknown> (
+  opts: AnnotoriousOpts<I, E>
+): ImageAnnotatorState<I> => {
 
-  const store = createStore<ImageAnnotation>();
+  const store = createStore<I>();
 
   const tree = createSpatialTree();
 
-  const selection = createSelectionState(store);
+  const selection = createSelectionState<I>(store);
   selection.setUserSelectAction(opts.userSelectAction);
 
   const hover = createHoverState(store);
@@ -49,40 +50,40 @@ export const createImageAnnotatorState = <E extends unknown>(
     
     (changes.deleted || []).forEach(a => tree.remove(a.target as ImageAnnotationTarget));
     
-    (changes.updated || []).forEach(({ oldValue, newValue }) =>
+    (changes.updated || []).forEach(({ oldValue, newValue }) => 
       tree.update(oldValue.target, newValue.target));
   });
 
   const getAt = (x: number, y: number): ImageAnnotation | undefined => {
     const target = tree.getAt(x, y);
-    return target ? store.getAnnotation(target.annotation) : undefined; 
+    return target ? store.getAnnotation(target.annotation) as unknown as ImageAnnotation : undefined; 
   }
 
   const getIntersecting = (x: number, y: number, width: number, height: number) =>
-    tree.getIntersecting(x, y, width, height).map(target => store.getAnnotation(target.annotation));
+    tree.getIntersecting(x, y, width, height).map(target => store.getAnnotation(target.annotation) as unknown as ImageAnnotation);
 
   return {
     store: {
       ...store,
       getAt,
       getIntersecting
-    } as ImageAnnotationStore,
+    },
     selection,
     hover,
     viewport
-  }
+  } as ImageAnnotatorState<I>;
 
 }
 
-export const createSvelteImageAnnotatorState = <E extends unknown>(  
-  opts: AnnotoriousOpts<ImageAnnotation, E>
-): SvelteImageAnnotatorState => {
+export const createSvelteImageAnnotatorState = <I extends Annotation, E extends unknown>(  
+  opts: AnnotoriousOpts<I, E>
+): SvelteImageAnnotatorState<I> => {
 
   const state = createImageAnnotatorState(opts);
   
   return {
     ...state,
-    store: toSvelteStore(state.store) as SvelteImageAnnotationStore
+    store: toSvelteStore(state.store) as SvelteImageAnnotationStore<I>
   }
 
 }

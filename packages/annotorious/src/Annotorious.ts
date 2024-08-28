@@ -1,6 +1,6 @@
 import type { SvelteComponent } from 'svelte';
 import { UserSelectAction } from '@annotorious/core';
-import type { Annotator, DrawingStyleExpression, Filter, User } from '@annotorious/core';
+import type { Annotation, Annotator, DrawingStyleExpression, Filter, User } from '@annotorious/core';
 import { createAnonymousGuest, createBaseAnnotator, createLifecycleObserver, createUndoStack } from '@annotorious/core';
 import { registerEditor } from './annotation/editors';
 import { getTool, registerTool, listDrawingTools, type DrawingTool } from './annotation/tools';
@@ -17,7 +17,7 @@ import './Annotorious.css';
 import './themes/dark/index.css';
 import './themes/light/index.css';
 
-export interface ImageAnnotator<E extends unknown = ImageAnnotation> extends Annotator<ImageAnnotation, E> { 
+export interface ImageAnnotator<I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation> extends Annotator<I, E> { 
 
   element: HTMLDivElement;
 
@@ -35,10 +35,10 @@ export interface ImageAnnotator<E extends unknown = ImageAnnotation> extends Ann
 
 }
 
-export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
+export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation>(
   image: string | HTMLImageElement | HTMLCanvasElement, 
-  options: AnnotoriousOpts<ImageAnnotation, E> = {}
-): ImageAnnotator<E> => {
+  options: AnnotoriousOpts<I, E> = {}
+): ImageAnnotator<I, E> => {
 
   if (!image)
     throw 'Missing argument: image';
@@ -47,20 +47,20 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     typeof image === 'string' ? document.getElementById(image) : image
   ) as HTMLImageElement | HTMLCanvasElement;
 
-  const opts = fillDefaults<ImageAnnotation, E>(options, {
+  const opts = fillDefaults<I, E>(options, {
     drawingEnabled: true,
     drawingMode: 'drag',
     userSelectAction: UserSelectAction.EDIT,
     theme: 'light'
   });
 
-  const state = createSvelteImageAnnotatorState(opts);
+  const state = createSvelteImageAnnotatorState<I, E>(opts);
 
   const { selection, store } = state;
 
   const undoStack = createUndoStack(store);
 
-  const lifecycle = createLifecycleObserver<ImageAnnotation, E>(
+  const lifecycle = createLifecycleObserver<I, E>(
     state, undoStack, opts.adapter, opts.autoSave
   );
 
@@ -87,13 +87,13 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
       drawingEnabled: Boolean(opts.drawingEnabled), 
       image: img, 
       preferredDrawingMode: opts.drawingMode!,
-      state, 
+      state: state, 
       style: opts.style, 
       user: currentUser
     }
   });
 
-  annotationLayer.$on('click', (evt: CustomEvent<SVGAnnotationLayerPointerEvent>) => {
+  annotationLayer.$on('click', (evt: CustomEvent<SVGAnnotationLayerPointerEvent<I>>) => {
     const { originalEvent, annotation } = evt.detail;
     if (annotation)
       selection.userSelect(annotation.id, originalEvent);
@@ -106,7 +106,7 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
   /******++++++*************/
 
   // Most of the external API functions are covered in the base annotator
-  const base = createBaseAnnotator<ImageAnnotation, E>(state, undoStack, opts.adapter);
+  const base = createBaseAnnotator<I, E>(state, undoStack, opts.adapter);
 
   const destroy = () => {
     // Destroy Svelte annotation layer
@@ -146,8 +146,8 @@ export const createImageAnnotator = <E extends unknown = ImageAnnotation>(
     console.warn('Filter not implemented yet');
   }
 
-  const setStyle = (style: DrawingStyleExpression<ImageAnnotation> | undefined) =>
-    annotationLayer.$set({ style });
+  const setStyle = (style: DrawingStyleExpression<I> | undefined) =>
+    annotationLayer.$set({ style: style as DrawingStyleExpression<ImageAnnotation> });
 
   const setTheme = (theme: Theme) => _setTheme(img, container, theme);
   

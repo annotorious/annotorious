@@ -1,7 +1,7 @@
-import type { Store, SvelteAnnotatorState, SvelteStore } from '@annotorious/core';
+import type { Annotation, Store, SvelteAnnotatorState, SvelteStore } from '@annotorious/core';
 import type { ImageAnnotation } from '../model';
 
-export type ImageAnnotationStore = Store<ImageAnnotation> & {
+export type ImageAnnotationStore<I extends Annotation> = Store<I> & {
 
   getAt(x: number, y: number): ImageAnnotation | undefined;
 
@@ -9,10 +9,10 @@ export type ImageAnnotationStore = Store<ImageAnnotation> & {
 
 }
 
-export type SvelteImageAnnotationStore = SvelteStore<ImageAnnotation> & ImageAnnotationStore;
+export type SvelteImageAnnotationStore<I extends Annotation = Annotation> = SvelteStore<I> & ImageAnnotationStore<I>;
 
-export type SvelteImageAnnotatorState = SvelteAnnotatorState<ImageAnnotation> & {
+export type SvelteImageAnnotatorState<I extends Annotation = Annotation> = SvelteAnnotatorState<I> & {
 
-  store: SvelteImageAnnotationStore;
+  store: SvelteImageAnnotationStore<I>;
 
 }
