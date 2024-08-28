@@ -69,7 +69,9 @@ export type {
   Shape,
   SVGSelector,
   W3CImageAnnotation,
-  W3CImageAnnotationTarget
+  W3CImageAnnotationTarget,
+  W3CImageFormatAdapter, 
+  W3CImageFormatAdapterOpts
 } from '@annotorious/annotorious';
 
 import {   
