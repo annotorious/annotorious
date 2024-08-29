@@ -4,7 +4,7 @@
   "description": "Annotorious React bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
-  "homepage": "https://annotorious.github.io",
+  "homepage": "https://annotorious.dev",
   "type": "module",
   "scripts": {
     "start": "vite",

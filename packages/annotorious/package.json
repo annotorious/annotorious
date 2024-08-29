@@ -4,7 +4,7 @@
   "description": "Add image annotation functionality to any web page with a few lines of JavaScript",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
-  "homepage": "https://annotorious.github.io",
+  "homepage": "https://annotorious.dev",
   "type": "module",
   "repository": {
     "type": "git",

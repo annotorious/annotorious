@@ -4,7 +4,7 @@
   "description": "Annotorious core types and functions",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
-  "homepage": "https://annotorious.github.io",
+  "homepage": "https://annotorious.dev",
   "type": "module",
   "repository": {
     "type": "git",
