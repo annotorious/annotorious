@@ -30,10 +30,13 @@ export type UserSelectActionExpression<T extends Annotation> = UserSelectAction 
 
 const EMPTY: Selection = { selected: [] };
 
-export const createSelectionState = <T extends Annotation>(store: Store<T>) => {
+export const createSelectionState = <T extends Annotation>(
+  store: Store<T>,
+  defaultSelectionAction?: UserSelectActionExpression<T>
+) => {
   const { subscribe, set } = writable<Selection>(EMPTY);
 
-  let currentUserSelectAction: UserSelectActionExpression<T> | undefined;
+  let currentUserSelectAction = defaultSelectionAction;
 
   let currentSelection: Selection = EMPTY;
 
