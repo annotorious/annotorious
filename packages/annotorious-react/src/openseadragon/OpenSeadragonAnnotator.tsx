@@ -13,8 +13,6 @@ export type OpenSeadragonAnnotatorProps<I extends Annotation, E extends unknown>
 
   children?: ReactNode;
 
-  drawingEnabled?: boolean;
-
   filter?: Filter<I>;
 
   style?: DrawingStyle | ((annotation: I) => DrawingStyle);
