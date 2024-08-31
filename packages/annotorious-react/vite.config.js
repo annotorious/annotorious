@@ -15,7 +15,7 @@ export default defineConfig({
     })
   ],
   server: {
-    open: '/test/index.html'
+    open: '/test/openseadragon/index.html'
   },
   build: {
     lib: {

@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { ImageAnnotation } from '@annotorious/annotorious';
 import OpenSeadragon from 'openseadragon';
-import { AnnotoriousPopupProps, Draggable } from '../AnnotoriousPopup';
+import { AnnotoriousPopupProps } from '../AnnotoriousPopupProps';
 import { useViewer } from './OpenSeadragonAnnotator';
 import { useSelection } from '../Annotorious';
 import { setPosition } from './setPosition';
@@ -68,15 +68,15 @@ export const OpenSeadragonPopup = (props: OpenSeadragonPopupContainerProps) => {
   }, [selected, dragged]);
   
   return selected.length > 0 ? (
-    <Draggable 
+    <div 
       ref={el} 
       key={selected.map(({ annotation }) => annotation.id).join('-')} 
       className="a9s-popup a9s-osd-popup" 
       onDragStart={onDragStart}>
 
-      {props.popup({ viewer, selected })}
+      {/* props.popup({ viewer, selected }) */}
       
-    </Draggable>
+    </div>
   ) : null;
 
 }
