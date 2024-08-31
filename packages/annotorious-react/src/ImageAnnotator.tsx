@@ -1,6 +1,6 @@
 import { Children, ReactElement, cloneElement, useContext, useEffect } from 'react';
 import { AnnotoriousOpts, createImageAnnotator } from '@annotorious/annotorious';
-import type { DrawingStyle, DrawingTool, Filter, ImageAnnotation } from '@annotorious/annotorious';
+import type { DrawingTool, Filter, ImageAnnotation } from '@annotorious/annotorious';
 import { AnnotoriousContext } from './Annotorious';
 
 export interface ImageAnnotatorProps<E extends unknown> extends AnnotoriousOpts<ImageAnnotation, E> {
@@ -10,8 +10,6 @@ export interface ImageAnnotatorProps<E extends unknown> extends AnnotoriousOpts<
   className?: string;
 
   filter?: Filter<ImageAnnotation>;
-
-  style?: DrawingStyle | ((annotation: ImageAnnotation) => DrawingStyle);
 
   tool?: DrawingTool;
 
