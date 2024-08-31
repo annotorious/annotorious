@@ -7,7 +7,7 @@ export interface ImageAnnotatorProps<E extends unknown> extends AnnotoriousOpts<
 
   children: ReactElement<HTMLImageElement>;
 
-  className?: string;
+  containerClassName?: string;
 
   filter?: Filter<ImageAnnotation>;
 
@@ -33,9 +33,9 @@ export const ImageAnnotator = <E extends unknown>(props: ImageAnnotatorProps<E>)
   };
 
   useEffect(() => {
-    if (!anno || !props.className) return;
-    anno.element.className = props.className;
-  }, [props.className, anno]);
+    if (!anno || !props.containerClassName) return;
+    anno.element.className = props.containerClassName;
+  }, [props.containerClassName, anno]);
 
   useEffect(() => {
     if (props.tool && anno) anno.setDrawingTool(props.tool);
