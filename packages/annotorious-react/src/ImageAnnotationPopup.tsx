@@ -101,7 +101,15 @@ export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
   }
 
   const onUpdateBody = (current: AnnotationBody, next: AnnotationBody) => {
+    const id = next.id || uuidv4();
 
+    const updated = {
+      ...next,
+      id,
+      annotation: annotation.id
+    }
+
+    anno.state.store.updateBody(current, updated);
   }
 
   return isOpen && annotation && (
