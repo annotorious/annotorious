@@ -5,7 +5,7 @@ import { useAnnotator, AnnotoriousOpenSeadragonAnnotator } from '../../src';
 import {
   OpenSeadragonViewer, 
   OpenSeadragonAnnotator, 
-  OpenSeadragonPopup, 
+  OpenSeadragonAnnotationPopup, 
 } from '../../src/openseadragon';
 
 import '@annotorious/openseadragon/annotorious-openseadragon.css';
@@ -114,7 +114,7 @@ export const App = () => {
             
         <OpenSeadragonViewer className="openseadragon" options={OSD_OPTIONS} />
 
-        <OpenSeadragonPopup 
+        <OpenSeadragonAnnotationPopup 
           popup={() => (
             <div className="popup">Hello World</div>
           )} />

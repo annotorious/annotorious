@@ -1,6 +1,10 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
+import OpenSeadragon from 'openseadragon';
 import { v4 as uuidv4 } from 'uuid';
-import { AnnotationBody, Annotator, Geometry, ImageAnnotation } from '@annotorious/annotorious';
+import { useAnnotator, useSelection, useViewer} from '@annotorious/react';
+import type { AnnotoriousPopupProps } from '@annotorious/react';
+import type { AnnotationBody, Annotator, Geometry, ImageAnnotation } from '@annotorious/annotorious';
+import { toClientRects } from '../utils/toClientRects';
 import {
   useFloating,
   arrow,
@@ -11,22 +15,22 @@ import {
   offset,
   FloatingArrow
 } from '@floating-ui/react';
-import { useAnnotator, useSelection } from './Annotorious';
-import { AnnotoriousPopupProps } from './AnnotoriousPopupProps';
-import { toClientRects } from './utils/toClientRects';
 
-const toDOMRect = (geometry: Geometry) => {
+const toDOMRect = (viewer: OpenSeadragon.Viewer, geometry: Geometry) => {
   const { minX, minY, maxX, maxY } = geometry.bounds;
 
+  const topLeft = viewer.viewport.imageToWindowCoordinates(new OpenSeadragon.Point(minX, minY));
+  const bottomRight = viewer.viewport.imageToWindowCoordinates(new OpenSeadragon.Point(maxX, maxY));
+
   return new DOMRect(
-    minX,
-    minY,
-    maxX - minX,
-    maxY - minY
+    topLeft.x,
+    topLeft.y,
+    bottomRight.x  - topLeft.x,
+    bottomRight.y - topLeft.y
   );
 }
 
-interface ImageAnnotationPopupProps {
+interface OpenSeadragonAnnotationPopupProps {
 
   arrow?: boolean;
 
@@ -34,11 +38,13 @@ interface ImageAnnotationPopupProps {
 
 }
 
-export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
-
+export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopupProps) => {
+  
   const anno = useAnnotator<Annotator<ImageAnnotation>>();
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const viewer = useViewer();
 
   const arrowRef = useRef(null);
 
@@ -57,6 +63,7 @@ export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
       flip({ crossAxis: true }),
       shift({ 
         crossAxis: true,
+        boundary: viewer?.element,
         padding: { right: 5, left: 5, top: 10, bottom: 10 }
       }),
       arrow({
@@ -72,7 +79,8 @@ export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
       setIsOpen(false);
     } else {
       const setPosition = () => { 
-        const rect = toDOMRect(annotation.target.selector.geometry);
+        
+        const rect = toDOMRect(viewer, annotation.target.selector.geometry);
         
         refs.setReference({
           getBoundingClientRect: () => rect,
@@ -82,9 +90,11 @@ export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
 
       setPosition();
 
+      viewer.addHandler('update-viewport', setPosition);
+
       setIsOpen(true);
     }
-  }, [props.popup, selected]);
+  }, [props.popup, selected, viewer]);
 
   const onCreateBody = (body: Partial<AnnotationBody>) => {
     const id = body.id || uuidv4();
@@ -123,7 +133,7 @@ export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
       <FloatingArrow 
         ref={arrowRef} 
         context={context} 
-        fill="currentColor" />
+        fill="#fff" />
 
       {props.popup({ 
         annotation, 

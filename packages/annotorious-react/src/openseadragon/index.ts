@@ -8,9 +8,8 @@ export type {
 } from './OpenSeadragonAnnotator';
 
 export { 
-  OpenSeadragonPopup, 
-  type OpenSeadragonPopupProps 
-} from './OpenSeadragonPopup';
+  OpenSeadragonAnnotationPopup, 
+} from './OpenSeadragonAnnotationPopup';
 
 export * from './OpenSeadragonViewer';
 
