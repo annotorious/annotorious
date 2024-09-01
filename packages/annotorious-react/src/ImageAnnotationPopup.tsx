@@ -17,15 +17,20 @@ import { toClientRects } from './utils/toClientRects';
 import { AnnotoriousImageAnnotator } from '@annotorious/openseadragon';
 
 const toDOMRect = (geometry: Geometry, container: HTMLDivElement) => {
-  const { left, top } = container.getBoundingClientRect();
+  const img = container.querySelector('img');
+
+  const { left, top } = img.getBoundingClientRect();
+
+  const kx = img.offsetWidth / img.naturalWidth;
+  const ky = img.offsetHeight / img.naturalHeight;
 
   const { minX, minY, maxX, maxY } = geometry.bounds;
 
   return new DOMRect(
-    left + minX,
-    top + minY,
-    maxX - minX,
-    maxY - minY
+    left + kx * minX,
+    top + ky * minY,
+    kx * (maxX - minX),
+    ky * (maxY - minY)
   );
 }
 
