@@ -105,7 +105,9 @@ export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
   const onUpdateBody = (current: AnnotationBody, next: AnnotationBody) => {
     const id = next.id || uuidv4();
 
-    const updated = {
+    const updated: AnnotationBody = {
+      updated: new Date(),
+      updatedBy: anno.getUser(),
       ...next,
       id,
       annotation: annotation.id
