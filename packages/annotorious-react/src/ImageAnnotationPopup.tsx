@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { AnnotationBody, Annotator, Geometry, ImageAnnotation } from '@annotorious/annotorious';
+import { AnnotationBody, Geometry } from '@annotorious/annotorious';
 import {
   useFloating,
   arrow,
@@ -14,13 +14,16 @@ import {
 import { useAnnotator, useSelection } from './Annotorious';
 import { AnnotoriousPopupProps } from './AnnotoriousPopupProps';
 import { toClientRects } from './utils/toClientRects';
+import { AnnotoriousImageAnnotator } from '@annotorious/openseadragon';
 
-const toDOMRect = (geometry: Geometry) => {
+const toDOMRect = (geometry: Geometry, container: HTMLDivElement) => {
+  const { left, top } = container.getBoundingClientRect();
+
   const { minX, minY, maxX, maxY } = geometry.bounds;
 
   return new DOMRect(
-    minX,
-    minY,
+    left + minX,
+    top + minY,
     maxX - minX,
     maxY - minY
   );
@@ -36,7 +39,7 @@ interface ImageAnnotationPopupProps {
 
 export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
 
-  const anno = useAnnotator<Annotator<ImageAnnotation>>();
+  const anno = useAnnotator<AnnotoriousImageAnnotator>();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -48,7 +51,7 @@ export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
 
   const editable = selected[0]?.editable;
 
-  const { refs, floatingStyles, context } = useFloating({
+  const { refs, floatingStyles, context, update } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
     middleware: [
@@ -72,19 +75,27 @@ export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
       setIsOpen(false);
     } else {
       const setPosition = () => { 
-        const rect = toDOMRect(annotation.target.selector.geometry);
-        
+        const rect = toDOMRect(annotation.target.selector.geometry, anno.element);
+
         refs.setReference({
           getBoundingClientRect: () => rect,
           getClientRects: () => toClientRects(rect)
         });
       }
 
+      window.addEventListener('scroll', setPosition, true);
+      window.addEventListener('resize', setPosition);
+
       setPosition();
 
       setIsOpen(true);
+
+      return () => {
+        window.removeEventListener('scroll', setPosition, true);
+        window.removeEventListener('resize', setPosition);
+      };
     }
-  }, [props.popup, selected]);
+  }, [anno, props.popup, selected]);
 
   const onCreateBody = (body: Partial<AnnotationBody>) => {
     const id = body.id || uuidv4();
@@ -124,8 +135,7 @@ export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
 
       <FloatingArrow 
         ref={arrowRef} 
-        context={context} 
-        fill="currentColor" />
+        context={context} />
 
       {props.popup({ 
         annotation, 

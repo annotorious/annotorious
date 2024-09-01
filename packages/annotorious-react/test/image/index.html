@@ -10,9 +10,8 @@
         padding: 0;
       }
       
-      .openseadragon {
-        height: 100vh;
-        width: 100vw;
+      img {
+        max-width: 100vw;
       }
 
       .popup {
@@ -24,10 +23,20 @@
         padding: 20px;
         white-space: nowrap;
       }
+
+      .column {
+        margin: 0 auto;
+        max-width: 400px;
+        padding-top: 500px;
+        padding-bottom: 1000px;
+        position: relative;
+      }
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div class="column">
+      <div id="root"></div>
+    </div>
     <script type="module" src="./index.tsx"></script>
   </body>
 </html>
