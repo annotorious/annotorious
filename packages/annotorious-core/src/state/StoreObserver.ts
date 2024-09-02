@@ -93,8 +93,9 @@ export enum Origin {
 export const shouldNotify = <T extends Annotation>(observer: StoreObserver<T>, event: StoreChangeEvent<T>) => {
   const { changes, origin } = event;
 
-  const isRelevantOrigin = 
-    !observer.options.origin || observer.options.origin === origin;
+  const isRelevantOrigin = observer.options.origin 
+    ? observer.options.origin === origin 
+    : origin !== Origin.SILENT;
 
   if (!isRelevantOrigin)
     return false;
