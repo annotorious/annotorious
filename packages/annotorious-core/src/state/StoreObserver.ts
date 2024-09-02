@@ -72,12 +72,20 @@ export enum Ignore {
 
 }
 
-/** Allows the observer to listen only for events that originated locally or from a remote source **/
+/** 
+ * Allows the observer to listen only for events that originated locally or from a remote source.
+ * 
+ * SILENT should be used for updates that are not supposed to trigger an event. Remember that 
+ * with great power comes great responsibility: SILENT is really for Annotorious plugins and
+ * extensions ONLY.
+ */
 export enum Origin { 
   
   LOCAL = 'LOCAL', 
   
-  REMOTE = 'REMOTE' 
+  REMOTE = 'REMOTE',
+  
+  SILENT = 'SILENT'
 
 }
 
