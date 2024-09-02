@@ -1,8 +1,8 @@
-import { AnnotationBody, ImageAnnotation } from '@annotorious/annotorious';
+import { Annotation, AnnotationBody, ImageAnnotation } from '@annotorious/annotorious';
 
-export interface PopupProps {
+export interface PopupProps <T extends Annotation = ImageAnnotation> {
 
-  annotation: ImageAnnotation;
+  annotation: T;
   
   editable?: boolean;
 
