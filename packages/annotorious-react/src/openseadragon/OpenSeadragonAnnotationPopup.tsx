@@ -19,12 +19,14 @@ import {
 const toDOMRect = (viewer: OpenSeadragon.Viewer, geometry: Geometry) => {
   const { minX, minY, maxX, maxY } = geometry.bounds;
 
-  const topLeft = viewer.viewport.imageToWindowCoordinates(new OpenSeadragon.Point(minX, minY));
-  const bottomRight = viewer.viewport.imageToWindowCoordinates(new OpenSeadragon.Point(maxX, maxY));
+  const { top, left } = viewer.element.getBoundingClientRect();
+
+  const topLeft = viewer.viewport.imageToViewerElementCoordinates(new OpenSeadragon.Point(minX, minY));
+  const bottomRight = viewer.viewport.imageToViewerElementCoordinates(new OpenSeadragon.Point(maxX, maxY));
 
   return new DOMRect(
-    topLeft.x,
-    topLeft.y,
+    topLeft.x + left,
+    topLeft.y + top,
     bottomRight.x  - topLeft.x,
     bottomRight.y - topLeft.y
   );
@@ -77,9 +79,8 @@ export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopup
   useEffect(() => {
     if (selected.length === 0) {
       setIsOpen(false);
-    } else {
+    } else {  
       const setPosition = () => { 
-        
         const rect = toDOMRect(viewer, annotation.target.selector.geometry);
         
         refs.setReference({
@@ -88,11 +89,19 @@ export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopup
         });
       }
 
-      setPosition();
-
+      window.addEventListener('scroll', setPosition, true);
+      window.addEventListener('resize', setPosition);
       viewer.addHandler('update-viewport', setPosition);
 
+      setPosition();
+
       setIsOpen(true);
+
+      return () => {
+        window.removeEventListener('scroll', setPosition, true);
+        window.removeEventListener('resize', setPosition);
+        viewer.removeHandler('update-viewport', setPosition);
+      };
     }
   }, [props.popup, selected, viewer]);
 
