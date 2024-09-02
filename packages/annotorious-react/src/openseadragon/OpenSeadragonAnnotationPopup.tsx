@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
 import { v4 as uuidv4 } from 'uuid';
 import { useAnnotator, useSelection, useViewer} from '@annotorious/react';
-import type { AnnotoriousPopupProps } from '@annotorious/react';
+import type { PopupProps } from '@annotorious/react';
 import type { AnnotationBody, Annotator, Geometry, ImageAnnotation } from '@annotorious/annotorious';
 import { toClientRects } from '../utils/toClientRects';
 import {
@@ -36,7 +36,7 @@ interface OpenSeadragonAnnotationPopupProps {
 
   arrow?: boolean;
 
-  popup: (props: AnnotoriousPopupProps) => ReactNode;
+  popup: (props: PopupProps) => ReactNode;
 
 }
 

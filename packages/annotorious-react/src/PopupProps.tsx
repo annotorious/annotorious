@@ -1,6 +1,6 @@
 import { AnnotationBody, ImageAnnotation } from '@annotorious/annotorious';
 
-export interface AnnotoriousPopupProps {
+export interface PopupProps {
 
   annotation: ImageAnnotation;
   

@@ -12,7 +12,7 @@ import {
   FloatingArrow
 } from '@floating-ui/react';
 import { useAnnotator, useSelection } from './Annotorious';
-import { AnnotoriousPopupProps } from './AnnotoriousPopupProps';
+import { PopupProps } from './PopupProps';
 import { toClientRects } from './utils/toClientRects';
 import { AnnotoriousImageAnnotator } from '@annotorious/openseadragon';
 
@@ -38,7 +38,7 @@ interface ImageAnnotationPopupProps {
 
   arrow?: boolean;
 
-  popup: (props: AnnotoriousPopupProps) => ReactNode;
+  popup: (props: PopupProps) => ReactNode;
 
 }
 

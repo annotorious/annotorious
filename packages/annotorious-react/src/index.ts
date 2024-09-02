@@ -1,8 +1,8 @@
 export * from './Annotorious';
 export * from './AnnotoriousPlugin';
-export * from './AnnotoriousPopupProps';
 export * from './ImageAnnotationPopup';
 export * from './ImageAnnotator';
+export * from './PopupProps';
 
 export * from './openseadragon';
 
