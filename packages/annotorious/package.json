@@ -44,7 +44,7 @@
     "svelte-preprocess": "^6.0.2",
     "typescript": "5.5.4",
     "vite": "^5.4.2",
-    "vite-plugin-dts": "^4.0.3",
+    "vite-plugin-dts": "^4.1.0",
     "vitest": "^2.0.5"
   },
   "dependencies": {

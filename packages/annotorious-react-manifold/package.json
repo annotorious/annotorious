@@ -35,7 +35,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "typescript": "5.5.4",
     "vite": "^5.4.2",
-    "vite-plugin-dts": "^4.0.3",
+    "vite-plugin-dts": "^4.1.0",
     "vite-tsconfig-paths": "^5.0.1"
   },
   "peerDependencies": {
