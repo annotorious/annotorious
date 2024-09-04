@@ -174,18 +174,21 @@
       transform={transform}>
       {#if drawingEl && editableAnnotations}
         {#each editableAnnotations as editable}
-          {#key editable.id}
-            <EditorMount
-              target={drawingEl}
-              editor={getEditor(editable.target.selector)}
-              annotation={editable}
-              style={style}
-              transform={{ elementToImage: toolTransform }}
-              viewportScale={scale}
-              on:grab={onGrab} 
-              on:change={onChangeSelected(editable)}
-              on:release={onRelease} />
+          {@const editor = getEditor(editable.target.selector)}
+          {#if editor}
+            {#key editable.id}
+              <EditorMount
+                target={drawingEl}
+                editor={getEditor(editable.target.selector)}
+                annotation={editable}
+                style={style}
+                transform={{ elementToImage: toolTransform }}
+                viewportScale={scale}
+                on:grab={onGrab} 
+                on:change={onChangeSelected(editable)}
+                on:release={onRelease} />
             {/key}
+          {/if}
         {/each}
       {:else if (drawingEl && tool && drawingEnabled)} 
         {#key toolName} 

@@ -23,7 +23,7 @@
   $: if (editorComponent) editorComponent.$set({ transform });
   $: if (editorComponent) editorComponent.$set({ viewportScale });
 
-  onMount(() => {
+  onMount(() => {    
     editorComponent = new editor({
       target,
       props: { shape: annotation.target.selector, computedStyle, transform, viewportScale }

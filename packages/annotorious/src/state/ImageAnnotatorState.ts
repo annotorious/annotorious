@@ -20,7 +20,7 @@ import type {
   SvelteImageAnnotatorState
 } from './ImageAnnotationStore';
 
-export type ImageAnnotatorState<I extends Annotation> = AnnotatorState<I> & {
+export type ImageAnnotatorState<I extends Annotation = ImageAnnotation> = AnnotatorState<I> & {
 
   store: ImageAnnotationStore<I>;
 
