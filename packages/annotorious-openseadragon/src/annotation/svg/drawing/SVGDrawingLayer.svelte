@@ -1,10 +1,10 @@
-<script lang="ts">
+<script lang="ts" generics="T extends Annotation">
   import { SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
-  import type { DrawingStyleExpression, Filter, StoreChangeEvent, User } from '@annotorious/core';
+  import type { Annotation, DrawingStyleExpression, Filter, StoreChangeEvent, User } from '@annotorious/core';
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
-  import { getEditor as _getEditor, getTool, listDrawingTools } from '@annotorious/annotorious';
+  import { getEditor as _getEditor, getTool, isImageAnnotation, listDrawingTools } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
   import OSDLayer from '../OSDLayer.svelte';
   import OSDToolMount from './OSDToolMount.svelte';
@@ -13,7 +13,7 @@
   export let drawingEnabled: boolean;
   export let filter: Filter<ImageAnnotation> | undefined;
   export let preferredDrawingMode: DrawingMode;
-  export let state: ImageAnnotatorState;
+  export let state: ImageAnnotatorState<T>;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined = undefined;
   export let toolName: string = listDrawingTools()[0];
   export let user: User;
@@ -37,9 +37,9 @@
   /** Selection tracking **/
   const { store, selection, hover } = state;
 
-  let storeObserver: (event: StoreChangeEvent<ImageAnnotation>) => void;
+  let storeObserver: (event: StoreChangeEvent<T>) => void;
 
-  let editableAnnotations: ImageAnnotation[] | undefined;
+  let editableAnnotations: T[] | undefined;
 
   let grabbedAt: number | undefined;
  
@@ -59,7 +59,7 @@
       editableAnnotations = editableIds.map(id => store.getAnnotation(id)!);
 
       // Track updates on the selected annotations
-      storeObserver = (event: StoreChangeEvent<ImageAnnotation>) => {
+      storeObserver = (event: StoreChangeEvent<T>) => {
         const { updated } = event.changes;
         editableAnnotations = (updated || []).map(change => change.newValue);
       }   
@@ -153,6 +153,7 @@
       }
     }
 
+    // @ts-ignore
     store.addAnnotation(annotation);
 
     selection.setSelected(annotation.id);
@@ -173,7 +174,7 @@
       bind:this={drawingEl}
       transform={transform}>
       {#if drawingEl && editableAnnotations}
-        {#each editableAnnotations as editable}
+        {#each editableAnnotations.filter(a => isImageAnnotation(a)) as editable}
           {@const editor = getEditor(editable.target.selector)}
           {#if editor}
             {#key editable.id}
