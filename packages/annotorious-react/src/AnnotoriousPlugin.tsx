@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, MutableRefObject } from 'react';
+import { useEffect, MutableRefObject } from 'react';
 import { Annotator } from '@annotorious/annotorious';
 import { useAnnotator } from './Annotorious';
 
@@ -7,6 +7,8 @@ export type AnnotatorPlugin<T extends unknown = Annotator<any, unknown>> =
 
 export interface AnnotoriousPluginProps<T extends unknown = Annotator<any, unknown>> {
 
+  pluginRef?: MutableRefObject<PluginReturnType<T>>; 
+  
   plugin: AnnotatorPlugin<T>;
 
   opts?: Object;
@@ -16,9 +18,9 @@ export interface AnnotoriousPluginProps<T extends unknown = Annotator<any, unkno
 type PluginReturnType<T> = ReturnType<AnnotatorPlugin<T>>;
 
 export const AnnotoriousPlugin = <T extends unknown = Annotator<any, unknown>>(
-  props: AnnotoriousPluginProps<T> & { ref?: MutableRefObject<PluginReturnType<T>> }
+  props: AnnotoriousPluginProps<T>
 ) => {
-  const { plugin, ref, opts } = props;
+  const { plugin, pluginRef, opts } = props;
 
   const anno = useAnnotator<T>();
 
@@ -27,18 +29,18 @@ export const AnnotoriousPlugin = <T extends unknown = Annotator<any, unknown>>(
 
     const p = plugin(anno, opts);
 
-    if (ref)
-      ref.current = p;
+    if (pluginRef)
+      pluginRef.current = p;
 
     return () => {
       if (p && 'unmount' in p) {
         p.unmount();
       }
 
-      if (ref)
-        ref.current = null;
+      if (pluginRef)
+        pluginRef.current = null;
     }
-  }, [anno, plugin, opts, ref]);
+  }, [anno, plugin, opts, pluginRef]);
 
   return null;
 
