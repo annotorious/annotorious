@@ -11,6 +11,8 @@ export interface AnnotoriousPluginProps<T extends unknown = Annotator<any, unkno
   
   plugin: AnnotatorPlugin<T>;
 
+  onLoad?(instance: PluginReturnType<T>): void;
+
   opts?: Object;
 
 }
@@ -20,7 +22,7 @@ type PluginReturnType<T> = ReturnType<AnnotatorPlugin<T>>;
 export const AnnotoriousPlugin = <T extends unknown = Annotator<any, unknown>>(
   props: AnnotoriousPluginProps<T>
 ) => {
-  const { plugin, pluginRef, opts } = props;
+  const { onLoad, opts, plugin, pluginRef } = props;
 
   const anno = useAnnotator<T>();
 
@@ -32,6 +34,9 @@ export const AnnotoriousPlugin = <T extends unknown = Annotator<any, unknown>>(
     if (pluginRef)
       pluginRef.current = p;
 
+    if (onLoad)
+      onLoad(p);
+
     return () => {
       if (p && 'unmount' in p) {
         p.unmount();
@@ -40,7 +45,7 @@ export const AnnotoriousPlugin = <T extends unknown = Annotator<any, unknown>>(
       if (pluginRef)
         pluginRef.current = null;
     }
-  }, [anno, plugin, opts, pluginRef]);
+  }, [anno, opts, plugin, pluginRef]);
 
   return null;
 
