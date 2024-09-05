@@ -159,7 +159,8 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
 
   const setAnnotations = (annotations: E[], replace = true) => {
     if (adapter) {
-      const { parsed, failed } = parseAll(adapter)(annotations);
+      const parseFn = adapter.parseAll || parseAll(adapter);
+      const { parsed, failed } = parseFn(annotations);
 
       if (failed.length > 0)
         console.warn(`Discarded ${failed.length} invalid annotations`, failed);

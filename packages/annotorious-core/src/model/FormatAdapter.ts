@@ -4,6 +4,8 @@ export interface FormatAdapter<A extends Annotation, T extends unknown> {
 
   parse(serialized: T): ParseResult<A>;
 
+  parseAll?(serialized :T[]): { parsed: A[], failed: T[] };
+
   serialize(core: A): T;
 
 }
