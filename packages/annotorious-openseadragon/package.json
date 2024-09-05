@@ -42,7 +42,7 @@
     "svelte": "^4.2.19",
     "svelte-preprocess": "^6.0.2",
     "typescript": "5.5.4",
-    "vite": "^5.4.2",
+    "vite": "^5.4.3",
     "vite-plugin-dts": "^4.1.0"
   },
   "peerDependencies": {
