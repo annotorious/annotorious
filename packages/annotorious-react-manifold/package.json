@@ -5,6 +5,7 @@
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
   "homepage": "https://annotorious.dev",
+  "funding": "https://steadyhq.com/rainer-simon",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/annotorious/annotorious-react-manifold.git"
