@@ -33,7 +33,7 @@ anno.on('createAnnotation', function(annotation) {
 
 ## Community
 
-Visit the [Discussions Forum](https://github.com/annotorious/annotorious/discussions) for community support, or file an
+Visit the [Discussion Forum](https://github.com/annotorious/annotorious/discussions) for community support, or file an
 issue on the [Issue Tracker](https://github.com/annotorious/annotorious/issues).
 
 ## Become a Sponsor
