@@ -1,7 +1,6 @@
 import { writable } from 'svelte/store';
 import { dequal } from 'dequal/lite';
-
-import type { Annotation } from '../model';
+import type { Annotation, FormatAdapter } from '../model';
 import type { Store } from './Store';
 
 export interface Selection {
@@ -14,7 +13,7 @@ export interface Selection {
 
 }
 
-export type SelectionState<T extends Annotation> = ReturnType<typeof createSelectionState<T>>;
+export type SelectionState<I extends Annotation, E extends unknown> = ReturnType<typeof createSelectionState<I, E>>;
 
 export enum UserSelectAction {
 
@@ -26,13 +25,14 @@ export enum UserSelectAction {
 
 }
 
-export type UserSelectActionExpression<T extends Annotation> = UserSelectAction | ((a: T) => UserSelectAction);
+export type UserSelectActionExpression<T extends unknown> = UserSelectAction | ((a: T) => UserSelectAction);
 
 const EMPTY: Selection = { selected: [] };
 
-export const createSelectionState = <T extends Annotation>(
-  store: Store<T>,
-  defaultSelectionAction?: UserSelectActionExpression<T>
+export const createSelectionState = <I extends Annotation, E extends unknown>(
+  store: Store<I>,
+  defaultSelectionAction?: UserSelectActionExpression<E>,
+  adapter?: FormatAdapter<I, E>
 ) => {
   const { subscribe, set } = writable<Selection>(EMPTY);
 
@@ -50,7 +50,7 @@ export const createSelectionState = <T extends Annotation>(
 
   const isEmpty = () => currentSelection.selected?.length === 0;
 
-  const isSelected = (annotationOrId: T | string) => {
+  const isSelected = (annotationOrId: I | string) => {
     if (isEmpty())
       return false;
 
@@ -66,7 +66,7 @@ export const createSelectionState = <T extends Annotation>(
       return;
     }
 
-    const action = onUserSelect(annotation, currentUserSelectAction);
+    const action = onUserSelect(annotation, currentUserSelectAction, adapter);
     switch (action) {
       case UserSelectAction.EDIT:
         set({ selected: [{ id, editable: true }], event });
@@ -85,13 +85,13 @@ export const createSelectionState = <T extends Annotation>(
     // Remove invalid
     const annotations = ids
       .map(id => store.getAnnotation(id))
-      .filter((a): a is T => Boolean(a));
+      .filter((a): a is I => Boolean(a));
 
     set({
       selected: annotations.map(annotation => {
         // If editable is not set, use default behavior
         const isEditable = editable === undefined
-          ? onUserSelect(annotation, currentUserSelectAction) === UserSelectAction.EDIT
+          ? onUserSelect(annotation, currentUserSelectAction, adapter) === UserSelectAction.EDIT
           : editable;
 
         return { id: annotation.id, editable: isEditable }
@@ -114,7 +114,7 @@ export const createSelectionState = <T extends Annotation>(
       set({ selected: selected.filter(({ id }) => !ids.includes(id)) });
   }
 
-  const setUserSelectAction = (action: UserSelectActionExpression<T> | undefined) =>
+  const setUserSelectAction = (action: UserSelectActionExpression<E> | undefined) =>
     currentUserSelectAction = action;
 
   // Track store delete and update events
@@ -143,7 +143,11 @@ export const createSelectionState = <T extends Annotation>(
 
 }
 
-export const onUserSelect = <T extends Annotation>(
-  annotation: T,
-  action?: UserSelectActionExpression<T>
-): UserSelectAction => (typeof action === 'function') ? action(annotation) : (action || UserSelectAction.EDIT);
+export const onUserSelect = <I extends Annotation, E extends unknown>(
+  annotation: I,
+  action?: UserSelectActionExpression<E>,
+  adapter?: FormatAdapter<I, E>
+): UserSelectAction => {
+  const crosswalked = adapter ? adapter.serialize(annotation) : annotation as unknown as E;
+  return (typeof action === 'function') ? action(crosswalked) : (action || UserSelectAction.EDIT)
+}

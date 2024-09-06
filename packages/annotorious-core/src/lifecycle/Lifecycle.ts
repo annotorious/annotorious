@@ -1,18 +1,20 @@
 import { dequal } from 'dequal/lite';
 import type { Annotation, AnnotatorState, FormatAdapter } from '../model';
-import { Origin, type ChangeSet, type UndoStack } from '../state';
+import { Origin, type ChangeSet, type SelectionState, type UndoStack } from '../state';
 import type { LifecycleEvents } from './LifecycleEvents';
 
 export type Lifecycle<I extends Annotation, E extends unknown> = 
   ReturnType<typeof createLifecycleObserver<I, E>>;
 
 export const createLifecycleObserver = <I extends Annotation, E extends unknown>(
-  state: AnnotatorState<I>,
+  state: AnnotatorState<I, E>,
   undoStack: UndoStack<I>,
   adapter?: FormatAdapter<I, E>,
   autoSave?: boolean
 ) => {
-  const { store, selection, hover, viewport } = state;
+  const { store, hover, viewport } = state;
+
+  const selection: SelectionState<I, E> = state.selection;
 
   const observers: Map<keyof LifecycleEvents, Function[]> = new Map();
 
