@@ -101,7 +101,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     if (adapter) {
       const { parsed, error } = adapter.parse(annotation);
       if (parsed) {
-        store.addAnnotation(reviveDates(parsed), Origin.REMOTE);
+        store.addAnnotation(parsed, Origin.REMOTE);
       } else {
         console.error(error);
       }
@@ -166,7 +166,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       if (failed.length > 0)
         console.warn(`Discarded ${failed.length} invalid annotations`, failed);
 
-      store.bulkAddAnnotation(parsed.map(reviveDates), replace, Origin.REMOTE);
+      store.bulkAddAnnotation(parsed, replace, Origin.REMOTE);
     } else {
       store.bulkAddAnnotation((annotations as unknown as I[]).map(reviveDates), replace, Origin.REMOTE);
     }
@@ -189,7 +189,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     if (adapter) {
       const crosswalked = adapter.parse(updated).parsed!;
       const previous = adapter.serialize(store.getAnnotation(crosswalked.id)!);
-      store.updateAnnotation(reviveDates(crosswalked));
+      store.updateAnnotation(crosswalked);
       return previous;
     } else {
       const previous = store.getAnnotation((updated as unknown as I).id);
