@@ -11,6 +11,7 @@ import type {
 } from '../state';
 import { Origin } from '../state';
 import type { LifecycleEvents } from '../lifecycle';
+import { reviveDates } from '../utils';
 import { type FormatAdapter, parseAll } from './FormatAdapter';
 import type { DrawingStyleExpression } from './DrawingStyle';
 import type { Filter } from './Filter';
@@ -100,12 +101,12 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     if (adapter) {
       const { parsed, error } = adapter.parse(annotation);
       if (parsed) {
-        store.addAnnotation(parsed, Origin.REMOTE);
+        store.addAnnotation(reviveDates(parsed), Origin.REMOTE);
       } else {
         console.error(error);
       }
     } else {
-      store.addAnnotation(annotation as unknown as I, Origin.REMOTE);
+      store.addAnnotation(reviveDates(annotation as unknown as I), Origin.REMOTE);
     }
   }
 
@@ -165,9 +166,9 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       if (failed.length > 0)
         console.warn(`Discarded ${failed.length} invalid annotations`, failed);
 
-      store.bulkAddAnnotation(parsed, replace, Origin.REMOTE);
+      store.bulkAddAnnotation(parsed.map(reviveDates), replace, Origin.REMOTE);
     } else {
-      store.bulkAddAnnotation(annotations as unknown as I[], replace, Origin.REMOTE);
+      store.bulkAddAnnotation((annotations as unknown as I[]).map(reviveDates), replace, Origin.REMOTE);
     }
   }
 
@@ -188,11 +189,11 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     if (adapter) {
       const crosswalked = adapter.parse(updated).parsed!;
       const previous = adapter.serialize(store.getAnnotation(crosswalked.id)!);
-      store.updateAnnotation(crosswalked);
+      store.updateAnnotation(reviveDates(crosswalked));
       return previous;
     } else {
       const previous = store.getAnnotation((updated as unknown as I).id);
-      store.updateAnnotation(updated as unknown as I);
+      store.updateAnnotation(reviveDates(updated as unknown as I));
       return previous as unknown as E;
     }
   }
