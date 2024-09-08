@@ -11,7 +11,7 @@ export type ImageAnnotationStore<I extends Annotation> = Store<I> & {
 
 export type SvelteImageAnnotationStore<I extends Annotation = Annotation> = SvelteStore<I> & ImageAnnotationStore<I>;
 
-export type SvelteImageAnnotatorState<I extends Annotation = Annotation> = SvelteAnnotatorState<I> & {
+export type SvelteImageAnnotatorState<I extends Annotation = Annotation, E extends unknown = Annotation> = SvelteAnnotatorState<I, E> & {
 
   store: SvelteImageAnnotationStore<I>;
 

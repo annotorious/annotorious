@@ -34,16 +34,6 @@
       import { createImageAnnotator, W3CImageFormat } from './index.ts';
 
       window.onload = function() {
-        // Just a weird dummy select action that makes
-        // Polygons editable, but rectangles read-only
-        const userSelectAction = a => {
-          if (a.target.selector.type === 'RECTANGLE') {
-            return 'NONE';
-          } else {
-            return 'EDIT';
-          }
-        }
-
         var anno = createImageAnnotator('sample-image', {
           adapter: W3CImageFormat('sample-image'),
           autoSave: true,

@@ -1,4 +1,4 @@
-<script lang="ts" generics="T extends Annotation">
+<script lang="ts" generics="I extends Annotation, E extends unknown">
   import { SvelteComponent, onMount } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import type { Annotation, DrawingStyleExpression, StoreChangeEvent, User } from '@annotorious/core';
@@ -17,7 +17,7 @@
   export let drawingEnabled: boolean;
   export let image: HTMLImageElement | HTMLCanvasElement;
   export let preferredDrawingMode: DrawingMode;
-  export let state: SvelteImageAnnotatorState<T>;
+  export let state: SvelteImageAnnotatorState<I, E>;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined = undefined;
   export let toolName: string = listDrawingTools()[0];
   export let user: User;
@@ -44,7 +44,7 @@
 
   $: ({ onPointerDown, onPointerUp } = addEventListeners(svgEl, store));
 
-  let storeObserver: (event: StoreChangeEvent<T>) => void | undefined;
+  let storeObserver: (event: StoreChangeEvent<I>) => void | undefined;
 
   let editableAnnotations: ImageAnnotation[] | undefined;
 
@@ -67,7 +67,7 @@
         .filter(a => a && isImageAnnotation(a));
 
       // Track updates on the editable annotations
-      storeObserver = (event: StoreChangeEvent<T>) => {
+      storeObserver = (event: StoreChangeEvent<I>) => {
         const { updated } = event.changes;
         editableAnnotations = updated?.map(change => change.newValue) as unknown as ImageAnnotation[];
       }   
@@ -92,7 +92,7 @@
       }
     };
 
-    store.addAnnotation(annotation as unknown as Partial<T>);
+    store.addAnnotation(annotation as unknown as Partial<I>);
 
     selection.setSelected(annotation.id);
   }

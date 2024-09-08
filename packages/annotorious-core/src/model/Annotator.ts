@@ -61,7 +61,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   setUser(user: User): void;
 
-  setUserSelectAction(action: UserSelectActionExpression<I>): void;
+  setUserSelectAction(action: UserSelectActionExpression<E>): void;
 
   setVisible(visible: boolean): void;
 
@@ -73,24 +73,24 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   off<T extends keyof LifecycleEvents<E>>(event: T, callback: LifecycleEvents<E>[T]): void;
 
-  state: AnnotatorState<I>;
+  state: AnnotatorState<I, E>;
 
 }
 
-export interface AnnotatorState<A extends Annotation> {
+export interface AnnotatorState<I extends Annotation, E extends unknown> {
 
-  store: Store<A>;
+  store: Store<I>;
 
-  selection: SelectionState<A>;
+  selection: SelectionState<I, E>;
 
-  hover: HoverState<A>;
+  hover: HoverState<I>;
 
   viewport: ViewportState;
 
 }
 
 export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
-  state: AnnotatorState<I>, 
+  state: AnnotatorState<I, E>, 
   undoStack: UndoStack<I>,
   adapter?: FormatAdapter<I, E>
 ) => {
@@ -180,7 +180,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
-  const setUserSelectAction = (action: UserSelectActionExpression<I>) => {
+  const setUserSelectAction = (action: UserSelectActionExpression<E>) => {
     selection.clear();
     selection.setUserSelectAction(action);
   }

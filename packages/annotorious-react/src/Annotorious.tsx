@@ -161,9 +161,9 @@ export const useAnnotation = <T extends Annotation = ImageAnnotation>(
   return annotation;
 }
 
-export const useAnnotationSelectAction = <T extends Annotation = ImageAnnotation>(id: string, action: UserSelectActionExpression<T>) => {
-  const annotation = useAnnotation<T>(id);
-  return annotation ? onUserSelect<T>(annotation, action) : undefined;
+export const useAnnotationSelectAction = <I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation>(id: string, action: UserSelectActionExpression<E>) => {
+  const annotation = useAnnotation<I>(id);
+  return annotation ? onUserSelect<I, E>(annotation, action) : undefined;
 }
 
 export const useSelection = <T extends Annotation = ImageAnnotation>() => {

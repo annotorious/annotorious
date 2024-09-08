@@ -2,7 +2,7 @@
 
 # Annotorious - JavaScript Image Annotation
 
-Add image annotation functionality to any web page with a few lines of JavaScript. Vist the
+Add image annotation functionality to any web page with a few lines of JavaScript. Visit the
 [project website](https://annotorious.dev) for documentation and live demos.
 
 ```sh
