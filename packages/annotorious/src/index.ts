@@ -34,3 +34,9 @@ export type {
   W3CAnnotationBody,
   W3CAnnotationTarget
 } from '@annotorious/core';
+
+export { 
+  createBody,
+  defaultColorProvider,
+  UserSelectAction
+} from '@annotorious/core'; 
