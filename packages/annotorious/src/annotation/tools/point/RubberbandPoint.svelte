@@ -1,26 +1,16 @@
 <script lang="ts">
   import { onMount, createEventDispatcher } from 'svelte';
   import type { DrawingMode } from '../../../AnnotoriousOpts';
-  import {
-    boundsFromPoint,
-    computeArea,
-    ShapeType,
-    type Point,
-    POINT_RADIUS,
-  } from '../../../model';
-  import { distance } from '../../utils';
+  import { boundsFromPoint, ShapeType, type Point, POINT_RADIUS } from '../../../model';
   import type { Transform } from '../..';
 
   const dispatch = createEventDispatcher<{ create: Point }>();
 
   /** Props **/
-  export let addEventListener: (
-    type: string,
-    fn: EventListener,
-    capture?: boolean,
-  ) => void;
+  export let addEventListener: (type: string, fn: EventListener, capture?: boolean) => void;
   export let drawingMode: DrawingMode;
   export let transform: Transform;
+  export let viewportScale = 1;
 
   let point: [number, number] | undefined;
 
@@ -71,7 +61,7 @@
 
 <g class="a9s-annotationlayer a9s-rubberband-point">
   {#if point}
-    <circle class="a9s-outer" cx={point[0]} cy={point[1]} r={POINT_RADIUS} />
-    <circle class="a9s-inner" cx={point[0]} cy={point[1]} r={POINT_RADIUS} />
+    <circle class="a9s-outer" cx={point[0]} cy={point[1]} r={POINT_RADIUS} scale={viewportScale} />
+    <circle class="a9s-inner" cx={point[0]} cy={point[1]} r={POINT_RADIUS} scale={viewportScale} />
   {/if}
 </g>

@@ -1,9 +1,5 @@
 <script lang="ts">
-  import {
-    boundsFromPoint,
-    boundsFromPoints,
-    POINT_RADIUS,
-  } from '../../../model';
+  import { boundsFromPoint, POINT_RADIUS } from '../../../model';
   import type { Point, PointGeometry, Shape } from '../../../model';
   import type { Transform } from '../../Transform';
   import { Editor, Handle } from '..';
@@ -12,6 +8,7 @@
   export let shape: Point;
   export let computedStyle: string | undefined;
   export let transform: Transform;
+  export let viewportScale: number = 1;
 
   $: geom = shape.geometry;
 
@@ -43,6 +40,7 @@
     cx={geom.x}
     cy={geom.y}
     r={POINT_RADIUS}
+    scale={viewportScale}
   />
 
   <circle
@@ -52,5 +50,6 @@
     cx={geom.x}
     cy={geom.y}
     r={POINT_RADIUS}
+    scale={viewportScale}
   />
 </Editor>

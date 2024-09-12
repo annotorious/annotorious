@@ -60,6 +60,30 @@
     }
   },
   {
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "id": "#9a55df80-710c-11ef-a499-0800200c9a66",
+    "type": "Annotation",
+    "body": [
+      {
+        "type": "TextualBody",
+        "value": "A comment...",
+        "purpose": "commenting",
+        "creator": {
+          "id": "http://www.example.com/rainer",
+          "name": "rainer"
+        },
+        "created": "2021-08-14T08:13:12.514Z",
+        "modified": "2021-08-14T08:13:12.557Z"
+      }
+    ],
+    "target": {
+      "selector": {
+        "type": "SvgSelector",
+        "value": "<svg><circle cx=\"500\" cy=\"500\" r=\"5\" /></svg>"
+      }
+    }
+  },
+  {
     "id": "outer",
     "bodies": [],
     "target": {
