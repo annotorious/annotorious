@@ -1,15 +1,23 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
   import { SvelteComponent, onMount } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-  import type { Annotation, DrawingStyleExpression, StoreChangeEvent, User } from '@annotorious/core';
+  import type {
+    Annotation,
+    DrawingStyleExpression,
+    StoreChangeEvent,
+    User,
+  } from '@annotorious/core';
   import { isImageAnnotation, ShapeType } from '../model';
-  import type { ImageAnnotation, Shape} from '../model';
+  import type { ImageAnnotation, Shape } from '../model';
   import { getEditor as _getEditor, EditorMount } from './editors';
-  import { Ellipse, Polygon, Rectangle} from './shapes';
+  import { Ellipse, Polygon, Rectangle, Point } from './shapes';
   import { getTool, listDrawingTools, ToolMount } from './tools';
   import { enableResponsive } from './utils';
   import { createSVGTransform } from './Transform';
-  import { addEventListeners, getSVGPoint } from './SVGAnnotationLayerPointerEvent';
+  import {
+    addEventListeners,
+    getSVGPoint,
+  } from './SVGAnnotationLayerPointerEvent';
   import type { SvelteImageAnnotatorState } from 'src/state';
   import type { DrawingMode } from 'src/AnnotoriousOpts';
 
@@ -18,12 +26,16 @@
   export let image: HTMLImageElement | HTMLCanvasElement;
   export let preferredDrawingMode: DrawingMode;
   export let state: SvelteImageAnnotatorState<I, E>;
-  export let style: DrawingStyleExpression<ImageAnnotation> | undefined = undefined;
+  export let style: DrawingStyleExpression<ImageAnnotation> | undefined =
+    undefined;
   export let toolName: string = listDrawingTools()[0];
   export let user: User;
   export let visible = true;
 
-  $: ({ tool, opts } = getTool(toolName) || { tool: undefined, opts: undefined });
+  $: ({ tool, opts } = getTool(toolName) || {
+    tool: undefined,
+    opts: undefined,
+  });
 
   $: drawingMode = opts?.drawingMode || preferredDrawingMode;
 
@@ -32,10 +44,10 @@
 
   /** Responsive scaling **/
   let svgEl: SVGSVGElement;
-    
+
   let scale: ReturnType<typeof enableResponsive>;
 
-  onMount(() => scale = enableResponsive(image, svgEl));
+  onMount(() => (scale = enableResponsive(image, svgEl)));
 
   $: transform = createSVGTransform(svgEl);
 
@@ -48,35 +60,38 @@
 
   let editableAnnotations: ImageAnnotation[] | undefined;
 
-  $: isEditable = (a: ImageAnnotation) => $selection.selected.find(s => s.id === a.id && s.editable);
+  $: isEditable = (a: ImageAnnotation) =>
+    $selection.selected.find((s) => s.id === a.id && s.editable);
 
   $: trackSelection($selection.selected);
 
-  const trackSelection = (selected: { id: string, editable?: boolean }[]) => {
-    if (storeObserver)
-      store.unobserve(storeObserver);
+  const trackSelection = (selected: { id: string; editable?: boolean }[]) => {
+    if (storeObserver) store.unobserve(storeObserver);
 
     // Track only editable annotations
-    const editableIds = 
-      selected.filter(({ editable }) => editable).map(({ id }) => id);
+    const editableIds = selected
+      .filter(({ editable }) => editable)
+      .map(({ id }) => id);
 
     if (editableIds.length > 0) {
       // Resolve selected IDs from the store
       editableAnnotations = editableIds
-        .map(id => store.getAnnotation(id)!)
-        .filter(a => a && isImageAnnotation(a));
+        .map((id) => store.getAnnotation(id)!)
+        .filter((a) => a && isImageAnnotation(a));
 
       // Track updates on the editable annotations
       storeObserver = (event: StoreChangeEvent<I>) => {
         const { updated } = event.changes;
-        editableAnnotations = updated?.map(change => change.newValue) as unknown as ImageAnnotation[];
-      }   
-      
+        editableAnnotations = updated?.map(
+          (change) => change.newValue,
+        ) as unknown as ImageAnnotation[];
+      };
+
       store.observe(storeObserver, { annotations: editableIds });
     } else {
       editableAnnotations = undefined;
     }
-  }
+  };
 
   const onSelectionCreated = <S extends Shape>(evt: CustomEvent<S>) => {
     const id = uuidv4();
@@ -88,34 +103,35 @@
         annotation: id,
         selector: evt.detail,
         creator: user,
-        created: new Date()
-      }
+        created: new Date(),
+      },
     };
 
     store.addAnnotation(annotation as unknown as Partial<I>);
 
     selection.setSelected(annotation.id);
-  }
+  };
 
-  const onChangeSelected = (annotation: ImageAnnotation) => (event: CustomEvent<Shape>) => {  
-    const { target } = annotation;
+  const onChangeSelected =
+    (annotation: ImageAnnotation) => (event: CustomEvent<Shape>) => {
+      const { target } = annotation;
 
-    // We don't consider a shape edit an 'update' if it happens within 10mins
-    const GRACE_PERIOD = 10 * 60 * 1000;
+      // We don't consider a shape edit an 'update' if it happens within 10mins
+      const GRACE_PERIOD = 10 * 60 * 1000;
 
-    const isUpdate = 
-      target.creator?.id !== user.id ||
-      !target.created ||
-      new Date().getTime() - target.created.getTime() > GRACE_PERIOD;
+      const isUpdate =
+        target.creator?.id !== user.id ||
+        !target.created ||
+        new Date().getTime() - target.created.getTime() > GRACE_PERIOD;
 
-    store.updateTarget({
-      ...target,
-      selector: event.detail,
-      created: isUpdate ? target.created : new Date(),
-      updated: isUpdate ? new Date() : undefined,
-      updatedBy: isUpdate ? user : undefined
-    });
-  }
+      store.updateTarget({
+        ...target,
+        selector: event.detail,
+        created: isUpdate ? target.created : new Date(),
+        updated: isUpdate ? new Date() : undefined,
+        updatedBy: isUpdate ? user : undefined,
+      });
+    };
 
   const onPointerMove = (evt: PointerEvent) => {
     const { x, y } = getSVGPoint(evt, svgEl);
@@ -128,10 +144,11 @@
     } else {
       hover.set(undefined);
     }
-  }
+  };
 
   // To get around lack of TypeScript support in Svelte markup
-  const getEditor = (shape: Shape): typeof SvelteComponent => _getEditor(shape)!;
+  const getEditor = (shape: Shape): typeof SvelteComponent =>
+    _getEditor(shape)!;
 </script>
 
 <svg
@@ -142,63 +159,56 @@
   class:hover={$hover}
   on:pointerup={onPointerUp}
   on:pointerdown={onPointerDown}
-  on:pointermove={onPointerMove}>
-  
+  on:pointermove={onPointerMove}
+>
   <g>
-    {#each $store.filter(a => isImageAnnotation(a)) as annotation}
+    {#each $store.filter((a) => isImageAnnotation(a)) as annotation}
       {#if isImageAnnotation(annotation) && !isEditable(annotation)}
         {@const selector = annotation.target.selector}
         {#key annotation.id}
-          {#if (selector?.type === ShapeType.ELLIPSE)}
-            <Ellipse 
-              annotation={annotation} 
-              geom={selector?.geometry} 
-              style={style} />
-          {:else if (selector?.type === ShapeType.RECTANGLE)}
-            <Rectangle 
-              annotation={annotation} 
-              geom={selector.geometry} 
-              style={style} />
-          {:else if (selector?.type === ShapeType.POLYGON)}
-            <Polygon 
-              annotation={annotation} 
-              geom={selector.geometry} 
-              style={style} />
+          {#if selector?.type === ShapeType.ELLIPSE}
+            <Ellipse {annotation} geom={selector?.geometry} {style} />
+          {:else if selector?.type === ShapeType.RECTANGLE}
+            <Rectangle {annotation} geom={selector.geometry} {style} />
+          {:else if selector?.type === ShapeType.POLYGON}
+            <Polygon {annotation} geom={selector.geometry} {style} />
+          {:else if selector?.type === ShapeType.POINT}
+            <Point {annotation} geom={selector.geometry} {style} />
           {/if}
         {/key}
       {/if}
     {/each}
   </g>
 
-  <g 
-    bind:this={drawingEl}
-    class="drawing" >
+  <g bind:this={drawingEl} class="drawing">
     {#if drawingEl}
       {#if editableAnnotations}
         {#each editableAnnotations as editable}
           {@const editor = getEditor(editable.target.selector)}
           {#if editor}
-            {#key editable.id}        
+            {#key editable.id}
               <EditorMount
                 target={drawingEl}
                 editor={getEditor(editable.target.selector)}
                 annotation={editable}
-                style={style}
-                transform={transform}
+                {style}
+                {transform}
                 viewportScale={$scale}
-                on:change={onChangeSelected(editable)} />
+                on:change={onChangeSelected(editable)}
+              />
             {/key}
           {/if}
         {/each}
-      {:else if (tool && drawingEnabled)} 
+      {:else if tool && drawingEnabled}
         {#key toolName}
-          <ToolMount 
+          <ToolMount
             target={drawingEl}
-            tool={tool}
-            drawingMode={drawingMode}
-            transform={transform}
+            {tool}
+            {drawingMode}
+            {transform}
             viewportScale={$scale}
-            on:create={onSelectionCreated} />
+            on:create={onSelectionCreated}
+          />
         {/key}
       {/if}
     {/if}

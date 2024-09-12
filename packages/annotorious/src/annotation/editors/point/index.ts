@@ -1,0 +1,1 @@
+export { default as PointEditor } from './PointEditor.svelte';

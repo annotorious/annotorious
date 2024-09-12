@@ -1,3 +1,4 @@
+import { POINT_RADIUS } from './point/Point';
 import type { Bounds, Shape, ShapeType } from './Shape';
 
 export interface ShapeUtil<T extends Shape> {
@@ -55,3 +56,18 @@ export const boundsFromPoints = (points: Array<[number, number]>): Bounds => {
 
   return { minX, minY, maxX, maxY };
 };
+
+/**
+ * Computes Bounds from a given point.
+ * @param x the x coord
+ * @param y the y coord
+ * @returns the Bounds
+ */
+export const boundsFromPoint = (x: number, y: number): Bounds => {
+  return {
+    minX: x - POINT_RADIUS,
+    minY: y - POINT_RADIUS,
+    maxX: x + POINT_RADIUS,
+    maxY: y + POINT_RADIUS
+  };
+}

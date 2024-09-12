@@ -1,5 +1,6 @@
 export * from './polygon';
 export * from './rectangle';
+export * from './point';
 export * from './editorsRegistry';
 
 export { default as Editor } from './Editor.svelte';
