@@ -25,7 +25,8 @@
     fill="transparent"
     cx={origin[0]}
     cy={origin[1]}
-    r={POINT_RADIUS / scale}
+    r={POINT_RADIUS}
+    {scale}
   />
 </g>
 
