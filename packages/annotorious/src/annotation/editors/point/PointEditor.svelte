@@ -9,6 +9,7 @@
   export let computedStyle: string | undefined;
   export let transform: Transform;
   export let viewportScale: number = 1;
+  console.log(viewportScale);
 
   $: geom = shape.geometry;
 
@@ -35,7 +36,7 @@
 <Editor {shape} {transform} {editor} on:change on:grab on:release let:grab>
   <circle
     class="a9s-outer"
-    style="fill:yellow;stroke:darkgoldenrod;"
+    style={computedStyle ? 'display:none;' : undefined}
     on:pointerdown={grab('SHAPE')}
     cx={geom.x}
     cy={geom.y}
@@ -45,11 +46,16 @@
 
   <circle
     class="a9s-inner a9s-shape-handle"
-    style="fill:yellow;stroke:darkgoldenrod;"
+    style={computedStyle}
     on:pointerdown={grab('SHAPE')}
     cx={geom.x}
     cy={geom.y}
     r={POINT_RADIUS}
     scale={viewportScale}
   />
+
+  <Handle x={geom.bounds.minX} y={geom.bounds.minY} scale={viewportScale * 2} on:pointerdown={grab('SHAPE')} />
+  <Handle x={geom.bounds.maxX} y={geom.bounds.maxY} scale={viewportScale * 2} on:pointerdown={grab('SHAPE')} />
+  <Handle x={geom.bounds.minX} y={geom.bounds.maxY} scale={viewportScale * 2} on:pointerdown={grab('SHAPE')} />
+  <Handle x={geom.bounds.maxX} y={geom.bounds.minY} scale={viewportScale * 2} on:pointerdown={grab('SHAPE')} />
 </Editor>
