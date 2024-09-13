@@ -1,5 +1,5 @@
-import type { Ellipse, EllipseGeometry, Polygon, PolygonGeometry, Shape } from '../../core';
-import { boundsFromPoints, ShapeType } from '../../core';
+import type { Ellipse, EllipseGeometry, PointGeometry, Polygon, PolygonGeometry, Shape, Point } from '../../core';
+import { boundsFromPoint, boundsFromPoints, POINT_RADIUS, ShapeType } from '../../core';
 import { insertSVGNamespace, sanitize, SVG_NAMESPACE } from './SVG';
 
 export interface SVGSelector {
@@ -66,6 +66,23 @@ const parseSVGEllipse = (value: string): Ellipse => {
   };
 }
 
+const parseSVGCircle = (value: string): Point => {
+  const doc = parseSVGXML(value);
+
+  const cx = parseFloat(doc.getAttribute('cx')!);
+  const cy = parseFloat(doc.getAttribute('cy')!);
+
+  return {
+    type: ShapeType.POINT,
+    geometry: {
+      x: cx,
+      y: cy,
+      bounds: boundsFromPoint(cx, cy)
+    }
+  };
+}
+
+
 export const parseSVGSelector = <T extends Shape>(valueOrSelector: SVGSelector | string): T => {
   const value = typeof valueOrSelector === 'string' ? valueOrSelector : valueOrSelector.value;
 
@@ -73,6 +90,8 @@ export const parseSVGSelector = <T extends Shape>(valueOrSelector: SVGSelector |
     return parseSVGPolygon(value) as unknown as T;
   else if (value.includes('<ellipse ')) 
     return parseSVGEllipse(value) as unknown as T;
+  else if (value.includes('<circle '))
+    return parseSVGCircle(value) as unknown as T;
   else 
     throw 'Unsupported SVG shape: ' + value;
 }
@@ -87,6 +106,9 @@ export const serializeSVGSelector = (shape: Shape): SVGSelector => {
   } else if (shape.type === ShapeType.ELLIPSE) {
     const geom = shape.geometry as EllipseGeometry;
     value = `<svg><ellipse cx="${geom.cx}" cy="${geom.cy}" rx="${geom.rx}" ry="${geom.ry}" /></svg>`
+  }else if(shape.type === ShapeType.POINT) {
+    const geom = shape.geometry as PointGeometry;
+    value = `<svg><circle cx="${geom.x}" cy="${geom.y}" r=${POINT_RADIUS} /></svg>`
   }
 
   if (value) {

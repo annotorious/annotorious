@@ -54,4 +54,20 @@ export const annotations = [{
       ]
     }
   ]
+},{
+  '@context': 'http://www.w3.org/ns/anno.jsonld',
+  id: 'http://www.example.com/annotation/95f9044c-73f5-4cef-82fb-2b3452bb75b9',
+  type: 'Annotation',
+  body: {
+    type: 'TextualBody',
+    value: 'A comment'
+  },
+  target: {
+    source: 'http://www.example.com/source/1',
+    selector: {
+      type: 'SvgSelector',
+      value:
+        '<svg><circle cx="60" cy="80" r=5 /></svg>'
+    }
+  }
 }];

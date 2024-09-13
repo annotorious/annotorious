@@ -41,6 +41,8 @@ export type {
   ImageAnnotation,
   ImageAnnotator,
   ImageAnnotatorState,
+  Point,
+  PointGeometry,
   Polygon,
   PolygonGeometry,
   Rectangle,
