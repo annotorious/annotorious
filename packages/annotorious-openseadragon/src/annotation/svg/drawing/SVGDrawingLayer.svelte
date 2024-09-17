@@ -1,4 +1,4 @@
-<script lang="ts" generics="T extends Annotation">
+<script lang="ts" generics="I extends Annotation, E extends unknown">
   import { SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
@@ -13,11 +13,15 @@
   export let drawingEnabled: boolean;
   export let filter: Filter<ImageAnnotation> | undefined;
   export let preferredDrawingMode: DrawingMode;
-  export let state: ImageAnnotatorState<T>;
+  export let state: ImageAnnotatorState<I, E>;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined = undefined;
   export let toolName: string = listDrawingTools()[0];
   export let user: User;
   export let viewer: OpenSeadragon.Viewer;
+
+  /** API methods */
+  export const getDrawingTool = () => toolName;
+  export const isDrawingEnabled = () => drawingEnabled;
 
   // I hate you
   const isFirefox = navigator.userAgent.match(/firefox|fxios/i);
@@ -37,9 +41,9 @@
   /** Selection tracking **/
   const { store, selection, hover } = state;
 
-  let storeObserver: (event: StoreChangeEvent<T>) => void;
+  let storeObserver: (event: StoreChangeEvent<I>) => void;
 
-  let editableAnnotations: T[] | undefined;
+  let editableAnnotations: I[] | undefined;
 
   let grabbedAt: number | undefined;
  
@@ -59,7 +63,7 @@
       editableAnnotations = editableIds.map(id => store.getAnnotation(id)!);
 
       // Track updates on the selected annotations
-      storeObserver = (event: StoreChangeEvent<T>) => {
+      storeObserver = (event: StoreChangeEvent<I>) => {
         const { updated } = event.changes;
         editableAnnotations = (updated || []).map(change => change.newValue);
       }   

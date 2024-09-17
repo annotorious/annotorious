@@ -1,4 +1,4 @@
-<script lang="ts" generics="T extends Annotation">
+<script lang="ts" generics="I extends Annotation, E extends unknown">
   import { createEventDispatcher, onMount } from 'svelte';
   import OpenSeadragon from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, StoreChangeEvent, Update } from '@annotorious/core';
@@ -10,7 +10,7 @@
 
   /** Props */
   export let filter: Filter<ImageAnnotation> | undefined;
-  export let state: ImageAnnotatorState<T>;
+  export let state: ImageAnnotatorState<I, E>;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined;
   export let viewer: OpenSeadragon.Viewer;
   export let visible = true;
@@ -140,13 +140,13 @@
     viewer.addHandler('update-viewport', stage.redraw);
     viewer.addHandler('animation-finish', updateViewportState);
 
-    const filterAnnotations = (t: T[]): ImageAnnotation[] => 
+    const filterAnnotations = (t: I[]): ImageAnnotation[] => 
       t.filter(t => isImageAnnotation(t));
 
-    const isImageAnnotationUpdate = (u: Update<T | ImageAnnotation>): u is Update<ImageAnnotation> =>
+    const isImageAnnotationUpdate = (u: Update<I | ImageAnnotation>): u is Update<ImageAnnotation> =>
       isImageAnnotation(u.oldValue) && isImageAnnotation(u.newValue);
   
-    const onStoreChange = (event: StoreChangeEvent<T>) => {
+    const onStoreChange = (event: StoreChangeEvent<I>) => {
       const { created, updated, deleted } = event.changes;
 
       filterAnnotations((created || [])).forEach(annotation => stage.addAnnotation(annotation));

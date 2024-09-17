@@ -48,6 +48,12 @@ export interface OpenSeadragonAnnotator<I extends Annotation = ImageAnnotation, 
 
   viewer: OpenSeadragon.Viewer;
 
+  cancelDrawing(): void;
+
+  getDrawingTool(): string | undefined;
+
+  isDrawingEnabled(): boolean;
+
   fitBounds(arg: { id: string } | string, opts?: FitboundsOptions): void;
 
   fitBoundsWithConstraints(arg: { id: string } | string, opts?: FitboundsOptions): void;
@@ -154,6 +160,11 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<I, E>(state, undoStack, opts.adapter);
 
+  const cancelDrawing = () => {
+    drawingLayer.$set({ drawingEnabled: false });
+    setTimeout(() => drawingLayer.$set({ drawingEnabled: true }), 1);
+  }
+
   const destroy = () => {
     // Destroy Svelte layers
     displayLayer.$destroy();
@@ -169,7 +180,13 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
 
   const fitBoundsWithConstraints = _fitBoundsWithConstraints(viewer, store);
 
+  const getDrawingTool = () =>
+    drawingLayer.getDrawingTool();
+
   const getUser = () => currentUser;
+
+  const isDrawingEnabled = () => 
+    drawingLayer.isDrawingEnabled();
 
   const registerDrawingTool = (name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts) =>
     registerTool(name, tool, opts);
@@ -221,10 +238,13 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
 
   return {
     ...base,
+    cancelDrawing,
     destroy,
     fitBounds,
     fitBoundsWithConstraints,
+    getDrawingTool,
     getUser,
+    isDrawingEnabled,
     listDrawingTools,
     on: lifecycle.on,
     off: lifecycle.off,
