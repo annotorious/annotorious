@@ -21,6 +21,12 @@ export interface ImageAnnotator<I extends Annotation = ImageAnnotation, E extend
 
   element: HTMLDivElement;
 
+  cancelDrawing(): void;
+
+  getDrawingTool(): string | undefined;
+
+  isDrawingEnabled(): boolean;
+
   listDrawingTools(): string[];
 
   registerDrawingTool(name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts): void;
@@ -108,6 +114,11 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<I, E>(state, undoStack, opts.adapter);
 
+  const cancelDrawing = () => {
+    annotationLayer.$set({ drawingEnabled: false });
+    setTimeout(() => annotationLayer.$set({ drawingEnabled: true }), 1);
+  }
+
   const destroy = () => {
     // Destroy Svelte annotation layer
     annotationLayer.$destroy();
@@ -121,7 +132,13 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
     undoStack.destroy();
   }
 
+  const getDrawingTool = () =>
+    annotationLayer.getDrawingTool();
+
   const getUser = () => currentUser;
+
+  const isDrawingEnabled = () => 
+    annotationLayer.isDrawingEnabled();
 
   const registerDrawingTool = (name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts) =>
     registerTool(name, tool, opts);
@@ -162,8 +179,11 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
 
   return {
     ...base,
+    cancelDrawing,
     destroy,
+    getDrawingTool,
     getUser,
+    isDrawingEnabled,
     listDrawingTools,
     on: lifecycle.on,
     off: lifecycle.off,

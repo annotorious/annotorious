@@ -23,6 +23,10 @@
   export let user: User;
   export let visible = true;
 
+  /** API methods */
+  export const getDrawingTool = () => toolName;
+  export const isDrawingEnabled = () => drawingEnabled;
+
   $: ({ tool, opts } = getTool(toolName) || { tool: undefined, opts: undefined });
 
   $: drawingMode = opts?.drawingMode || preferredDrawingMode;
