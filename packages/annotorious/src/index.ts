@@ -36,6 +36,8 @@ export type {
 } from '@annotorious/core';
 
 export { 
+  chainStyles,
+  computeStyle,
   createBody,
   defaultColorProvider,
   UserSelectAction

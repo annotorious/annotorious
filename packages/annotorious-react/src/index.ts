@@ -70,6 +70,8 @@ export type {
 } from '@annotorious/annotorious';
 
 export {   
+  chainStyles,
+  computeStyle,
   createImageAnnotator,
   ShapeType,
   W3CImageFormat

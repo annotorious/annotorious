@@ -14,7 +14,7 @@ import {
 import { useAnnotator, useSelection } from './Annotorious';
 import { PopupProps } from './PopupProps';
 import { toClientRects } from './utils/toClientRects';
-import { AnnotoriousImageAnnotator } from '@annotorious/openseadragon';
+import { ImageAnnotator } from '@annotorious/openseadragon';
 
 const toDOMRect = (geometry: Geometry, container: HTMLDivElement) => {
   const img = container.querySelector('img');
@@ -44,7 +44,7 @@ interface ImageAnnotationPopupProps {
 
 export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
 
-  const anno = useAnnotator<AnnotoriousImageAnnotator>();
+  const anno = useAnnotator<ImageAnnotator>();
 
   const [isOpen, setIsOpen] = useState(false);
 
