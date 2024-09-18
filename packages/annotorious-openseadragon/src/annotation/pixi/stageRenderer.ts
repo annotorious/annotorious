@@ -109,6 +109,7 @@ const redrawStage = (
 
         // Counter scale stroke
         lineStyle.width = strokeWidth / scale;
+        lineStyle.native = false;
 
         // @ts-ignore
         stroke.geometry.invalidate();
