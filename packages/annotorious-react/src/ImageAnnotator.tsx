@@ -38,8 +38,8 @@ export const ImageAnnotator = <E extends unknown>(props: ImageAnnotatorProps<E>)
   }, [props.containerClassName, anno]);
 
   useEffect(() => {
-    if (props.tool && anno) anno.setDrawingTool(props.tool);
-  }, [props.tool, anno]);
+    if (anno) anno.setDrawingEnabled(props.drawingEnabled);
+  }, [props.drawingEnabled]);
 
   useEffect(() => {
     if (anno) anno.setFilter(props.filter);
@@ -48,6 +48,10 @@ export const ImageAnnotator = <E extends unknown>(props: ImageAnnotatorProps<E>)
   useEffect(() => {
     if (anno) anno.setStyle(props.style);
   }, [props.style]);
+
+  useEffect(() => {
+    if (tool && anno) anno.setDrawingTool(props.tool);
+  }, [tool, anno]);
 
   useEffect(() => {
     if (anno) anno.setUserSelectAction(props.userSelectAction);

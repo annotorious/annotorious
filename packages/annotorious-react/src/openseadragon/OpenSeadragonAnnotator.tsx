@@ -63,6 +63,10 @@ export const OpenSeadragonAnnotator = <I extends Annotation, E extends unknown>(
     if (anno) anno.setDrawingTool(tool);
   }, [tool]);
 
+  useEffect(() => {
+    if (anno) anno.setUserSelectAction(props.userSelectAction);
+  }, [props.userSelectAction]);
+
   return (
     <OpenSeadragonAnnotatorContext.Provider value={{ viewer, setViewer }}>
       {props.children}
