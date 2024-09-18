@@ -37,7 +37,6 @@ export type {
   DrawingMode,
   DrawingTool,
   FragmentSelector,
-  ImageAnnotator as AnnotoriousImageAnnotator,
   ImageAnnotation,
   ImageAnnotator,
   ImageAnnotatorState,
