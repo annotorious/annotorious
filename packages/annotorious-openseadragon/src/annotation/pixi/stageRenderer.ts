@@ -96,7 +96,7 @@ const redrawStage = (
   const viewportBounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds(true));
   const scale = getCurrentScale(viewer);
 
-  if (scale !== lastScale && !fastRedraw) {
+  if (scale !== lastScale || !fastRedraw) {
     fastRedraw = true;
 
     shapes.forEach(({ stroke, strokeWidth }) => {
@@ -105,7 +105,7 @@ const redrawStage = (
       if (strokeWidth > 1) {
         // Disable fast redraws if at least one shape
         // has non-native stroke
-        fastRedraw = false;
+        fastRedraw = scale === lastScale;
 
         // Counter scale stroke
         lineStyle.width = strokeWidth / scale;
@@ -334,7 +334,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
         stroke.tint = strokeStyle.tint || 0xFFFFFF;
         stroke.alpha = strokeStyle.alpha;
 
-        annotationShapes.set(annotation.id, { annotation, fill, stroke, strokeWidth });
+        annotationShapes.set(annotation.id, { annotation, fill, stroke, strokeWidth: strokeStyle.lineWidth });
       });
     } else {
       const { fillStyle, strokeStyle } = getGraphicsStyle(s);
@@ -349,13 +349,15 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
         stroke.tint = strokeStyle.tint || 0xFFFFFF;
         stroke.alpha = strokeStyle.alpha;
 
-        annotationShapes.set(annotation.id, { annotation, fill, stroke, strokeWidth });
+        annotationShapes.set(annotation.id, { annotation, fill, stroke, strokeWidth: strokeStyle.lineWidth });
       });
     }
   
     style = s;
 
     renderer.render(graphics);
+
+    redrawStage(viewer, graphics, annotationShapes, renderer)();
   }
 
   const setVisible = (visible: boolean) => {

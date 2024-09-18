@@ -25,6 +25,7 @@
         <button id="move-or-draw">Move</button>
         <button id="undo">Undo</button>
         <button id="redo">Redo</button>
+        <button id="style">Change Style</button>
       </div>
     </div>
 
@@ -77,23 +78,23 @@
           }
         });
 
+        const BASE_STYLE = function(a, state) {
+          const { hovered, selected } = state || {};
+          return {
+            fill: hovered ? '#00ff00' : '#ff0000', 
+            stroke: '#ff0000', 
+            fillOpacity: 0.1,
+            strokeOpacity: 0.9,
+            strokeWidth: 5
+          }
+        };
+
         var anno = createOSDAnnotator(viewer, {
           autoSave: true,
           adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c'),
           drawingEnabled: false,
-          style: function(a, state) {
-            const { hovered, selected } = state || {};
-
-            return {
-              fill: hovered ? '#00ff00' : '#ff0000', 
-              stroke: '#ff0000', 
-              fillOpacity: 0.1,
-              strokeOpacity: 0.9,
-            }
-          }
+          style: BASE_STYLE
         });
-
-        // anno.setDrawingTool('polygon');
 
         fetch('annotations.json').then((response) => response.json())
           .then(annotations =>
@@ -130,6 +131,26 @@
 
         document.getElementById('redo').addEventListener('click', function() {
           anno.redo();
+        });
+
+        var currentStyle = BASE_STYLE;
+        document.getElementById('style').addEventListener('click', function() {
+          if (currentStyle === BASE_STYLE) {
+            const style = {
+              fill: '#0000ff', 
+              stroke: '#ff00ff', 
+              fillOpacity: 0.1,
+              strokeOpacity: 0.9,
+              strokeWidth: 2
+            };
+
+            anno.setStyle(style);
+
+            currentStyle = style;
+          } else {
+            anno.setStyle(BASE_STYLE);
+            currentStyle = BASE_STYLE;
+          }
         });
 
         anno.on('clickAnnotation', a => console.log('clicked', a));
