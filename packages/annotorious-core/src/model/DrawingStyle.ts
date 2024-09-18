@@ -43,8 +43,8 @@ export const chainStyles = <T extends Annotation = Annotation>(
   if (typeof applyFirst !== 'function' && typeof applySecond !== 'function') {
     // Simple case: just two objects
     return {
-      ...applyFirst,
-      ...applySecond
+      ...(applyFirst || {}),
+      ...(applySecond || {})
     };
   } else {
     // Return a function
@@ -53,8 +53,8 @@ export const chainStyles = <T extends Annotation = Annotation>(
       const second = typeof applySecond === 'function' ? applySecond(a, state) : applySecond;
 
       return {
-        ...first,
-        ...second
+        ...(first || {}),
+        ...(second || {})
       }
     }
   }
