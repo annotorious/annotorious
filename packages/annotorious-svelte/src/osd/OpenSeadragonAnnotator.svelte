@@ -7,7 +7,7 @@
   /** props **/
   export let viewer: OpenSeadragon.Viewer;
   export let opts = {};
-  export let anno: SvelteAnnotator<ImageAnnotation> = undefined;
+  export let anno: SvelteAnnotator<ImageAnnotation, ImageAnnotation> = undefined;
 
   $: init(viewer);
 
@@ -23,8 +23,8 @@
         state: {
           ...annotator.state,
           store: svelteStore
-        } as SvelteAnnotatorState<ImageAnnotation>
-      } as SvelteAnnotator<ImageAnnotation>
+        } as SvelteAnnotatorState<ImageAnnotation, ImageAnnotation>
+      } as SvelteAnnotator<ImageAnnotation, ImageAnnotation>
 
       setContext('anno', shim);
       setContext('viewer', viewer);

@@ -1,14 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import OpenSeadragon from 'openseadragon';
-  import { ImageAnnotation, W3CImageFormat } from '@annotorious/annotorious';
-  import { OpenSeadragonAnnotator, MouseOverTooltip, SvelteAnnotator } from '@annotorious/svelte';
+  import { type ImageAnnotation, W3CImageFormat } from '@annotorious/annotorious';
+  import { OpenSeadragonAnnotator, MouseOverTooltip, type SvelteAnnotator } from '../src';
 
   let container: HTMLDivElement;
 
   let viewer: OpenSeadragon.Viewer;
 
-  let anno: SvelteAnnotator<ImageAnnotation>;
+  let anno: SvelteAnnotator<ImageAnnotation, ImageAnnotation>;
 
   $: if (anno) anno.loadAnnotations('annotations.json');
 
