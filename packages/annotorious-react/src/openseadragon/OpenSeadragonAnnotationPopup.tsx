@@ -81,6 +81,10 @@ export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopup
       setIsOpen(false);
     } else {  
       const setPosition = () => { 
+        // This avoids issues when new viewer instances are mounted/unmounted 
+        // while the popup is open
+        if (!viewer.element) return;
+
         const rect = toDOMRect(viewer, annotation.target.selector.geometry);
         
         refs.setReference({
