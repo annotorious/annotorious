@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/annotorious",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "description": "Add image annotation functionality to any web page with a few lines of JavaScript",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -40,16 +40,16 @@
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tsconfig/svelte": "^5.0.4",
     "@types/rbush": "^3.0.4",
-    "jsdom": "^25.0.0",
+    "jsdom": "^25.0.1",
     "svelte": "^4.2.19",
     "svelte-preprocess": "^6.0.2",
     "typescript": "5.6.2",
-    "vite": "^5.4.6",
-    "vite-plugin-dts": "^4.2.1",
+    "vite": "^5.4.8",
+    "vite-plugin-dts": "^4.2.2",
     "vitest": "^2.1.1"
   },
   "dependencies": {
-    "@annotorious/core": "3.0.8",
+    "@annotorious/core": "3.0.9",
     "rbush": "^4.0.1",
     "uuid": "^10.0.0"
   }

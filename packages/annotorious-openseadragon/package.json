@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/openseadragon",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "description": "Annotorious for OpenSeadragon",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -43,15 +43,15 @@
     "svelte": "^4.2.19",
     "svelte-preprocess": "^6.0.2",
     "typescript": "5.6.2",
-    "vite": "^5.4.6",
-    "vite-plugin-dts": "^4.2.1"
+    "vite": "^5.4.8",
+    "vite-plugin-dts": "^4.2.2"
   },
   "peerDependencies": {
     "openseadragon": "^3.0.0 || ^4.0.0 || ^5.0.0"
   },
   "dependencies": {
-    "@annotorious/core": "3.0.8",
-    "@annotorious/annotorious": "3.0.8",
+    "@annotorious/core": "3.0.9",
+    "@annotorious/annotorious": "3.0.9",
     "pixi.js": "^7.4.2",
     "uuid": "^10.0.0"
   }
