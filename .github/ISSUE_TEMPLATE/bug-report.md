@@ -1,8 +1,8 @@
 ---
-name: New Issue
-about: Create a new issue for Annotorious
+name: Bug Report
+about: Create a new issue for a problem or bug in Annotorious
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
