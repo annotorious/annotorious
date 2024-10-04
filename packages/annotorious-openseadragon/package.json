@@ -38,13 +38,13 @@
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tsconfig/svelte": "^5.0.4",
     "@types/openseadragon": "^3.0.10",
-    "@types/rbush": "^3.0.4",
+    "@types/rbush": "^4.0.0",
     "@types/uuid": "^10.0.0",
     "svelte": "^4.2.19",
-    "svelte-preprocess": "^6.0.2",
+    "svelte-preprocess": "^6.0.3",
     "typescript": "5.6.2",
     "vite": "^5.4.8",
-    "vite-plugin-dts": "^4.2.2"
+    "vite-plugin-dts": "^4.2.3"
   },
   "peerDependencies": {
     "openseadragon": "^3.0.0 || ^4.0.0 || ^5.0.0"

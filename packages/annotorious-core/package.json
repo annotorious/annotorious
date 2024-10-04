@@ -31,11 +31,11 @@
     "@types/deep-equal": "^1.0.4",
     "@types/uuid": "^10.0.0",
     "svelte": "^4.2.19",
-    "svelte-preprocess": "^6.0.2",
+    "svelte-preprocess": "^6.0.3",
     "typescript": "5.6.2",
     "vite": "^5.4.8",
-    "vite-plugin-dts": "^4.2.2",
-    "vitest": "^2.1.1"
+    "vite-plugin-dts": "^4.2.3",
+    "vitest": "^2.1.2"
   },
   "dependencies": {
     "dequal": "^2.0.3",
