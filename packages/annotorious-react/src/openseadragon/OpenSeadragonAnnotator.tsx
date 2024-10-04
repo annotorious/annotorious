@@ -30,7 +30,7 @@ export const OpenSeadragonAnnotator = <I extends Annotation, E extends unknown>(
   const { anno, setAnno } = useContext(AnnotoriousContext);
 
   useEffect(() => {
-    if (viewer) {
+    if (viewer?.element) {
       const anno = createOSDAnnotator<I, E>(viewer, opts as AnnotoriousOpts<I, E>);
 
       if (props.drawingEnabled !== undefined) anno.setDrawingEnabled(props.drawingEnabled);
