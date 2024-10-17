@@ -47,7 +47,8 @@
     "@annotorious/annotorious": "3.0.11",
     "@annotorious/core": "3.0.11",
     "@annotorious/openseadragon": "3.0.11",
-    "@floating-ui/react": "^0.26.24"
+    "@floating-ui/react": "^0.26.24",
+    "zustand": "^5.0.0"
   },
   "sideEffects": false
 }
