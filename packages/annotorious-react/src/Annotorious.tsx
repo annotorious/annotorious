@@ -50,7 +50,7 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
 
   useEffect(() => {
     if (anno) {
-      const { selection, store } = anno.state;
+      const { selection, store, hover } = anno.state;
 
       // Components below <Annotorious /> may have
       // loaded annotations into the store already! 
@@ -169,6 +169,33 @@ export const useAnnotationSelectAction = <I extends Annotation = ImageAnnotation
 export const useSelection = <T extends Annotation = ImageAnnotation>() => {
   const { selection } = useContext(AnnotoriousContext);
   return selection as Selection<T>;
+}
+
+export const useHover = <T extends Annotation = ImageAnnotation>() => {
+  const { anno } = useContext(AnnotoriousContext);
+
+  const [hover, setHover] = useState<T | undefined>();
+
+  useEffect(() => {
+    if (!anno) return;
+
+    const { hover, store } = (anno as Annotator<T, unknown>).state;
+
+    const unsubscribeHover = hover.subscribe(id => {
+      if (id) {
+        const annotation = store.getAnnotation(id);
+        setHover(annotation);
+      } else {
+        setHover(undefined);
+      }
+    });
+  
+    return () => {
+      unsubscribeHover();
+    }
+  }, [anno]);
+
+  return hover;
 }
 
 export const useAnnotatorUser = (): User => {
