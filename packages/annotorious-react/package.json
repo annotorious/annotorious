@@ -20,7 +20,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/annotorious-react.es.js"
+      "import": "./dist/annotorious-react.es.js",
+      "default": "./dist/annotorious-react.es.js"
     },
     "./annotorious-react.css": "./dist/annotorious-react.css"
   },
