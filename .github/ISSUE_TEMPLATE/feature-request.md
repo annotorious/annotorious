@@ -19,6 +19,7 @@ Please provide:
 Is this an actual feature request or a question? Make sure to check the [discussion forum](https://github.com/orgs/annotorious/discussions) before positing an issue.
 
 **Feature request**
+
 Please provide a clear and concise description of the feature you are missing.
 
 
