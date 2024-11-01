@@ -5,7 +5,7 @@
   import type { Selection, StoreChangeEvent, SvelteAnnotatorState } from '@annotorious/core';
   import type { ImageAnnotation } from '@annotorious/annotorious';
 
-  export let state: SvelteAnnotatorState<ImageAnnotation>;
+  export let state: SvelteAnnotatorState<ImageAnnotation, ImageAnnotation>;
 
   export let viewer: OpenSeadragon.Viewer;
 

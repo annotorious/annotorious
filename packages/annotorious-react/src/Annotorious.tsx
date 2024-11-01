@@ -14,6 +14,7 @@ import type {
   Annotation,
   Annotator,
   Selection as CoreSelection,
+  ImageAnnotation,
   Store,
   StoreChangeEvent,
   User
@@ -49,7 +50,7 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
 
   useEffect(() => {
     if (anno) {
-      const { selection, store } = anno.state;
+      const { selection, store, hover } = anno.state;
 
       // Components below <Annotorious /> may have
       // loaded annotations into the store already! 
@@ -130,10 +131,13 @@ const _useAnnotationsDebounced = <T extends Annotation>(debounce: number) => {
   return useDebounce(annotations, debounce) as T[];
 }
 
-export const useAnnotations = <T extends Annotation>(debounce?: number) =>
+export const useAnnotations = <T extends Annotation = ImageAnnotation>(debounce?: number) =>
   debounce ? _useAnnotationsDebounced<T>(debounce) : _useAnnotations<T>();
 
-export const useAnnotation = <T extends Annotation>(id: string, options?: Omit<StoreObserveOptions, 'annotations'>) => {
+export const useAnnotation = <T extends Annotation = ImageAnnotation>(
+  id: string, 
+  options?: Omit<StoreObserveOptions, 'annotations'>
+) => {
   const store = useAnnotationStore<Store<T>>();
 
   const [annotation, setAnnotation] = useState<T | undefined>(
@@ -157,14 +161,41 @@ export const useAnnotation = <T extends Annotation>(id: string, options?: Omit<S
   return annotation;
 }
 
-export const useAnnotationSelectAction = <T extends Annotation>(id: string, action: UserSelectActionExpression<T>) => {
-  const annotation = useAnnotation(id);
-  return annotation ? onUserSelect(annotation, action) : undefined;
+export const useAnnotationSelectAction = <I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation>(id: string, action: UserSelectActionExpression<E>) => {
+  const annotation = useAnnotation<I>(id);
+  return annotation ? onUserSelect<I, E>(annotation, action) : undefined;
 }
 
-export const useSelection = <T extends Annotation>() => {
+export const useSelection = <T extends Annotation = ImageAnnotation>() => {
   const { selection } = useContext(AnnotoriousContext);
   return selection as Selection<T>;
+}
+
+export const useHover = <T extends Annotation = ImageAnnotation>() => {
+  const { anno } = useContext(AnnotoriousContext);
+
+  const [hover, setHover] = useState<T | undefined>();
+
+  useEffect(() => {
+    if (!anno) return;
+
+    const { hover, store } = (anno as Annotator<T, unknown>).state;
+
+    const unsubscribeHover = hover.subscribe(id => {
+      if (id) {
+        const annotation = store.getAnnotation(id);
+        setHover(annotation);
+      } else {
+        setHover(undefined);
+      }
+    });
+  
+    return () => {
+      unsubscribeHover();
+    }
+  }, [anno]);
+
+  return hover;
 }
 
 export const useAnnotatorUser = (): User => {
@@ -221,5 +252,5 @@ const _useViewportStateDebounced =  <T extends Annotation>(debounce: number) => 
   return useDebounce(inViewport, debounce) as T[];
 }
 
-export const useViewportState =  <T extends Annotation>(debounce?: number) =>
+export const useViewportState =  <T extends Annotation = ImageAnnotation>(debounce?: number) =>
   debounce ? _useViewportStateDebounced<T>(debounce) : _useViewportState<T>();

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
 import { DrawingStyleExpression, ImageAnnotation, W3CImageFormat } from '@annotorious/openseadragon';
-import { useAnnotator, AnnotoriousOpenSeadragonAnnotator } from '../src';
+import { useAnnotator, AnnotoriousOpenSeadragonAnnotator } from '../../src';
 import {
   OpenSeadragonViewer, 
   OpenSeadragonAnnotator, 
-  OpenSeadragonPopup, 
-} from '../src/openseadragon';
+  OpenSeadragonAnnotationPopup, 
+} from '../../src/openseadragon';
 
 import '@annotorious/openseadragon/annotorious-openseadragon.css';
 
@@ -114,7 +114,7 @@ export const App = () => {
             
         <OpenSeadragonViewer className="openseadragon" options={OSD_OPTIONS} />
 
-        <OpenSeadragonPopup 
+        <OpenSeadragonAnnotationPopup 
           popup={() => (
             <div className="popup">Hello World</div>
           )} />

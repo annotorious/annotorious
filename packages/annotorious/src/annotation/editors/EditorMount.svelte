@@ -22,8 +22,9 @@
   $: if (annotation) editorComponent?.$set({ shape: annotation.target.selector });
   $: if (editorComponent) editorComponent.$set({ transform });
   $: if (editorComponent) editorComponent.$set({ viewportScale });
+  $: if (editorComponent && computedStyle) editorComponent.$set({ computedStyle });
 
-  onMount(() => {
+  onMount(() => {    
     editorComponent = new editor({
       target,
       props: { shape: annotation.target.selector, computedStyle, transform, viewportScale }

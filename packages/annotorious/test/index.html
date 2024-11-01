@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Annotorious 3.0.0-alpha</title>
+    <title>Annotorious</title>
     <style>
       html, body {
         background-color: #cfcfcf;
@@ -34,16 +34,6 @@
       import { createImageAnnotator, W3CImageFormat } from './index.ts';
 
       window.onload = function() {
-        // Just a weird dummy select action that makes
-        // Polygons editable, but rectangles read-only
-        const userSelectAction = a => {
-          if (a.target.selector.type === 'RECTANGLE') {
-            return 'NONE';
-          } else {
-            return 'EDIT';
-          }
-        }
-
         var anno = createImageAnnotator('sample-image', {
           adapter: W3CImageFormat('sample-image'),
           autoSave: true,
@@ -79,6 +69,11 @@
         });
 
         anno.setDrawingTool('polygon');
+
+        document.addEventListener('keydown', evt => {
+          if (evt.key === 'Escape')
+            anno.cancelDrawing();
+        });
 
         // Make it global, so we can manipulate in the browser console.
         window.anno = anno;

@@ -1,8 +1,8 @@
-<script lang="ts">
+<script lang="ts" generics="I extends Annotation, E extends unknown">
   import { createEventDispatcher, onMount } from 'svelte';
   import OpenSeadragon from 'openseadragon';
-  import type { DrawingStyleExpression, StoreChangeEvent } from '@annotorious/core';
-  import type { Filter, ImageAnnotation, ImageAnnotatorState } from '@annotorious/annotorious';
+  import type { Annotation, DrawingStyleExpression, StoreChangeEvent, Update } from '@annotorious/core';
+  import { isImageAnnotation, type Filter, type ImageAnnotation, type ImageAnnotatorState } from '@annotorious/annotorious';
   import type { PixiLayerClickEvent } from './PixiLayerClickEvent';
   import { createStage } from './stageRenderer';
 
@@ -10,7 +10,7 @@
 
   /** Props */
   export let filter: Filter<ImageAnnotation> | undefined;
-  export let state: ImageAnnotatorState;
+  export let state: ImageAnnotatorState<I, E>;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined;
   export let viewer: OpenSeadragon.Viewer;
   export let visible = true;
@@ -140,14 +140,21 @@
     viewer.addHandler('update-viewport', stage.redraw);
     viewer.addHandler('animation-finish', updateViewportState);
 
-    const onStoreChange = (event: StoreChangeEvent<ImageAnnotation>) => {
+    const filterAnnotations = (t: I[]): ImageAnnotation[] => 
+      t.filter(t => isImageAnnotation(t));
+
+    const isImageAnnotationUpdate = (u: Update<I | ImageAnnotation>): u is Update<ImageAnnotation> =>
+      isImageAnnotation(u.oldValue) && isImageAnnotation(u.newValue);
+  
+    const onStoreChange = (event: StoreChangeEvent<I>) => {
       const { created, updated, deleted } = event.changes;
 
-      (created || []).forEach(annotation => stage.addAnnotation(annotation));
-
-      (updated || []).forEach(({ oldValue, newValue }) => stage.updateAnnotation(oldValue, newValue));
-
-      (deleted || []).forEach(annotation => stage.removeAnnotation(annotation));
+      filterAnnotations((created || [])).forEach(annotation => stage.addAnnotation(annotation));
+      filterAnnotations((deleted || [])).forEach(annotation => stage.removeAnnotation(annotation));
+      
+      (updated || [])
+        .filter(u => isImageAnnotationUpdate(u))
+        .forEach(({ oldValue, newValue }) => stage.updateAnnotation(oldValue, newValue));
 
       if (currentViewportBounds) {
         const { x, y, width, height } = currentViewportBounds;

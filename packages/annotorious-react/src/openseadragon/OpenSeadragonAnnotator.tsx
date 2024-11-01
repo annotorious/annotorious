@@ -13,8 +13,6 @@ export type OpenSeadragonAnnotatorProps<I extends Annotation, E extends unknown>
 
   children?: ReactNode;
 
-  drawingEnabled?: boolean;
-
   filter?: Filter<I>;
 
   style?: DrawingStyle | ((annotation: I) => DrawingStyle);
@@ -32,7 +30,7 @@ export const OpenSeadragonAnnotator = <I extends Annotation, E extends unknown>(
   const { anno, setAnno } = useContext(AnnotoriousContext);
 
   useEffect(() => {
-    if (viewer) {
+    if (viewer?.element) {
       const anno = createOSDAnnotator<I, E>(viewer, opts as AnnotoriousOpts<I, E>);
 
       if (props.drawingEnabled !== undefined) anno.setDrawingEnabled(props.drawingEnabled);
@@ -64,6 +62,10 @@ export const OpenSeadragonAnnotator = <I extends Annotation, E extends unknown>(
   useEffect(() => {
     if (anno) anno.setDrawingTool(tool);
   }, [tool]);
+
+  useEffect(() => {
+    if (anno) anno.setUserSelectAction(props.userSelectAction);
+  }, [props.userSelectAction]);
 
   return (
     <OpenSeadragonAnnotatorContext.Provider value={{ viewer, setViewer }}>

@@ -1,10 +1,11 @@
 {
   "name": "@annotorious/react",
-  "version": "3.0.0",
+  "version": "3.0.11",
   "description": "Annotorious React bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
   "homepage": "https://annotorious.dev",
+  "funding": "https://steadyhq.com/rainer-simon",
   "type": "module",
   "scripts": {
     "start": "vite",
@@ -19,17 +20,18 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/annotorious-react.es.js"
+      "import": "./dist/annotorious-react.es.js",
+      "default": "./dist/annotorious-react.es.js"
     },
     "./annotorious-react.css": "./dist/annotorious-react.css"
   },
   "devDependencies": {
-    "@types/react": "^18.3.4",
+    "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "typescript": "5.5.4",
-    "vite": "^5.4.2",
-    "vite-plugin-dts": "^4.0.3",
+    "@vitejs/plugin-react": "^4.3.2",
+    "typescript": "5.6.2",
+    "vite": "^5.4.8",
+    "vite-plugin-dts": "^4.2.3",
     "vite-tsconfig-paths": "^5.0.1"
   },
   "peerDependencies": {
@@ -43,10 +45,10 @@
     }
   },
   "dependencies": {
-    "@annotorious/core": "3.0.0",
-    "@annotorious/annotorious": "3.0.0",
-    "@annotorious/openseadragon": "3.0.0",
-    "@neodrag/react": "^2.0.4"
+    "@annotorious/annotorious": "3.0.11",
+    "@annotorious/core": "3.0.11",
+    "@annotorious/openseadragon": "3.0.11",
+    "@floating-ui/react": "^0.26.24"
   },
   "sideEffects": false
 }

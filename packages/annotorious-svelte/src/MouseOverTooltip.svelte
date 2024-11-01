@@ -5,7 +5,7 @@
 
   export let container: Element;
 
-  const anno = getContext<SvelteAnnotator<ImageAnnotation>>('anno');
+  const anno = getContext<SvelteAnnotator<ImageAnnotation, ImageAnnotation>>('anno');
 
   const { store, hover } = anno.state;
 
@@ -53,3 +53,9 @@
 
   </div>
 {/if}
+
+<style>
+  .a9s-tooltip {
+    pointer-events: none;
+  }
+</style>

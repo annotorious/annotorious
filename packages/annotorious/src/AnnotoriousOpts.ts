@@ -13,7 +13,7 @@ export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E exten
   // 'drag': starts drawing on drag, single click always selects
   drawingMode?: DrawingMode;
 
-  userSelectAction?: UserSelectActionExpression<I>;
+  userSelectAction?: UserSelectActionExpression<E>;
 
   style?: DrawingStyleExpression<ImageAnnotation>;
 

@@ -20,25 +20,25 @@ import type {
   SvelteImageAnnotatorState
 } from './ImageAnnotationStore';
 
-export type ImageAnnotatorState<I extends Annotation> = AnnotatorState<I> & {
+export type ImageAnnotatorState<I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation> = AnnotatorState<I, E> & {
 
   store: ImageAnnotationStore<I>;
 
-  selection: SelectionState<ImageAnnotation>;
+  selection: SelectionState<I, E>;
 
-  hover: HoverState<ImageAnnotation>;
+  hover: HoverState<I>;
 
 }
 
 export const createImageAnnotatorState = <I extends Annotation, E extends unknown> (
   opts: AnnotoriousOpts<I, E>
-): ImageAnnotatorState<I> => {
+): ImageAnnotatorState<I, E> => {
 
   const store = createStore<I>();
 
   const tree = createSpatialTree();
 
-  const selection = createSelectionState<I>(store, opts.userSelectAction);
+  const selection = createSelectionState<I, E>(store, opts.userSelectAction, opts.adapter);
 
   const hover = createHoverState(store);
 
@@ -70,15 +70,15 @@ export const createImageAnnotatorState = <I extends Annotation, E extends unknow
     selection,
     hover,
     viewport
-  } as ImageAnnotatorState<I>;
+  } as ImageAnnotatorState<I, E>;
 
 }
 
 export const createSvelteImageAnnotatorState = <I extends Annotation, E extends unknown>(  
   opts: AnnotoriousOpts<I, E>
-): SvelteImageAnnotatorState<I> => {
+): SvelteImageAnnotatorState<I, E> => {
 
-  const state = createImageAnnotatorState(opts);
+  const state = createImageAnnotatorState<I, E>(opts);
   
   return {
     ...state,

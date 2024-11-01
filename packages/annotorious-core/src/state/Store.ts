@@ -36,8 +36,9 @@ export const createStore = <T extends Annotation>() => {
 
   const observers: StoreObserver<T>[] = [];
 
-  const observe = (onChange: { (event: StoreChangeEvent<T>): void }, options: StoreObserveOptions = {}) =>
+  const observe = (onChange: { (event: StoreChangeEvent<T>): void }, options: StoreObserveOptions = {}) => {
     observers.push({ onChange, options });
+  }
 
   const unobserve = (onChange: { (event: StoreChangeEvent<T>): void }) => {
     const idx = observers.findIndex(observer => observer.onChange == onChange);

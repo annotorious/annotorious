@@ -1,8 +1,8 @@
 ![Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious](/images/splash-image.jpg "Aerial view of Schönbrunn Palace in Vienna annotated with Annotorious")
 
-# Annotorious v3
+# Annotorious - JavaScript Image Annotation
 
-Add image annotation functionality to any web page with a few lines of JavaScript. Vist the
+Add image annotation functionality to any web page with a few lines of JavaScript. Visit the
 [project website](https://annotorious.dev) for documentation and live demos.
 
 ```sh
@@ -33,7 +33,7 @@ anno.on('createAnnotation', function(annotation) {
 
 ## Community
 
-Visit the [Discussions Forum](https://github.com/annotorious/annotorious/discussions) for community support, or file an
+Visit the [Discussion Forum](https://github.com/annotorious/annotorious/discussions) for community support, or file an
 issue on the [Issue Tracker](https://github.com/annotorious/annotorious/issues).
 
 ## Become a Sponsor

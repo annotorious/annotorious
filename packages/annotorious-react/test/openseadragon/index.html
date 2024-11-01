@@ -3,16 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Annotorious React</title>
+    <title>Annotorious OpenSeadragon | React</title>
     <style>
       html, body {
         margin: 0;
         padding: 0;
       }
+
+      .column {
+        margin: 0 auto;
+        max-width: 900px;
+        padding: 200px 0 800px 0;
+        position: relative;
+      }
       
       .openseadragon {
-        height: 100vh;
-        width: 100vw;
+        height: 400px;
+        width: 100%;
       }
 
       .popup {
@@ -20,14 +27,16 @@
         border: 1px solid rgba(0, 0, 0, 0.18);
         border-radius: 12px;
         box-shadow: 1px 1px 20px rgba(0, 0, 0, 0.28);
-        min-height: 400px;
+        min-height: 80px;
         padding: 20px;
         white-space: nowrap;
       }
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div class="column">
+      <div id="root"></div>
+    </div>
     <script type="module" src="./index.tsx"></script>
   </body>
 </html>

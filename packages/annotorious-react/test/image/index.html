@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Annotorious | React</title>
+    <style>
+      html, body {
+        background-color: #ccc;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .popup {
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.18);
+        border-radius: 12px;
+        box-shadow: 1px 1px 20px rgba(0, 0, 0, 0.28);
+        min-height: 400px;
+        padding: 20px;
+        white-space: nowrap;
+      }
+
+      .column {
+        background-color: #fff;
+        box-sizing: border-box;
+        margin: 0 auto;
+        max-width: 680px;
+        padding: 200px 20px 1000px 20px;
+        position: relative;
+      }
+
+      img {
+        margin: 0 auto;
+        max-width: 100vw;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="column">
+      <div id="root"></div>
+    </div>
+    <script type="module" src="./index.tsx"></script>
+  </body>
+</html>

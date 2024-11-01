@@ -11,6 +11,7 @@ import type {
 } from '../state';
 import { Origin } from '../state';
 import type { LifecycleEvents } from '../lifecycle';
+import { reviveDates } from '../utils';
 import { type FormatAdapter, parseAll } from './FormatAdapter';
 import type { DrawingStyleExpression } from './DrawingStyle';
 import type { Filter } from './Filter';
@@ -60,7 +61,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   setUser(user: User): void;
 
-  setUserSelectAction(action: UserSelectActionExpression<I>): void;
+  setUserSelectAction(action: UserSelectActionExpression<E>): void;
 
   setVisible(visible: boolean): void;
 
@@ -72,24 +73,24 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   off<T extends keyof LifecycleEvents<E>>(event: T, callback: LifecycleEvents<E>[T]): void;
 
-  state: AnnotatorState<I>;
+  state: AnnotatorState<I, E>;
 
 }
 
-export interface AnnotatorState<A extends Annotation> {
+export interface AnnotatorState<I extends Annotation, E extends unknown> {
 
-  store: Store<A>;
+  store: Store<I>;
 
-  selection: SelectionState<A>;
+  selection: SelectionState<I, E>;
 
-  hover: HoverState<A>;
+  hover: HoverState<I>;
 
   viewport: ViewportState;
 
 }
 
 export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
-  state: AnnotatorState<I>, 
+  state: AnnotatorState<I, E>, 
   undoStack: UndoStack<I>,
   adapter?: FormatAdapter<I, E>
 ) => {
@@ -105,7 +106,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
         console.error(error);
       }
     } else {
-      store.addAnnotation(annotation as unknown as I, Origin.REMOTE);
+      store.addAnnotation(reviveDates(annotation as unknown as I), Origin.REMOTE);
     }
   }
 
@@ -159,14 +160,15 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
 
   const setAnnotations = (annotations: E[], replace = true) => {
     if (adapter) {
-      const { parsed, failed } = parseAll(adapter)(annotations);
+      const parseFn = adapter.parseAll || parseAll(adapter);
+      const { parsed, failed } = parseFn(annotations);
 
       if (failed.length > 0)
         console.warn(`Discarded ${failed.length} invalid annotations`, failed);
 
       store.bulkAddAnnotation(parsed, replace, Origin.REMOTE);
     } else {
-      store.bulkAddAnnotation(annotations as unknown as I[], replace, Origin.REMOTE);
+      store.bulkAddAnnotation((annotations as unknown as I[]).map(reviveDates), replace, Origin.REMOTE);
     }
   }
 
@@ -178,7 +180,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
-  const setUserSelectAction = (action: UserSelectActionExpression<I>) => {
+  const setUserSelectAction = (action: UserSelectActionExpression<E>) => {
     selection.clear();
     selection.setUserSelectAction(action);
   }
@@ -191,7 +193,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       return previous;
     } else {
       const previous = store.getAnnotation((updated as unknown as I).id);
-      store.updateAnnotation(updated as unknown as I);
+      store.updateAnnotation(reviveDates(updated as unknown as I));
       return previous as unknown as E;
     }
   }

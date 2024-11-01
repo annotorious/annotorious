@@ -10,15 +10,15 @@ export interface SvelteStore<T extends Annotation> extends Store<T> {
 
 }
 
-export interface SvelteAnnotatorState<T extends Annotation> extends AnnotatorState<T> {
+export interface SvelteAnnotatorState<I extends Annotation, E extends unknown> extends AnnotatorState<I, E> {
 
-  store: SvelteStore<T>
+  store: SvelteStore<I>
 
 }
 
-export interface SvelteAnnotator<T extends Annotation> extends Annotator<T> {
+export interface SvelteAnnotator<I extends Annotation, E extends unknown> extends Annotator<I, E> {
 
-  state: SvelteAnnotatorState<T>
+  state: SvelteAnnotatorState<I, E>
 
 }
 
