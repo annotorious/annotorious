@@ -51,6 +51,6 @@
   "dependencies": {
     "@annotorious/core": "3.0.11",
     "rbush": "^4.0.1",
-    "uuid": "^10.0.0"
+    "uuid": "^11.0.2"
   }
 }

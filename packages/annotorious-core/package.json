@@ -29,7 +29,6 @@
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tsconfig/svelte": "^5.0.4",
     "@types/deep-equal": "^1.0.4",
-    "@types/uuid": "^10.0.0",
     "svelte": "^4.2.19",
     "svelte-preprocess": "^6.0.3",
     "typescript": "5.6.2",
@@ -41,6 +40,6 @@
     "dequal": "^2.0.3",
     "nanoevents": "^9.0.0",
     "nanoid": "^5.0.7",
-    "uuid": "^10.0.0"
+    "uuid": "^11.0.2"
   }
 }
