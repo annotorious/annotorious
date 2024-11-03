@@ -1,5 +1,6 @@
 export { 
   OpenSeadragonAnnotator, 
+  OpenSeadragonAnnotatorContext,
   useViewer 
 } from './OpenSeadragonAnnotator';
 

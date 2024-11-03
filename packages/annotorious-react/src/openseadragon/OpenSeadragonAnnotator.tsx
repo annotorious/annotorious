@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
 import { createOSDAnnotator } from '@annotorious/openseadragon';
-import { Annotation, AnnotoriousOpts, DrawingStyle, Filter, ImageAnnotation } from '@annotorious/annotorious';
+import { Annotation, AnnotoriousOpts, DrawingStyle, Filter } from '@annotorious/annotorious';
 import { AnnotoriousContext } from '../Annotorious';
 
 export const OpenSeadragonAnnotatorContext = createContext<{ 
