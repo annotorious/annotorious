@@ -9,6 +9,8 @@ export interface Selection {
 
   event?: PointerEvent | KeyboardEvent;
 
+  isIdling?: boolean;
+
 }
 
 export type SelectionState<I extends Annotation, E extends unknown> = ReturnType<typeof createSelectionState<I, E>>;
@@ -49,8 +51,7 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
   const isEmpty = () => currentSelection.selected?.length === 0;
 
   const isSelected = (annotationOrId: I | string) => {
-    if (isEmpty())
-      return false;
+    if (isEmpty()) return false;
 
     const id = typeof annotationOrId === 'string' ? annotationOrId : annotationOrId.id;
     return currentSelection.selected.some(i => i.id === id);
@@ -87,7 +88,8 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
 
     set({
       selected: annotations.map(annotation => {
-        // If editable is not set, use default behavior
+
+        // If editable isn't set, use the default behavior
         const isEditable = editable === undefined
           ? onUserSelect(annotation, currentUserSelectAction, adapter) === UserSelectAction.EDIT
           : editable;
@@ -112,6 +114,12 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
       set({ selected: selected.filter(({ id }) => !ids.includes(id)) });
   }
 
+  const setIdling = (isIdling: boolean) => {
+    if (currentSelection.isIdling !== isIdling) {
+      set({ ...currentSelection, isIdling });
+    }
+  }
+
   const setUserSelectAction = (action: UserSelectActionExpression<E> | undefined) =>
     currentUserSelectAction = action;
 
@@ -130,13 +138,17 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
     get userSelectAction() {
       return currentUserSelectAction;
     },
-    clear,
+    get isIdling() {
+      return currentSelection ? currentSelection.isIdling : null;
+    },
     isEmpty,
     isSelected,
     setSelected,
+    setIdling,
     setUserSelectAction,
+    userSelect,
     subscribe,
-    userSelect
+    clear
   };
 
 }
