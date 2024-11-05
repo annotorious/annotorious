@@ -9,8 +9,6 @@ export interface Selection {
 
   event?: PointerEvent | KeyboardEvent;
 
-  [key: string]: any; // Allow for additional properties to be added by plugins
-
 }
 
 export type SelectionState<I extends Annotation, E extends unknown> = ReturnType<typeof createSelectionState<I, E>>;
@@ -21,7 +19,7 @@ export enum UserSelectAction {
 
   SELECT = 'SELECT',  // Just select, but don't make editable
 
-  NONE = 'NONE' // Click won't select - annotation is completely inert
+  NONE = 'NONE' // Click won't select - the annotation is completely inert
 
 }
 
@@ -89,7 +87,8 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
 
     set({
       selected: annotations.map(annotation => {
-        // If editable is not set, use default behavior
+
+        // If editable isn't set, use the default behavior
         const isEditable = editable === undefined
           ? onUserSelect(annotation, currentUserSelectAction, adapter) === UserSelectAction.EDIT
           : editable;
