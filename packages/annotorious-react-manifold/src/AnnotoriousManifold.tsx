@@ -21,7 +21,7 @@ interface ManifoldSelection<T extends Annotation = Annotation> {
 
   selected: { annotation: T, editable?: boolean }[],
 
-  pointerEvent?: PointerEvent;
+  event?: PointerEvent | KeyboardEvent;
 
 }
 
@@ -45,6 +45,7 @@ export const AnnotoriousManifold = (props: { children: ReactNode }) => {
     setAnnotators(m => new Map(m.entries()).set(id, anno))
 
     const { store } = anno.state;
+
     const selectionState = anno.state.selection;
 
     // Add the annotations to the state
@@ -58,7 +59,7 @@ export const AnnotoriousManifold = (props: { children: ReactNode }) => {
     // Track selection
     let selectionStoreObserver: (event: StoreChangeEvent<Annotation>) => void;
 
-    const unsubscribeSelection = selectionState.subscribe(({ selected, pointerEvent }) => {
+    const unsubscribeSelection = selectionState.subscribe(({ selected, event }) => {
       if (selectionStoreObserver) 
         store.unobserve(selectionStoreObserver);
 
@@ -67,11 +68,11 @@ export const AnnotoriousManifold = (props: { children: ReactNode }) => {
 
       // Set the new selection
       if (!muteSelectionEvents.current)
-        setSelection({ id, selected: resolved, pointerEvent });
+        setSelection({ id, selected: resolved, event });
 
       // Track the state of the selected annotations in the store
-      selectionStoreObserver = event => {
-        const { updated } = event.changes;
+      selectionStoreObserver = e => {
+        const { updated } = e.changes;
 
         setSelection(({ id, selected }) => ({
           id,
@@ -79,7 +80,7 @@ export const AnnotoriousManifold = (props: { children: ReactNode }) => {
             const next = updated.find(u => u.oldValue.id === annotation.id);
             return next ? { annotation: next.newValue, editable } : { annotation, editable };
           }),
-          pointerEvent
+          event
         }));
       }
 

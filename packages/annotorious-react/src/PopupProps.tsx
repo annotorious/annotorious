@@ -6,7 +6,7 @@ export interface PopupProps <T extends Annotation = ImageAnnotation> {
   
   editable?: boolean;
 
-  event?: PointerEvent;
+  event?: PointerEvent | KeyboardEvent;
 
   onCreateBody(body: Partial<AnnotationBody>): void;
 
