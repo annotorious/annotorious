@@ -56,25 +56,37 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
     return currentSelection.selected.some(i => i.id === id);
   }
 
-  // TODO enable CTRL select
-  const userSelect = (id: string, event?: Selection['event']) => {
-    const annotation = store.getAnnotation(id);
-    if (!annotation) {
-      console.warn('Invalid selection: ' + id);
-      return;
+  const userSelect = (idOrIds: string | string[], event?: Selection['event']) => {
+    let annotations: I[];
+
+    if (Array.isArray(idOrIds)) {
+      annotations = idOrIds.map(id => store.getAnnotation(id)!).filter(Boolean);
+
+      if (annotations.length < idOrIds.length) {
+        console.warn('Invalid selection: ' + idOrIds.filter(id => !annotations.some(a => a.id === id)));
+        return;
+      }
+    } else {
+      const annotation = store.getAnnotation(idOrIds);
+      if (!annotation) {
+        console.warn('Invalid selection: ' + idOrIds);
+        return;
+      }
+
+      annotations = [annotation];
     }
 
-    const action = onUserSelect(annotation, currentUserSelectAction, adapter);
-    switch (action) {
-      case UserSelectAction.EDIT:
-        set({ selected: [{ id, editable: true }], event });
-        break;
-      case UserSelectAction.SELECT:
-        set({ selected: [{ id }], event });
-        break;
-      default:
-        set({ selected: [], event });
-    }
+    const selected = annotations.reduce<{ id: string, editable?: boolean }[]>((sel, a) => {
+      const action = onUserSelect(a, currentUserSelectAction, adapter);
+      if (action === UserSelectAction.EDIT)
+        return [...sel, { id: a.id, editable: true }];
+      else if (action === UserSelectAction.SELECT) 
+        return [...sel, { id: a.id }];
+      else
+        return sel;
+    }, []);
+
+    set({ selected, event });
   }
 
   const setSelected = (idOrIds: string | string[], editable?: boolean) => {
