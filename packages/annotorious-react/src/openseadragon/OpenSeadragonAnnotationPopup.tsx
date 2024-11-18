@@ -146,7 +146,7 @@ export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopup
     anno.state.store.updateBody(current, updated);
   }
 
-  return isOpen && annotation && (
+  return (isOpen && annotation) ? (
     <div
       className="a9s-popup a9s-image-popup"
       ref={refs.setFloating}
@@ -168,6 +168,6 @@ export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopup
         onUpdateBody
       })}
     </div>
-  )
+  ) : null;
 
 }
