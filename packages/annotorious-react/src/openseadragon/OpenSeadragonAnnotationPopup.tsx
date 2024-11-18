@@ -13,7 +13,8 @@ import {
   autoUpdate,
   flip,
   offset,
-  FloatingArrow
+  FloatingArrow,
+  FloatingArrowProps
 } from '@floating-ui/react';
 
 const toDOMRect = (viewer: OpenSeadragon.Viewer, geometry: Geometry) => {
@@ -35,6 +36,8 @@ const toDOMRect = (viewer: OpenSeadragon.Viewer, geometry: Geometry) => {
 interface OpenSeadragonAnnotationPopupProps {
 
   arrow?: boolean;
+
+  arrowProps?: Omit<FloatingArrowProps, 'context' | 'ref'>;
 
   popup: (props: PopupProps) => ReactNode;
 
@@ -144,11 +147,13 @@ export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopup
       className="a9s-popup a9s-image-popup"
       ref={refs.setFloating}
       style={floatingStyles}>
-
-      <FloatingArrow 
-        ref={arrowRef} 
-        context={context} 
-        fill="#fff" />
+      
+      {props.arrow && (
+        <FloatingArrow 
+          ref={arrowRef} 
+          context={context} 
+          {...(props.arrowProps || {})} />
+      )}
 
       {props.popup({ 
         annotation, 
