@@ -68,6 +68,8 @@ export interface OpenSeadragonAnnotator<I extends Annotation = ImageAnnotation, 
 
   setDrawingEnabled(enabled: boolean): void;
 
+  setModalSelect(modalSelect: boolean): void;
+
   setTheme(theme: 'light' | 'dark' | 'auto'): void;
 
 }
@@ -98,6 +100,8 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
   let drawingEnabled = opts.drawingEnabled;
 
   let drawingMode = opts.drawingMode;
+
+  let modalSelect = opts.modalSelect;
 
   const keyboardCommands = initKeyboardCommands(undoStack, viewer.element);
 
@@ -136,7 +140,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
   displayLayer.$on('click', (evt: CustomEvent<PixiLayerClickEvent>) => {    
     const { originalEvent, annotation } = evt.detail;
 
-    if (opts.modalSelect) {
+    if (modalSelect) {
       // Ignore click event if there is a selection
       if (selection.isEmpty() && annotation)
         selection.userSelect(annotation.id, originalEvent);
@@ -223,6 +227,10 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     drawingLayer.$set({ filter });
   }
 
+  const setModalSelect = (enabled: boolean) => {
+    modalSelect = enabled;
+  }
+
   const setStyle = (style: DrawingStyleExpression<I> | undefined) => {
     displayLayer.$set({ style: style as DrawingStyleExpression<ImageAnnotation> });
     drawingLayer.$set({ style: style as DrawingStyleExpression<ImageAnnotation> });
@@ -260,6 +268,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     setDrawingEnabled,
     setDrawingTool,
     setFilter,
+    setModalSelect,
     setPresenceProvider,
     setStyle,
     setTheme,

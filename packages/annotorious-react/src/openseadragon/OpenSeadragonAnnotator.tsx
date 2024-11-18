@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
 import { createOSDAnnotator } from '@annotorious/openseadragon';
-import { Annotation, AnnotoriousOpts, DrawingStyle, Filter } from '@annotorious/annotorious';
+import { Annotation, AnnotoriousOpts, DrawingStyle, Filter, User} from '@annotorious/annotorious';
 import { AnnotoriousContext } from '../Annotorious';
 
 export const OpenSeadragonAnnotatorContext = createContext<{ 
@@ -19,6 +19,8 @@ export type OpenSeadragonAnnotatorProps<I extends Annotation, E extends unknown>
 
   tool?: string | null;
 
+  user?: User;
+
 }
 
 export const OpenSeadragonAnnotator = <I extends Annotation, E extends unknown>(props: OpenSeadragonAnnotatorProps<I, E>) => {
@@ -32,12 +34,6 @@ export const OpenSeadragonAnnotator = <I extends Annotation, E extends unknown>(
   useEffect(() => {
     if (viewer?.element) {
       const anno = createOSDAnnotator<I, E>(viewer, opts as AnnotoriousOpts<I, E>);
-
-      if (props.drawingEnabled !== undefined) anno.setDrawingEnabled(props.drawingEnabled);
-      if (props.filter) anno.setFilter(props.filter);
-      if (props.style) anno.setStyle(props.style);
-      if (props.tool) anno.setDrawingTool(props.tool);
-
       setAnno(anno);
 
       return () => {
@@ -49,23 +45,35 @@ export const OpenSeadragonAnnotator = <I extends Annotation, E extends unknown>(
 
   useEffect(() => {
     if (anno) anno.setDrawingEnabled(props.drawingEnabled);
-  }, [props.drawingEnabled]);
+  }, [anno, props.drawingEnabled]);
 
   useEffect(() => {
     if (anno) anno.setFilter(props.filter);
-  }, [props.filter]);
+  }, [anno, props.filter]);
+
+  useEffect(() => {
+
+  }, [anno])
 
   useEffect(() => {
     if (anno) anno.setStyle(props.style);
-  }, [props.style]);
+  }, [anno, props.style]);
 
   useEffect(() => {
     if (anno) anno.setDrawingTool(tool);
-  }, [tool]);
+  }, [anno, tool]);
+
+  useEffect(() => {
+    if (anno) anno.setModalSelect(props.modalSelect);
+  }, [anno, props.modalSelect]);
+
+  useEffect(() => {
+    if (anno) anno.setUser(props.user);
+  }, [anno, props.user]);
 
   useEffect(() => {
     if (anno) anno.setUserSelectAction(props.userSelectAction);
-  }, [props.userSelectAction]);
+  }, [anno, props.userSelectAction]);
 
   return (
     <OpenSeadragonAnnotatorContext.Provider value={{ viewer, setViewer }}>
