@@ -136,12 +136,19 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
   displayLayer.$on('click', (evt: CustomEvent<PixiLayerClickEvent>) => {    
     const { originalEvent, annotation } = evt.detail;
 
-    // Ignore click event if drawing is currently active with mode 'click'
-    const blockEvent = drawingMode === 'click' && drawingEnabled;
-    if (annotation && !blockEvent)
-      selection.userSelect(annotation.id, originalEvent);
-    else if (!selection.isEmpty())
-      selection.clear();
+    if (opts.modalSelect) {
+      // Ignore click event if there is a selection
+      if (selection.isEmpty() && annotation)
+        selection.userSelect(annotation.id, originalEvent);
+    } else {
+      // Ignore click event if drawing is currently active with mode 'click'
+      const blockEvent = (drawingMode === 'click' && drawingEnabled);
+
+      if (annotation && !blockEvent)
+        selection.userSelect(annotation.id, originalEvent);
+      else if (!selection.isEmpty())
+        selection.clear();
+    }
   });
 
   viewer.element.addEventListener('pointerdown', (event: PointerEvent) => {

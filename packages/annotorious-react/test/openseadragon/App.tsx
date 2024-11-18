@@ -108,6 +108,7 @@ export const App = () => {
           'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c')}
         drawingEnabled={false}
         drawingMode="click"
+        modalSelect
         tool="polygon"
         filter={filter.filter}
         style={STYLE}>
@@ -116,7 +117,10 @@ export const App = () => {
 
         <OpenSeadragonAnnotationPopup 
           popup={() => (
-            <div className="popup">Hello World</div>
+            <div className="popup">
+              Hello World
+              <button onClick={() => anno.setSelected()}>OK</button>
+            </div>
           )} />
       </OpenSeadragonAnnotator>
     </div>
