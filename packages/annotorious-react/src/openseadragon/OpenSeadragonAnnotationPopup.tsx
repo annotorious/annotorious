@@ -14,7 +14,8 @@ import {
   flip,
   offset,
   FloatingArrow,
-  FloatingArrowProps
+  FloatingArrowProps,
+  Placement
 } from '@floating-ui/react';
 
 const toDOMRect = (viewer: OpenSeadragon.Viewer, geometry: Geometry) => {
@@ -39,6 +40,8 @@ interface OpenSeadragonAnnotationPopupProps {
 
   arrowProps?: Omit<FloatingArrowProps, 'context' | 'ref'>;
 
+  placement?: Placement;
+
   popup: (props: PopupProps) => ReactNode;
 
 }
@@ -62,6 +65,7 @@ export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopup
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
+    placement: props.placement,
     middleware: [
       inline(), 
       offset(10),
