@@ -52,10 +52,6 @@ export const OpenSeadragonAnnotator = <I extends Annotation, E extends unknown>(
   }, [anno, props.filter]);
 
   useEffect(() => {
-
-  }, [anno])
-
-  useEffect(() => {
     if (anno) anno.setStyle(props.style);
   }, [anno, props.style]);
 
