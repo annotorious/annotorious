@@ -26,8 +26,7 @@ type HasTime = { created?: string | Date; updated?: string | Date; };
  * Converts any string dates in the given annotation(-like) 
  * object to proper Date objects.
  */
-export const reviveDates = <A extends Annotation>(annotation: A): A => {
-
+export const reviveDates = <A extends Annotation = Annotation>(annotation: any): A => {
   const revive = <T extends HasTime>(body: T): T => {
     const revived = {...body};
 
@@ -44,7 +43,7 @@ export const reviveDates = <A extends Annotation>(annotation: A): A => {
     ...annotation,
     bodies: (annotation.bodies || []).map(revive),
     target: revive(annotation.target)
-  }
+  } as A;
 }
 
 /**
