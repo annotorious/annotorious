@@ -1,5 +1,5 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
-  import { SvelteComponent, onMount } from 'svelte';
+  import { type SvelteComponent, onMount } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import type { Annotation, DrawingStyleExpression, StoreChangeEvent, User } from '@annotorious/core';
   import { isImageAnnotation, ShapeType } from '../model';
