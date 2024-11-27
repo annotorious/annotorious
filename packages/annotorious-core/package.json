@@ -31,15 +31,15 @@
     "@types/deep-equal": "^1.0.4",
     "svelte": "^4.2.19",
     "svelte-preprocess": "^6.0.3",
-    "typescript": "5.6.3",
+    "typescript": "5.7.2",
     "vite": "^5.4.11",
     "vite-plugin-dts": "^4.3.0",
-    "vitest": "^2.1.5"
+    "vitest": "^2.1.6"
   },
   "dependencies": {
     "dequal": "^2.0.3",
     "nanoevents": "^9.1.0",
-    "nanoid": "^5.0.8",
+    "nanoid": "^5.0.9",
     "uuid": "^11.0.3"
   }
 }
