@@ -56,6 +56,7 @@ export type {
   FragmentSelector,
   ImageAnnotator as AnnotoriousImageAnnotator,
   ImageAnnotation,
+  ImageAnnotationTarget,
   ImageAnnotatorState,
   Polygon,
   PolygonGeometry,
