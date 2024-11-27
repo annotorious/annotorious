@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
+import { createAnonymousGuest } from '@annotorious/core';
 import { createOSDAnnotator } from '@annotorious/openseadragon';
 import { Annotation, AnnotoriousOpts, DrawingStyle, Filter, User} from '@annotorious/annotorious';
 import { AnnotoriousContext } from '../Annotorious';
@@ -64,7 +65,12 @@ export const OpenSeadragonAnnotator = <I extends Annotation, E extends unknown>(
   }, [anno, props.modalSelect]);
 
   useEffect(() => {
-    if (anno) anno.setUser(props.user);
+    if (!anno) return;
+    
+    if (props.user)
+      anno.setUser(props.user);
+    else 
+      anno.setUser(createAnonymousGuest());
   }, [anno, props.user]);
 
   useEffect(() => {
