@@ -9,7 +9,8 @@ import {
   autoUpdate,
   flip,
   offset,
-  FloatingArrow
+  FloatingArrow,
+  FloatingArrowProps
 } from '@floating-ui/react';
 import { useAnnotator, useSelection } from './Annotorious';
 import { PopupProps } from './PopupProps';
@@ -37,6 +38,8 @@ const toDOMRect = (geometry: Geometry, container: HTMLDivElement) => {
 interface ImageAnnotationPopupProps {
 
   arrow?: boolean;
+
+  arrowProps?: Omit<FloatingArrowProps, 'context' | 'ref'>;
 
   popup: (props: PopupProps) => ReactNode;
 
@@ -138,9 +141,12 @@ export const ImageAnnotationPopup = (props: ImageAnnotationPopupProps) => {
       ref={refs.setFloating}
       style={floatingStyles}>
 
-      <FloatingArrow 
-        ref={arrowRef} 
-        context={context} />
+      {props.arrow && (
+        <FloatingArrow 
+          ref={arrowRef} 
+          context={context} 
+          {...(props.arrowProps || {})} />
+      )}
 
       {props.popup({ 
         annotation, 
