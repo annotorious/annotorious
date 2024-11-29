@@ -27,6 +27,8 @@ export interface ImageAnnotator<I extends Annotation = ImageAnnotation, E extend
 
   isDrawingEnabled(): boolean;
 
+  // TODO: Restore registration of drawing tools
+  
   // listDrawingTools(): string[];
 
   // registerDrawingTool(name: string, tool: Component, opts?: DrawingToolOpts): void;
