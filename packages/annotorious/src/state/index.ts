@@ -1,2 +1,2 @@
 export * from './ImageAnnotationStore';
-export * from './ImageAnnotatorState';
+export * from './ImageAnnotatorState.svelte';

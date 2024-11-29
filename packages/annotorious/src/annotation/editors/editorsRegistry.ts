@@ -1,14 +1,12 @@
 import { ShapeType, type Shape } from '../../model';
-import type { SvelteComponent } from 'svelte';
 import { PolygonEditor } from './polygon';
 import { RectangleEditor } from './rectangle';
 
-const REGISTERED = new Map<ShapeType, typeof SvelteComponent>([
-  [ShapeType.RECTANGLE, RectangleEditor as typeof SvelteComponent],
-  [ShapeType.POLYGON, PolygonEditor as typeof SvelteComponent]
-]);
+export type EditorComponent = PolygonEditor | RectangleEditor;
 
-export const getEditor = (shape: Shape) => REGISTERED.get(shape.type);
+export function getEditor<T extends ShapeType>(shape: T) {
+  if (shape === ShapeType.RECTANGLE) return RectangleEditor;
+  if (shape === ShapeType.POLYGON) return PolygonEditor;
+  throw new Error(`No behavior defined for shape type '${ShapeType}`)
+}
 
-export const registerEditor = (shapeType: ShapeType, editor: typeof SvelteComponent) =>
-  REGISTERED.set(shapeType, editor);

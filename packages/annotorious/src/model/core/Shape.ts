@@ -18,6 +18,14 @@ export enum ShapeType {
 
 }
 
+
+
+
+
+
+
+export type ShapeName = `${ShapeType}`
+
 export interface Geometry {
 
   bounds: Bounds;

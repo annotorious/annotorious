@@ -8,9 +8,7 @@ export interface ImageAnnotation extends Annotation {
 }
 
 export interface ImageAnnotationTarget extends AnnotationTarget {
-
   selector: Shape
-
 }
 
 export const isImageAnnotation = <T extends Annotation>(

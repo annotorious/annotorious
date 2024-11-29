@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount, type SvelteComponent } from 'svelte';
+  import {
+    createEventDispatcher,
+    onMount,
+    type Component,
+    mount,
+    unmount,
+  } from 'svelte';
   import type { Transform } from '../Transform';
   import type { Shape } from 'src/model';
   import type { DrawingMode } from 'src/AnnotoriousOpts';
@@ -7,43 +13,53 @@
   const dispatch = createEventDispatcher<{ create: Shape }>();
 
   /** Props **/
-  export let drawingMode: DrawingMode;
-  export let target: SVGGElement;
-  export let tool: typeof SvelteComponent;
-  export let transform: Transform;
-  export let viewportScale: number;
+  const {
+    drawingMode,
+    target,
+    tool,
+    transform,
+    viewportScale,
+  }: {
+    drawingMode: DrawingMode;
+    target: SVGGElement;
+    tool: Component;
+    transform: Transform;
+    viewportScale: number;
+  } = $props();
 
-  let toolComponent: SvelteComponent;
-
-  $: if (toolComponent) toolComponent.$set({ transform });
-  $: if (toolComponent) toolComponent.$set({ viewportScale });
+  let toolProps = $derived({
+    addEventListener,
+    drawingMode,
+    transform,
+    viewportScale,
+  });
 
   onMount(() => {
     const svg = target.closest('svg');
 
     const cleanup: Function[] = [];
 
-    const addEventListener = (name: keyof SVGSVGElementEventMap, handler: EventListenerOrEventListenerObject, capture?: boolean) => {
+    const addEventListener = (
+      name: keyof SVGSVGElementEventMap,
+      handler: EventListenerOrEventListenerObject,
+      capture?: boolean,
+    ) => {
       svg?.addEventListener(name, handler, capture);
       cleanup.push(() => svg?.removeEventListener(name, handler, capture));
-    }
+    };
 
-    toolComponent = new tool({
+    const toolComponent = mount(tool, {
       target,
-      props: { 
-        addEventListener,
-        drawingMode,
-        transform, 
-        viewportScale
-      }
+      props: {
+        ...toolProps,
+        // TODO: Adding explicit 'any'
+        oncreate: (event: any) => dispatch('create', event.detail),
+      },
     });
 
-    toolComponent.$on('create', 
-      event => dispatch('create', event.detail));
-
     return () => {
-      cleanup.forEach(fn => fn());
-      toolComponent.$destroy();
-    }
+      cleanup.forEach((fn) => fn());
+      unmount(toolComponent);
+    };
   });
 </script>

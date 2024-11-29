@@ -1,12 +1,11 @@
-import type { SvelteComponent } from 'svelte';
+import { mount, unmount, type Component } from 'svelte';
 import { UserSelectAction } from '@annotorious/core';
 import type { Annotation, Annotator, DrawingStyleExpression, Filter, User } from '@annotorious/core';
 import { createAnonymousGuest, createBaseAnnotator, createLifecycleObserver, createUndoStack } from '@annotorious/core';
-import { registerEditor } from './annotation/editors';
-import { getTool, registerTool, listDrawingTools, type DrawingTool } from './annotation/tools';
+import { getTool, type DrawingTool } from './annotation/tools';
 import { SVGAnnotationLayer } from './annotation';
-import type { DrawingToolOpts, SVGAnnotationLayerPointerEvent } from './annotation';
-import type { ImageAnnotation, ShapeType } from './model';
+import type { SVGAnnotationLayerPointerEvent } from './annotation';
+import type { ImageAnnotation } from './model';
 import { createSvelteImageAnnotatorState } from './state';
 import { setTheme as _setTheme } from './themes';
 import { fillDefaults, type Theme } from './AnnotoriousOpts';
@@ -16,6 +15,7 @@ import { initKeyboardCommands } from './keyboardCommands';
 import './Annotorious.css';
 import './themes/dark/index.css';
 import './themes/light/index.css';
+import type { SVGLayerProps } from './annotation/types';
 
 export interface ImageAnnotator<I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation> extends Annotator<I, E> { 
 
@@ -27,11 +27,11 @@ export interface ImageAnnotator<I extends Annotation = ImageAnnotation, E extend
 
   isDrawingEnabled(): boolean;
 
-  listDrawingTools(): string[];
+  // listDrawingTools(): string[];
 
-  registerDrawingTool(name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts): void;
+  // registerDrawingTool(name: string, tool: Component, opts?: DrawingToolOpts): void;
 
-  registerShapeEditor(shapeType: ShapeType, editor: typeof SvelteComponent): void;
+  // registerShapeEditor(shapeType: ShapeType, editor: Component): void;
 
   setDrawingTool(name: DrawingTool): void; 
 
@@ -83,29 +83,36 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
 
   const keyboardCommands = initKeyboardCommands(undoStack);
 
-  let currentUser: User = createAnonymousGuest();
+  let currentUser: User = $state(createAnonymousGuest());
 
   _setTheme(img, container, opts.theme!);
 
-  const annotationLayer = new SVGAnnotationLayer({
-    target: container,
-    props: { 
-      drawingEnabled: Boolean(opts.drawingEnabled), 
-      image: img, 
+  const layerProps : SVGLayerProps<I, E> = $state(
+    {
+      drawingEnabled: Boolean(opts.drawingEnabled),
+      image: img,
       preferredDrawingMode: opts.drawingMode!,
-      state: state, 
-      style: opts.style, 
-      user: currentUser
+      state: state,
+      style: opts.style,
+      user: currentUser,
+      toolName: undefined,
+      onclick:  (evt: CustomEvent<SVGAnnotationLayerPointerEvent<I>>) => {
+        const { originalEvent, annotation } = evt.detail;
+        if (annotation)
+          selection.userSelect(annotation.id, originalEvent);
+        else if (!selection.isEmpty())
+          selection.clear();
+      },
+      imageAnnotatorState: state
     }
-  });
-
-  annotationLayer.$on('click', (evt: CustomEvent<SVGAnnotationLayerPointerEvent<I>>) => {
-    const { originalEvent, annotation } = evt.detail;
-    if (annotation)
-      selection.userSelect(annotation.id, originalEvent);
-    else if (!selection.isEmpty())
-      selection.clear();
-  });
+  )
+  const annotationLayer = mount(
+    SVGAnnotationLayer<I, E>,
+    { 
+      target: container,
+      props: layerProps
+    }
+  )
 
   /*************************/
   /*      External API     */
@@ -115,13 +122,14 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
   const base = createBaseAnnotator<I, E>(state, undoStack, opts.adapter);
 
   const cancelDrawing = () => {
-    annotationLayer.$set({ drawingEnabled: false });
-    setTimeout(() => annotationLayer.$set({ drawingEnabled: true }), 1);
+    layerProps.drawingEnabled = false;
+    // TODO: I don't undrstand this.
+    setTimeout(() => layerProps.drawingEnabled = true , 1);
   }
 
   const destroy = () => {
     // Destroy Svelte annotation layer
-    annotationLayer.$destroy();
+    unmount(annotationLayer)
 
     // Unwrap the image
     container.parentNode!.insertBefore(img, container);
@@ -138,13 +146,13 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
   const getUser = () => currentUser;
 
   const isDrawingEnabled = () => 
-    annotationLayer.isDrawingEnabled();
+    layerProps.drawingEnabled;
 
-  const registerDrawingTool = (name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts) =>
-    registerTool(name, tool, opts);
+  // const registerDrawingTool = (name: string, tool: Component, opts?: DrawingToolOpts) =>
+  //   registerTool(name, tool, opts);
 
-  const registerShapeEditor = (shapeType: ShapeType, editor: typeof SvelteComponent) =>
-    registerEditor(shapeType, editor);
+  // const registerShapeEditor = (shapeType: ShapeType, editor: Component) =>
+  //   editors[shapeType] = editor;
 
   const setDrawingTool = (name: DrawingTool) => {
     // Validate that the tool exists
@@ -152,30 +160,29 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
     if (!toolSpec)
       throw `No drawing tool named ${name}`;
 
-    // @ts-ignore
-    annotationLayer.$set({ toolName: name })
+    layerProps.toolName =  name
   }
 
   const setDrawingEnabled = (enabled: boolean) =>
-    annotationLayer.$set({ drawingEnabled: enabled });
+    layerProps.drawingEnabled = enabled;
   
   const setFilter = (_: Filter) => {
     console.warn('Filter not implemented yet');
   }
 
   const setStyle = (style: DrawingStyleExpression<I> | undefined) =>
-    annotationLayer.$set({ style: style as DrawingStyleExpression<ImageAnnotation> });
+    layerProps.style = style as DrawingStyleExpression<ImageAnnotation>;
 
   const setTheme = (theme: Theme) => _setTheme(img, container, theme);
   
   const setUser = (user: User) => {
     currentUser = user;
-    annotationLayer.$set({ user });
+    layerProps.user = user;
   }
 
   const setVisible = (visible: boolean) =>
     // @ts-ignore
-    annotationLayer.$set({ visible });
+  layerProps.visible = visible;
 
   return {
     ...base,
@@ -184,11 +191,11 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
     getDrawingTool,
     getUser,
     isDrawingEnabled,
-    listDrawingTools,
+    // listDrawingTools,
     on: lifecycle.on,
     off: lifecycle.off,
-    registerDrawingTool,
-    registerShapeEditor,
+    // registerDrawingTool,
+    // registerShapeEditor,
     setDrawingEnabled,
     setDrawingTool,
     setFilter,

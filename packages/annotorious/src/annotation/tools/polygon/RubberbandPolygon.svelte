@@ -1,36 +1,52 @@
 <script lang="ts">
   import { onMount, createEventDispatcher } from 'svelte';
   import type { DrawingMode } from '../../../AnnotoriousOpts';
-  import { boundsFromPoints, computeArea, ShapeType, type Polygon } from '../../../model';
+  import {
+    boundsFromPoints,
+    computeArea,
+    ShapeType,
+    type Polygon,
+  } from '../../../model';
   import { distance } from '../../utils';
   import type { Transform } from '../..';
 
   const dispatch = createEventDispatcher<{ create: Polygon }>();
 
   /** Props **/
-  export let addEventListener: (type: string, fn: EventListener, capture?: boolean) => void;
-  export let drawingMode: DrawingMode;
-  export let transform: Transform;
-  export let viewportScale = 1;
+  const {
+    addEventListener,
+    drawingMode,
+    transform,
+    viewportScale = 1,
+  }: {
+    addEventListener: (
+      type: string,
+      fn: EventListener,
+      capture?: boolean,
+    ) => void;
+    drawingMode: DrawingMode;
+    transform: Transform;
+    viewportScale: number;
+  } = $props();
 
-  let lastPointerDown: { timeStamp: number, offsetX: number, offsetY: number };
+  let lastPointerDown: { timeStamp: number; offsetX: number; offsetY: number };
 
-  let points: [number, number][] = [];
-  
-  let cursor: [number, number] | undefined;
+  let points: [number, number][] = $state([]);
+
+  let cursor: [number, number] | undefined = $state(undefined);
 
   // Keep track of the user keeping the finger
-  // in place. Long pauses will be interpreted like a 
+  // in place. Long pauses will be interpreted like a
   // double click and close the shape.
   let touchPauseTimer: number | undefined;
 
-  let isClosable: boolean = false;
+  let isClosable: boolean = $state(false);
 
   const CLOSE_DISTANCE = 20;
 
   const TOUCH_PAUSE_LIMIT = 1500;
 
-  $: handleSize = 10 / viewportScale;
+  let handleSize = $derived(10 / viewportScale);
 
   const onPointerDown = (event: Event) => {
     const evt = event as PointerEvent;
@@ -47,7 +63,7 @@
         cursor = point;
       }
     }
-  }
+  };
 
   const onPointerMove = (event: Event) => {
     const evt = event as PointerEvent;
@@ -57,7 +73,7 @@
     if (points.length > 0) {
       cursor = transform.elementToImage(evt.offsetX, evt.offsetY);
 
-      if (points.length >  2) {
+      if (points.length > 2) {
         const d = distance(cursor, points[0]) * viewportScale;
         isClosable = d < CLOSE_DISTANCE;
       }
@@ -68,7 +84,7 @@
         }, TOUCH_PAUSE_LIMIT);
       }
     }
-  }
+  };
 
   const onPointerUp = (event: Event) => {
     const evt = event as PointerEvent;
@@ -79,10 +95,12 @@
       const timeDifference = evt.timeStamp - lastPointerDown.timeStamp;
 
       const d = distance(
-        [lastPointerDown.offsetX, lastPointerDown.offsetY], 
-        [evt.offsetX, evt.offsetY]);
+        [lastPointerDown.offsetX, lastPointerDown.offsetY],
+        [evt.offsetX, evt.offsetY],
+      );
 
-      if (timeDifference > 300 || d > 15) // Not a single click - ignore
+      if (timeDifference > 300 || d > 15)
+        // Not a single click - ignore
         return;
 
       if (isClosable) {
@@ -119,7 +137,7 @@
         points.push(cursor!);
       }
     }
-  }
+  };
 
   const onDblClick = () => {
     if (!cursor) return;
@@ -129,63 +147,62 @@
     const p = [...points, cursor];
 
     const shape: Polygon = {
-      type: ShapeType.POLYGON, 
+      type: ShapeType.POLYGON,
       geometry: {
         bounds: boundsFromPoints(p),
-        points: p
-      }
-    }
+        points: p,
+      },
+    };
 
     const area = computeArea(shape);
     if (area > 4) {
       points = [];
       cursor = undefined;
-    
+
       dispatch('create', shape);
     }
-  }
+  };
 
   const stopDrawing = () => {
     const shape: Polygon = {
-      type: ShapeType.POLYGON, 
+      type: ShapeType.POLYGON,
       geometry: {
         bounds: boundsFromPoints(points),
-        points: [...points]
-      }
-    }
+        points: [...points],
+      },
+    };
 
     points = [];
     cursor = undefined;
-  
-    dispatch('create', shape);
-  }
 
-  onMount(() => {
-    addEventListener('pointerdown', onPointerDown, true);
-    addEventListener('pointermove', onPointerMove);
-    addEventListener('pointerup', onPointerUp, true);
-    addEventListener('dblclick', onDblClick, true);
-  });
+    dispatch('create', shape);
+  };
+  console.error('HERE');
+  // onMount(() => {
+  //   addEventListener('pointerdown', onPointerDown, true);
+  //   addEventListener('pointermove', onPointerMove);
+  //   addEventListener('pointerup', onPointerUp, true);
+  //   addEventListener('dblclick', onDblClick, true);
+  // });
 </script>
 
 <g class="a9s-annotation a9s-rubberband">
   {#if cursor}
-    {@const coords = (isClosable ? points : [...points, cursor]).map(xy => xy.join(',')).join(' ')}
-      <polygon 
-        class="a9s-outer"
-        points={coords} />
+    {@const coords = (isClosable ? points : [...points, cursor])
+      .map((xy) => xy.join(','))
+      .join(' ')}
+    <polygon class="a9s-outer" points={coords} />
 
-      <polygon 
-        class="a9s-inner"
-        points={coords} />
-        
+    <polygon class="a9s-inner" points={coords} />
+
     {#if isClosable}
-      <rect 
+      <rect
         class="a9s-corner-handle"
-        x={points[0][0] - handleSize / 2} 
-        y={points[0][1] - handleSize / 2} 
-        height={handleSize} 
-        width={handleSize} />
+        x={points[0][0] - handleSize / 2}
+        y={points[0][1] - handleSize / 2}
+        height={handleSize}
+        width={handleSize}
+      />
     {/if}
   {/if}
 </g>
