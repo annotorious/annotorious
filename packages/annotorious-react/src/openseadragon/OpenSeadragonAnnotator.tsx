@@ -1,4 +1,4 @@
-import { createContext, MutableRefObject, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, forwardRef, ReactNode, useContext, useEffect, useImperativeHandle, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
 import { createAnonymousGuest } from '@annotorious/core';
 import { createOSDAnnotator } from '@annotorious/openseadragon';
@@ -25,13 +25,17 @@ export type OpenSeadragonAnnotatorProps<I extends Annotation, E extends unknown>
 
 }
 
-export const OpenSeadragonAnnotator = <I extends Annotation, E extends unknown>(props: OpenSeadragonAnnotatorProps<I, E>) => {
-
+export const OpenSeadragonAnnotator = forwardRef(<I extends Annotation, E extends unknown>(
+  props: OpenSeadragonAnnotatorProps<I, E>, 
+  ref: React.ForwardedRef<AnnotoriousOpenSeadragonAnnotator<I, E> | null>
+) => {
   const { children, tool, ...opts } = props;
 
   const [viewer, setViewer] = useState<OpenSeadragon.Viewer>();
 
   const { anno, setAnno } = useContext(AnnotoriousContext);
+
+  useImperativeHandle(ref, () => anno as AnnotoriousOpenSeadragonAnnotator<I, E> | null, [anno]);
 
   useEffect(() => {
     if (viewer?.element) {
@@ -84,7 +88,7 @@ export const OpenSeadragonAnnotator = <I extends Annotation, E extends unknown>(
     </OpenSeadragonAnnotatorContext.Provider>
   )
 
-}
+});
 
 export const useViewer = () => {
   const { viewer } = useContext(OpenSeadragonAnnotatorContext);
