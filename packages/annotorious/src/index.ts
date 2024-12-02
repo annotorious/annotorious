@@ -3,7 +3,7 @@ export * from './model';
 export * from './state';
 export * from './themes';
 export * from './annotation/tools';
-export * from './Annotorious';
+export * from './Annotorious.svelte';
 export * from './AnnotoriousOpts';
 export * from './keyboardCommands';
 

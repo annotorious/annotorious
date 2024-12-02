@@ -5,19 +5,32 @@
   import type { Transform } from '../..';
 
   const dispatch = createEventDispatcher<{ create: Rectangle }>();
-  
+
   /** Props **/
-  export let addEventListener: (type: string, fn: EventListener, capture?: boolean) => void;
-  export let drawingMode: DrawingMode;
-  export let transform: Transform;
+  const {
+    addEventListener,
+    drawingMode,
+    transform,
+  }: {
+    addEventListener: (
+      type: string,
+      fn: EventListener,
+      capture?: boolean,
+    ) => void;
+    drawingMode: DrawingMode;
+    transform: Transform;
+  } = $props();
 
   let lastPointerDown: number;
 
-  let origin: [x: number, y: number] | undefined; 
+  let origin: [x: number, y: number] | undefined = $state(undefined);
 
-  let anchor: [number, number] | undefined;
+  let anchor: [number, number] | undefined = $state(undefined);
 
-  let x: number, y: number, w: number, h: number;
+  let x: number = $state(0);
+  let y: number = $state(0);
+  let w: number = $state(1);
+  let h: number = $state(1);
 
   const onPointerDown = (event: Event) => {
     const evt = event as PointerEvent;
@@ -33,7 +46,7 @@
       w = 1;
       h = 1;
     }
-  }
+  };
 
   const onPointerMove = (event: Event) => {
     const evt = event as PointerEvent;
@@ -46,8 +59,8 @@
       w = Math.abs(anchor[0] - origin[0]);
       h = Math.abs(anchor[1] - origin[1]);
     }
-  }
-    
+  };
+
   const onPointerUp = (event: Event) => {
     const evt = event as PointerEvent;
 
@@ -55,19 +68,18 @@
 
     if (drawingMode === 'click') {
       // Not a single click - ignore
-      if (timeDifference > 300)
-        return;
+      if (timeDifference > 300) return;
 
       // This statement caused a weird bug on OSD: when starting
-      // to draw with a quick drag (<300ms), OSD got stuck in mouseNav 
-      // mode. The image still moved with the mouse cursor, even though 
-      // button was no longer pressed. 
+      // to draw with a quick drag (<300ms), OSD got stuck in mouseNav
+      // mode. The image still moved with the mouse cursor, even though
+      // button was no longer pressed.
       // I'm commenting out this statement as a fix. But there must have
       // been a reason I put it here in the first place. Keep an eye ou
       // for regressions.
-      // 
+      //
       // And if you are ever tempted to un-comment the statement: beware!
-      
+
       // evt.stopPropagation();
 
       if (origin) {
@@ -91,30 +103,33 @@
         anchor = undefined;
       }
     }
-  }
+  };
 
   const stopDrawing = () => {
     // Require 4x4 pixels minimum
     if (w * h > 15) {
       const shape: Rectangle = {
-        type: ShapeType.RECTANGLE, 
+        type: ShapeType.RECTANGLE,
         geometry: {
           bounds: {
-            minX: x, 
+            minX: x,
             minY: y,
             maxX: x + w,
-            maxY: y + h
+            maxY: y + h,
           },
-          x, y, w, h
-        }
-      }
+          x,
+          y,
+          w,
+          h,
+        },
+      };
 
       dispatch('create', shape);
     }
-    
+
     origin = undefined;
     anchor = undefined;
-  }
+  };
 
   onMount(() => {
     addEventListener('pointerdown', onPointerDown);
@@ -125,18 +140,8 @@
 
 <g class="a9s-annotation a9s-rubberband">
   {#if origin}
-    <rect
-      class="a9s-outer"
-      x={x} 
-      y={y} 
-      width={w} 
-      height={h} />
+    <rect class="a9s-outer" {x} {y} width={w} height={h} />
 
-    <rect
-      class="a9s-inner"
-      x={x} 
-      y={y} 
-      width={w} 
-      height={h} />
+    <rect class="a9s-inner" {x} {y} width={w} height={h} />
   {/if}
 </g>

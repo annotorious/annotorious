@@ -1,18 +1,19 @@
 <script lang="ts">
   import Handle from '../Handle.svelte';
-  import type { Rectangle, Shape } from '../../../model';
-  import type { Transform } from '../../Transform';
+  import type { Shape } from '../../../model';
   import { Editor } from '..';
 
   /** Props */
-  export let shape: Rectangle;
-  export let computedStyle: string | undefined;
-  export let transform: Transform;
-  export let viewportScale: number = 1;
 
-  $: geom = shape.geometry;
+  let { shape, computedStyle, transform, viewportScale = 1 } = $props();
 
-  const editor = (rectangle: Shape, handle: string, delta: [number, number]) => {
+  let geom = $derived(shape.geometry);
+
+  const editor = (
+    rectangle: Shape,
+    handle: string,
+    delta: [number, number],
+  ) => {
     const initialBounds = rectangle.geometry.bounds;
 
     let [x0, y0] = [initialBounds.minX, initialBounds.minY];
@@ -67,80 +68,107 @@
     return {
       ...rectangle,
       geometry: {
-        x, y, w, h,
+        x,
+        y,
+        w,
+        h,
         bounds: {
           minX: x,
           minY: y,
           maxX: x + w,
-          maxY: y + h
-        }
-      }
+          maxY: y + h,
+        },
+      },
     };
-  }
+  };
 </script>
 
-<Editor
-  shape={shape}
-  transform={transform}
-  editor={editor}
-  on:grab
-  on:change 
-  on:release
-  let:grab={grab}>
-
-  <rect 
+<Editor {shape} {transform} {editor} on:grab on:change on:release let:grab>
+  <rect
     class="a9s-outer"
     style={computedStyle ? 'display:none;' : undefined}
-    on:pointerdown={grab('SHAPE')}
-    x={geom.x} y={geom.y} width={geom.w} height={geom.h} />
+    onpointerdown={grab('SHAPE')}
+    x={geom.x}
+    y={geom.y}
+    width={geom.w}
+    height={geom.h}
+  />
 
-  <rect 
+  <rect
     class="a9s-inner a9s-shape-handle"
     style={computedStyle}
-    on:pointerdown={grab('SHAPE')}
-    x={geom.x} y={geom.y} width={geom.w} height={geom.h} />
+    onpointerdown={grab('SHAPE')}
+    x={geom.x}
+    y={geom.y}
+    width={geom.w}
+    height={geom.h}
+  />
 
-  <rect 
-    class="a9s-edge-handle a9s-edge-handle-top" 
-    on:pointerdown={grab('TOP')}
-    x={geom.x} y={geom.y} height={1} width={geom.w} />
+  <rect
+    class="a9s-edge-handle a9s-edge-handle-top"
+    onpointerdown={grab('TOP')}
+    x={geom.x}
+    y={geom.y}
+    height={1}
+    width={geom.w}
+  />
 
-  <rect 
+  <rect
     class="a9s-edge-handle a9s-edge-handle-right"
-    on:pointerdown={grab('RIGHT')}
-    x={geom.x + geom.w} y={geom.y} height={geom.h} width={1}/>
+    onpointerdown={grab('RIGHT')}
+    x={geom.x + geom.w}
+    y={geom.y}
+    height={geom.h}
+    width={1}
+  />
 
-  <rect 
-    class="a9s-edge-handle a9s-edge-handle-bottom" 
-    on:pointerdown={grab('BOTTOM')}
-    x={geom.x} y={geom.y + geom.h} height={1} width={geom.w} />
+  <rect
+    class="a9s-edge-handle a9s-edge-handle-bottom"
+    onpointerdown={grab('BOTTOM')}
+    x={geom.x}
+    y={geom.y + geom.h}
+    height={1}
+    width={geom.w}
+  />
 
-  <rect 
-    class="a9s-edge-handle a9s-edge-handle-left" 
-    on:pointerdown={grab('LEFT')}
-    x={geom.x} y={geom.y} height={geom.h} width={1} />
+  <rect
+    class="a9s-edge-handle a9s-edge-handle-left"
+    onpointerdown={grab('LEFT')}
+    x={geom.x}
+    y={geom.y}
+    height={geom.h}
+    width={1}
+  />
 
   <Handle
     class="a9s-corner-handle-topleft"
-    on:pointerdown={grab('TOP_LEFT')}
-    x={geom.x} y={geom.y}
-    scale={viewportScale} /> 
+    onpointerdown={grab('TOP_LEFT')}
+    x={geom.x}
+    y={geom.y}
+    scale={viewportScale}
+  />
 
   <Handle
     class="a9s-corner-handle-topright"
-    on:pointerdown={grab('TOP_RIGHT')}
-    x={geom.x + geom.w} y={geom.y} 
-    scale={viewportScale} />
-  
-  <Handle 
+    onpointerdown={grab('TOP_RIGHT')}
+    x={geom.x + geom.w}
+    y={geom.y}
+    scale={viewportScale}
+  />
+
+  <Handle
     class="a9s-corner-handle-bottomright"
-    on:pointerdown={grab('BOTTOM_RIGHT')}
-    x={geom.x + geom.w} y={geom.y + geom.h} 
-    scale={viewportScale} />
-    
-  <Handle 
+    onpointerdown={grab('BOTTOM_RIGHT')}
+    x={geom.x + geom.w}
+    y={geom.y + geom.h}
+    scale={viewportScale}
+  />
+
+  <Handle
     class="a9s-corner-handle-bottomleft"
-    on:pointerdown={grab('BOTTOM_LEFT')}
-    x={geom.x} y={geom.y + geom.h} 
-    scale={viewportScale} />
+    onpointerdown={grab('BOTTOM_LEFT')}
+    x={geom.x}
+    y={geom.y + geom.h}
+    scale={viewportScale}
+  />
 </Editor>

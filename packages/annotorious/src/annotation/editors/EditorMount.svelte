@@ -1,45 +1,74 @@
 <script lang="ts">
   import type { DrawingStyleExpression } from '@annotorious/core';
-  import { createEventDispatcher, onMount, type SvelteComponent } from 'svelte';
-  import type { ImageAnnotation, Shape } from '../../model';
+  import {
+    createEventDispatcher,
+    mount,
+    onMount,
+    type Component,
+    type SvelteComponent,
+  } from 'svelte';
+  import type { ImageAnnotation, Shape, ShapeType } from '../../model';
   import { computeStyle } from '../utils/styling';
   import type { Transform } from '../Transform';
+  import type { EditorComponent } from './editorsRegistry';
 
-  const dispatch = createEventDispatcher<{ grab: PointerEvent, release: PointerEvent, change: Shape }>();
+  const dispatch = createEventDispatcher<{
+    grab: PointerEvent;
+    release: PointerEvent;
+    change: Shape;
+  }>();
 
   /** Props */
-  export let annotation: ImageAnnotation;
-  export let editor: typeof SvelteComponent;
-  export let style: DrawingStyleExpression<ImageAnnotation> | undefined;
-  export let target: SVGGElement;
-  export let transform: Transform;
-  export let viewportScale: number;
 
-  let editorComponent: SvelteComponent;
+  const {
+    annotation,
+    editor,
+    style,
+    target,
+    transform,
+    viewportScale,
+  }: {
+    annotation: ImageAnnotation;
+    editor: EditorComponent;
+    style: DrawingStyleExpression<ImageAnnotation> | undefined;
+    target: SVGGElement;
+    transform: Transform;
+    viewportScale: number;
+  } = $props();
 
-  $: computedStyle = computeStyle(annotation, style);
+  let computedStyle = $derived(computeStyle(annotation, style));
 
-  $: if (annotation) editorComponent?.$set({ shape: annotation.target.selector });
-  $: if (editorComponent) editorComponent.$set({ transform });
-  $: if (editorComponent) editorComponent.$set({ viewportScale });
-  $: if (editorComponent && computedStyle) editorComponent.$set({ computedStyle });
+  let shape = $derived(annotation ? annotation.target.selector : undefined);
 
-  onMount(() => {    
-    editorComponent = new editor({
+  let editorProps = $derived({
+    transform,
+    viewportScale,
+    computedStyle,
+    shape,
+  });
+
+  onMount(() => {
+    // @ts-ignore I think this one might be ok?
+    mount(editor, {
       target,
-      props: { shape: annotation.target.selector, computedStyle, transform, viewportScale }
+      events: {
+        // TODO restore shapechange event.
+        //  'change':  (event) => {
+        //       editorComponent.$$set({ shape: event.detail });
+        //       dispatch('change', event.detail);
+        //     }
+      },
+      props: editorProps,
     });
 
-    editorComponent.$on('change', event => {
-      editorComponent.$$set({ shape: event.detail });
-      dispatch('change', event.detail);
-    });
+    // TODO resotre listeners
+    // editorComponent.$on('grab', (event) => dispatch('grab', event.detail));
+    // editorComponent.$on('release', (event) =>
+    //   dispatch('release', event.detail),
+    // );
 
-    editorComponent.$on('grab', event => dispatch('grab', event.detail));
-    editorComponent.$on('release', event => dispatch('release', event.detail));
-
-    return () => {
-      editorComponent.$destroy();
-    }
+    // return () => {
+    //   editorComponent.$destroy();
+    // };
   });
 </script>

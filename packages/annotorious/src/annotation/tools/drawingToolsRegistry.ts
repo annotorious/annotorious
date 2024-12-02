@@ -1,9 +1,9 @@
-import type { SvelteComponent } from 'svelte';
-import { RubberbandRectangle } from './rectangle';
-import { RubberbandPolygon } from './polygon';
+import RubberbandRectangle from './rectangle/RubberbandRectangle.svelte';
+import RubberbandPolygon from './polygon/RubberbandPolygon.svelte';
 import type { DrawingMode } from '../../AnnotoriousOpts';
+import type { ShapeName } from 'src/model';
 
-export type DrawingTool = 'rectangle' | 'polygon' | string;
+export type DrawingTool = 'RECTANGLE' | 'POLYGON';
 
 export type DrawingToolOpts = {
 
@@ -13,15 +13,21 @@ export type DrawingToolOpts = {
 
 }
 
-// @ts-ignore
-const REGISTERED = new Map<DrawingTool, { tool: typeof SvelteComponent, opts?: DrawingToolOpts }>([
-  ['rectangle', { tool: RubberbandRectangle }],
-  ['polygon', { tool: RubberbandPolygon }]
-]);
+export const drawingTool = {
+  'RECTANGLE': { tool: RubberbandRectangle },
+  'POLYGON': { tool: RubberbandPolygon }
+} as const;
 
-export const listDrawingTools = () => [...REGISTERED.keys()];
+export const listDrawingTools = () => [...Object.keys(drawingTool)];
 
-export const getTool = (name: string) => REGISTERED.get(name);
-  
-export const registerTool = (name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts) =>
-  REGISTERED.set(name, { tool, opts });
+export const getTool = (name: ShapeName) => {
+  if (name === "ELLIPSE") {
+    throw new Error(`Not supported right now. Seems like this is part
+      of an extension that needs to be baked into the main type system?`)
+  }
+  // TODO: I don't understand 'opts'
+  return {tool: drawingTool[name], opts: undefined}
+}  
+
+// export const registerTool = (name: string, tool: Component, opts?: DrawingToolOpts) =>
+//   REGISTERED.set(name, { tool, opts });
