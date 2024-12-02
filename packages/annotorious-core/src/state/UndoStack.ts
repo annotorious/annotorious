@@ -41,7 +41,7 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>, history?:
 
   const changeStack: ChangeSet<T>[] = history || [];
 
-  let pointer = -1;
+  let pointer = changeStack.length - 1;
 
   let muteEvents = false;
 
