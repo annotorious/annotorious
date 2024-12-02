@@ -1,4 +1,4 @@
-import type { Annotation, DrawingStyleExpression, FormatAdapter, UserSelectActionExpression } from '@annotorious/core';
+import type { Annotation, ChangeSet, DrawingStyleExpression, FormatAdapter, UserSelectActionExpression } from '@annotorious/core';
 import type { ImageAnnotation } from './model';
 
 export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation> {
@@ -12,6 +12,8 @@ export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E exten
   // 'click': starts on single click, user cannot select unless drawingEnabled = false
   // 'drag': starts drawing on drag, single click always selects
   drawingMode?: DrawingMode;
+
+  initialHistory?: ChangeSet<I>[];
 
   // Modal selection mode WILL NOT CHANGE OR DE-SELECT THE CURRENT SELECTION if another 
   // annotation or empty space is clicked. Warning: this means that the user is no longer

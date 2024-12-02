@@ -20,6 +20,7 @@ export type {
   AnnotatorState,
   Appearance,
   AppearanceProvider,
+  ChangeSet,
   Color,
   DrawingStyle,
   DrawingStyleExpression,

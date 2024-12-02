@@ -90,7 +90,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
 
   const { hover, selection, store } = state;
 
-  const undoStack = createUndoStack(store);
+  const undoStack = createUndoStack(store, opts.initialHistory);
 
   const lifecycle = createLifecycleObserver<I, E>(
     state, undoStack, opts.adapter, opts.autoSave);

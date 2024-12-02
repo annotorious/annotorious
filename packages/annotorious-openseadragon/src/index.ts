@@ -8,6 +8,7 @@ export type {
   AnnotationTarget,
   Annotator,
   AnnotatorState,
+  ChangeSet,
   Color,
   DrawingStyle,
   DrawingStyleExpression,

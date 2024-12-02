@@ -64,7 +64,7 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
 
   const { selection, store } = state;
 
-  const undoStack = createUndoStack(store);
+  const undoStack = createUndoStack(store, opts.initialHistory);
 
   const lifecycle = createLifecycleObserver<I, E>(
     state, undoStack, opts.adapter, opts.autoSave
