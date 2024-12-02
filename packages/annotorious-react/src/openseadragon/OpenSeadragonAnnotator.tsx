@@ -88,7 +88,9 @@ export const OpenSeadragonAnnotator = forwardRef(<I extends Annotation, E extend
     </OpenSeadragonAnnotatorContext.Provider>
   )
 
-});
+}) as <I extends Annotation, E extends unknown> (
+  props: OpenSeadragonAnnotatorProps<I, E> & { ref?: React.ForwardedRef<AnnotoriousOpenSeadragonAnnotator<I, E> | null> }
+) => React.ReactElement;
 
 export const useViewer = () => {
   const { viewer } = useContext(OpenSeadragonAnnotatorContext);

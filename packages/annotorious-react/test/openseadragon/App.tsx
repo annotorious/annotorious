@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
-import { DrawingStyleExpression, ImageAnnotation, W3CImageFormat } from '@annotorious/openseadragon';
-import { useAnnotator, AnnotoriousOpenSeadragonAnnotator } from '../../src';
+import { Annotation, DrawingStyleExpression, ImageAnnotation, W3CImageAnnotation, W3CImageFormat } from '@annotorious/openseadragon';
+import { useAnnotator, AnnotoriousOpenSeadragonAnnotator, Filter } from '../../src';
 import {
   OpenSeadragonViewer, 
   OpenSeadragonAnnotator, 
@@ -45,10 +45,10 @@ const OSD_OPTIONS: OpenSeadragon.Options = {
   }
 };
 
-const FILTERS = [ 
+const FILTERS: { key: string, filter: Filter | undefined }[] = [ 
   { key: 'SHOW_ALL', filter: undefined },
-  { key: 'SHOW_RECTANGLES', filter: (a: ImageAnnotation) => a.target.selector.type === 'RECTANGLE' },
-  { key: 'SHOW_POLYGONS', filter: (a: ImageAnnotation) => a.target.selector.type === 'POLYGON' }
+  { key: 'SHOW_RECTANGLES', filter: (a: Annotation) => (a as ImageAnnotation).target.selector.type === 'RECTANGLE' },
+  { key: 'SHOW_POLYGONS', filter: (a: Annotation) => (a as ImageAnnotation).target.selector.type === 'POLYGON' }
 ];
 
 const STYLE: DrawingStyleExpression<ImageAnnotation> = (a, state) => ({
@@ -63,9 +63,13 @@ export const App = () => {
 
   const anno = useAnnotator<AnnotoriousOpenSeadragonAnnotator>();
 
+  const annoRef = useRef<AnnotoriousOpenSeadragonAnnotator<ImageAnnotation, W3CImageAnnotation>>(null);
+
+  const viewerRef = useRef<OpenSeadragon.Viewer>(null);
+
   const [mode, setMode] = useState<'move' | 'draw'>('move');
 
-  const [filter, setFilter] = useState<{ key: String, filter: ((a: ImageAnnotation) => boolean) | undefined }>(FILTERS[0]);
+  const [filter, setFilter] = useState<{ key: String, filter: Filter | undefined }>(FILTERS[0]);
 
   useEffect(() => {
     if (anno) {
@@ -74,6 +78,9 @@ export const App = () => {
         .then(annotations => { 
           anno.setAnnotations(annotations)
         });
+
+      console.log('viewerRef', viewerRef);
+      console.log('annoRef', annoRef);
     }
   }, [anno]);
 
@@ -104,6 +111,7 @@ export const App = () => {
       </div>
 
       <OpenSeadragonAnnotator 
+        ref={annoRef}
         adapter={W3CImageFormat(
           'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c')}
         drawingEnabled={false}
@@ -113,7 +121,10 @@ export const App = () => {
         filter={filter.filter}
         style={STYLE}>
             
-        <OpenSeadragonViewer className="openseadragon" options={OSD_OPTIONS} />
+        <OpenSeadragonViewer 
+          ref={viewerRef}
+          className="openseadragon" 
+          options={OSD_OPTIONS} />
 
         <OpenSeadragonAnnotationPopup 
           popup={() => (
