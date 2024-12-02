@@ -1,9 +1,10 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, MutableRefObject, ReactNode, useContext, useEffect, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
 import { createAnonymousGuest } from '@annotorious/core';
 import { createOSDAnnotator } from '@annotorious/openseadragon';
 import { Annotation, AnnotoriousOpts, DrawingStyle, Filter, User} from '@annotorious/annotorious';
 import { AnnotoriousContext } from '../Annotorious';
+import { AnnotoriousOpenSeadragonAnnotator } from '.';
 
 export const OpenSeadragonAnnotatorContext = createContext<{ 
   viewer: OpenSeadragon.Viewer,

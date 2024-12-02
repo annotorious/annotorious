@@ -2,6 +2,7 @@ import type { Annotation } from './Annotation';
 import type { User } from './User';
 import type { PresenceProvider } from '../presence';
 import type {
+  ChangeSet,
   HoverState,
   SelectionState,
   Store,
@@ -38,6 +39,8 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
   getAnnotationById(id: string): E | undefined;
 
   getAnnotations(): E[];
+
+  getHistory(): ChangeSet<I>[];
 
   getSelected(): E[];
 
@@ -209,6 +212,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     clearAnnotations,
     getAnnotationById,
     getAnnotations,
+    getHistory: undoStack.getHistory,
     getSelected,
     loadAnnotations,
     redo: undoStack.redo,
