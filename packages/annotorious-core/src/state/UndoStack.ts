@@ -17,6 +17,8 @@ export interface UndoStack <T extends Annotation> {
 
   destroy(): void;
 
+  getHistory(): ChangeSet<T>[];
+
   on<E extends keyof UndoStackEvents<T>>(event: E, callback: UndoStackEvents<T>[E]): Unsubscribe;
 
   undo(): void;
@@ -33,11 +35,11 @@ export interface UndoStackEvents <T extends Annotation> {
 
 }
 
-export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStack<T> => {
+export const createUndoStack = <T extends Annotation>(store: Store<T>, history?: ChangeSet<T>[]): UndoStack<T> => {
 
   const emitter = createNanoEvents<UndoStackEvents<T>>();
 
-  const changeStack: ChangeSet<T>[] = [];
+  const changeStack: ChangeSet<T>[] = history || [];
 
   let pointer = -1;
 
@@ -128,6 +130,8 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
 
   const destroy = () => store.unobserve(onChange);
 
+  const getHistory = () => ([...changeStack]);
+
   const on = <E extends keyof UndoStackEvents<T>>(event: E, callback: UndoStackEvents<T>[E]) => 
     emitter.on(event, callback);
 
@@ -135,6 +139,7 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>): UndoStac
     canRedo,
     canUndo,
     destroy,
+    getHistory,
     on,
     redo,
     undo
