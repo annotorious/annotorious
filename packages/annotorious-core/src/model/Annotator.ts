@@ -106,7 +106,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
         console.error(error);
       }
     } else {
-      store.addAnnotation(reviveDates(annotation as unknown as I), Origin.REMOTE);
+      store.addAnnotation(reviveDates<I>(annotation), Origin.REMOTE);
     }
   }
 
@@ -168,7 +168,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
 
       store.bulkAddAnnotation(parsed, replace, Origin.REMOTE);
     } else {
-      store.bulkAddAnnotation((annotations as unknown as I[]).map(reviveDates), replace, Origin.REMOTE);
+      store.bulkAddAnnotation(annotations.map(reviveDates<I>), replace, Origin.REMOTE);
     }
   }
 
@@ -193,7 +193,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       return previous;
     } else {
       const previous = store.getAnnotation((updated as unknown as I).id);
-      store.updateAnnotation(reviveDates(updated as unknown as I));
+      store.updateAnnotation(reviveDates<I>(updated));
       return previous as unknown as E;
     }
   }

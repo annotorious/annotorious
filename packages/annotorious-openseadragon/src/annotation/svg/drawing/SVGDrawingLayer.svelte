@@ -1,5 +1,5 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
-  import { SvelteComponent } from 'svelte';
+  import type { SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, Filter, StoreChangeEvent, User } from '@annotorious/core';
