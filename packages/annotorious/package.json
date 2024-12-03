@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/annotorious",
-  "version": "3.0.18",
+  "version": "3.0.19",
   "description": "Add image annotation functionality to any web page with a few lines of JavaScript",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -46,10 +46,10 @@
     "typescript": "5.7.2",
     "vite": "^5.4.11",
     "vite-plugin-dts": "^4.3.0",
-    "vitest": "^2.1.6"
+    "vitest": "^2.1.8"
   },
   "dependencies": {
-    "@annotorious/core": "3.0.18",
+    "@annotorious/core": "3.0.19",
     "rbush": "^4.0.1",
     "uuid": "^11.0.3"
   }

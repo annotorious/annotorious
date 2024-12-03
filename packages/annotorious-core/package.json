@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/core",
-  "version": "3.0.18",
+  "version": "3.0.19",
   "description": "Annotorious core types and functions",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -34,7 +34,7 @@
     "typescript": "5.7.2",
     "vite": "^5.4.11",
     "vite-plugin-dts": "^4.3.0",
-    "vitest": "^2.1.6"
+    "vitest": "^2.1.8"
   },
   "dependencies": {
     "dequal": "^2.0.3",
