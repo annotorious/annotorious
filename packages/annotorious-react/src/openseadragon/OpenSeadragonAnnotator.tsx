@@ -62,7 +62,7 @@ export const OpenSeadragonAnnotator = forwardRef(<I extends Annotation, E extend
   }, [anno, props.style]);
 
   useEffect(() => {
-    if (anno) anno.setDrawingTool(tool);
+    if (anno) anno.setDrawingTool(tool || 'rectangle');
   }, [anno, tool]);
 
   useEffect(() => {
