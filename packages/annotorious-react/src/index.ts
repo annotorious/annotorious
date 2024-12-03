@@ -26,6 +26,7 @@ export type {
   DrawingStyleExpression,
   Filter,
   FormatAdapter,
+  History,
   HoverState,
   LifecycleEvents,
   ParseResult,

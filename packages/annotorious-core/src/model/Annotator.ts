@@ -2,7 +2,7 @@ import type { Annotation } from './Annotation';
 import type { User } from './User';
 import type { PresenceProvider } from '../presence';
 import type {
-  ChangeSet,
+  History,
   HoverState,
   SelectionState,
   Store,
@@ -40,7 +40,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   getAnnotations(): E[];
 
-  getHistory(): ChangeSet<I>[];
+  getHistory(): History<I>;
 
   getSelected(): E[];
 

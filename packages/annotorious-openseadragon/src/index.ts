@@ -13,6 +13,7 @@ export type {
   DrawingStyle,
   DrawingStyleExpression,
   FormatAdapter,
+  History,
   HoverState,
   Selection,
   SelectionState,
