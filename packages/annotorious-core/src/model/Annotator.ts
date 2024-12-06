@@ -54,7 +54,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   setAnnotations(annotations: Partial<E>[], replace?: boolean): void;
 
-  setFilter(filter: Filter | undefined): void;
+  setFilter(filter: Filter<I> | undefined): void;
 
   setPresenceProvider?(provider: PresenceProvider): void;
 
