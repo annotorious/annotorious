@@ -27,6 +27,10 @@
   cursor: pointer;
 }
 
+.a9s-annotationlayer .a9s-annotation.a9s-none-select {
+  cursor: default;
+}
+
 .a9s-annotationlayer ellipse, 
 .a9s-annotationlayer polygon,
 .a9s-annotationlayer rect  {

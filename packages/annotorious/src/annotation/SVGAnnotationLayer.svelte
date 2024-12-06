@@ -155,17 +155,20 @@
         {#key annotation.id}
           {#if (selector?.type === ShapeType.ELLIPSE)}
             <Ellipse 
-              annotation={annotation} 
+              annotation={annotation}
+              isNoneSelection={selection.userSelectAction === "NONE"}
               geom={selector?.geometry} 
               style={style} />
           {:else if (selector?.type === ShapeType.RECTANGLE)}
             <Rectangle 
-              annotation={annotation} 
+              annotation={annotation}
+              isNoneSelection={selection.userSelectAction === "NONE"}
               geom={selector.geometry} 
               style={style} />
           {:else if (selector?.type === ShapeType.POLYGON)}
             <Polygon 
-              annotation={annotation} 
+              annotation={annotation}
+              isNoneSelection={selection.userSelectAction === "NONE"}
               geom={selector.geometry} 
               style={style} />
           {/if}
