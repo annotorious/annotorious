@@ -81,9 +81,9 @@
         const BASE_STYLE = function(a, state) {
           const { hovered, selected } = state || {};
           return {
-            fill: hovered ? '#00ff00' : '#ff0000', 
+            fill: hovered ? 'rgba(0,255,0,0.1)' : 'rgba(255,0,0,0.2)',
             stroke: '#ff0000', 
-            fillOpacity: 0.1,
+            // fillOpacity: 0.1,
             strokeOpacity: 0.9,
             strokeWidth: 1
           }

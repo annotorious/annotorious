@@ -7,6 +7,7 @@ import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annot
 const DEFAULT_FILL = 0xffffff;
 const DEFAULT_FILL_ALPHA = 0.25;
 const DEFAULT_STROKE = 0xffffff;
+const DEFAULT_STROKE_ALPHA = 1;
 const DEFAULT_STROKE_WIDTH = 1.5;
 
 // Fast redraws skip counter-scaling operations
@@ -30,12 +31,20 @@ interface AnnotationShape {
 const getGraphicsStyle = (style?: DrawingStyle) => {
   const fillStyle = {
     tint: style?.fill ? new PIXI.Color(style.fill).toNumber() : DEFAULT_FILL,
-    alpha: style?.fillOpacity === undefined ? DEFAULT_FILL_ALPHA : Math.min(style.fillOpacity, 1)
+    alpha: style?.fillOpacity !== undefined ?
+      Math.min(style.fillOpacity, 1) :
+      String(style?.fill).toLowerCase().startsWith('rgba(') ?
+        (new PIXI.Color(style?.fill)).alpha :
+        DEFAULT_FILL_ALPHA
   };
 
   const strokeStyle = {
     tint: style?.stroke ? new PIXI.Color(style.stroke).toNumber() : DEFAULT_STROKE,
-    alpha: style?.strokeOpacity === undefined ? 1 : Math.min(style.strokeOpacity, 1),
+    alpha: style?.strokeOpacity !== undefined ?
+      Math.min(style.strokeOpacity, 1) :
+      String(style?.stroke).toLowerCase().startsWith('rgba(') ?
+        (new PIXI.Color(style?.stroke)).alpha :
+          DEFAULT_STROKE_ALPHA,
     lineWidth: style?.strokeWidth === undefined ? DEFAULT_STROKE_WIDTH : style.strokeWidth
   }
 
