@@ -181,7 +181,7 @@
         
     {#if isClosable}
       <rect 
-        class="a9s-corner-handle"
+        class="a9s-handle"
         x={points[0][0] - handleSize / 2} 
         y={points[0][1] - handleSize / 2} 
         height={handleSize} 
