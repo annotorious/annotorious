@@ -11,10 +11,11 @@ describe('parseW3CImageAnnotation', () => {
     expect(parsed[0].error).toBe(undefined);
     expect(parsed[1].error).toBe(undefined);
 
-    const [polygon, ellipse, rectangle] = parsed;
+    const [polygon, ellipse, path, rectangle] = parsed;
 
     expect(polygon.parsed?.target.selector.type).toBe(ShapeType.POLYGON);
     expect(ellipse.parsed?.target.selector.type).toBe(ShapeType.ELLIPSE);
+    expect(path.parsed?.target.selector.type).toBe(ShapeType.POLYGON);
     expect(rectangle.parsed?.target.selector.type).toBe(ShapeType.RECTANGLE);
   });
 });
