@@ -23,9 +23,13 @@
   export let user: User;
   export let visible = true;
 
+  // Trick to force tool re-mounting on cancelDrawing
+  let toolMountKey = 0;
+
   /** API methods */
   export const getDrawingTool = () => toolName;
   export const isDrawingEnabled = () => drawingEnabled;
+  export const cancelDrawing = () => toolMountKey += 1;
 
   $: ({ tool, opts } = getTool(toolName) || { tool: undefined, opts: undefined });
 
@@ -195,7 +199,7 @@
           {/if}
         {/each}
       {:else if (tool && drawingEnabled)} 
-        {#key toolName}
+        {#key `${toolName}-${toolMountKey}`}
           <ToolMount 
             target={drawingEl}
             tool={tool}

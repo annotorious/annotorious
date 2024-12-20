@@ -114,10 +114,8 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<I, E>(state, undoStack, opts.adapter);
 
-  const cancelDrawing = () => {
-    annotationLayer.$set({ drawingEnabled: false });
-    setTimeout(() => annotationLayer.$set({ drawingEnabled: true }), 1);
-  }
+  const cancelDrawing = () =>
+    annotationLayer.cancelDrawing();
 
   const destroy = () => {
     // Destroy Svelte annotation layer
