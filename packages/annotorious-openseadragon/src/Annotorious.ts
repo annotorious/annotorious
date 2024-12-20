@@ -173,7 +173,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
 
   const cancelDrawing = () => {
     drawingLayer.$set({ drawingEnabled: false });
-    setTimeout(() => drawingLayer.$set({ drawingEnabled: true }), 1);
+    drawingLayer.$set({ drawingEnabled: true });
   }
 
   const destroy = () => {
@@ -217,7 +217,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
 
   const setDrawingEnabled = (enabled: boolean) => {
     drawingEnabled = enabled;
-    drawingLayer.$set({ drawingEnabled });
+    setTimeout(() => drawingLayer.$set({ drawingEnabled: enabled }), 1);
   }
 
   const setFilter = (filter: Filter | undefined) => {
