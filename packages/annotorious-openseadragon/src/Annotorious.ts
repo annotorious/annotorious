@@ -220,7 +220,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     setTimeout(() => drawingLayer.$set({ drawingEnabled: enabled }), 1);
   }
 
-  const setFilter = (filter: Filter | undefined) => {
+  const setFilter = (filter: Filter<I> | undefined) => {
     // @ts-ignore
     displayLayer.$set({ filter });
     // @ts-ignore
