@@ -171,10 +171,8 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
   // Most of the external API functions are covered in the base annotator
   const base = createBaseAnnotator<I, E>(state, undoStack, opts.adapter);
 
-  const cancelDrawing = () => {
-    drawingLayer.$set({ drawingEnabled: false });
-    drawingLayer.$set({ drawingEnabled: true });
-  }
+  const cancelDrawing = () =>
+    drawingLayer.cancelDrawing();
 
   const destroy = () => {
     // Destroy Svelte layers
@@ -217,7 +215,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
 
   const setDrawingEnabled = (enabled: boolean) => {
     drawingEnabled = enabled;
-    setTimeout(() => drawingLayer.$set({ drawingEnabled: enabled }), 1);
+    drawingLayer.$set({ drawingEnabled: enabled });
   }
 
   const setFilter = (filter: Filter<I> | undefined) => {
@@ -227,9 +225,8 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     drawingLayer.$set({ filter });
   }
 
-  const setModalSelect = (enabled: boolean) => {
+  const setModalSelect = (enabled: boolean) =>
     modalSelect = enabled;
-  }
 
   const setStyle = (style: DrawingStyleExpression<I> | undefined) => {
     displayLayer.$set({ style: style as DrawingStyleExpression<ImageAnnotation> });

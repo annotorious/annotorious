@@ -27,9 +27,9 @@
   let toolMountKey = 0;
 
   /** API methods */
+  export const cancelDrawing = () => toolMountKey += 1;
   export const getDrawingTool = () => toolName;
   export const isDrawingEnabled = () => drawingEnabled;
-  export const cancelDrawing = () => toolMountKey += 1;
 
   $: ({ tool, opts } = getTool(toolName) || { tool: undefined, opts: undefined });
 

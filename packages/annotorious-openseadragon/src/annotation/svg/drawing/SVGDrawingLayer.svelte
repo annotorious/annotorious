@@ -19,7 +19,11 @@
   export let user: User;
   export let viewer: OpenSeadragon.Viewer;
 
+  // Trick to force tool re-mounting on cancelDrawing
+  let toolMountKey = 0;
+
   /** API methods */
+  export const cancelDrawing = () => toolMountKey += 1;
   export const getDrawingTool = () => toolName;
   export const isDrawingEnabled = () => drawingEnabled;
 
@@ -196,7 +200,7 @@
           {/if}
         {/each}
       {:else if (drawingEl && tool && drawingEnabled)} 
-        {#key toolName} 
+        {#key `${toolName}-${toolMountKey}`}
           <OSDToolMount
             target={drawingEl}
             tool={tool}
