@@ -28,13 +28,14 @@ export const OpenSeadragonViewer = forwardRef<OpenSeadragon.Viewer, OpenSeadrago
         setViewer(v);
 
       return () => {
+        console.log('Destroying viewer', JSON.stringify(options));
         if (setViewer)
           setViewer(undefined);
 
         v.destroy();
       }
     }
-  }, [JSON.stringify(options)]);
+  }, [options]);
 
   useImperativeHandle(ref, () => viewer);
 
