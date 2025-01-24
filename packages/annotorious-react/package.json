@@ -30,7 +30,7 @@
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "5.7.3",
-    "vite": "^6.0.11",
+    "vite": "^5.4.14",
     "vite-plugin-dts": "^4.5.0",
     "vite-tsconfig-paths": "^5.1.4"
   },
@@ -45,9 +45,9 @@
     }
   },
   "dependencies": {
-    "@annotorious/annotorious": "3.1.0",
-    "@annotorious/core": "3.1.0",
-    "@annotorious/openseadragon": "3.1.0",
+    "@annotorious/annotorious": "3.0.20",
+    "@annotorious/core": "3.0.20",
+    "@annotorious/openseadragon": "3.0.20",
     "@floating-ui/react": "^0.27.3",
     "zustand": "^5.0.3"
   },
