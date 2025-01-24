@@ -51,7 +51,8 @@
   "dependencies": {
     "@annotorious/annotorious": "3.0.20",
     "@annotorious/core": "3.0.20",
-    "pixi.js": "^7.4.2",
+    "npm": "^11.0.0",
+    "pixi.js-legacy": "^7.4.2",
     "uuid": "^11.0.3"
   }
 }
