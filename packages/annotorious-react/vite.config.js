@@ -28,11 +28,13 @@ export default defineConfig({
         ...Object.keys(packageJson.peerDependencies),
         '@annotorious/core',
         '@annotorious/annotorious',
-        '@annotorious/openseadragon'
+        '@annotorious/openseadragon',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime'
       ],
       output: {
         preserveModules: true,
-        assetFileNames: 'annotorious-react.[ext]'
+        assetFileNames: 'annotorious-react.[ext]',
       }
     },
     sourcemap: true

@@ -25,7 +25,8 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [
-        ...Object.keys(packageJson.peerDependencies)
+        ...Object.keys(packageJson.peerDependencies),
+        'react/jsx-runtime'
       ],
       output: {
         preserveModules: true,
