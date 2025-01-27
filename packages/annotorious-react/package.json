@@ -8,7 +8,8 @@
   "funding": "https://steadyhq.com/rainer-simon",
   "type": "module",
   "scripts": {
-    "start": "vite",
+    "start-image": "cd test/image && vite --host",
+    "start-openseadragon": "cd test/openseadragon && vite --host",
     "build": "tsc && vite build",
     "test": "echo 'Skipping tests in @annotorious/react package'"
   },

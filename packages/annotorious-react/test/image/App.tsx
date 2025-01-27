@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
+
 import { W3CImageFormat } from '@annotorious/annotorious';
+
 import { 
   AnnotoriousImageAnnotator, 
   ImageAnnotationPopup,
@@ -26,15 +28,17 @@ export const App = () => {
   return (
     <div>
       <ImageAnnotator 
-        adapter={W3CImageFormat(
-          'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c')}>
-        <img src="640px-Hallstatt.jpg" />
+        adapter={
+          W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c')
+        }>
+        <img alt="Nice european city" src="/640px-Hallstatt.jpg" />
       </ImageAnnotator>
 
       <ImageAnnotationPopup
         popup={props => (
           <div>Hello World</div>
-        )} />
+        )}
+      />
     </div>
   )
 
