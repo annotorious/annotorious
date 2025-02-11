@@ -11,8 +11,11 @@ import {
   setRectMaskSize
 } from '../../selectors/RectFragment';
 
-const CORNER = 'corner';
+const HANDLE = 'handle';
 const EDGE = 'edge';
+
+const DEFAULT_EDGE_PADDING = 5;
+const DEFAULT_HANDLE_PADDING = 10;
 
 /**
  * An editable rectangle shape.
@@ -34,10 +37,8 @@ export default class EditableRect extends EditableShape {
     //   <g> <-- return this node as .element
     //     <rect class="a9s-outer" ... />
     //     <rect class="a9s-inner" ... />
-    //     <g class="a9s-handle" ...> ... </g>
-    //     <g class="a9s-handle" ...> ... </g>
-    //     <g class="a9s-handle" ...> ... </g>
-    //     <g class="a9s-handle" ...> ... </g>
+    //     <rect class="a9s-edge" ... /> (x4)
+    //     <g class="a9s-handle" ...> ... </g> (x4)
     //   </g>
     // </g>
 
@@ -48,42 +49,59 @@ export default class EditableRect extends EditableShape {
     this.mask.setAttribute('class', 'a9s-selection-mask');
     this.containerGroup.appendChild(this.mask);
 
-    // The 'element' = rectangles + handles
+    // The 'element' = rectangles + handles + edges
     this.elementGroup = document.createElementNS(SVG_NAMESPACE, 'g');
     this.elementGroup.setAttribute('class', 'a9s-annotation editable selected');
     this.elementGroup.setAttribute('data-id', annotation.id);
 
     this.rectangle = drawRect(x, y, w, h);
-    this.rectangle.querySelector('.a9s-inner')
+    this.rectangle
+      .querySelector('.a9s-inner')
       .addEventListener('mousedown', this.onGrab(this.rectangle));
 
     this.elementGroup.appendChild(this.rectangle);
 
-    this.enableEdgeControls = config.enableEdgeControls;
+    // Add edge rectangles for resizing
+    this.edges = this.createEdges(x, y, w, h);
 
-    const edgeHandles = this.enableEdgeControls
-    ? [
-        [x + w / 2, y, EDGE],
-        [x + w, y + h / 2, EDGE],
-        [x + w / 2, y + h, EDGE],
-        [x, y + h / 2, EDGE],
-      ]
-    : [];
+    this.edges.forEach(edge => {
+      this.elementGroup.appendChild(edge);
+      edge.addEventListener('mousedown', this.onGrab(edge, EDGE));
+    });
 
+    // Create corner handles
     this.handles = [
-      [x, y, CORNER],
-      [x + w, y, CORNER],
-      [x + w, y + h, CORNER],
-      [x, y + h, CORNER],
-      ...edgeHandles,
-    ].map(t => {
+      [x, y, HANDLE],
+      [x + w, y, HANDLE],
+      [x + w, y + h, HANDLE],
+      [x, y + h, HANDLE],
+    ].map((t, i) => {
       const [x, y, type] = t;
       const handle = this.drawHandle(x, y);
+      const handleInner = handle.querySelector('.a9s-handle-inner');
+
+      // The circles are rendered in clockwise direction
+      // So 0 and 2 show nwse-resize and 1 and 3 show nesw-resize as cursor
+      if (i % 2 === 0) {
+        handleInner.style.cursor = 'nwse-resize';
+      } else {
+        handleInner.style.cursor = 'nesw-resize';
+      }
 
       handle.addEventListener('mousedown', this.onGrab(handle, type));
       this.elementGroup.appendChild(handle);
 
       return handle;
+    });
+
+    this.handlePads = this.createHandlePads(x, y, w, h);
+
+    // Attaching the mouse down event to the handle pads
+    this.handlePads.forEach((pad, i) => {
+      pad.addEventListener('mousedown', (evt) => {
+        this.onGrab(this.handles[i], HANDLE)(evt);
+      });
+      this.elementGroup.appendChild(pad);
     });
 
     this.containerGroup.appendChild(this.elementGroup);
@@ -92,49 +110,191 @@ export default class EditableRect extends EditableShape {
 
     format(this.rectangle, annotation, config.formatters);
 
-    // The grabbed element (handle or entire group), if any
+    // The grabbed element (handle, edge or entire group), if any
     this.grabbedElem = null;
-    
-    // Type of the grabbed element, either 'corner' or 'edge'
+
+    // Type of the grabbed element, either 'handle' or 'edge'
     this.grabbedType = null;
 
     // Mouse xy offset inside the shape, if mouse pressed
     this.mouseOffset = null;
+
+    this.svgRoot = this.svg.closest('svg');
   }
 
-  onScaleChanged = () => 
+  calculateEdgePadding = () => {
+    const basePadding = this.config.edgePadding ?? DEFAULT_EDGE_PADDING;
+
+    let scaleFactor;
+    if (this.scale < 0.5) {
+      // When zoomed in deeply, we increase the padding slightly to make resizing easier.
+      scaleFactor = this.scale * 2;
+    } else {
+      scaleFactor = this.scale;
+    }
+
+    const edgeResizePadding = basePadding * scaleFactor;
+    return Math.max(edgeResizePadding, 1);
+  }
+
+  calculateHandlePadding = () => {
+    const basePadding = this.config.handlePadding ?? DEFAULT_HANDLE_PADDING;
+
+    let scaleFactor;
+    if (this.scale < 0.5) {
+      // When zoomed in deeply, we increase the padding slightly to make resizing easier
+      scaleFactor = this.scale * 2;
+    } else {
+      scaleFactor = this.scale / 2;
+    }
+
+    const scaledPadSize = basePadding * scaleFactor;
+    return Math.max(scaledPadSize, 1);
+  }
+
+  createEdges(x, y, w, h) {
+    const edgeResizePadding = this.calculateEdgePadding();
+
+    return [
+      // Edges are drawn from top to bottom and left to right
+      this.createEdge(
+        x,
+        y - edgeResizePadding,
+        w,
+        2 * edgeResizePadding,
+        'ns-resize',
+        'top'
+      ),
+      this.createEdge(
+        x + w - edgeResizePadding,
+        y,
+        2 * edgeResizePadding,
+        h,
+        'ew-resize',
+        'right'
+      ),
+      this.createEdge(
+        x,
+        y + h - edgeResizePadding,
+        w,
+        2 * edgeResizePadding,
+        'ns-resize',
+        'bottom'
+      ),
+      this.createEdge(
+        x - edgeResizePadding,
+        y,
+        2 * edgeResizePadding,
+        h,
+        'ew-resize',
+        'left'
+      )
+    ];
+  }
+
+  createEdge(x, y, width, height, cursor, position) {
+    const edge = document.createElementNS(SVG_NAMESPACE, 'rect');
+    edge.setAttribute('x', x);
+    edge.setAttribute('y', y);
+    edge.setAttribute('width', width);
+    edge.setAttribute('height', height);
+    edge.setAttribute('class', `a9s-edge ${position}`);
+    edge.style.fill = 'transparent';
+    edge.style.cursor = cursor;
+    return edge;
+  }
+
+  createHandlePads(x, y, w, h) {
+    const scaledPadSize = this.calculateHandlePadding();
+    const radius = scaledPadSize;
+
+    return [
+      this.createHandlePad(x, y, radius, 'nwse-resize'), // top left
+      this.createHandlePad(x + w, y, radius, 'nesw-resize'), // top right
+      this.createHandlePad(x + w, y + h, radius, 'nwse-resize'), // bottom right
+      this.createHandlePad(x, y + h, radius, 'nesw-resize') // bottom left
+    ];
+  }
+
+  createHandlePad(x, y, radius, cursor) {
+    const handlePad = document.createElementNS(SVG_NAMESPACE, 'circle');
+    handlePad.setAttribute('cx', x);
+    handlePad.setAttribute('cy', y);
+    handlePad.setAttribute('r', radius);
+    handlePad.setAttribute('class', 'a9s-handle-pad');
+    handlePad.style.fill = 'transparent';
+    handlePad.style.cursor = cursor;
+    return handlePad;
+  }
+
+  onScaleChanged = () =>
     this.handles.map(this.scaleHandle);
+
+  updateEdgePositions() {
+    const edgeResizePadding = this.calculateEdgePadding();
+    const { x, y, w, h } = getRectSize(this.rectangle);
+    const [top, right, bottom, left] = this.edges;
+
+    top.setAttribute('x', x);
+    top.setAttribute('y', y - edgeResizePadding);
+    top.setAttribute('width', w);
+    top.setAttribute('height', 2 * edgeResizePadding);
+
+    right.setAttribute('x', x + w - edgeResizePadding);
+    right.setAttribute('y', y);
+    right.setAttribute('width', 2 * edgeResizePadding);
+    right.setAttribute('height', h);
+
+    bottom.setAttribute('x', x);
+    bottom.setAttribute('y', y + h - edgeResizePadding);
+    bottom.setAttribute('width', w);
+    bottom.setAttribute('height', 2 * edgeResizePadding);
+
+    left.setAttribute('x', x - edgeResizePadding);
+    left.setAttribute('y', y);
+    left.setAttribute('width', 2 * edgeResizePadding);
+    left.setAttribute('height', h);
+  }
+
+  updateHandlePadPositions = () => {
+    const { x, y, w, h } = getRectSize(this.rectangle);
+    const scaledPadSize = this.calculateHandlePadding();
+    const radius = scaledPadSize / 2;
+    const [topLeft, topRight, bottomRight, bottomLeft] = this.handlePads;
+    topLeft.setAttribute('cx', x);
+    topLeft.setAttribute('cy', y);
+    topLeft.setAttribute('r', radius);
+
+    topRight.setAttribute('cx', x + w);
+    topRight.setAttribute('cy', y);
+    topRight.setAttribute('r', radius);
+
+    bottomRight.setAttribute('cx', x + w);
+    bottomRight.setAttribute('cy', y + h);
+    bottomRight.setAttribute('r', radius);
+
+    bottomLeft.setAttribute('cx', x);
+    bottomLeft.setAttribute('cy', y + h);
+    bottomLeft.setAttribute('r', radius);
+  }
 
   setSize = (x, y, w, h) => {
     setRectSize(this.rectangle, x, y, w, h);
     setRectMaskSize(this.mask, this.env.image, x, y, w, h);
     setFormatterElSize(this.elementGroup, x, y, w, h);
 
-    const [
-      topleft,
-      topright,
-      bottomright,
-      bottomleft,
-      topEdge,
-      rightEdge,
-      bottomEdge,
-      leftEdge
-    ] = this.handles;
-
+    // Update handle positions
+    const [topleft, topright, bottomright, bottomleft] = this.handles;
     this.setHandleXY(topleft, x, y);
     this.setHandleXY(topright, x + w, y);
     this.setHandleXY(bottomright, x + w, y + h);
     this.setHandleXY(bottomleft, x, y + h);
 
-    if (this.enableEdgeControls) {
-      this.setHandleXY(topEdge, x + w / 2, y);
-      this.setHandleXY(rightEdge, x + w, y + h / 2);
-      this.setHandleXY(bottomEdge, x + w / 2, y + h);
-      this.setHandleXY(leftEdge, x, y + h / 2);
-    }
+    this.updateEdgePositions();
+    this.updateHandlePadPositions();
   }
 
-  stretchCorners = (draggedHandleIdx, anchorHandle, mousePos) => {
+  stretchHandles = (draggedHandleIdx, anchorHandle, mousePos) => {
     const anchor = this.getHandleXY(anchorHandle);
 
     const width = mousePos.x - anchor.x;
@@ -142,34 +302,57 @@ export default class EditableRect extends EditableShape {
 
     const x = width > 0 ? anchor.x : mousePos.x;
     const y = height > 0 ? anchor.y : mousePos.y;
-    const w = Math.abs(width);
-    const h = Math.abs(height);
+    const w = Math.max(1, Math.abs(width));
+    const h = Math.max(1, Math.abs(height));
 
     this.setSize(x, y, w, h);
 
     return { x, y, w, h };
   }
 
-  stretchEdge = (handleIdx, oppositeHandle, mousePos) => {
-    const anchor = this.getHandleXY(oppositeHandle);
+  stretchEdge = (edge, mousePos) => {
     const currentRectDims = getRectSize(this.rectangle);
-    const isHeightAdjustment = handleIdx % 2 === 0;
+    const edgePosition = edge.getAttribute('class').split(' ')[1];
 
-    const width = isHeightAdjustment ? currentRectDims.w : mousePos.x - anchor.x;
-    const height = isHeightAdjustment ? mousePos.y - anchor.y : currentRectDims.h;
-
-    const x = isHeightAdjustment ? currentRectDims.x : (width > 0 ? anchor.x : mousePos.x);
-    const y = isHeightAdjustment ? (height > 0 ? anchor.y : mousePos.y) : currentRectDims.y;
-    const w = Math.abs(width);
-    const h = Math.abs(height);
+    let { x, y, w, h } = currentRectDims;
+    switch (edgePosition) {
+      case 'top':
+        h = y + h - mousePos.y;
+        if (h < 1) {
+          h = 1;
+        }
+        y = mousePos.y;
+        break;
+      case 'right':
+        w = mousePos.x - x;
+        if (w < 1) {
+          w = 1;
+        }
+        break;
+      case 'bottom':
+        h = mousePos.y - y;
+        if (h < 1) {
+          h = 1;
+        }
+        break;
+      case 'left':
+        w = x + w - mousePos.x;
+        if (w < 1) {
+          w = 1;
+        }
+        x = mousePos.x;
+        break;
+    }
 
     this.setSize(x, y, w, h);
-
     return { x, y, w, h };
-  };
+  }
 
   onGrab = (grabbedElem, type) => evt => {
     if (evt.button !== 0) return;  // left click
+
+    evt.stopPropagation();
+
     this.grabbedElem = grabbedElem;
     this.grabbedType = type;
     const pos = this.getSVGPoint(evt);
@@ -181,10 +364,9 @@ export default class EditableRect extends EditableShape {
     if (evt.button !== 0) return;  // left click
     const constrain = (coord, max) =>
       coord < 0 ? 0 : (coord > max ? max : coord);
-
     if (this.grabbedElem) {
       const pos = this.getSVGPoint(evt);
-
+      
       if (this.grabbedElem === this.rectangle) {
         // x/y changes by mouse offset, w/h remains unchanged
         const { w, h } = getRectSize(this.rectangle);
@@ -195,19 +377,33 @@ export default class EditableRect extends EditableShape {
         const y = constrain(pos.y - this.mouseOffset.y, naturalHeight - h);
 
         this.setSize(x, y, w, h);
-        this.emit('update', toRectFragment(x, y, w, h, this.env.image, this.config.fragmentUnit));
-      } else {
-        // Mouse position replaces one of the corner coords, depending
+        this.emit(
+          'update',
+          toRectFragment(x, y, w, h, this.env.image, this.config.fragmentUnit)
+        );
+      } else if (this.grabbedType === HANDLE) {
+        // Mouse position replaces one of the handle coords, depending
         // on which handle is the grabbed element
         const handleIdx = this.handles.indexOf(this.grabbedElem);
         const oppositeHandle = this.handles[handleIdx ^ 2];
 
-        const { x, y, w, h } = 
-          this.grabbedType === CORNER
-          ? this.stretchCorners(handleIdx, oppositeHandle, pos)
-          : this.stretchEdge(handleIdx, oppositeHandle, pos);
+        const { x, y, w, h } = this.stretchHandles(
+          handleIdx,
+          oppositeHandle,
+          pos
+        );
 
-        this.emit('update', toRectFragment(x, y, w, h, this.env.image, this.config.fragmentUnit));
+        this.emit(
+          'update',
+          toRectFragment(x, y, w, h, this.env.image, this.config.fragmentUnit)
+        );
+      } else if (this.grabbedType === EDGE) {
+        const { x, y, w, h } = this.stretchEdge(this.grabbedElem, pos);
+
+        this.emit(
+          'update',
+          toRectFragment(x, y, w, h, this.env.image, this.config.fragmentUnit)
+        );
       }
     }
   }
@@ -231,5 +427,4 @@ export default class EditableRect extends EditableShape {
     this.containerGroup.parentNode.removeChild(this.containerGroup);
     super.destroy();
   }
-
 }
