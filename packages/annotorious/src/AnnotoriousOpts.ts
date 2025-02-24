@@ -5,20 +5,34 @@ export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E exten
 
   adapter?: FormatAdapter<I, E>;
 
+  /**
+   * Automatically trigger update events for
+   * changed annotations on the user's idling.
+   */
   autoSave?: boolean;
+
+  /**
+   * Report annotation updates immediately
+   * both when the bodies were updated or not.
+   */
+  immediateUpdatesEmit?: boolean;
 
   drawingEnabled?: boolean;
 
-  // 'click': starts on single click, user cannot select unless drawingEnabled = false
-  // 'drag': starts drawing on drag, single click always selects
+  /**
+   * 'click': starts on single click, user cannot select unless drawingEnabled = false
+   * 'drag': starts drawing on drag, single click always selects
+   */
   drawingMode?: DrawingMode;
 
   initialHistory?: History<I>;
 
-  // Modal selection mode WILL NOT CHANGE OR DE-SELECT THE CURRENT SELECTION if another 
-  // annotation or empty space is clicked. Warning: this means that the user is no longer
-  // able to de-select until a programmatic de-select is triggered from the host app!
-  // Use this mode only in combination with custom popups!
+  /**
+   * Modal selection mode WILL NOT CHANGE OR DE-SELECT THE CURRENT SELECTION if another
+   * annotation or empty space is clicked. Warning: this means that the user is no longer
+   * able to de-select until a programmatic de-select is triggered from the host app!
+   * Use this mode only in combination with custom popups!
+   */
   modalSelect?: boolean;
 
   userSelectAction?: UserSelectActionExpression<E>;

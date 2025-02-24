@@ -17,7 +17,7 @@ import './Annotorious.css';
 import './themes/dark/index.css';
 import './themes/light/index.css';
 
-export interface ImageAnnotator<I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation> extends Annotator<I, E> { 
+export interface ImageAnnotator<I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation> extends Annotator<I, E> {
 
   element: HTMLDivElement;
 
@@ -33,7 +33,7 @@ export interface ImageAnnotator<I extends Annotation = ImageAnnotation, E extend
 
   registerShapeEditor(shapeType: ShapeType, editor: typeof SvelteComponent): void;
 
-  setDrawingTool(name: DrawingTool): void; 
+  setDrawingTool(name: DrawingTool): void;
 
   setDrawingEnabled(enabled: boolean): void;
 
@@ -42,7 +42,7 @@ export interface ImageAnnotator<I extends Annotation = ImageAnnotation, E extend
 }
 
 export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation>(
-  image: string | HTMLImageElement | HTMLCanvasElement, 
+  image: string | HTMLImageElement | HTMLCanvasElement,
   options: AnnotoriousOpts<I, E> = {}
 ): ImageAnnotator<I, E> => {
 
@@ -67,7 +67,13 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
   const undoStack = createUndoStack(store, opts.initialHistory);
 
   const lifecycle = createLifecycleObserver<I, E>(
-    state, undoStack, opts.adapter, opts.autoSave
+    state,
+    undoStack,
+    opts.adapter,
+    {
+      autoSave: opts.autoSave,
+      immediateUpdatesEmit: opts.immediateUpdatesEmit
+    }
   );
 
   // We'll wrap the image in a container DIV.
@@ -89,12 +95,12 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
 
   const annotationLayer = new SVGAnnotationLayer({
     target: container,
-    props: { 
-      drawingEnabled: Boolean(opts.drawingEnabled), 
-      image: img, 
+    props: {
+      drawingEnabled: Boolean(opts.drawingEnabled),
+      image: img,
       preferredDrawingMode: opts.drawingMode!,
-      state: state, 
-      style: opts.style, 
+      state: state,
+      style: opts.style,
       user: currentUser
     }
   });
@@ -137,7 +143,7 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
 
   const getUser = () => currentUser;
 
-  const isDrawingEnabled = () => 
+  const isDrawingEnabled = () =>
     annotationLayer.isDrawingEnabled();
 
   const registerDrawingTool = (name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts) =>
@@ -158,7 +164,7 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
 
   const setDrawingEnabled = (enabled: boolean) =>
     annotationLayer.$set({ drawingEnabled: enabled });
-  
+
   const setFilter = (_: Filter) => {
     console.warn('Filter not implemented yet');
   }
@@ -167,7 +173,7 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
     annotationLayer.$set({ style: style as DrawingStyleExpression<ImageAnnotation> });
 
   const setTheme = (theme: Theme) => _setTheme(img, container, theme);
-  
+
   const setUser = (user: User) => {
     currentUser = user;
     annotationLayer.$set({ user });
