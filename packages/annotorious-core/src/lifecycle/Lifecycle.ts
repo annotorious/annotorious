@@ -11,7 +11,19 @@ export const createLifecycleObserver = <I extends Annotation, E extends unknown>
   state: AnnotatorState<I, E>,
   undoStack: UndoStack<I>,
   adapter?: FormatAdapter<I, E>,
-  autoSave?: boolean
+  options?: {
+    /**
+     * Automatically trigger update events for
+     * changed annotations on the user's idling.
+     */
+    autoSave?: boolean;
+
+    /**
+     * Report annotation updates immediately
+     * both when the bodies were updated or not.
+     */
+    immediateUpdatesEmit?: boolean;
+  }
 ) => {
   const { hover, selection, store, viewport } = state;
 
@@ -143,31 +155,33 @@ export const createLifecycleObserver = <I extends Annotation, E extends unknown>
     emit('viewportIntersect', ids.map(id => store.getAnnotation(id)!)));
 
   store.observe(event => {
-    // autoSave option triggers update events on idleness
-    if (autoSave) {
+    if (options?.autoSave) {
       if (idleTimeout)
         clearTimeout(idleTimeout);
 
       idleTimeout = setTimeout(onIdleUpdate, 1000);
     }
 
+    const { created = [], updated = [], deleted = [] } = event.changes;
+
     // Local CREATE and DELETE events are applied immediately
-    const { created, deleted } = event.changes;
-    (created || []).forEach(a => emit('createAnnotation', a));
-    (deleted || []).forEach(a => emit('deleteAnnotation', a));
+    created.forEach(a => emit('createAnnotation', a));
+    deleted.forEach(a => emit('deleteAnnotation', a));
 
-    // Updates are only applied immediately if they involve body changes
-    const updatesWithBody = (event.changes.updated || []).filter(u => [
-      ...(u.bodiesCreated || []),
-      ...(u.bodiesDeleted || []),
-      ...(u.bodiesUpdated || [])
-    ].length > 0);
+    const updatedToEmit = options?.immediateUpdatesEmit
+      ? updated
+      : updated.filter(u => [
+        // Emit updates only if they involve body changes
+        ...(u.bodiesCreated || []),
+        ...(u.bodiesDeleted || []),
+        ...(u.bodiesUpdated || [])
+      ].length > 0);
 
-    // Emit an update with the new annototation and the stored initial state
-    updatesWithBody.forEach(({ oldValue, newValue }) => {
+    // Emit an update with the new annotation and the stored initial state
+    updatedToEmit.forEach(({ oldValue, newValue }) => {
       const initial = initialSelection.find(a => a.id === oldValue.id) || oldValue;
 
-      // Record the update as the new last known state
+      // Record the update as the new last-known state
       initialSelection = initialSelection
         .map(a => a.id === oldValue.id ? newValue : a);
 
