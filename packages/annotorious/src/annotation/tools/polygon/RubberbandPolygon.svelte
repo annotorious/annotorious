@@ -22,7 +22,7 @@
   // Keep track of the user keeping the finger
   // in place. Long pauses will be interpreted like a 
   // double click and close the shape.
-  let touchPauseTimer: number | undefined;
+  let touchPauseTimer: ReturnType<typeof setTimeout> | undefined;
 
   let isClosable: boolean = false;
 
@@ -121,17 +121,18 @@
     }
   }
 
-  const onDblClick = () => {
+  const onDblClick = () => {    
     if (!cursor) return;
 
-    // Require min 3 points (incl. cursor) and minimum
-    // polygon area
-    const p = [...points, cursor];
+    // Require min 3 points and minimum polygon area.
+    // Note that the double click will have added a duplicate point!
+    const p = points.slice(0, -1);
+    if (p.length < 3) return;
 
     const shape: Polygon = {
       type: ShapeType.POLYGON, 
       geometry: {
-        bounds: boundsFromPoints(p),
+        bounds: boundsFromPoints(points),
         points: p
       }
     }
@@ -140,7 +141,7 @@
     if (area > 4) {
       points = [];
       cursor = undefined;
-    
+
       dispatch('create', shape);
     }
   }
@@ -156,7 +157,7 @@
 
     points = [];
     cursor = undefined;
-  
+
     dispatch('create', shape);
   }
 
