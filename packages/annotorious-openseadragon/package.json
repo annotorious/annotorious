@@ -52,6 +52,6 @@
     "@annotorious/annotorious": "3.1.4",
     "@annotorious/core": "3.1.4",
     "pixi.js": "^7.4.2",
-    "uuid": "^11.0.5"
+    "uuid": "^11.1.0"
   }
 }

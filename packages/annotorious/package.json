@@ -46,11 +46,11 @@
     "typescript": "5.7.3",
     "vite": "^5.4.14",
     "vite-plugin-dts": "^4.5.0",
-    "vitest": "^3.0.4"
+    "vitest": "^3.0.6"
   },
   "dependencies": {
     "@annotorious/core": "3.1.4",
     "rbush": "^4.0.1",
-    "uuid": "^11.0.5"
+    "uuid": "^11.1.0"
   }
 }
