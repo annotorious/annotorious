@@ -156,7 +156,7 @@
     {#each $store.filter(a => isImageAnnotation(a)) as annotation}
       {#if isImageAnnotation(annotation) && !isEditable(annotation)}
         {@const selector = annotation.target.selector}
-        {#key annotation.id}
+        {#key annotation}
           {#if (selector?.type === ShapeType.ELLIPSE)}
             <Ellipse 
               annotation={annotation} 
