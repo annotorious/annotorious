@@ -41,9 +41,9 @@
     "@types/rbush": "^4.0.0",
     "svelte": "^4.2.19",
     "svelte-preprocess": "^6.0.3",
-    "typescript": "5.7.3",
+    "typescript": "5.8.2",
     "vite": "^5.4.14",
-    "vite-plugin-dts": "^4.5.0"
+    "vite-plugin-dts": "^4.5.3"
   },
   "peerDependencies": {
     "openseadragon": "^3.0.0 || ^4.0.0 || ^5.0.0"
