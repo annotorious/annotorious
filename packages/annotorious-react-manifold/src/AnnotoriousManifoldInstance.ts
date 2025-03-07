@@ -31,7 +31,7 @@ export interface AnnotoriousManifoldInstance<I extends Annotation = Annotation, 
 
   getAnnotator(id: string): Annotator<I, E> | undefined;
   
-  setSelected(annotationId: string): void;
+  setSelected(annotationId: string, editable?: boolean): void;
 
   updateAnnotation(arg1: string | I, arg2?: I | Origin, arg3?: Origin): void;
 
@@ -111,10 +111,10 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
       annotator.state.store.updateAnnotation(arg1, arg2, arg3);
   }
 
-  const setSelected = (id: string) => {
+  const setSelected = (id: string, editable?: boolean) => {
     const { annotator } = find(id);
     if (annotator)
-      annotator.setSelected(id);
+      annotator.setSelected(id, editable);
   }
 
   return {
