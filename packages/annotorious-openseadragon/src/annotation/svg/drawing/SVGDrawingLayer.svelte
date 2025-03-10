@@ -13,6 +13,7 @@
   /** Props **/
   export let drawingEnabled: boolean;
   export let filter: Filter<ImageAnnotation> | undefined;
+  export let multiSelect: boolean | undefined;
   export let preferredDrawingMode: DrawingMode;
   export let state: ImageAnnotatorState<I, E>;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined = undefined;
@@ -123,7 +124,7 @@
       if (isVisibleHit && !editableAnnotations!.find(e => e.id === hit.id)) {
         hover.set(hit.id);
 
-        const next = updateSelection(hit.id, evt.detail, selection);
+        const next = updateSelection(hit.id, evt.detail, selection, multiSelect);
         selection.userSelect(next);
       }
     }
