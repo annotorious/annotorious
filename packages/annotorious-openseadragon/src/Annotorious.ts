@@ -29,13 +29,14 @@ import type {
   AnnotoriousOpts, 
   DrawingTool, 
   DrawingToolOpts, 
-  ImageAnnotation, 
+  ImageAnnotation,
   ShapeType, 
   Theme
 } from '@annotorious/annotorious';
 import type { PixiLayerClickEvent } from './annotation';
-import { PixiLayer, SVGDrawingLayer, SVGPresenceLayer } from './annotation';
+import { PixiLayer, SVGDrawingLayer, SVGPresenceLayer, SVGSelectionLayer } from './annotation';
 import { setTheme as _setTheme } from './themes';
+import { updateSelection } from './utils';
 import { 
   fitBounds as _fitBounds, 
   fitBoundsWithConstraints as _fitBoundsWithConstraints, 
@@ -137,19 +138,31 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     }
   });
 
+  const selectionLayer = new SVGSelectionLayer({
+    target: viewer.element.querySelector('.openseadragon-canvas')!,
+    props: {
+      state,
+      viewer
+    }
+  });
+
   displayLayer.$on('click', (evt: CustomEvent<PixiLayerClickEvent>) => {    
     const { originalEvent, annotation } = evt.detail;
+
+    // Shorthand
+    const getNextSelection = (annotation: ImageAnnotation) =>
+      updateSelection(annotation.id, originalEvent, selection);
 
     if (modalSelect) {
       // Ignore click event if there is a selection
       if (selection.isEmpty() && annotation)
-        selection.userSelect(annotation.id, originalEvent);
+        selection.userSelect(getNextSelection(annotation), originalEvent);
     } else {
       // Ignore click event if drawing is currently active with mode 'click'
       const blockEvent = (drawingMode === 'click' && drawingEnabled);
 
       if (annotation && !blockEvent)
-        selection.userSelect(annotation.id, originalEvent);
+        selection.userSelect(getNextSelection(annotation), originalEvent);
       else if (!selection.isEmpty())
         selection.clear();
     }
@@ -179,6 +192,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     displayLayer.$destroy();
     presenceLayer.$destroy();
     drawingLayer.$destroy();
+    selectionLayer.$destroy();
 
     // Other cleanup actions
     keyboardCommands.destroy();
