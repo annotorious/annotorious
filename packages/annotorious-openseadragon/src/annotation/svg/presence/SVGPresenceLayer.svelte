@@ -1,6 +1,6 @@
-<script lang="ts">
+<script lang="ts" generics="I extends Annotation">
   import { onDestroy } from 'svelte';
-  import type { PresenceProvider, PresentUser, StoreChangeEvent } from '@annotorious/core';
+  import type { Annotation, PresenceProvider, PresentUser, StoreChangeEvent } from '@annotorious/core';
   import { ShapeType, type ImageAnnotation, type ImageAnnotationStore } from '@annotorious/annotorious';
   import OSDLayer from '../OSDLayer.svelte';
   import SVGPresencePolygon from './shapes/PresencePolygon.svelte';
@@ -14,7 +14,7 @@
 
   }
 
-  export let store: ImageAnnotationStore;
+  export let store: ImageAnnotationStore<I>;
   
   export let viewer: OpenSeadragon.Viewer;
 
@@ -22,7 +22,7 @@
 
   let trackedAnnotations: TrackedAnnotation[] = [];
 
-  let storeObserver: (event: StoreChangeEvent<ImageAnnotation>) => void;
+  let storeObserver: (event: StoreChangeEvent<I>) => void;
 
   $: if (provider) provider.on('selectionChange', onSelectionChange);
 
@@ -32,7 +32,7 @@
         .filter(({ selectedBy }) => selectedBy.presenceKey !== p.presenceKey),
       ...(selection || []).map(id => ({ 
           // Warning - could be undefined!
-          annotation: store.getAnnotation(id)!,
+          annotation: store.getAnnotation(id)! as unknown as ImageAnnotation,
           selectedBy: p
         }))
     ].filter(({ annotation }) => {
@@ -46,19 +46,19 @@
     if (storeObserver)
       store.unobserve(storeObserver);
 
-    storeObserver = (event: StoreChangeEvent<ImageAnnotation>) => {      
+    storeObserver = (event: StoreChangeEvent<I>) => {      
       const { deleted, updated } = event.changes;
 
       const deletedIds = new Set((deleted || []).map(a => a.id));
 
-      const next: TrackedAnnotation[] = trackedAnnotations
+      const next = trackedAnnotations
         // Remove deleted
         .filter(({ annotation }) => !deletedIds.has(annotation.id))
         // Replace updated
         .map(tracked => {
           const u = (updated || []).find(update => update.oldValue.id === tracked.annotation.id);
           if (u) {
-            return { selectedBy: tracked.selectedBy, annotation: u.newValue }; 
+            return { selectedBy: tracked.selectedBy, annotation: u.newValue as unknown as ImageAnnotation }; 
           } else {
             return tracked; 
           }

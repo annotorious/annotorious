@@ -6,12 +6,14 @@
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
   import { getEditor as _getEditor, getTool, isImageAnnotation, listDrawingTools } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
+  import { updateSelection } from '../../../utils';
   import OSDLayer from '../OSDLayer.svelte';
   import OSDToolMount from './OSDToolMount.svelte';
 
   /** Props **/
   export let drawingEnabled: boolean;
   export let filter: Filter<ImageAnnotation> | undefined;
+  export let multiSelect: boolean | undefined;
   export let preferredDrawingMode: DrawingMode;
   export let state: ImageAnnotatorState<I, E>;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined = undefined;
@@ -74,21 +76,20 @@
       
       store.observe(storeObserver, { annotations: editableIds });
 
-      if (isFirefox) {
-        // As of May 16, 2024 Firefox has the following fun bug: despite the SVG elements
-        // being properly in the markup, FF DOES NOT RENDER THEM VISIBLY on the screen.
-        // This doesn't always happen. I can't figure out a reliable pattern, but timing
-        // must play a role. (It doesn't happen in the simple examples. But happens in 
-        // the Recogito React-based interface.) 
-        //
-        // As soon as the first re-render is triggered, FF wakes up, and the shapes display
-        // correctly. One reliable way of 'waking up' the FF renderer is to change the
-        // transform attribute on an SVG element. By panning OpenSeadragon by one tenth of a 
-        // pixel (!), we're triggering such a refresh without causing a change that's visible
-        // to the user. *sigh* 
-        const { width } = viewer.viewport.viewerElementToViewportRectangle(new OpenSeadragon.Rect(0, 0, 1, 1));
-        viewer.viewport.panBy(new OpenSeadragon.Point(Math.abs(width / 10), 0));
-      }
+      // As of May 16, 2024 Firefox has the following fun bug: despite the SVG elements
+      // being properly in the markup, FF DOES NOT RENDER THEM VISIBLY on the screen.
+      // This doesn't always happen. I can't figure out a reliable pattern, but timing
+      // must play a role. (It doesn't happen in the simple examples. But happens in 
+      // the Recogito React-based interface.) 
+      //
+      // As soon as the first re-render is triggered, FF wakes up, and the shapes display
+      // correctly. One reliable way of 'waking up' the FF renderer is to change the
+      // transform attribute on an SVG element. By panning OpenSeadragon by one tenth of a 
+      // pixel (!), we're triggering such a refresh without causing a change that's visible
+      // to the user. *sigh* 
+
+      // Update: same now happens on Chrome...
+      viewer.forceRedraw();
     } else {
       editableAnnotations = undefined;
     }
@@ -122,7 +123,9 @@
 
       if (isVisibleHit && !editableAnnotations!.find(e => e.id === hit.id)) {
         hover.set(hit.id);
-        selection.setSelected(hit.id);
+
+        const next = updateSelection(hit.id, evt.detail, selection, multiSelect);
+        selection.userSelect(next);
       }
     }
   }
@@ -181,7 +184,7 @@
     <g 
       bind:this={drawingEl}
       transform={transform}>
-      {#if drawingEl && editableAnnotations}
+      {#if drawingEl && editableAnnotations?.length === 1}
         {#each editableAnnotations.filter(a => isImageAnnotation(a)) as editable}
           {@const editor = getEditor(editable.target.selector)}
           {#if editor}

@@ -26,16 +26,17 @@ import {
   registerEditor
 } from '@annotorious/annotorious';
 import type {
-  AnnotoriousOpts, 
   DrawingTool, 
   DrawingToolOpts, 
-  ImageAnnotation, 
+  ImageAnnotation,
   ShapeType, 
   Theme
 } from '@annotorious/annotorious';
 import type { PixiLayerClickEvent } from './annotation';
-import { PixiLayer, SVGDrawingLayer, SVGPresenceLayer } from './annotation';
+import { PixiLayer, SVGDrawingLayer, SVGPresenceLayer, SVGSelectionLayer } from './annotation';
+import type { AnnotoriousOSDOpts } from './AnnotoriousOSDOpts';
 import { setTheme as _setTheme } from './themes';
+import { updateSelection } from './utils';
 import { 
   fitBounds as _fitBounds, 
   fitBoundsWithConstraints as _fitBoundsWithConstraints, 
@@ -76,7 +77,7 @@ export interface OpenSeadragonAnnotator<I extends Annotation = ImageAnnotation, 
 
 export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation>(
   viewer: OpenSeadragon.Viewer, 
-  options: AnnotoriousOpts<I, E> = {}
+  options: AnnotoriousOSDOpts<I, E> = {}
 ): OpenSeadragonAnnotator<I, E> => {
 
   const opts = fillDefaults<I, E>(options, {
@@ -84,7 +85,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     drawingMode: isTouch ? 'drag' : 'click',
     userSelectAction: UserSelectAction.EDIT,
     theme: 'light'
-  });
+  }) as AnnotoriousOSDOpts<I, E>;
 
   const state = createImageAnnotatorState<I, E>(opts);
 
@@ -129,6 +130,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     props: { 
       drawingEnabled: Boolean(drawingEnabled),
       filter: undefined,
+      multiSelect: opts.multiSelect,
       preferredDrawingMode: drawingMode!,
       state,
       style: opts.style,
@@ -137,19 +139,31 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     }
   });
 
+  const selectionLayer = new SVGSelectionLayer({
+    target: viewer.element.querySelector('.openseadragon-canvas')!,
+    props: {
+      state,
+      viewer
+    }
+  });
+
   displayLayer.$on('click', (evt: CustomEvent<PixiLayerClickEvent>) => {    
     const { originalEvent, annotation } = evt.detail;
+
+    // Shorthand
+    const getNextSelection = (annotation: ImageAnnotation) =>
+      updateSelection(annotation.id, originalEvent, selection, opts.multiSelect);
 
     if (modalSelect) {
       // Ignore click event if there is a selection
       if (selection.isEmpty() && annotation)
-        selection.userSelect(annotation.id, originalEvent);
+        selection.userSelect(getNextSelection(annotation), originalEvent);
     } else {
       // Ignore click event if drawing is currently active with mode 'click'
       const blockEvent = (drawingMode === 'click' && drawingEnabled);
 
       if (annotation && !blockEvent)
-        selection.userSelect(annotation.id, originalEvent);
+        selection.userSelect(getNextSelection(annotation), originalEvent);
       else if (!selection.isEmpty())
         selection.clear();
     }
@@ -179,6 +193,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     displayLayer.$destroy();
     presenceLayer.$destroy();
     drawingLayer.$destroy();
+    selectionLayer.$destroy();
 
     // Other cleanup actions
     keyboardCommands.destroy();
