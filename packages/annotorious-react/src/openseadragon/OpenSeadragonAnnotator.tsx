@@ -1,8 +1,8 @@
 import { createContext, forwardRef, ReactNode, useContext, useEffect, useImperativeHandle, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
 import { createAnonymousGuest } from '@annotorious/core';
-import { createOSDAnnotator } from '@annotorious/openseadragon';
-import { Annotation, AnnotoriousOpts, DrawingStyle, Filter, User} from '@annotorious/annotorious';
+import { AnnotoriousOSDOpts, createOSDAnnotator } from '@annotorious/openseadragon';
+import { Annotation, DrawingStyle, Filter, User} from '@annotorious/annotorious';
 import { AnnotoriousContext } from '../Annotorious';
 import { AnnotoriousOpenSeadragonAnnotator } from '.';
 
@@ -11,7 +11,7 @@ export const OpenSeadragonAnnotatorContext = createContext<{
   setViewer(viewer: OpenSeadragon.Viewer): void
 }>({ viewer: null, setViewer: null });
 
-export type OpenSeadragonAnnotatorProps<I extends Annotation, E extends unknown> = AnnotoriousOpts<I, E> & {
+export type OpenSeadragonAnnotatorProps<I extends Annotation, E extends unknown> = AnnotoriousOSDOpts<I, E> & {
 
   children?: ReactNode;
 
@@ -39,7 +39,7 @@ export const OpenSeadragonAnnotator = forwardRef(<I extends Annotation, E extend
 
   useEffect(() => {
     if (viewer?.element) {
-      const anno = createOSDAnnotator<I, E>(viewer, opts as AnnotoriousOpts<I, E>);
+      const anno = createOSDAnnotator<I, E>(viewer, opts as AnnotoriousOSDOpts<I, E>);
       setAnno(anno);
 
       return () => {

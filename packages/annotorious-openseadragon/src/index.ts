@@ -1,4 +1,5 @@
 export * from './Annotorious';
+export * from './AnnotoriousOSDOpts';
 
 // Essential re-exports from @annotorious/core
 export type {
