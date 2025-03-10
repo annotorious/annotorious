@@ -12,6 +12,8 @@ export enum ShapeType {
 
   ELLIPSE = 'ELLIPSE',
 
+  MULTIPOLYGLON = 'MULTIPOLYGON',
+
   POLYGON = 'POLYGON',
 
   RECTANGLE = 'RECTANGLE'
