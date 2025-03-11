@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import type OpenSeadragon from 'openseadragon';
 import { ShapeType } from '@annotorious/annotorious';
 import type { AnnotationState, DrawingStyle, DrawingStyleExpression, Filter, Selection } from '@annotorious/core';
-import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annotorious/annotorious';
+import type { Ellipse, ImageAnnotation, MultiPolygon, MultiPolygonRing, Polygon, Rectangle, Shape } from '@annotorious/annotorious';
 
 const DEFAULT_FILL = 0xffffff;
 const DEFAULT_FILL_ALPHA = 0.25;
@@ -75,19 +75,35 @@ const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (co
   return { fill: fillGraphics, stroke: strokeGraphics, strokeWidth: strokeStyle.lineWidth };
 }
 
+const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
+  const { x, y, w, h } = rectangle.geometry;
+  g.drawRect(x, y, w, h);
+});
+
 const drawEllipse = drawShape((ellipse: Ellipse, g: PIXI.Graphics) => {
   const { cx, cy, rx, ry } = ellipse.geometry;
   g.drawEllipse(cx, cy, rx, ry)
 });
 
 const drawPolygon = drawShape((polygon: Polygon, g: PIXI.Graphics) => {
-  const flattened = polygon.geometry.points.reduce((flat, xy) => ([...flat, ...xy]), []);   
+  const flattened = polygon.geometry.points.reduce<number[]>((flat, xy) => ([...flat, ...xy]), []);   
   g.drawPolygon(flattened);
 });
 
-const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
-  const { x, y, w, h } = rectangle.geometry;
-  g.drawRect(x, y, w, h);
+const drawMultiPolygon = drawShape((multiPolygon: MultiPolygon, g: PIXI.Graphics) => {
+  const flattenRing = (ring: MultiPolygonRing) => 
+    ring.points.reduce<number[]>((flat, xy) => ([...flat, ...xy]), []);
+
+  multiPolygon.geometry.polygons.forEach(element => {
+    const [outer, ...holes] = element.rings;
+    g.drawPolygon(flattenRing(outer));
+
+    holes.forEach(hole => {
+      g.beginHole();
+      g.drawPolygon(flattenRing(hole));
+      g.endHole();
+    });
+  });
 });
 
 const getCurrentScale = (viewer: OpenSeadragon.Viewer) => {
@@ -220,6 +236,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       rendered = drawPolygon(graphics, selector as Polygon, s);
     } else if (selector.type === ShapeType.ELLIPSE) {
       rendered = drawEllipse(graphics, selector as Ellipse, s);
+    } else if (selector.type === ShapeType.MULTIPOLYGLON) {
+      rendered = drawMultiPolygon(graphics, selector as MultiPolygon, s);
     } else {
       console.warn(`Unsupported shape type: ${selector.type}`)
     }
