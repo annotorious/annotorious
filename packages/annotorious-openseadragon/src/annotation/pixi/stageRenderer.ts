@@ -51,13 +51,14 @@ const getGraphicsStyle = (style?: DrawingStyle) => {
   return { fillStyle, strokeStyle };
 }
 
-const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (container: PIXI.Graphics, shape: T, style?: DrawingStyle) => {
+const drawSimpleShape = <T extends Shape>(
+  drawFn: (s: T, g: PIXI.Graphics
+) => void) => (container: PIXI.Container, shape: T, style?: DrawingStyle) => {
   const { fillStyle, strokeStyle } = getGraphicsStyle(style);
 
   const fillGraphics = new PIXI.Graphics();
-  fillGraphics.beginFill(0xffffff);
-  fn(shape, fillGraphics); 
-  fillGraphics.endFill();
+  drawFn(shape, fillGraphics); 
+  fillGraphics.fill();
   fillGraphics.tint = fillStyle.tint;
   fillGraphics.alpha = fillStyle.alpha;
 
@@ -65,46 +66,74 @@ const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (co
     
   const strokeGraphics = new PIXI.Graphics();
   const lineWidth = strokeStyle.lineWidth === 1 ? 1 : strokeStyle.lineWidth / lastScale;
-  strokeGraphics.lineStyle(lineWidth, 0xffffff, 1, 0.5, strokeStyle.lineWidth === 1);
-  fn(shape, strokeGraphics); 
-  strokeGraphics.tint = strokeStyle.tint || 0xFFFFFF;
-  strokeGraphics.alpha = strokeStyle.alpha;
+  drawFn(shape, strokeGraphics); 
+  strokeGraphics.stroke({ 
+    width: lineWidth, 
+    color: 0xffffff,
+    alignment: 0.5,
+    tint: strokeStyle.tint || 0xFFFFFF,
+    alpha: strokeStyle.alpha,
+    pixelLine: strokeStyle.lineWidth === 1
+  } as PIXI.StrokeInput)
 
   container.addChild(strokeGraphics);
     
   return { fill: fillGraphics, stroke: strokeGraphics, strokeWidth: strokeStyle.lineWidth };
 }
 
-const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
+const drawRectangle = drawSimpleShape((rectangle: Rectangle, g: PIXI.Graphics) => {
   const { x, y, w, h } = rectangle.geometry;
-  g.drawRect(x, y, w, h);
+  g.rect(x, y, w, h);
 });
 
-const drawEllipse = drawShape((ellipse: Ellipse, g: PIXI.Graphics) => {
+const drawEllipse = drawSimpleShape((ellipse: Ellipse, g: PIXI.Graphics) => {
   const { cx, cy, rx, ry } = ellipse.geometry;
-  g.drawEllipse(cx, cy, rx, ry)
+  g.ellipse(cx, cy, rx, ry)
 });
 
-const drawPolygon = drawShape((polygon: Polygon, g: PIXI.Graphics) => {
+const drawPolygon = drawSimpleShape((polygon: Polygon, g: PIXI.Graphics) => {
   const flattened = polygon.geometry.points.reduce<number[]>((flat, xy) => ([...flat, ...xy]), []);   
-  g.drawPolygon(flattened);
+  g.poly(flattened);
 });
 
-const drawMultiPolygon = drawShape((multiPolygon: MultiPolygon, g: PIXI.Graphics) => {
+const drawMultiPolygon = (container: PIXI.Container, multi: MultiPolygon, style?: DrawingStyle) => {
   const flattenRing = (ring: MultiPolygonRing) => 
     ring.points.reduce<number[]>((flat, xy) => ([...flat, ...xy]), []);
 
-  multiPolygon.geometry.polygons.forEach(element => {
-    const [outer, ...holes] = element.rings;
-    g.drawPolygon(flattenRing(outer));
+  const { fillStyle, strokeStyle } = getGraphicsStyle(style);
 
-    holes.forEach(hole => {
-      g.beginHole();
-      g.drawPolygon(flattenRing(hole));
-      g.endHole();
-    });
+  let fillGraphics = new PIXI.Graphics();
+  let strokeGraphics = new PIXI.Graphics();
+
+  multi.geometry.polygons.forEach(element => {
+    const [outer, ...holes] = element.rings;
+
+    fillGraphics.poly(flattenRing(outer)).fill();
+    fillGraphics.tint = fillStyle.tint;
+    fillGraphics.alpha = fillStyle.alpha;
+
+    holes.forEach(hole => fillGraphics.poly(flattenRing(hole)).cut());
+
+    container.addChild(fillGraphics);
+
+    const lineWidth = strokeStyle.lineWidth === 1 ? 1 : strokeStyle.lineWidth / lastScale;
+    strokeGraphics.stroke({ 
+      width: lineWidth, 
+      color: 0xffffff,
+      alignment: 0.5,
+      tint: strokeStyle.tint || 0xFFFFFF,
+      alpha: strokeStyle.alpha,
+      pixelLine: strokeStyle.lineWidth === 1
+    } as PIXI.StrokeInput);
+
+    strokeGraphics.poly(flattenRing(outer));
+    holes.forEach(hole => strokeGraphics.poly(flattenRing(hole)));
+  
+    container.addChild(strokeGraphics);
   });
-});
+
+  return { fill: fillGraphics, stroke: strokeGraphics, strokeWidth: strokeStyle.lineWidth };
+}
 
 const getCurrentScale = (viewer: OpenSeadragon.Viewer) => {
   const containerWidth = viewer.viewport.getContainerSize().x;
@@ -114,10 +143,12 @@ const getCurrentScale = (viewer: OpenSeadragon.Viewer) => {
 
 const redrawStage = (
   viewer: OpenSeadragon.Viewer, 
-  graphics: PIXI.Graphics,
+  graphics: PIXI.Container,
   shapes: Map<String, AnnotationShape>,
-  renderer: PIXI.IRenderer<PIXI.ICanvas>
-) => () => {
+  renderer?: PIXI.Renderer<PIXI.ICanvas>
+) => {
+  if (!renderer) return;
+
   const viewportBounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds(true));
   const scale = getCurrentScale(viewer);
 
@@ -125,7 +156,7 @@ const redrawStage = (
     fastRedraw = true;
 
     shapes.forEach(({ stroke, strokeWidth }) => {
-      const { lineStyle } = stroke.geometry.graphicsData[0];
+      const lineStyle = stroke.strokeStyle;
 
       if (strokeWidth > 1) {
         // Disable fast redraws if at least one shape
@@ -134,14 +165,14 @@ const redrawStage = (
 
         // Counter scale stroke
         lineStyle.width = strokeWidth / scale;
-        lineStyle.native = false;
+        lineStyle.pixelLine = false;
 
         // @ts-ignore
         stroke.geometry.invalidate();
-      } else if (strokeWidth === 1 && !lineStyle.native) {
+      } else if (strokeWidth === 1 && !lineStyle.pixelLine) {
         // Set native stroke if necessary
         lineStyle.width = 1;
-        lineStyle.native = true;
+        lineStyle.pixelLine = true;
 
         // @ts-ignore
         stroke.geometry.invalidate();
@@ -193,17 +224,26 @@ const redrawStage = (
   renderer.render(graphics);
 }
 
-export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElement) => {
+export const createStage = (
+  viewer: OpenSeadragon.Viewer, 
+  canvas: HTMLCanvasElement
+) => {
+  const graphics = new PIXI.Container();
 
-  const graphics = new PIXI.Graphics();
+  let renderer: PIXI.Renderer;
 
-  const renderer = PIXI.autoDetectRenderer({ 
+  PIXI.autoDetectRenderer({
     width: canvas.width, 
     height: canvas.height,
     backgroundAlpha: 0,
-    view: canvas,
+    canvas,
     antialias: true,
     resolution: 2
+  }).then(r => {
+    renderer = r;
+
+    renderer.render(graphics);
+    redrawStage(viewer, graphics, annotationShapes, renderer);
   });
 
   // Lookup table: shapes and annotations by annotation ID
@@ -282,8 +322,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   }
 
   const resize = (width: number, height: number) => {
-    renderer.resize(width, height);
-    renderer.render(graphics);
+    renderer?.resize(width, height);
+    renderer?.render(graphics);
   }
 
   const setFilter = (filter?: Filter<ImageAnnotation>) => {
@@ -307,7 +347,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       }
     });
 
-    renderer.render(graphics);
+    renderer?.render(graphics);
   }
 
   const setHovered = (annotationId?: string) => {
@@ -323,7 +363,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
     hovered = annotationId;
 
-    renderer.render(graphics);
+    renderer?.render(graphics);
   }
 
   const setSelected = (selection: Selection) => {
@@ -340,7 +380,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
     selectedIds = new Set(nextIds);
 
-    renderer.render(graphics);
+    renderer?.render(graphics);
   }
 
   const setStyle = (s?: DrawingStyleExpression<ImageAnnotation>) => {
@@ -382,10 +422,6 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     }
   
     style = s;
-
-    renderer.render(graphics);
-
-    redrawStage(viewer, graphics, annotationShapes, renderer)();
   }
 
   const setVisible = (visible: boolean) => {
@@ -395,12 +431,12 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       canvas.classList.add('hidden');
   }
   
-  const destroy = () => renderer.destroy();
+  const destroy = () => renderer?.destroy();
 
   return {
     addAnnotation,
     destroy,
-    redraw: redrawStage(viewer, graphics, annotationShapes, renderer),
+    redraw: () => redrawStage(viewer, graphics, annotationShapes, renderer),
     removeAnnotation,
     resize,
     setFilter,
