@@ -1,0 +1,1 @@
+export { default as MultiPolygonEditor } from './MultiPolygonEditor.svelte';

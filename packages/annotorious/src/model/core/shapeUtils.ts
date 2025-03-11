@@ -86,3 +86,20 @@ export const isPointInPolygon = (points: [number, number][], x: number, y: numbe
   return inside;
 }
 
+export const pointsToPath = (points: [number, number][], close: boolean = true): string => {
+  let d = 'M ';
+
+  points.forEach(([x, y], idx) => {
+    if (idx === 0) {
+      // First point after the M command
+      d += `${x},${y}`;
+    } else {
+      d += ` L ${x},${y}`;
+    }
+  });
+
+  if (close)
+    d += ' Z';
+
+  return d;
+}
