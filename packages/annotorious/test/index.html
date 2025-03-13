@@ -35,15 +35,15 @@
 
       window.onload = function() {
         var anno = createImageAnnotator('sample-image', {
-          // adapter: W3CImageFormat('sample-image'),
+          adapter: W3CImageFormat('sample-image'),
           autoSave: true,
           style: function(annotation) {
             return annotation.target.selector.type === 'RECTANGLE' ? { fill: 'red' } : { fill: 'blue' };
           }
         });
 
-        // anno.loadAnnotations('./annotations.w3c.json');
-        anno.loadAnnotations('./annotations.core.json');
+        anno.loadAnnotations('./annotations.w3c.json');
+        // anno.loadAnnotations('./annotations.core.json');
       
         anno.on('createAnnotation', function (annotation) {
           console.log('created', annotation);

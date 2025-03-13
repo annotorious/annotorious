@@ -51,6 +51,7 @@
   "dependencies": {
     "@annotorious/core": "3.1.7",
     "rbush": "^4.0.1",
+    "svg-pathdata": "^7.1.0",
     "uuid": "^11.1.0"
   }
 }

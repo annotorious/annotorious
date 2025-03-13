@@ -1,6 +1,15 @@
-import type { Ellipse, EllipseGeometry, MultiPolygonGeometry, Polygon, PolygonGeometry, Shape } from '../../core';
 import { boundsFromPoints, multipolygonElementToPath, ShapeType } from '../../core';
-import { insertSVGNamespace, sanitize, SVG_NAMESPACE } from './SVG';
+import { parseSVGXML } from './SVG';
+import { svgPathToMultiPolygonElement } from './pathParser';
+import type { 
+  Ellipse, 
+  EllipseGeometry, 
+  MultiPolygon,
+  MultiPolygonGeometry, 
+  Polygon, 
+  PolygonGeometry, 
+  Shape 
+} from '../../core';
 
 export interface SVGSelector {
 
@@ -10,27 +19,8 @@ export interface SVGSelector {
 
 }
 
-type Point = [number, number];
-type Points = Point[];
-
-const parseSVGXML = (value: string): Element => {
-  const parser = new DOMParser();
-
-  const doc = parser.parseFromString(value, "image/svg+xml");
-
-  // SVG needs a namespace declaration - check if it's set or insert if not
-  const isPrefixDeclared = doc.lookupPrefix(SVG_NAMESPACE); // SVG declared via prefix
-  const isDefaultNamespaceSVG = doc.lookupNamespaceURI(null); // SVG declared as default namespace
-
-  if (isPrefixDeclared || isDefaultNamespaceSVG) {
-    return sanitize(doc).firstChild as Element;
-  } else {
-    return sanitize(insertSVGNamespace(doc)).firstChild as Element;
-  }
-}
-
 const parseSVGPolygon = (value: string): Polygon => {
-  const [a, b, str] = value.match(/(<polygon points=["|'])([^("|')]*)/) || [];
+  const [_, __, str] = value.match(/(<polygon points=["|'])([^("|')]*)/) || [];
   const points = str.split(' ').map((p) => p.split(',').map(parseFloat));
 
   return {
@@ -69,87 +59,35 @@ const parseSVGEllipse = (value: string): Ellipse => {
   };
 }
 
-const parseSVGPath = (value: string): Polygon => {
+const parseSVGPath = (value: string): Polygon | MultiPolygon => {
   const doc = parseSVGXML(value);
-  const path = doc.getAttribute('d')
-  const polygons: Points[] = [];
 
-  if (!path) {
-    throw new Error("Unsupported SVG path (no d attribute)");
-  }
+  const paths = doc.nodeName === 'path' ? [doc] : Array.from(doc.querySelectorAll('path'));
+  const d = paths.map(path => path.getAttribute('d') || '');
 
-  function parseCommands(args: string): string[] {
-    const regex = /[MLHVCSQTAZ][^MLHVCSQTAZ]*/gi;
-    const commands = args.match(regex);
-    return commands ? commands : [];
-  }
+  const polygons = d.map(d => svgPathToMultiPolygonElement(d)!).filter(Boolean);
 
-  function parseNumbers(args: string): number[] {
-    const regNumber = /-?[0-9]*\.?[0-9]+(?:e[-+]?\d+)?/gi;
-    const numbers = args.match(regNumber);
-    return numbers ? numbers.map(Number) : [];
-  }
+  const outerPoints = polygons.reduce<[number, number][]>((points, element) => {
+    return [...points, ...element.rings[0].points]
+  }, []);
 
-  const commands = parseCommands(path);
+  const bounds = boundsFromPoints(outerPoints);
 
-  let points: Points = [];
-  commands.forEach((command) => {
-    let op = command[0];
-    const numbers = parseNumbers(command.slice(1).trim());
-    const isRelative = op !== op.toUpperCase();
-
-    switch (op.toUpperCase()) {
-      case "M":
-      case "L":
-        for (let i = 0; i < numbers.length; i += 2) {
-          const xy: number[] = numbers.slice(i, i + 2);
-          points.push([
-            isRelative ? xy[0] + points[points.length - 1][0] : xy[0],
-            isRelative ? xy[1] + points[points.length - 1][1] : xy[1],
-          ]);
-        }
-        break;
-      case "V":
-        numbers.forEach((number) => {
-          points.push([
-            points[points.length - 1][0],
-            isRelative ? number + points[points.length - 1][1] : number,
-          ]);
-        });
-        break;
-      case "H":
-        numbers.forEach((number) => {
-          points.push([
-            isRelative ? number + points[points.length - 1][0] : number,
-            points[points.length - 1][1],
-          ]);
-        });
-        break;
-      case "Z":
-        polygons.push([...points]);
-        points = [];
-        break;
-      default:
-        throw new Error("Unsupported SVG path (unsupported command " + op + ")");
-    }
-  });
-
-  // close last path?
-  if (points.length) {
-    polygons.push([...points]);
-  }
-
-  if (polygons.length > 1) {
-      throw new Error("Unsupported SVG path (multiple polygons)");
-  }
-
-  return {
+  // No need to create a MultiPolygon if theres only a single element with an outer ring
+  const isSinglePolygon = polygons.length === 1 && polygons[0].rings.length === 1;
+  return isSinglePolygon ? {
     type: ShapeType.POLYGON,
     geometry: {
-      points: polygons[0],
-      bounds: boundsFromPoints(polygons[0])
+      points: outerPoints,
+      bounds
     }
-  };
+  } : {
+    type: ShapeType.MULTIPOLYGLON,
+    geometry: {
+      polygons,
+      bounds
+    }
+  }
 }
 
 export const parseSVGSelector = <T extends Shape>(valueOrSelector: SVGSelector | string): T => {

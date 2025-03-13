@@ -47,6 +47,24 @@ export const annotations = [{
     }
   }
 }, {
+  "id": "31d824ce-089f-4bb3-9871-422bf9f2ef4f",
+  "target": {
+    "source": "sample-image",
+    "selector": {
+      "type": "SvgSelector",
+      "value": "<svg><g><path fill-rule=\"evenodd\" d=\"M 478.65133212051086,234.49738591539688 L 583.0160670565832,232.59967525843268 L 595.9948440900438,324.5922113030464 L 461.84661911724714,316.5340511085419 Z M 518.2974615750816,263.18082664581027 L 513.8912115750816,300.21709653835717 L 564.9195329502184,308.68584653835717 L 554.8375017002184,262.56754539581027 Z\" /></g></svg>"
+    }
+  },
+  "@context": "http://www.w3.org/ns/anno.jsonld",
+  "type": "Annotation",
+  "body": [],
+  "created": "2025-03-13T09:06:02.869Z",
+  "creator": {
+    "isGuest": true,
+    "id": "zN5Es1Zl1sBw0JJxrtzF"
+  },
+  "modified": "2025-03-13T10:24:24.531Z"
+}, {
   '@context': 'http://www.w3.org/ns/anno.jsonld',
   id: 'http://www.example.com/annotation/a263656a-3dfe-4720-aae4-7a5a49c2f53f',
   type: 'Annotation',
