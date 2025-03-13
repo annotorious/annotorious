@@ -67,14 +67,16 @@ const drawSimpleShape = <T extends Shape>(
   const strokeGraphics = new PIXI.Graphics();
   const lineWidth = strokeStyle.lineWidth === 1 ? 1 : strokeStyle.lineWidth / lastScale;
   drawFn(shape, strokeGraphics); 
+
+  console.log('simple shape', lineWidth);
+
   strokeGraphics.stroke({ 
     width: lineWidth, 
-    color: 0xffffff,
+    color: strokeStyle.tint || 0xffffff,
     alignment: 0.5,
-    tint: strokeStyle.tint || 0xFFFFFF,
     alpha: strokeStyle.alpha,
     pixelLine: strokeStyle.lineWidth === 1
-  } as PIXI.StrokeInput)
+  } as PIXI.StrokeInput);
 
   container.addChild(strokeGraphics);
     
@@ -155,9 +157,9 @@ const redrawStage = (
   if (scale !== lastScale || !fastRedraw) {
     fastRedraw = true;
 
-    shapes.forEach(({ stroke, strokeWidth }) => {
-      const lineStyle = stroke.strokeStyle;
-
+    shapes.forEach(({ stroke, strokeWidth, annotation }) => {
+      const lineStyle = { ...stroke.strokeStyle };
+      
       if (strokeWidth > 1) {
         // Disable fast redraws if at least one shape
         // has non-native stroke
@@ -167,15 +169,17 @@ const redrawStage = (
         lineStyle.width = strokeWidth / scale;
         lineStyle.pixelLine = false;
 
-        // @ts-ignore
-        stroke.geometry.invalidate();
+        stroke.setStrokeStyle(lineStyle);
+
+        // stroke.didViewUpdate = true;
+
+        console.log(stroke);
       } else if (strokeWidth === 1 && !lineStyle.pixelLine) {
         // Set native stroke if necessary
-        lineStyle.width = 1;
-        lineStyle.pixelLine = true;
+        // lineStyle.width = 1;
+        // lineStyle.pixelLine = true;
 
-        // @ts-ignore
-        stroke.geometry.invalidate();
+        // stroke.geometry.invalidate();
       }
     });
   }
@@ -322,8 +326,9 @@ export const createStage = (
   }
 
   const resize = (width: number, height: number) => {
-    renderer?.resize(width, height);
-    renderer?.render(graphics);
+    if (!renderer) return;
+    renderer.resize(width, height);
+    renderer.render(graphics);
   }
 
   const setFilter = (filter?: Filter<ImageAnnotation>) => {
