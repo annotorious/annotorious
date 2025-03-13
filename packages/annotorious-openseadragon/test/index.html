@@ -81,23 +81,24 @@
         const BASE_STYLE = function(a, state) {
           const { hovered, selected } = state || {};
           return {
-            fill: hovered ? 'rgba(0,255,0,0.1)' : 'rgba(255,0,0,0.2)',
+            fill: hovered ? 'rgba(180,0,60,0.7)' : 'rgba(180,0,60,0.5)',
             stroke: '#ff0000', 
             // fillOpacity: 0.1,
             strokeOpacity: 0.9,
-            strokeWidth: 1
+            strokeWidth: 3
           }
         };
 
         var anno = createOSDAnnotator(viewer, {
           autoSave: true,
-          adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c'),
+          // adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c'),
           drawingEnabled: false,
           multiSelect: true,
           style: BASE_STYLE
         });
 
-        fetch('annotations.json').then((response) => response.json())
+        // fetch('annotations.w3c.json').then((response) => response.json())
+        fetch('annotations.core.json').then((response) => response.json())
           .then(annotations =>
             anno.setAnnotations(annotations));
 
