@@ -8,13 +8,14 @@ describe('parseW3CImageAnnotation', () => {
   it('should parse the sample annotations correctly', () => {
     const parsed = (annotations as W3CAnnotation[]).map(a => parseW3CImageAnnotation(a));
 
-    expect(parsed[0].error).toBe(undefined);
-    expect(parsed[1].error).toBe(undefined);
-
-    const [polygon, ellipse, rectangle] = parsed;
+    expect(parsed.some(r => r.error)).toBeFalsy();
+    
+    const [polygon, ellipse, path, multi, rectangle] = parsed;
 
     expect(polygon.parsed?.target.selector.type).toBe(ShapeType.POLYGON);
     expect(ellipse.parsed?.target.selector.type).toBe(ShapeType.ELLIPSE);
+    expect(path.parsed?.target.selector.type).toBe(ShapeType.POLYGON);
+    expect(multi.parsed?.target.selector.type).toBe(ShapeType.MULTIPOLYGLON);
     expect(rectangle.parsed?.target.selector.type).toBe(ShapeType.RECTANGLE);
   });
 });
