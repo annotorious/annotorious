@@ -1,5 +1,5 @@
-import type { Ellipse, EllipseGeometry, Polygon, PolygonGeometry, Shape } from '../../core';
-import { boundsFromPoints, ShapeType } from '../../core';
+import type { Ellipse, EllipseGeometry, MultiPolygonGeometry, Polygon, PolygonGeometry, Shape } from '../../core';
+import { boundsFromPoints, multipolygonElementToPath, ShapeType } from '../../core';
 import { insertSVGNamespace, sanitize, SVG_NAMESPACE } from './SVG';
 
 export interface SVGSelector {
@@ -77,6 +77,13 @@ export const parseSVGSelector = <T extends Shape>(valueOrSelector: SVGSelector |
     throw 'Unsupported SVG shape: ' + value;
 }
 
+const serializeMultiPolygon = (geom: MultiPolygonGeometry) => {
+  const paths = geom.polygons.map(elem =>
+    `<path fill-rule="evenodd" d="${multipolygonElementToPath(elem)}" />`);
+
+  return `<g>${paths.join('')}</g>`
+} 
+
 export const serializeSVGSelector = (shape: Shape): SVGSelector => {
   let value: string | undefined;
 
@@ -86,7 +93,10 @@ export const serializeSVGSelector = (shape: Shape): SVGSelector => {
     value = `<svg><polygon points="${points.map((xy) => xy.join(',')).join(' ')}" /></svg>`;
   } else if (shape.type === ShapeType.ELLIPSE) {
     const geom = shape.geometry as EllipseGeometry;
-    value = `<svg><ellipse cx="${geom.cx}" cy="${geom.cy}" rx="${geom.rx}" ry="${geom.ry}" /></svg>`
+    value = `<svg><ellipse cx="${geom.cx}" cy="${geom.cy}" rx="${geom.rx}" ry="${geom.ry}" /></svg>`;
+  } else if (shape.type === ShapeType.MULTIPOLYGLON) {
+    const geom = shape.geometry as MultiPolygonGeometry;
+    value = `<svg>${serializeMultiPolygon(geom)}</svg>`;
   }
 
   if (value) {
