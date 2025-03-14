@@ -24,7 +24,7 @@ export default class EditableRect extends EditableShape {
 
   constructor(annotation, g, config, env) {
     super(annotation, g, config, env);
-
+    
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
 
@@ -61,10 +61,10 @@ export default class EditableRect extends EditableShape {
 
     this.elementGroup.appendChild(this.rectangle);
 
-    // Add edge rectangles for resizing
-    this.edges = this.createEdges(x, y, w, h);
+    // Add edge padding for resizing
+    this.edgePadding = this.createEdgePadding(x, y, w, h);
 
-    this.edges.forEach(edge => {
+    this.edgePadding.forEach(edge => {
       this.elementGroup.appendChild(edge);
       edge.addEventListener('mousedown', this.onGrab(edge, EDGE));
     });
@@ -123,73 +123,86 @@ export default class EditableRect extends EditableShape {
   }
 
   calculateEdgePadding = () => {
-    const basePadding = this.config.edgePadding ?? DEFAULT_EDGE_PADDING;
+    // const basePadding = this.config.edgePadding ?? DEFAULT_EDGE_PADDING;
 
-    let scaleFactor;
-    if (this.scale < 0.5) {
-      // When zoomed in deeply, we increase the padding slightly to make resizing easier.
-      scaleFactor = this.scale * 2;
-    } else {
-      scaleFactor = this.scale;
-    }
+    // let scaleFactor;
+    // if (this.scale < 0.5) {
+    //   // When zoomed in deeply, we increase the padding slightly to make resizing easier.
+    //   scaleFactor = this.scale * 2;
+    // } else {
+    //   scaleFactor = this.scale;
+    // }
 
-    const edgeResizePadding = basePadding * scaleFactor;
-    return Math.max(edgeResizePadding, 1);
+    // const edgeResizePadding = basePadding * scaleFactor;
+    // return Math.max(edgeResizePadding, 1);
+    return 3;
   }
 
   calculateHandlePadding = () => {
-    const basePadding = this.config.handlePadding ?? DEFAULT_HANDLE_PADDING;
+    // const basePadding = this.config.handlePadding ?? DEFAULT_HANDLE_PADDING;
 
-    let scaleFactor;
-    if (this.scale < 0.5) {
-      // When zoomed in deeply, we increase the padding slightly to make resizing easier
-      scaleFactor = this.scale * 2;
-    } else {
-      scaleFactor = this.scale / 2;
-    }
+    // let scaleFactor;
+    // if (this.scale < 0.5) {
+    //   // When zoomed in deeply, we increase the padding slightly to make resizing easier
+    //   scaleFactor = this.scale * 2;
+    // } else {
+    //   scaleFactor = this.scale / 2;
+    // }
 
-    const scaledPadSize = basePadding * scaleFactor;
-    return Math.max(scaledPadSize, 1);
+    // const scaledPadSize = basePadding * scaleFactor;
+    // return Math.max(scaledPadSize, 1);
+    return 5;
   }
 
-  createEdges(x, y, w, h) {
+  createEdgePadding(x, y, w, h) {
     const edgeResizePadding = this.calculateEdgePadding();
 
     return [
-      // Edges are drawn from top to bottom and left to right
-      this.createEdge(
-        x,
-        y - edgeResizePadding,
-        w,
-        2 * edgeResizePadding,
-        'ns-resize',
-        'top'
-      ),
-      this.createEdge(
-        x + w - edgeResizePadding,
-        y,
-        2 * edgeResizePadding,
-        h,
-        'ew-resize',
-        'right'
-      ),
-      this.createEdge(
-        x,
-        y + h - edgeResizePadding,
-        w,
-        2 * edgeResizePadding,
-        'ns-resize',
-        'bottom'
-      ),
-      this.createEdge(
-        x - edgeResizePadding,
-        y,
-        2 * edgeResizePadding,
-        h,
-        'ew-resize',
-        'left'
-      )
+      // top edge
+      this.createLine(x, y, x + w, y, 'ns-resize', 'top'),
+      // right edge
+      this.createLine(x + w, y, x + w, y + h, 'ew-resize', 'right'),
+      // bottom edge
+      this.createLine(x, y + h, x + w, y + h, 'ns-resize', 'bottom'),
+      // left edge
+      this.createLine(x, y, x, y + h, 'ew-resize', 'left')
     ];
+
+    // return [
+    //   // Edges are drawn from top to bottom and left to right
+    //   this.createEdge(
+    //     x,
+    //     y - edgeResizePadding,
+    //     w,
+    //     2 * edgeResizePadding,
+    //     'ns-resize',
+    //     'top'
+    //   ),
+    //   this.createEdge(
+    //     x + w - edgeResizePadding,
+    //     y,
+    //     2 * edgeResizePadding,
+    //     h,
+    //     'ew-resize',
+    //     'right'
+    //   ),
+    //   this.createEdge(
+    //     x,
+    //     y + h - edgeResizePadding,
+    //     w,
+    //     2 * edgeResizePadding,
+    //     'ns-resize',
+    //     'bottom'
+    //   ),
+    //   this.createEdge(
+    //     x - edgeResizePadding,
+    //     y,
+    //     2 * edgeResizePadding,
+    //     h,
+    //     'ew-resize',
+    //     'left'
+    //   )
+    // ];
   }
 
   createEdge(x, y, width, height, cursor, position) {
@@ -199,9 +212,22 @@ export default class EditableRect extends EditableShape {
     edge.setAttribute('width', width);
     edge.setAttribute('height', height);
     edge.setAttribute('class', `a9s-edge ${position}`);
-    edge.style.fill = 'transparent';
+    edge.style.fill = 'blue';
     edge.style.cursor = cursor;
     return edge;
+  }
+
+  createLine(x1, y1, x2, y2, cursor, position) {
+    const edgePadding = document.createElementNS(SVG_NAMESPACE, 'line');
+    edgePadding.setAttribute('x1', x1);
+    edgePadding.setAttribute('y1', y1);
+    edgePadding.setAttribute('x2', x2);
+    edgePadding.setAttribute('y2', y2);
+    edgePadding.setAttribute('class', `a9s-edge-pad ${position}`);
+    edgePadding.style.cursor = cursor;
+    edgePadding.style.stroke = 'blue';
+    edgePadding.setAttribute('stroke-width', 5)
+    return edgePadding;
   }
 
   createHandlePads(x, y, w, h) {
@@ -222,7 +248,7 @@ export default class EditableRect extends EditableShape {
     handlePad.setAttribute('cy', y);
     handlePad.setAttribute('r', radius);
     handlePad.setAttribute('class', 'a9s-handle-pad');
-    handlePad.style.fill = 'transparent';
+    handlePad.style.fill = 'red';
     handlePad.style.cursor = cursor;
     return handlePad;
   }
@@ -233,7 +259,7 @@ export default class EditableRect extends EditableShape {
   updateEdgePositions() {
     const edgeResizePadding = this.calculateEdgePadding();
     const { x, y, w, h } = getRectSize(this.rectangle);
-    const [top, right, bottom, left] = this.edges;
+    const [top, right, bottom, left] = this.edgePadding;
 
     top.setAttribute('x', x);
     top.setAttribute('y', y - edgeResizePadding);
@@ -256,10 +282,36 @@ export default class EditableRect extends EditableShape {
     left.setAttribute('height', h);
   }
 
+  updateEdgePadPositions() {
+    const { x, y, w, h } = getRectSize(this.rectangle);
+    const [top, right, bottom, left] = this.edgePadding;
+  
+    top.setAttribute('x1', x);
+    top.setAttribute('y1', y);
+    top.setAttribute('x2', x + w);
+    top.setAttribute('y2', y);
+  
+    right.setAttribute('x1', x + w);
+    right.setAttribute('y1', y);
+    right.setAttribute('x2', x + w);
+    right.setAttribute('y2', y + h);
+  
+    bottom.setAttribute('x1', x);
+    bottom.setAttribute('y1', y + h);
+    bottom.setAttribute('x2', x + w);
+    bottom.setAttribute('y2', y + h);
+  
+    left.setAttribute('x1', x);
+    left.setAttribute('y1', y);
+    left.setAttribute('x2', x);
+    left.setAttribute('y2', y + h);
+  }
+  
+
   updateHandlePadPositions = () => {
     const { x, y, w, h } = getRectSize(this.rectangle);
     const scaledPadSize = this.calculateHandlePadding();
-    const radius = scaledPadSize / 2;
+    const radius = scaledPadSize;
     const [topLeft, topRight, bottomRight, bottomLeft] = this.handlePads;
     topLeft.setAttribute('cx', x);
     topLeft.setAttribute('cy', y);
@@ -290,7 +342,7 @@ export default class EditableRect extends EditableShape {
     this.setHandleXY(bottomright, x + w, y + h);
     this.setHandleXY(bottomleft, x, y + h);
 
-    this.updateEdgePositions();
+    this.updateEdgePadPositions();
     this.updateHandlePadPositions();
   }
 
