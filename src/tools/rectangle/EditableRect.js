@@ -14,8 +14,8 @@ import {
 const HANDLE = 'handle';
 const EDGE = 'edge';
 
-const DEFAULT_EDGE_PADDING = 5;
-const DEFAULT_HANDLE_PADDING = 10;
+const DEFAULT_EDGE_PADDING = 3;
+const DEFAULT_HANDLE_PADDING = 4;
 
 /**
  * An editable rectangle shape.
@@ -24,7 +24,7 @@ export default class EditableRect extends EditableShape {
 
   constructor(annotation, g, config, env) {
     super(annotation, g, config, env);
-    
+
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
 
@@ -33,14 +33,23 @@ export default class EditableRect extends EditableShape {
     // SVG markup for this class looks like this:
     //
     // <g>
-    //   <path class="a9s-selection mask"... />
+    //   <path class="a9s-selection-mask"... />
     //   <g> <-- return this node as .element
-    //     <rect class="a9s-outer" ... />
-    //     <rect class="a9s-inner" ... />
-    //     <rect class="a9s-edge" ... /> (x4)
-    //     <g class="a9s-handle" ...> ... </g> (x4)
+    //     <g>
+    //       <rect class="a9s-outer" ... />
+    //       <rect class="a9s-inner" ... />
+    //     </g>
+    //     <line class="a9s-edge-pad" ... /> (x4)
+    //     <g class="a9s-handle"> 
+    //       <g>
+    //         <circle class="a9s-handle-outer" ... />
+    //         <circle class="a9s-handle-inner" ... />
+    //       </g>
+    //     </g> (x4)
+    //     <circle class="a9s-handle-pad" ... /> (x4)
     //   </g>
     // </g>
+
 
     // 'g' for the editable rect compound shape
     this.containerGroup = document.createElementNS(SVG_NAMESPACE, 'g');
@@ -122,41 +131,7 @@ export default class EditableRect extends EditableShape {
     this.svgRoot = this.svg.closest('svg');
   }
 
-  calculateEdgePadding = () => {
-    // const basePadding = this.config.edgePadding ?? DEFAULT_EDGE_PADDING;
-
-    // let scaleFactor;
-    // if (this.scale < 0.5) {
-    //   // When zoomed in deeply, we increase the padding slightly to make resizing easier.
-    //   scaleFactor = this.scale * 2;
-    // } else {
-    //   scaleFactor = this.scale;
-    // }
-
-    // const edgeResizePadding = basePadding * scaleFactor;
-    // return Math.max(edgeResizePadding, 1);
-    return 3;
-  }
-
-  calculateHandlePadding = () => {
-    // const basePadding = this.config.handlePadding ?? DEFAULT_HANDLE_PADDING;
-
-    // let scaleFactor;
-    // if (this.scale < 0.5) {
-    //   // When zoomed in deeply, we increase the padding slightly to make resizing easier
-    //   scaleFactor = this.scale * 2;
-    // } else {
-    //   scaleFactor = this.scale / 2;
-    // }
-
-    // const scaledPadSize = basePadding * scaleFactor;
-    // return Math.max(scaledPadSize, 1);
-    return 5;
-  }
-
   createEdgePadding(x, y, w, h) {
-    const edgeResizePadding = this.calculateEdgePadding();
-
     return [
       // top edge
       this.createLine(x, y, x + w, y, 'ns-resize', 'top'),
@@ -167,54 +142,6 @@ export default class EditableRect extends EditableShape {
       // left edge
       this.createLine(x, y, x, y + h, 'ew-resize', 'left')
     ];
-
-    // return [
-    //   // Edges are drawn from top to bottom and left to right
-    //   this.createEdge(
-    //     x,
-    //     y - edgeResizePadding,
-    //     w,
-    //     2 * edgeResizePadding,
-    //     'ns-resize',
-    //     'top'
-    //   ),
-    //   this.createEdge(
-    //     x + w - edgeResizePadding,
-    //     y,
-    //     2 * edgeResizePadding,
-    //     h,
-    //     'ew-resize',
-    //     'right'
-    //   ),
-    //   this.createEdge(
-    //     x,
-    //     y + h - edgeResizePadding,
-    //     w,
-    //     2 * edgeResizePadding,
-    //     'ns-resize',
-    //     'bottom'
-    //   ),
-    //   this.createEdge(
-    //     x - edgeResizePadding,
-    //     y,
-    //     2 * edgeResizePadding,
-    //     h,
-    //     'ew-resize',
-    //     'left'
-    //   )
-    // ];
-  }
-
-  createEdge(x, y, width, height, cursor, position) {
-    const edge = document.createElementNS(SVG_NAMESPACE, 'rect');
-    edge.setAttribute('x', x);
-    edge.setAttribute('y', y);
-    edge.setAttribute('width', width);
-    edge.setAttribute('height', height);
-    edge.setAttribute('class', `a9s-edge ${position}`);
-    edge.style.fill = 'blue';
-    edge.style.cursor = cursor;
-    return edge;
   }
 
   createLine(x1, y1, x2, y2, cursor, position) {
@@ -225,14 +152,13 @@ export default class EditableRect extends EditableShape {
     edgePadding.setAttribute('y2', y2);
     edgePadding.setAttribute('class', `a9s-edge-pad ${position}`);
     edgePadding.style.cursor = cursor;
-    edgePadding.style.stroke = 'blue';
-    edgePadding.setAttribute('stroke-width', 5)
+    edgePadding.style.stroke = 'transparent';
+    edgePadding.setAttribute('stroke-width', DEFAULT_EDGE_PADDING)
     return edgePadding;
   }
 
   createHandlePads(x, y, w, h) {
-    const scaledPadSize = this.calculateHandlePadding();
-    const radius = scaledPadSize;
+    const radius = DEFAULT_HANDLE_PADDING;
 
     return [
       this.createHandlePad(x, y, radius, 'nwse-resize'), // top left
@@ -248,39 +174,13 @@ export default class EditableRect extends EditableShape {
     handlePad.setAttribute('cy', y);
     handlePad.setAttribute('r', radius);
     handlePad.setAttribute('class', 'a9s-handle-pad');
-    handlePad.style.fill = 'red';
+    handlePad.style.fill = 'transparent';
     handlePad.style.cursor = cursor;
     return handlePad;
   }
 
   onScaleChanged = () =>
     this.handles.map(this.scaleHandle);
-
-  updateEdgePositions() {
-    const edgeResizePadding = this.calculateEdgePadding();
-    const { x, y, w, h } = getRectSize(this.rectangle);
-    const [top, right, bottom, left] = this.edgePadding;
-
-    top.setAttribute('x', x);
-    top.setAttribute('y', y - edgeResizePadding);
-    top.setAttribute('width', w);
-    top.setAttribute('height', 2 * edgeResizePadding);
-
-    right.setAttribute('x', x + w - edgeResizePadding);
-    right.setAttribute('y', y);
-    right.setAttribute('width', 2 * edgeResizePadding);
-    right.setAttribute('height', h);
-
-    bottom.setAttribute('x', x);
-    bottom.setAttribute('y', y + h - edgeResizePadding);
-    bottom.setAttribute('width', w);
-    bottom.setAttribute('height', 2 * edgeResizePadding);
-
-    left.setAttribute('x', x - edgeResizePadding);
-    left.setAttribute('y', y);
-    left.setAttribute('width', 2 * edgeResizePadding);
-    left.setAttribute('height', h);
-  }
 
   updateEdgePadPositions() {
     const { x, y, w, h } = getRectSize(this.rectangle);
@@ -310,7 +210,7 @@ export default class EditableRect extends EditableShape {
 
   updateHandlePadPositions = () => {
     const { x, y, w, h } = getRectSize(this.rectangle);
-    const scaledPadSize = this.calculateHandlePadding();
+    const scaledPadSize = DEFAULT_HANDLE_PADDING;
     const radius = scaledPadSize;
     const [topLeft, topRight, bottomRight, bottomLeft] = this.handlePads;
     topLeft.setAttribute('cx', x);
