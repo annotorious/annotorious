@@ -1,6 +1,5 @@
 import { Origin } from '@annotorious/react';
 import type { Annotation, AnnotationBody, Annotator } from '@annotorious/react';
-import { createPluginManifold } from './PluginManifoldInstance';
 
 export interface AnnotoriousManifoldInstance<I extends Annotation = Annotation, E extends { id: string } = Annotation> {
 
@@ -27,18 +26,10 @@ export interface AnnotoriousManifoldInstance<I extends Annotation = Annotation, 
   getAnnotations(): I[];
 
   getAnnotator(id: string): Annotator<I, E> | undefined;
-
-  mountPlugin<P extends AnnotoriousPlugin>(mountFn: (anno: Annotator<I, E>, opts?: any) => P, opts?: any): P;
   
   setSelected(annotationId: string, editable?: boolean): void;
 
   updateAnnotation(arg1: string | I, arg2?: I | Origin, arg3?: Origin): void;
-
-}
-
-export interface AnnotoriousPlugin {
-
-  destroy(): void;
 
 }
 
@@ -108,11 +99,6 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
 
   const getAnnotator = (id: string) => annotators.get(id);
 
-  const mountPlugin = <P extends AnnotoriousPlugin>(
-    mountFn: (anno: Annotator<I, E>, opts?: any) => P, 
-    opts?: any
-  ) => createPluginManifold<P, I, E>(Array.from(annotators.values()), mountFn, opts);
-
   const updateAnnotation = (arg1: string | I, arg2?: I | Origin, arg3?: Origin) => {
     const oldId: string = typeof arg1 === 'string' ? arg1 : arg1.id;
 
@@ -140,7 +126,6 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
     getAnnotation,
     getAnnotations,
     getAnnotator,
-    mountPlugin,
     setSelected,
     updateAnnotation
   }

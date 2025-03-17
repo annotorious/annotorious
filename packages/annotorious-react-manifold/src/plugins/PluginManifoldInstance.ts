@@ -1,5 +1,5 @@
 import { Annotation, Annotator } from '@annotorious/react';
-import { AnnotoriousPlugin } from './AnnotoriousManifoldInstance';
+import { AnnotoriousPlugin } from './Plugin';
 
 export const createPluginManifold = <
   P extends AnnotoriousPlugin,
