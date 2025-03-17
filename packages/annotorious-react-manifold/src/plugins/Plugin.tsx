@@ -4,7 +4,7 @@ import { PluginProviderContext } from './PluginProvider';
 
 export interface AnnotoriousPlugin {
 
-  destroy(): void;
+  destroy?(): void;
 
 }
 

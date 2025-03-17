@@ -51,7 +51,7 @@ export const PluginProvider = (props: PluginProviderProps) => {
     setManifolds(new Map(manifoldInstances));
 
     return () => {
-      manifoldInstances.forEach(([_, instance]) => instance.destroy());
+      manifoldInstances.forEach(([_, instance]) => instance?.destroy());
     }
   }, [annotators, plugins]);
 
