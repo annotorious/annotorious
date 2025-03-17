@@ -1,2 +1,2 @@
 export * from './Plugin';
-export * from './PluginProvider';
+export { PluginProvider } from './PluginProvider';
