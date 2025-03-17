@@ -2,17 +2,11 @@ import { Annotator } from '@annotorious/react';
 import { useContext, useEffect } from 'react';
 import { PluginProviderContext } from './PluginProvider';
 
-export interface AnnotoriousPlugin {
-
-  destroy?(): void;
-
-}
-
 interface PluginProps {
 
   name: string;
 
-  plugin: (anno: Annotator, opts?: any) => AnnotoriousPlugin;
+  plugin: (anno: Annotator, opts?: any) => unknown;
 
   opts?: any;
 

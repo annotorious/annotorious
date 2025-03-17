@@ -1,8 +1,7 @@
 import { Annotation, Annotator } from '@annotorious/react';
-import { AnnotoriousPlugin } from './Plugin';
 
 export const createPluginManifold = <
-  P extends AnnotoriousPlugin,
+  P extends unknown,
   I extends Annotation = Annotation, 
   E extends { id: string } = Annotation
 >(
@@ -13,7 +12,7 @@ export const createPluginManifold = <
 
   const instances = annotators.map(anno => mountFn(anno, opts));
 
-  return new Proxy({} as P, {
+  return new Proxy({} as any, {
     get: (_, prop: string | symbol) => {
       const firstInstance = instances[0];
       if (!firstInstance) return undefined;

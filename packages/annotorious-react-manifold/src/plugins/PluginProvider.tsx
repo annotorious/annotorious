@@ -1,12 +1,11 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { Annotator } from '@annotorious/react';
 import { AnnotoriousManifoldContext } from '../AnnotoriousManifold';
-import { AnnotoriousPlugin } from './Plugin';
 import { createPluginManifold } from './PluginManifoldInstance';
 
 interface PluginManifoldData {
 
-  mountFn: (anno: Annotator, opts?: any) => AnnotoriousPlugin;
+  mountFn: (anno: Annotator, opts?: any) => unknown;
 
   opts?: any;
 
@@ -16,7 +15,7 @@ interface PluginProviderContextValue {
 
   setPlugins: React.Dispatch<React.SetStateAction<Map<string, PluginManifoldData>>>
 
-  manifolds: Map<string, AnnotoriousPlugin>;
+  manifolds: Map<string, unknown>;
 
 }
 
@@ -41,12 +40,12 @@ export const PluginProvider = (props: PluginProviderProps) => {
   const [plugins, setPlugins] = useState<Map<string, PluginManifoldData>>(new Map());
 
   // One manifold per plugin (each managing one plugin instance per annotator)
-  const [manifolds, setManifolds] = useState<Map<string, AnnotoriousPlugin>>();
+  const [manifolds, setManifolds] = useState<Map<string, any>>();
 
   useEffect(() => {
     const manifoldInstances = Array.from(plugins.entries()).map(([name, { mountFn, opts }]) => {
       return [name, createPluginManifold(annotators, mountFn, opts)];
-    }) as [string, AnnotoriousPlugin][];
+    }) as [string, any][];
 
     setManifolds(new Map(manifoldInstances));
 
@@ -63,7 +62,7 @@ export const PluginProvider = (props: PluginProviderProps) => {
 
 }
 
-export const usePluginManifold = <P extends AnnotoriousPlugin>(name: string) => {
+export const usePluginManifold = <P extends unknown>(name: string) => {
   const { manifolds } = useContext(PluginProviderContext);
   return manifolds.get(name) as P;
 }
