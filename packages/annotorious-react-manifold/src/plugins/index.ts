@@ -1,2 +1,2 @@
 export * from './Plugin';
-export { PluginProvider } from './PluginProvider';
+export { PluginProvider, usePluginManifold } from './PluginProvider';
