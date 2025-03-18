@@ -9,6 +9,8 @@ export interface AnnotoriousManifoldInstance<I extends Annotation = Annotation, 
 
   addBody(body: AnnotationBody, origin?: Origin): void;
 
+  bulkUpdateAnnotations(annotations: I[], origin?: Origin): void; 
+
   clear(origin: Origin): void;
 
   deleteAnnotation(id: string, origin?: Origin): I | undefined;
@@ -61,6 +63,20 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
 
   const clear = (origin = Origin.LOCAL) =>
     Array.from(annotators.values()).forEach(a => a.state.store.clear(origin));
+
+  const bulkUpdateAnnotations = (annotations: I[], origin = Origin.LOCAL) => {
+    const withAnnotator = annotations.map(a => find(a.id)).filter(t => t.source);
+
+    const bySource = Object.groupBy(withAnnotator, t => t.source);
+
+    Object.entries(bySource).forEach(([source, data]) => {
+      const annotator = annotators.get(source);
+      if (!annotator) return;
+
+      const toUpdate: I[] = data.map(d => d.annotation).filter(Boolean);
+      annotator.state.store.bulkUpdateAnnotation(toUpdate, origin);
+    })
+  }
 
   const deleteAnnotation = (id: string, origin = Origin.LOCAL) => {
     const { annotation, annotator } = find(id);
@@ -117,6 +133,7 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
     annotators: [...annotators.values()],
     sources: [...annotators.keys()],
     addBody,
+    bulkUpdateAnnotations,
     clear,
     deleteAnnotation,
     deleteBody,
