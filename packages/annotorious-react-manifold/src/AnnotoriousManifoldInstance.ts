@@ -9,6 +9,8 @@ export interface AnnotoriousManifoldInstance<I extends Annotation = Annotation, 
 
   addBody(body: AnnotationBody, origin?: Origin): void;
 
+  bulkDeleteAnnotations(annotationsOrIds: (I | string)[], origin?: Origin): void;
+
   bulkUpdateAnnotations(annotations: I[], origin?: Origin): void; 
 
   clear(origin: Origin): void;
@@ -64,12 +66,29 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
   const clear = (origin = Origin.LOCAL) =>
     Array.from(annotators.values()).forEach(a => a.state.store.clear(origin));
 
+  const bulkDeleteAnnotations = (annotationsOrIds: (I | string)[], origin = Origin.LOCAL) => {
+    const ids = annotationsOrIds.map(arg => typeof arg === 'string' ? arg : arg.id);
+
+    const withAnnotator = ids.map(id => {
+      const { source } = find(id);
+      return { source, id };
+    }).filter(t => t.source);
+
+    const bySource = Object.groupBy(withAnnotator, t => t.source);
+
+    Object.entries(bySource).forEach(([source, data]) => {
+      const annotator = annotators.get(source);
+      if (annotator)
+        annotator.state.store.bulkDeleteAnnotation(data.map(d => d.id), origin);
+    });
+  }
+
   const bulkUpdateAnnotations = (annotations: I[], origin = Origin.LOCAL) => {
     const withAnnotator = annotations.map(annotation => {
       // Keep source and annotator, but replace annotation
       const { source, annotator } = find(annotation.id);
-      return { source, annotator, annotation };
-    }).filter(t => (t.source && t.annotator));
+      return { source, annotation };
+    }).filter(t => t.source);
 
     const bySource = Object.groupBy(withAnnotator, t => t.source);
 
@@ -137,6 +156,7 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
     annotators: [...annotators.values()],
     sources: [...annotators.keys()],
     addBody,
+    bulkDeleteAnnotations,
     bulkUpdateAnnotations,
     clear,
     deleteAnnotation,
