@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { Annotator } from '@annotorious/react';
 import { AnnotoriousManifoldContext } from '../AnnotoriousManifold';
-import { createPluginManifold } from './PluginManifoldInstance';
+import { createPluginManifold, PluginManifoldProxy } from './PluginManifoldInstance';
 
 interface PluginManifoldData {
 
@@ -64,5 +64,5 @@ export const PluginProvider = (props: PluginProviderProps) => {
 
 export const usePluginManifold = <P extends unknown>(name: string) => {
   const { manifolds } = useContext(PluginProviderContext);
-  return manifolds.get(name) as P;
+  return manifolds.get(name) as PluginManifoldProxy<P>;
 }

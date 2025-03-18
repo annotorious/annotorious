@@ -1,5 +1,11 @@
 import { Annotation, Annotator } from '@annotorious/react';
 
+export type PluginManifoldProxy<P> = {
+  [K in keyof P]: P[K] extends (...args: infer Args) => infer Return
+    ? (...args: Args) => Return[]
+    : P[K];
+};
+
 export const createPluginManifold = <
   P extends unknown,
   I extends Annotation = Annotation, 
@@ -8,7 +14,7 @@ export const createPluginManifold = <
   annotators: Annotator<I, E>[],
   mountFn: (anno: Annotator<I, E>, opts?: any) => P, 
   opts?: any, 
-): P => {
+): PluginManifoldProxy<P> => {
 
   const instances = annotators.map(anno => mountFn(anno, opts));
 
