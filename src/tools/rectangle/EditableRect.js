@@ -14,8 +14,8 @@ import {
 const HANDLE = 'handle';
 const EDGE = 'edge';
 
-const DEFAULT_EDGE_PADDING = 3;
-const DEFAULT_HANDLE_PADDING = 4;
+const DEFAULT_EDGE_PADDING = 5;
+const DEFAULT_HANDLE_PADDING = 7;
 
 /**
  * An editable rectangle shape.
@@ -302,8 +302,6 @@ export default class EditableRect extends EditableShape {
 
   onGrab = (grabbedElem, type) => evt => {
     if (evt.button !== 0) return;  // left click
-
-    evt.stopPropagation();
 
     this.grabbedElem = grabbedElem;
     this.grabbedType = type;
