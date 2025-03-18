@@ -65,7 +65,11 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
     Array.from(annotators.values()).forEach(a => a.state.store.clear(origin));
 
   const bulkUpdateAnnotations = (annotations: I[], origin = Origin.LOCAL) => {
-    const withAnnotator = annotations.map(a => find(a.id)).filter(t => t.source);
+    const withAnnotator = annotations.map(annotation => {
+      // Keep source and annotator, but replace annotation
+      const { source, annotator } = find(annotation.id);
+      return { source, annotator, annotation };
+    }).filter(t => (t.source && t.annotator));
 
     const bySource = Object.groupBy(withAnnotator, t => t.source);
 
