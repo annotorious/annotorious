@@ -110,6 +110,15 @@ export const createStore = <T extends Annotation>() => {
       emit(origin, { updated: [update] })
   }
 
+  const upsertAnnotation = (arg1: T, arg2 = Origin.LOCAL) => {
+    const exists = Boolean(annotationIndex.get(arg1.id));
+    if (exists) {
+      updateAnnotation(arg1);
+    } else {
+      addAnnotation(arg1);
+    }
+  }
+
   const bulkUpdateAnnotations = (annotations: T[], origin = Origin.LOCAL) => {
     const updated = annotations.reduce((updated, annotation) => {
       const u = updateOneAnnotation(annotation);
@@ -404,7 +413,8 @@ export const createStore = <T extends Annotation>() => {
     unobserve,
     updateAnnotation,
     updateBody,
-    updateTarget
+    updateTarget,
+    upsertAnnotation
 	};
 
 }
