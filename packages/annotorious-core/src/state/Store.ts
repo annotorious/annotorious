@@ -110,12 +110,12 @@ export const createStore = <T extends Annotation>() => {
       emit(origin, { updated: [update] })
   }
 
-  const upsertAnnotation = (arg1: T, arg2 = Origin.LOCAL) => {
-    const exists = Boolean(annotationIndex.get(arg1.id));
+  const upsertAnnotation = (annotation: T, origin = Origin.LOCAL) => {
+    const exists = Boolean(annotationIndex.get(annotation.id));
     if (exists) {
-      updateAnnotation(arg1);
+      updateAnnotation(annotation, origin);
     } else {
-      addAnnotation(arg1);
+      addAnnotation(annotation, origin);
     }
   }
 
