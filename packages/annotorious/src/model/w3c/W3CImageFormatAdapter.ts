@@ -52,11 +52,13 @@ export const parseW3CImageAnnotation = (
   const w3cTarget = Array.isArray(annotation.target) 
     ? annotation.target[0] : annotation.target;
 
-  const w3cSelector = Array.isArray(w3cTarget.selector) 
-    ? w3cTarget.selector[0] : w3cTarget.selector;
+  const w3cSelector = 
+    typeof w3cTarget === 'string' ? w3cTarget :
+      Array.isArray(w3cTarget.selector) 
+        ? w3cTarget.selector[0] : w3cTarget.selector;
 
   const selector = 
-    w3cSelector?.type === 'FragmentSelector' ?
+    typeof w3cSelector === 'string' || w3cSelector?.type === 'FragmentSelector' ?
       parseFragmentSelector(w3cSelector as FragmentSelector, opts.invertY) :
     w3cSelector?.type === 'SvgSelector' ?
       parseSVGSelector(w3cSelector as SVGSelector) : undefined;
