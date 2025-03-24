@@ -30,7 +30,7 @@ describe('createSelectionState', () => {
 
   beforeEach(() => {
     store = createStore<Annotation>();
-    store.bulkAddAnnotation([testAnnotation1, testAnnotation2, testAnnotation3]);
+    store.bulkAddAnnotations([testAnnotation1, testAnnotation2, testAnnotation3]);
     selectionState = createSelectionState(store);
   });
 

@@ -79,7 +79,7 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
     Object.entries(bySource).forEach(([source, data]) => {
       const annotator = annotators.get(source);
       if (annotator)
-        annotator.state.store.bulkDeleteAnnotation(data.map(d => d.id), origin);
+        annotator.state.store.bulkDeleteAnnotations(data.map(d => d.id), origin);
     });
   }
 
@@ -97,7 +97,7 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
       if (!annotator) return;
 
       const toUpdate: I[] = data.map(d => d.annotation).filter(Boolean);
-      annotator.state.store.bulkUpdateAnnotation(toUpdate, origin);
+      annotator.state.store.bulkUpdateAnnotations(toUpdate, origin);
     })
   }
 
