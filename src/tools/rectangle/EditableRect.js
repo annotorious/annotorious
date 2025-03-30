@@ -30,25 +30,31 @@ export default class EditableRect extends EditableShape {
 
     const { x, y, w, h } = parseRectFragment(annotation, env.image);
 
-    // SVG markup for this class looks like this:
-    //
-    // <g>
-    //   <path class="a9s-selection-mask"... />
-    //   <g> <-- return this node as .element
-    //     <g>
-    //       <rect class="a9s-outer" ... />
-    //       <rect class="a9s-inner" ... />
-    //     </g>
-    //     <line class="a9s-edge-pad" ... /> (x4)
-    //     <g class="a9s-handle"> 
-    //       <g>
-    //         <circle class="a9s-handle-outer" ... />
-    //         <circle class="a9s-handle-inner" ... />
-    //       </g>
-    //     </g> (x4)
-    //     <circle class="a9s-handle-pad" ... /> (x4)
-    //   </g>
-    // </g>
+// SVG markup for this class looks like this:
+//
+// <g>
+//   <path class="a9s-selection-mask"... />
+//   <g> <-- return this node as .element
+//     <g>
+//       <rect class="a9s-outer" ... />
+//       <rect class="a9s-inner" ... />
+//     </g>
+//     <line class="a9s-edge-pad top" ... />
+//     <line class="a9s-edge-pad right" ... />
+//     <line class="a9s-edge-pad bottom" ... />
+//     <line class="a9s-edge-pad left" ... />
+//     <g class="a9s-handle"> 
+//       <g>
+//         <circle class="a9s-handle-outer" ... />
+//         <circle class="a9s-handle-inner" ... />
+//       </g>
+//     </g> (x4)
+//     <circle class="a9s-handle-pad top-left" ... />
+//     <circle class="a9s-handle-pad top-right" ... />
+//     <circle class="a9s-handle-pad bottom-right" ... />
+//     <circle class="a9s-handle-pad bottom-left" ... />
+//   </g>
+// </g>
 
 
     // 'g' for the editable rect compound shape
@@ -159,21 +165,21 @@ export default class EditableRect extends EditableShape {
 
   createHandlePads(x, y, w, h) {
     const radius = DEFAULT_HANDLE_PADDING;
-
+  
     return [
-      this.createHandlePad(x, y, radius, 'nwse-resize'), // top left
-      this.createHandlePad(x + w, y, radius, 'nesw-resize'), // top right
-      this.createHandlePad(x + w, y + h, radius, 'nwse-resize'), // bottom right
-      this.createHandlePad(x, y + h, radius, 'nesw-resize') // bottom left
+      this.createCircle(x, y, radius, 'nwse-resize', 'top-left'), // top left
+      this.createCircle(x + w, y, radius, 'nesw-resize', 'top-right'), // top right
+      this.createCircle(x + w, y + h, radius, 'nwse-resize', 'bottom-right'), // bottom right
+      this.createCircle(x, y + h, radius, 'nesw-resize', 'bottom-left') // bottom left
     ];
   }
 
-  createHandlePad(x, y, radius, cursor) {
+  createCircle(x, y, radius, cursor, position) {
     const handlePad = document.createElementNS(SVG_NAMESPACE, 'circle');
     handlePad.setAttribute('cx', x);
     handlePad.setAttribute('cy', y);
     handlePad.setAttribute('r', radius);
-    handlePad.setAttribute('class', 'a9s-handle-pad');
+    handlePad.setAttribute('class', `a9s-handle-pad ${position}`);
     handlePad.style.fill = 'transparent';
     handlePad.style.cursor = cursor;
     return handlePad;
