@@ -80,6 +80,12 @@ export {
   chainStyles,
   computeStyle,
   createImageAnnotator,
+  parseFragmentSelector,
+  parseSVGSelector,
+  parseW3CImageAnnotation,
+  serializeFragmentSelector,
+  serializeSVGSelector,
+  serializeW3CImageAnnotation,
   ShapeType,
   W3CImageFormat
 } from '@annotorious/annotorious';
