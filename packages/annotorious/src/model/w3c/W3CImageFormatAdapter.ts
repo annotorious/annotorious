@@ -121,6 +121,7 @@ export const serializeW3CImageAnnotation = (
     target: {
       ...rest,
       source,
+      type: 'SpecificResource',
       selector: w3cSelector
     }
   } as W3CImageAnnotation;
