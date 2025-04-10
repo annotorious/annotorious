@@ -63,6 +63,9 @@ export const parseW3CImageAnnotation = (
     w3cSelector?.type === 'SvgSelector' ?
       parseSVGSelector(w3cSelector as SVGSelector) : undefined;
 
+  const target = 
+    Array.isArray(rest.target) ? rest.target[0] : rest.targret;
+
   return (selector || !opts.strict) ? { 
     parsed: {
       ...rest,
@@ -72,7 +75,8 @@ export const parseW3CImageAnnotation = (
         created: created ? new Date(created) : undefined,
         creator: parseW3CUser(creator),
         updated: modified ? new Date(modified) : undefined,
-        ...(Array.isArray(rest.target) ? rest.target[0] : rest.target),
+        // Note the target can be a string and we don't want to spread the characters...
+        ...(typeof target === 'string' ? {} : target),
         annotation: annotationId,
         selector: selector || w3cSelector
       }
