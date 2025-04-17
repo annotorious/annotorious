@@ -5,7 +5,7 @@
   import type { Annotation, DrawingStyleExpression, Filter, StoreChangeEvent, User } from '@annotorious/core';
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
   import { getEditor as _getEditor, getTool, isImageAnnotation, listDrawingTools } from '@annotorious/annotorious';
-  import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
+  import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode, DrawingToolOpts } from '@annotorious/annotorious';
   import { updateSelection } from '../../../utils';
   import OSDLayer from '../OSDLayer.svelte';
   import OSDToolMount from './OSDToolMount.svelte';
@@ -29,16 +29,13 @@
   export const getDrawingTool = () => toolName;
   export const isDrawingEnabled = () => drawingEnabled;
 
-  // I hate you
-  const isFirefox = navigator.userAgent.match(/firefox|fxios/i);
-
-  $: ({ tool, opts } = getTool(toolName) || { tool: undefined, opts: undefined });
+  $: ({ tool, opts: { drawingMode: _drawingMode, ...opts }} = getTool(toolName) || { tool: undefined, opts: {} as DrawingToolOpts });
 
   /** Drawing tool layer **/
   let drawingEl: SVGGElement;
 
   /** Tool lifecycle **/
-  $: drawingMode = opts?.drawingMode || preferredDrawingMode;
+  $: drawingMode = _drawingMode || preferredDrawingMode;
 
   $: drawingEnabled && drawingMode === 'drag' ? viewer.setMouseNavEnabled(false) : viewer.setMouseNavEnabled(true); 
 
@@ -211,6 +208,7 @@
             transform={{ elementToImage: toolTransform }}
             viewer={viewer}
             viewportScale={scale}
+            {...opts}
             on:create={onSelectionCreated} />
         {/key}
       {/if}

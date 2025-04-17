@@ -14,7 +14,7 @@ export type DrawingToolOpts = {
 }
 
 // @ts-ignore
-const REGISTERED = new Map<DrawingTool, { tool: typeof SvelteComponent, opts?: DrawingToolOpts }>([
+const REGISTERED = new Map<DrawingTool, { tool: typeof SvelteComponent, opts: DrawingToolOpts }>([
   ['rectangle', { tool: RubberbandRectangle }],
   ['polygon', { tool: RubberbandPolygon }]
 ]);
@@ -23,5 +23,5 @@ export const listDrawingTools = () => [...REGISTERED.keys()];
 
 export const getTool = (name: string) => REGISTERED.get(name);
   
-export const registerTool = (name: string, tool: typeof SvelteComponent, opts?: DrawingToolOpts) =>
+export const registerTool = (name: string, tool: typeof SvelteComponent, opts: DrawingToolOpts = {}) =>
   REGISTERED.set(name, { tool, opts });
