@@ -29,14 +29,14 @@
   export const getDrawingTool = () => toolName;
   export const isDrawingEnabled = () => drawingEnabled;
 
-  $: ({ tool, opts: { drawingMode: _drawingMode, ...opts }} = getTool(toolName) || { tool: undefined, opts: {} as DrawingToolOpts });
-
+  $: ({ tool, opts } = getTool(toolName) || { tool: undefined, opts: undefined });
+  
   /** Drawing tool layer **/
   let drawingEl: SVGGElement;
 
   /** Tool lifecycle **/
-  $: drawingMode = _drawingMode || preferredDrawingMode;
-
+  $: drawingMode = opts?.drawingMode || preferredDrawingMode;
+  
   $: drawingEnabled && drawingMode === 'drag' ? viewer.setMouseNavEnabled(false) : viewer.setMouseNavEnabled(true); 
 
   $: drawingEnabled && selection.clear();
@@ -208,7 +208,7 @@
             transform={{ elementToImage: toolTransform }}
             viewer={viewer}
             viewportScale={scale}
-            {...opts}
+            opts={opts}
             on:create={onSelectionCreated} />
         {/key}
       {/if}

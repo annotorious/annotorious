@@ -1,12 +1,13 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, type SvelteComponent } from 'svelte';
   import type OpenSeadragon from 'openseadragon';
-  import type { DrawingMode, Shape, Transform } from '@annotorious/annotorious';
+  import type { DrawingMode, DrawingToolOpts, Shape, Transform } from '@annotorious/annotorious';
 
   const dispatch = createEventDispatcher<{ create: Shape }>();
 
   /** Props **/
   export let drawingMode: DrawingMode;
+  export let opts: DrawingToolOpts | undefined;
   export let target: SVGGElement;
   export let tool: typeof SvelteComponent;
   export let transform: Transform;
@@ -56,6 +57,7 @@
       props: { 
         addEventListener,
         drawingMode,
+        opts,
         transform, 
         viewportScale
       }
