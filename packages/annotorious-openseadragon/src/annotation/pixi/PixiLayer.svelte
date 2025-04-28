@@ -46,10 +46,8 @@
   const onPointerMove = (canvas: HTMLCanvasElement) => (evt: PointerEvent) => {
     const {x, y} = getImageXY(new OpenSeadragon.Point(evt.offsetX, evt.offsetY));
     
-    const hit = store.getAt(x, y);
-    const isVisibleHit = hit && (!filter || filter(hit));
-
-    if (isVisibleHit) {
+    const hit = store.getAt(x, y, filter);
+    if (hit) {
       canvas.classList.add('hover');
 
       if ($hover !== hit.id) {
