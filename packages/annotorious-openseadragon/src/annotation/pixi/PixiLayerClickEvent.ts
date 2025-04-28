@@ -1,9 +1,9 @@
-import type { ImageAnnotation } from '@annotorious/annotorious/src';
+import type { Annotation } from '@annotorious/annotorious/src';
 
-export interface PixiLayerClickEvent {
+export interface PixiLayerClickEvent<I extends Annotation> {
   
   originalEvent: PointerEvent;
   
-  annotation?: ImageAnnotation;
+  annotation?: I;
 
 }

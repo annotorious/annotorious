@@ -1,11 +1,10 @@
-import type { Annotation, Store, SvelteAnnotatorState, SvelteStore } from '@annotorious/core';
-import type { ImageAnnotation } from '../model';
+import type { Annotation, Filter, Store, SvelteAnnotatorState, SvelteStore } from '@annotorious/core';
 
 export type ImageAnnotationStore<I extends Annotation> = Store<I> & {
 
-  getAt(x: number, y: number): ImageAnnotation | undefined;
+  getAt(x: number, y: number, filter?: Filter<I>): I | undefined;
 
-  getIntersecting(x: number, y: number, width: number, height: number): ImageAnnotation[];
+  getIntersecting(x: number, y: number, width: number, height: number): I[];
 
 }
 

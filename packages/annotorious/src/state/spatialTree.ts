@@ -1,7 +1,7 @@
 import RBush from 'rbush';
 import { ShapeType,computeArea, intersects, isImageAnnotationTarget } from '../model';
 import type { ImageAnnotationTarget } from '../model';
-import type { AnnotationTarget } from '@annotorious/core';
+import type { Annotation, AnnotationTarget, Filter } from '@annotorious/core';
 
 interface IndexedTarget {
 
@@ -74,7 +74,8 @@ export const createSpatialTree = () => {
     tree.load(indexedTargets);
   };
 
-  const getAt = (x: number, y: number): ImageAnnotationTarget | undefined => {
+
+  const getAt = (x: number, y: number, filter?: Filter<Annotation>): ImageAnnotationTarget[] => {
     const idxHits = tree.search({
       minX: x,
       minY: y,
@@ -91,7 +92,9 @@ export const createSpatialTree = () => {
     // Get smallest shape
     if (exactHits.length > 0) {
       exactHits.sort((a, b) => computeArea(a.selector) - computeArea(b.selector));
-      return exactHits[0];
+      return exactHits;
+    } else {
+      return [];
     }
   };
 

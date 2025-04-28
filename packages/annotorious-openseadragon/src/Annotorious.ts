@@ -147,11 +147,11 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     }
   });
 
-  displayLayer.$on('click', (evt: CustomEvent<PixiLayerClickEvent>) => {    
+  displayLayer.$on('click', (evt: CustomEvent<PixiLayerClickEvent<I>>) => {    
     const { originalEvent, annotation } = evt.detail;
 
     // Shorthand
-    const getNextSelection = (annotation: ImageAnnotation) =>
+    const getNextSelection = (annotation: I) =>
       updateSelection(annotation.id, originalEvent, selection, opts.multiSelect);
 
     if (modalSelect) {

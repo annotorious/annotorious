@@ -9,7 +9,7 @@
   import './PixiLayer.css';
 
   /** Props */
-  export let filter: Filter<ImageAnnotation> | undefined;
+  export let filter: Filter<I> | undefined;
   export let state: ImageAnnotatorState<I, E>;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined;
   export let viewer: OpenSeadragon.Viewer;
@@ -17,13 +17,13 @@
 
   const { store, hover, selection, viewport } = state;
   
-  const dispatch = createEventDispatcher<{ click: PixiLayerClickEvent}>();
+  const dispatch = createEventDispatcher<{ click: PixiLayerClickEvent<I>}>();
 
   let stage: ReturnType<typeof createStage>;
 
   let lastPress: { x: number, y: number } | undefined;
 
-  $: stage?.setFilter(filter);
+  $: stage?.setFilter(filter as Filter<ImageAnnotation> | undefined);
 
   $: stage?.setSelected($selection);
 
@@ -79,12 +79,10 @@
 
     if (dist < 5) {
       const {x, y} = getImageXY(evt.position);
-      const annotation = store.getAt(x, y);
+      const annotation = store.getAt(x, y, filter);
 
       if (annotation) {
-        const isVisibleAnnotation = (!filter || filter(annotation));
-        if (isVisibleAnnotation)
-          dispatch('click', { originalEvent, annotation });
+        dispatch('click', { originalEvent, annotation });
       } else {
         dispatch('click', { originalEvent });
       }
