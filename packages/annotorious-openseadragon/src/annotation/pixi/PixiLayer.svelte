@@ -81,10 +81,13 @@
       const {x, y} = getImageXY(evt.position);
       const annotation = store.getAt(x, y);
 
-      if (annotation)
-        dispatch('click', { originalEvent, annotation });
-      else
+      if (annotation) {
+        const isVisibleAnnotation = (!filter || filter(annotation));
+        if (isVisibleAnnotation)
+          dispatch('click', { originalEvent, annotation });
+      } else {
         dispatch('click', { originalEvent });
+      }
     }
 
     lastPress = undefined;
