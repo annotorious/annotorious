@@ -59,7 +59,10 @@ export const createImageAnnotatorState = <I extends Annotation, E extends unknow
 
     if (filter) {
       // Resolve annotations first, so we can filter
-      const annotations = targets.map(t => store.getAnnotation(t.annotation)!).filter(Boolean);
+      const annotations = targets.map(t => store.getAnnotation(t.annotation)!)
+        .filter(Boolean)
+        .filter(filter);
+        
       return annotations[0];
     } else {
       const top = targets[0];
