@@ -1,14 +1,14 @@
 import { onUserSelect } from '@annotorious/core';
-import type { StoreObserveOptions, UserSelectActionExpression} from '@annotorious/core';
+import type { StoreObserveOptions, UserSelectActionExpression, FormatAdapter } from '@annotorious/core';
 import { useDebounce } from './useDebounce';
-import { 
-  createContext, 
-  forwardRef, 
-  type ReactNode, 
-  useContext, 
-  useEffect, 
-  useImperativeHandle, 
-  useState 
+import {
+  createContext,
+  forwardRef,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useState
 } from 'react';
 import type {
   Annotation,
@@ -26,13 +26,13 @@ interface Selection<T extends Annotation = Annotation> extends Omit<CoreSelectio
 
 }
 
-export const AnnotoriousContext = createContext({ 
+export const AnnotoriousContext = createContext({
 
-  anno: undefined, 
+  anno: undefined,
 
-  setAnno: undefined, 
+  setAnno: undefined,
 
-  annotations: [], 
+  annotations: [],
 
   selection: { selected: [] }
 
@@ -68,7 +68,7 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
       let selectionStoreObserver: (event: StoreChangeEvent<Annotation>) => void;
 
       const unsubscribeSelection = selection.subscribe(({ selected, ...rest }) => {
-        if (selectionStoreObserver) 
+        if (selectionStoreObserver)
           store.unobserve(selectionStoreObserver);
 
         const resolved = (selected || [])
@@ -99,15 +99,15 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
   }, [anno]);
 
   return (
-    <AnnotoriousContext.Provider value={{ 
-      anno, 
+    <AnnotoriousContext.Provider value={{
+      anno,
       setAnno,
-      annotations, 
-      selection 
+      annotations,
+      selection
     }}>
-       {props.children}
+      {props.children}
     </AnnotoriousContext.Provider>
-  )
+  );
 
 });
 
@@ -135,7 +135,7 @@ export const useAnnotations = <T extends Annotation = ImageAnnotation>(debounce?
   debounce ? _useAnnotationsDebounced<T>(debounce) : _useAnnotations<T>();
 
 export const useAnnotation = <T extends Annotation = ImageAnnotation>(
-  id: string, 
+  id: string,
   options?: Omit<StoreObserveOptions, 'annotations'>
 ) => {
   const store = useAnnotationStore<Store<T>>();
@@ -161,9 +161,13 @@ export const useAnnotation = <T extends Annotation = ImageAnnotation>(
   return annotation;
 }
 
-export const useAnnotationSelectAction = <I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation>(id: string, action: UserSelectActionExpression<E>) => {
+export const useAnnotationSelectAction = <I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation>(
+  id: string,
+  action: UserSelectActionExpression<E>,
+  adapter?: FormatAdapter<I, E>
+) => {
   const annotation = useAnnotation<I>(id);
-  return annotation ? onUserSelect<I, E>(annotation, action) : undefined;
+  return annotation ? onUserSelect<I, E>(annotation, action, adapter) : undefined;
 }
 
 export const useSelection = <T extends Annotation = ImageAnnotation>() => {
@@ -189,10 +193,10 @@ export const useHover = <T extends Annotation = ImageAnnotation>() => {
         setHover(undefined);
       }
     });
-  
+
     return () => {
       unsubscribeHover();
-    }
+    };
   }, [anno]);
 
   return hover;
@@ -220,7 +224,7 @@ const _useViewportState = <T extends Annotation>() => {
       let viewportStoreObserver: (event: StoreChangeEvent<T>) => void;
 
       const unsubscribeViewport = viewport.subscribe(ids => {
-        if (viewportStoreObserver) 
+        if (viewportStoreObserver)
           store.unobserve(viewportStoreObserver);
 
         const resolved = ids.map(id => store.getAnnotation(id)) as T[];
@@ -252,5 +256,5 @@ const _useViewportStateDebounced =  <T extends Annotation>(debounce: number) => 
   return useDebounce(inViewport, debounce) as T[];
 }
 
-export const useViewportState =  <T extends Annotation = ImageAnnotation>(debounce?: number) =>
+export const useViewportState = <T extends Annotation = ImageAnnotation>(debounce?: number) =>
   debounce ? _useViewportStateDebounced<T>(debounce) : _useViewportState<T>();
