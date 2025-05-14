@@ -86,7 +86,7 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
   const bulkUpdateAnnotations = (annotations: I[], origin = Origin.LOCAL) => {
     const withAnnotator = annotations.map(annotation => {
       // Keep source and annotator, but replace annotation
-      const { source, annotator } = find(annotation.id);
+      const { source } = find(annotation.id);
       return { source, annotation };
     }).filter(t => t.source);
 

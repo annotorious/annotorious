@@ -12,7 +12,7 @@
 
   /** Props **/
   export let drawingEnabled: boolean;
-  export let filter: Filter<ImageAnnotation> | undefined;
+  export let filter: Filter<I> | undefined;
   export let multiSelect: boolean | undefined;
   export let preferredDrawingMode: DrawingMode;
   export let state: ImageAnnotatorState<I, E>;
