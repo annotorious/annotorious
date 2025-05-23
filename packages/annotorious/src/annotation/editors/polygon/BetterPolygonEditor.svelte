@@ -36,11 +36,16 @@
 
   const onHandlePointerDown = (idx: number) => (evt: PointerEvent) => {
     isHandleHovered = true;
-    
+
     evt.preventDefault();
     evt.stopPropagation();
 
     lastHandleClick = performance.now();
+  }
+
+  const onShapePointerDown = () => {
+    // De-select all 
+    selectedCorners = [];
   }
 
   const onHandlePointerUp = (idx: number) => (evt: PointerEvent) => {
@@ -92,9 +97,13 @@
     if (handle === 'SHAPE') {
       points = geom.points.map(([x, y]) => [x + delta[0], y + delta[1]]);
     } else {
-      points = geom.points.map(([x, y], idx) =>
-        handle === `HANDLE-${idx}` ? [x + delta[0], y + delta[1]] : [x, y]
-      );
+      points = geom.points.map(([x, y], idx) => {
+        if (selectedCorners.length > 1) {
+          return selectedCorners.includes(idx) ? [x + delta[0], y + delta[1]] : [x, y];
+        } else {
+          return handle === `HANDLE-${idx}` ? [x + delta[0], y + delta[1]] : [x, y]
+        }
+      });
     }
 
     const bounds = boundsFromPoints(points);
@@ -142,6 +151,8 @@
   }
 
   const onDeleteSelectedCorners = () => {
+    console.log('delete');
+
     // Polygon needs 3 points min
     if (geom.points.length < 4) return;
 
@@ -152,6 +163,8 @@
       ...shape,
       geometry: { points, bounds }
     });
+
+    selectedCorners = [];
   }
 
   const onEnterHandle = () => {
@@ -161,7 +174,6 @@
   const onLeaveHandle = () => {
     isHandleHovered = false;
   }
-
 
   const onKeydown = (evt: KeyboardEvent) => {
     if (evt.key === 'Delete' || evt.key === 'Backspace') {
@@ -173,6 +185,8 @@
   onMount(() => {
     svgEl.addEventListener('pointermove', onPointerMove);
     svgEl.addEventListener('keydown', onKeydown);
+
+    svgEl.addEventListener('blur', () => console.log('blur'));
 
     return () => {
       svgEl.removeEventListener('pointermove', onPointerMove);
@@ -207,6 +221,7 @@
     class="a9s-outer"
     style={computedStyle ? 'display:none;' : undefined}
     mask="url(#ghost-handle-mask-{shape.type})"
+    on:pointerdown={onShapePointerDown}
     on:pointerdown={grab('SHAPE')}
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
 
@@ -215,6 +230,7 @@
     style={computedStyle}
     mask="url(#ghost-handle-mask-{shape.type})"
     on:pointermove={onPointerMove}
+    on:pointerdown={onShapePointerDown}
     on:pointerdown={grab('SHAPE')}
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
 
@@ -250,7 +266,7 @@
             class="a9s-midpoint"
             cx={pt[0]}
             cy={pt[1]}
-            r={handleSize - 0.75} 
+            r={handleSize - 1} 
             on:pointerdown={addPoint(idx)} />
         {/if}
       {/each}
@@ -274,9 +290,9 @@
   }
 
   .a9s-midpoint {
-    fill: rgba(26, 26, 26, 0.3);
-    stroke: rgba(255, 255, 255, 0.75);
-    stroke-width: 1px;  
+    fill: rgba(26, 26, 26, 0.25);
+    stroke: rgba(255, 255, 255, 0.65);
+    stroke-width: 1.25px;  
     transition: fill 400ms;
   }
 
