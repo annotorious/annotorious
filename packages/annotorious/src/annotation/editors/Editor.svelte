@@ -9,7 +9,7 @@
   export let shape: Shape;
   export let editor: (shape: Shape, handle: string, delta: [number, number]) => Shape;
   export let transform: Transform;
-  export let svgEl: Element;
+  export let svgEl: SVGSVGElement;
 
   let grabbedHandle: string | undefined;
 

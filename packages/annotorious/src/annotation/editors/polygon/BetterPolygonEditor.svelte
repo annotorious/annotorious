@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, tick } from 'svelte';
+  import { createEventDispatcher, onMount, tick } from 'svelte';
   import { boundsFromPoints } from '../../../model';
   import type { Polygon, PolygonGeometry, Shape } from '../../../model';
   import type { Transform } from '../../Transform';
@@ -12,7 +12,7 @@
   export let computedStyle: string | undefined;
   export let transform: Transform;
   export let viewportScale: number = 1;
-  export let svgEl: Element;
+  export let svgEl: SVGSVGElement;
 
   $: geom = shape.geometry;
   $: handleSize = 6 / viewportScale;
@@ -141,6 +141,34 @@
       newHandle.firstChild.dispatchEvent(newEvent);
     }
   }
+
+  const onDeleteSelectedCorner = () => {
+    // Polygon needs 3 points min
+    if (geom.points.length < 4) return;
+
+    const points = geom.points.filter((_, i) => i !== selectedCorner) as [number, number][];
+    const bounds = boundsFromPoints(points);
+
+    dispatch('change', {
+      ...shape,
+      geometry: { points, bounds }
+    });
+  }
+
+  onMount(() => {
+    const onKeydown = (event: KeyboardEvent) => {
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        event.preventDefault();
+        onDeleteSelectedCorner();
+      }
+    };
+
+    svgEl.addEventListener('keydown', onKeydown);
+
+    return () => {
+      svgEl.removeEventListener('keydown', onKeydown);
+    }
+  });
 </script>
 
 <Editor

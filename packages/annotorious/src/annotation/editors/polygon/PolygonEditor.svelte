@@ -9,7 +9,7 @@
   export let computedStyle: string | undefined;
   export let transform: Transform;
   export let viewportScale: number = 1;
-  export let svgEl: Element;
+  export let svgEl: SVGSVGElement;
 
   $: geom = shape.geometry;
 
