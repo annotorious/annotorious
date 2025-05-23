@@ -52,6 +52,7 @@
         visibleMidpoints = [];
         selectedCorner = undefined;
       } else {
+        console.log('selected', idx);
         selectedCorner = idx;
       }
     }
@@ -71,7 +72,7 @@
     , 0);
 
     // Neighbours: the points before and after the closest midpoint
-    const pointBeforeIdx = (closestMidpointIdx - 1 + midpoints.length) % midpoints.length;
+    const pointBeforeIdx = (closestMidpointIdx + midpoints.length) % midpoints.length;
     const pointAfterIdx = (closestMidpointIdx + 1) % midpoints.length;
 
     // Which neighbour is closer to the mouse pointer?
@@ -107,6 +108,8 @@
   }
 
   const addPoint = (midpointIdx: number) => async (evt: PointerEvent) => {
+    evt.stopPropagation();
+
     const points = [
       ...geom.points.slice(0, midpointIdx + 1),
       midpoints[midpointIdx],
