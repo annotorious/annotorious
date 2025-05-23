@@ -59,8 +59,6 @@
   }
 
   const onPointerMove = (evt: PointerEvent) => {
-    if (selectedCorner === undefined) return;
-
     const [px, py] = transform.elementToImage(evt.offsetX, evt.offsetY);
 
     const getDistSq = (pt: number[]) =>
@@ -158,17 +156,19 @@
     });
   }
 
-  onMount(() => {
-    const onKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Delete' || event.key === 'Backspace') {
-        event.preventDefault();
-        onDeleteSelectedCorner();
-      }
-    };
+  const onKeydown = (evt: KeyboardEvent) => {
+    if (evt.key === 'Delete' || evt.key === 'Backspace') {
+      evt.preventDefault();
+      onDeleteSelectedCorner();
+    }
+  };
 
+  onMount(() => {
+    svgEl.addEventListener('pointermove', onPointerMove);
     svgEl.addEventListener('keydown', onKeydown);
 
     return () => {
+      svgEl.removeEventListener('pointermove', onPointerMove);
       svgEl.removeEventListener('keydown', onKeydown);
     }
   });
@@ -219,7 +219,7 @@
     </g>
   {/each}
 
-  {#if selectedCorner !== undefined}
+  {#if visibleMidpoints.length > 0}
     <g>
       {#each midpoints as pt, idx}
         {#if (visibleMidpoints.includes(idx))}
@@ -227,7 +227,7 @@
             class="a9s-midpoint"
             cx={pt[0]}
             cy={pt[1]}
-            r={handleSize - 2} 
+            r={handleSize - 1.5} 
             on:pointerdown={addPoint(idx)} />
         {/if}
       {/each}
@@ -251,7 +251,13 @@
   }
 
   .a9s-midpoint {
-    fill: red;
-    stroke-width: 0;
+    fill: rgba(255, 255, 255, 0.6);
+    stroke: #757575;
+    stroke-width: 0.5px;  
+    transition: fill 250ms;
+  }
+
+  .a9s-midpoint:hover {
+    fill: #fff;
   }
 </style>
