@@ -9,6 +9,7 @@
   export let computedStyle: string | undefined;
   export let transform: Transform;
   export let viewportScale: number = 1;
+  export let svgEl: Element;
 
   $: geom = shape.geometry;
 
@@ -38,6 +39,7 @@
   shape={shape}
   transform={transform}
   editor={editor}
+  svgEl={svgEl}
   on:change 
   on:grab
   on:release

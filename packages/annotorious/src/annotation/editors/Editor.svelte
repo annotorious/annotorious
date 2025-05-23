@@ -9,6 +9,7 @@
   export let shape: Shape;
   export let editor: (shape: Shape, handle: string, delta: [number, number]) => Shape;
   export let transform: Transform;
+  export let svgEl: Element;
 
   let grabbedHandle: string | undefined;
 
@@ -18,7 +19,13 @@
 
   const onGrab = (handle: string) => (evt: PointerEvent) => {
     grabbedHandle = handle;
-    origin = transform.elementToImage(evt.offsetX, evt.offsetY);
+
+    const { left, top } = svgEl.getBoundingClientRect();
+    const offsetX = evt.clientX - left;
+    const offsetY = evt.clientY - top;
+
+    origin = transform.elementToImage(offsetX, offsetY);
+
     initialShape = shape;
 
     const target = evt.target as Element;

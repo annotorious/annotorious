@@ -42,7 +42,7 @@
           }
         });
 
-        anno.loadAnnotations('./annotations.w3c.json');
+        anno.loadAnnotations('./annotations.test.json');
         // anno.loadAnnotations('./annotations.core.json');
       
         anno.on('createAnnotation', function (annotation) {
@@ -62,11 +62,11 @@
         });
 
         anno.on('mouseEnterAnnotation', function(annotation) {
-          console.log('enter', annotation);
+          // console.log('enter', annotation);
         });
 
         anno.on('mouseLeaveAnnotation', function(annotation) {
-          console.log('leave', annotation);
+          // console.log('leave', annotation);
         });
 
         anno.setDrawingTool('polygon');

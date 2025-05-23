@@ -27,7 +27,13 @@
   onMount(() => {    
     editorComponent = new editor({
       target,
-      props: { shape: annotation.target.selector, computedStyle, transform, viewportScale }
+      props: { 
+        shape: annotation.target.selector, 
+        computedStyle, 
+        transform, 
+        viewportScale,
+        svgEl: target.closest('svg')
+      }
     });
 
     editorComponent.$on('change', event => {

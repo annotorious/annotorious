@@ -29,6 +29,7 @@
       class="a9s-touch-halo"
       class:touched={touched}
       on:pointerdown
+      on:pointerup
       on:pointerdown={onPointerDown} 
       on:pointerup={onPointerUp} />
 
@@ -40,6 +41,7 @@
       height={handleSize}
       on:pointerdown
       on:pointerdown={onPointerDown} 
+      on:pointerup
       on:pointerup={onPointerUp}  />
   </g>
 {:else}
@@ -49,7 +51,8 @@
     y={y - handleSize / 2} 
     width={handleSize} 
     height={handleSize} 
-    on:pointerdown />
+    on:pointerdown
+    on:pointerup />
 {/if}
 
 <style>
@@ -61,6 +64,4 @@
   .a9s-touch-halo.touched {
     fill: rgba(255, 255, 255, 0.25);
   }
-
-
 </style>
