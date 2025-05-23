@@ -15,11 +15,11 @@
   export let svgEl: SVGSVGElement;
 
   $: geom = shape.geometry;
-  $: handleSize = 6 / viewportScale;
+  $: handleSize = 5 / viewportScale;
 
   const CLICK_THRESHOLD = 250;
 
-  let isHandleGrabbed = false;
+  let isHandleHovered = false;
   let lastHandleClick: number | undefined;
   let selectedCorners: number[] = [];
 
@@ -35,17 +35,15 @@
   let visibleMidpoints: number[] = []
 
   const onHandlePointerDown = (idx: number) => (evt: PointerEvent) => {
+    isHandleHovered = true;
+    
     evt.preventDefault();
     evt.stopPropagation();
-
-    isHandleGrabbed = true;
 
     lastHandleClick = performance.now();
   }
 
   const onHandlePointerUp = (idx: number) => (evt: PointerEvent) => {
-    isHandleGrabbed = false;
-
     if (!lastHandleClick) return;
 
     // Drag, not click
@@ -156,6 +154,15 @@
     });
   }
 
+  const onEnterHandle = () => {
+    isHandleHovered = true;
+  }
+
+  const onLeaveHandle = () => {
+    isHandleHovered = false;
+  }
+
+
   const onKeydown = (evt: KeyboardEvent) => {
     if (evt.key === 'Delete' || evt.key === 'Backspace') {
       evt.preventDefault();
@@ -185,25 +192,23 @@
   let:grab={grab}>
  
   <mask id="ghost-handle-mask-{shape.type}">
-    <!-- White allows content to show through -->
+    <!-- Mask the polygon by midpoint handles for nicer appearance -->
     <rect class="mask" width="100%" height="100%" fill="white"/>
-    <!-- Black circles hide the polygon lines under ghost handles -->
-    {#if (visibleMidpoints.length > 0 && !isHandleGrabbed)}
+    {#if (visibleMidpoints.length > 0 && !isHandleHovered)}
       {#each midpoints as pt, idx}
         {#if (visibleMidpoints.includes(idx))}
-          <circle cx={pt[0]} cy={pt[1]} r={handleSize - 1.5} fill="black"/>
+          <circle cx={pt[0]} cy={pt[1]} r={handleSize - 1} fill="black"/>
         {/if}
       {/each}
     {/if}
   </mask>
 
-
-  <!-- polygon
+  <polygon
     class="a9s-outer"
     style={computedStyle ? 'display:none;' : undefined}
     mask="url(#ghost-handle-mask-{shape.type})"
     on:pointerdown={grab('SHAPE')}
-    points={geom.points.map(xy => xy.join(',')).join(' ')} / -->
+    points={geom.points.map(xy => xy.join(',')).join(' ')} />
 
   <polygon
     class="a9s-inner a9s-shape-handle"
@@ -228,14 +233,16 @@
         class={`a9s-better-handle a9s-better-handle-inner${selectedCorners.includes(idx) ? ' selected' : ''}`}
         cx={point[0]} 
         cy={point[1]} 
-        r={handleSize - 2}
+        r={handleSize - 1.5}
+        on:pointerenter={onEnterHandle}
+        on:pointerleave={onLeaveHandle}
         on:pointerdown={onHandlePointerDown(idx)}
         on:pointerdown={grab(`HANDLE-${idx}`)}
         on:pointerup={onHandlePointerUp(idx)} />
     </g>
   {/each}
 
-  {#if (visibleMidpoints.length > 0 && !isHandleGrabbed)}
+  {#if (visibleMidpoints.length > 0 && !isHandleHovered)}
     <g>
       {#each midpoints as pt, idx}
         {#if (visibleMidpoints.includes(idx))}
@@ -243,7 +250,7 @@
             class="a9s-midpoint"
             cx={pt[0]}
             cy={pt[1]}
-            r={handleSize - 1.5} 
+            r={handleSize - 0.75} 
             on:pointerdown={addPoint(idx)} />
         {/if}
       {/each}
@@ -254,8 +261,8 @@
 <style>
   .a9s-better-handle-outer {
     fill: #fff;
-    stroke: #757575;
-    stroke-width: 0.25px;  
+    stroke: rgba(117, 117, 117, 0.5);
+    stroke-width: 0.5px;  
   }
 
   .a9s-better-handle-inner {
@@ -267,14 +274,15 @@
   }
 
   .a9s-midpoint {
-    fill: rgba(255, 255, 255, 0.65);
-    stroke: #757575;
-    stroke-width: 0.25px;  
+    fill: rgba(26, 26, 26, 0.3);
+    stroke: rgba(255, 255, 255, 0.75);
+    stroke-width: 1px;  
     transition: fill 400ms;
   }
 
   .a9s-midpoint:hover {
-    fill: #fff;
+    fill: #1a1a1a;
+    stroke: #fff;
   }
 
   mask > rect {
