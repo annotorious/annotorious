@@ -19,9 +19,9 @@
 
   const CLICK_THRESHOLD = 250;
 
+  let isHandleGrabbed = false;
   let lastHandleClick: number | undefined;
-
-  let selectedCorner: number | undefined;
+  let selectedCorners: number[] = [];
 
   $: midpoints = geom.points.map((thisCorner, idx) => {
     const nextCorner = idx === geom.points.length - 1 ? geom.points[0] : geom.points[idx + 1];
@@ -38,23 +38,37 @@
     evt.preventDefault();
     evt.stopPropagation();
 
-    lastHandleClick = performance.now();
+    isHandleGrabbed = true;
 
-    if (selectedCorner !== undefined && selectedCorner !== idx)
-      selectedCorner = undefined;
+    lastHandleClick = performance.now();
   }
 
   const onHandlePointerUp = (idx: number) => (evt: PointerEvent) => {
+    isHandleGrabbed = false;
+
     if (!lastHandleClick) return;
 
-    if ((performance.now() - lastHandleClick) < CLICK_THRESHOLD) {
-      if (selectedCorner === idx) {
-        visibleMidpoints = [];
-        selectedCorner = undefined;
-      } else {
-        console.log('selected', idx);
-        selectedCorner = idx;
-      }
+    // Drag, not click
+    if (performance.now() - lastHandleClick > CLICK_THRESHOLD) return;
+
+    const isSelected = selectedCorners.includes(idx);
+
+    if (evt.metaKey || evt.ctrlKey || evt.shiftKey) {
+      // Add to or remove from selection
+      if (isSelected)
+        selectedCorners = selectedCorners.filter(i => i !== idx);
+      else
+        selectedCorners = [...selectedCorners, idx];
+    } else {
+      // Reset selection
+      if (isSelected && selectedCorners.length > 1)
+        // Keep selected, de-select others
+        selectedCorners = [idx]
+      else if (isSelected)
+        // De-select
+        selectedCorners = [];
+      else
+        selectedCorners = [idx];
     }
   }
 
@@ -69,19 +83,7 @@
       getDistSq(midpoint) < getDistSq(midpoints[closestIdx]) ? currentIdx : closestIdx
     , 0);
 
-    // Neighbours: the points before and after the closest midpoint
-    const pointBeforeIdx = (closestMidpointIdx + midpoints.length) % midpoints.length;
-    const pointAfterIdx = (closestMidpointIdx + 1) % midpoints.length;
-
-    // Which neighbour is closer to the mouse pointer?
-    const closestNeighbourIdx = getDistSq(geom.points[pointBeforeIdx]) > getDistSq(geom.points[pointAfterIdx])
-      ? pointAfterIdx : pointBeforeIdx;
-
-    // Show midpoints before and after the closest neighbour
-    visibleMidpoints = [
-      closestNeighbourIdx,
-      closestNeighbourIdx === 0 ? midpoints.length - 1 : closestNeighbourIdx - 1
-    ];
+    visibleMidpoints = [closestMidpointIdx];
   }
 
   const editor = (polygon: Shape, handle: string, delta: [number, number]) => {
@@ -114,8 +116,6 @@
       ...geom.points.slice(midpointIdx + 1)
     ] as [number, number][];
 
-    selectedCorner = midpointIdx + 1;
-
     const bounds = boundsFromPoints(points);
 
     dispatch('change', {
@@ -143,11 +143,11 @@
     }
   }
 
-  const onDeleteSelectedCorner = () => {
+  const onDeleteSelectedCorners = () => {
     // Polygon needs 3 points min
     if (geom.points.length < 4) return;
 
-    const points = geom.points.filter((_, i) => i !== selectedCorner) as [number, number][];
+    const points = geom.points.filter((_, i) => !selectedCorners.includes(i)) as [number, number][];
     const bounds = boundsFromPoints(points);
 
     dispatch('change', {
@@ -159,7 +159,7 @@
   const onKeydown = (evt: KeyboardEvent) => {
     if (evt.key === 'Delete' || evt.key === 'Backspace') {
       evt.preventDefault();
-      onDeleteSelectedCorner();
+      onDeleteSelectedCorners();
     }
   };
 
@@ -183,16 +183,32 @@
   on:grab
   on:release
   let:grab={grab}>
+ 
+  <mask id="ghost-handle-mask-{shape.type}">
+    <!-- White allows content to show through -->
+    <rect class="mask" width="100%" height="100%" fill="white"/>
+    <!-- Black circles hide the polygon lines under ghost handles -->
+    {#if (visibleMidpoints.length > 0 && !isHandleGrabbed)}
+      {#each midpoints as pt, idx}
+        {#if (visibleMidpoints.includes(idx))}
+          <circle cx={pt[0]} cy={pt[1]} r={handleSize - 1.5} fill="black"/>
+        {/if}
+      {/each}
+    {/if}
+  </mask>
 
-  <polygon
+
+  <!-- polygon
     class="a9s-outer"
     style={computedStyle ? 'display:none;' : undefined}
+    mask="url(#ghost-handle-mask-{shape.type})"
     on:pointerdown={grab('SHAPE')}
-    points={geom.points.map(xy => xy.join(',')).join(' ')} />
+    points={geom.points.map(xy => xy.join(',')).join(' ')} / -->
 
   <polygon
     class="a9s-inner a9s-shape-handle"
     style={computedStyle}
+    mask="url(#ghost-handle-mask-{shape.type})"
     on:pointermove={onPointerMove}
     on:pointerdown={grab('SHAPE')}
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
@@ -200,7 +216,7 @@
   {#each geom.points as point, idx}
     <g class="a9s-better-handle-wrapper">
       <circle 
-        class={`a9s-better-handle a9s-better-handle-outer${selectedCorner === idx ? ' selected' : ''}`}
+        class={`a9s-better-handle a9s-better-handle-outer${selectedCorners.includes(idx) ? ' selected' : ''}`}
         cx={point[0]} 
         cy={point[1]} 
         r={handleSize}
@@ -209,7 +225,7 @@
         on:pointerup={onHandlePointerUp(idx)} />
 
       <circle 
-        class={`a9s-better-handle a9s-better-handle-inner${selectedCorner === idx ? ' selected' : ''}`}
+        class={`a9s-better-handle a9s-better-handle-inner${selectedCorners.includes(idx) ? ' selected' : ''}`}
         cx={point[0]} 
         cy={point[1]} 
         r={handleSize - 2}
@@ -219,7 +235,7 @@
     </g>
   {/each}
 
-  {#if visibleMidpoints.length > 0}
+  {#if (visibleMidpoints.length > 0 && !isHandleGrabbed)}
     <g>
       {#each midpoints as pt, idx}
         {#if (visibleMidpoints.includes(idx))}
@@ -251,13 +267,17 @@
   }
 
   .a9s-midpoint {
-    fill: rgba(255, 255, 255, 0.6);
+    fill: rgba(255, 255, 255, 0.65);
     stroke: #757575;
-    stroke-width: 0.5px;  
-    transition: fill 250ms;
+    stroke-width: 0.25px;  
+    transition: fill 400ms;
   }
 
   .a9s-midpoint:hover {
+    fill: #fff;
+  }
+
+  mask > rect {
     fill: #fff;
   }
 </style>
