@@ -19,6 +19,8 @@
 
   const CLICK_THRESHOLD = 250;
 
+  const HOVER_DISTANCE_THRESHOLD = 50;
+
   let isHandleHovered = false;
   let lastHandleClick: number | undefined;
   let selectedCorners: number[] = [];
@@ -86,7 +88,11 @@
       getDistSq(midpoint) < getDistSq(midpoints[closestIdx]) ? currentIdx : closestIdx
     , 0);
 
-    visibleMidpoints = [closestMidpointIdx];
+    if (Math.sqrt(getDistSq(midpoints[closestMidpointIdx])) > HOVER_DISTANCE_THRESHOLD) {
+      visibleMidpoints = [];
+    } else {
+      visibleMidpoints = [closestMidpointIdx];
+    }
   }
 
   const editor = (polygon: Shape, handle: string, delta: [number, number]) => {
@@ -186,8 +192,6 @@
     svgEl.addEventListener('pointermove', onPointerMove);
     svgEl.addEventListener('keydown', onKeydown);
 
-    svgEl.addEventListener('blur', () => console.log('blur'));
-
     return () => {
       svgEl.removeEventListener('pointermove', onPointerMove);
       svgEl.removeEventListener('keydown', onKeydown);
@@ -278,7 +282,7 @@
   .a9s-better-handle-outer {
     fill: #fff;
     stroke: rgba(117, 117, 117, 0.5);
-    stroke-width: 0.5px;  
+    stroke-width: 0;
   }
 
   .a9s-better-handle-inner {
@@ -290,10 +294,10 @@
   }
 
   .a9s-midpoint {
-    fill: rgba(26, 26, 26, 0.25);
-    stroke: rgba(255, 255, 255, 0.65);
+    fill: rgba(255, 255, 255, 0.15);
+    stroke: rgba(255, 255, 255, 0.6);
     stroke-width: 1.25px;  
-    transition: fill 400ms;
+    transition: fill 400ms, stroke 400ms;
   }
 
   .a9s-midpoint:hover {

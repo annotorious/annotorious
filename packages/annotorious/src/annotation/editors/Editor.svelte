@@ -20,11 +20,20 @@
   const onGrab = (handle: string) => (evt: PointerEvent) => {
     grabbedHandle = handle;
 
-    const { left, top } = svgEl.getBoundingClientRect();
-    const offsetX = evt.clientX - left;
-    const offsetY = evt.clientY - top;
+    // For legacy compatibility: offsetX and offsetY are not
+    // available on synthetic events, currently used by the
+    // new PolygonEditor. Old versions of Annotorious, however, 
+    // won't yet forward the svgEl prop!
+    if (svgEl) {
+      const { left, top } = svgEl.getBoundingClientRect();
+      const offsetX = evt.clientX - left;
+      const offsetY = evt.clientY - top;
 
-    origin = transform.elementToImage(offsetX, offsetY);
+      origin = transform.elementToImage(offsetX, offsetY);
+    } else {
+      const { offsetX, offsetY } = evt;
+      origin = transform.elementToImage(offsetX, offsetY);
+    }
 
     initialShape = shape;
 
