@@ -4,6 +4,8 @@
   import type { Polygon, PolygonGeometry, Shape } from '../../../model';
   import type { Transform } from '../../Transform';
   import { Editor } from '..';
+  import Handle from './BetterPolygonHandle.svelte';
+  import Midpoint from './BetterPolygonMidpoint.svelte';
 
   const dispatch = createEventDispatcher<{ change: Polygon }>();
 
@@ -15,7 +17,7 @@
   export let svgEl: SVGSVGElement;
 
   $: geom = shape.geometry;
-  $: handleSize = 5 / viewportScale;
+  $: handleSize = 4.5;
 
   const CLICK_THRESHOLD = 250;
 
@@ -48,7 +50,7 @@
       svgEl.focus();
   }
 
-  const onHandlePointerDown = (idx: number) => (evt: PointerEvent) => {
+  const onHandlePointerDown = (evt: PointerEvent) => {
     isHandleHovered = true;
 
     evt.preventDefault();
@@ -158,7 +160,7 @@
     await tick();
 
     // Find the newly inserted handle and dispatch grab event
-    const newHandle = [...document.querySelectorAll(`.a9s-better-handle-wrapper`)][midpointIdx + 1];
+    const newHandle = [...document.querySelectorAll(`.a9s-better-handle`)][midpointIdx + 1];
     if (newHandle?.firstChild) {
       const newEvent = new PointerEvent('pointerdown', {
         bubbles: true,
@@ -232,7 +234,7 @@
     {#if (visibleMidpoint !== undefined && !isHandleHovered)}
       {#each midpoints as mid, idx}
         {#if (visibleMidpoint === idx)}
-          <circle cx={mid.point[0]} cy={mid.point[1]} r={handleSize - 1} fill="black"/>
+          <circle cx={mid.point[0]} cy={mid.point[1]} r={handleSize} fill="black"/>
         {/if}
       {/each}
     {/if}
@@ -256,72 +258,29 @@
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
 
   {#each geom.points as point, idx}
-    <g class="a9s-better-handle-wrapper">
-      <circle 
-        class={`a9s-better-handle a9s-better-handle-outer${selectedCorners.includes(idx) ? ' selected' : ''}`}
-        cx={point[0]} 
-        cy={point[1]} 
-        r={handleSize}
-        on:pointerdown={onHandlePointerDown(idx)}
-        on:pointerdown={grab(`HANDLE-${idx}`)}
-        on:pointerup={onHandlePointerUp(idx)} />
-
-      <circle 
-        class={`a9s-better-handle a9s-better-handle-inner${selectedCorners.includes(idx) ? ' selected' : ''}`}
-        cx={point[0]} 
-        cy={point[1]} 
-        r={handleSize - 1.5}
-        on:pointerenter={onEnterHandle}
-        on:pointerleave={onLeaveHandle}
-        on:pointerdown={onHandlePointerDown(idx)}
-        on:pointerdown={grab(`HANDLE-${idx}`)}
-        on:pointerup={onHandlePointerUp(idx)} />
-    </g>
+    <Handle 
+      x={point[0]}
+      y={point[1]}
+      scale={viewportScale}
+      selected={selectedCorners.includes(idx)}
+      on:pointerenter={onEnterHandle}
+      on:pointerleave={onLeaveHandle}
+      on:pointerdown={onHandlePointerDown}
+      on:pointerdown={grab(`HANDLE-${idx}`)}
+      on:pointerup={onHandlePointerUp(idx)} />
   {/each}
 
   {#if (visibleMidpoint !== undefined && !isHandleHovered)}
-    <g>
-      {#each midpoints as mid, idx}
-        {#if (visibleMidpoint === idx)}
-          <circle 
-            class="a9s-midpoint"
-            cx={mid.point[0]}
-            cy={mid.point[1]}
-            r={handleSize - 1} 
-            on:pointerdown={addPoint(idx)} />
-        {/if}
-      {/each}
-    </g>
+    {@const { point } = midpoints[visibleMidpoint]}
+    <Midpoint 
+      x={point[0]}
+      y={point[1]}
+      scale={viewportScale}
+      on:pointerdown={addPoint(visibleMidpoint)} />
   {/if}
 </Editor>
 
 <style>
-  .a9s-better-handle-outer {
-    fill: #fff;
-    stroke: rgba(117, 117, 117, 0.5);
-    stroke-width: 0;
-  }
-
-  .a9s-better-handle-inner {
-    fill: #1a1a1a;
-  }
-
-  .a9s-better-handle-inner.selected {
-    fill: #fff;
-  }
-
-  .a9s-midpoint {
-    fill: rgba(0, 0, 0, 0.2);
-    stroke: rgba(255, 255, 255, 0.6);
-    stroke-width: 1.25px;  
-    transition: fill 400ms, stroke 400ms;
-  }
-
-  .a9s-midpoint:hover {
-    fill: #1a1a1a;
-    stroke: #fff;
-  }
-
   mask > rect {
     fill: #fff;
   }
