@@ -97,6 +97,8 @@
           style: BASE_STYLE
         });
 
+        anno.setDrawingTool('polygon');
+
         // fetch('annotations.w3c.json').then((response) => response.json())
         fetch('annotations.core.json').then((response) => response.json())
           .then(annotations =>

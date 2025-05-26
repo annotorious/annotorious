@@ -173,8 +173,10 @@
   const getEditor = (shape: Shape): typeof SvelteComponent => _getEditor(shape)!;
 </script>
 
+<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <OSDLayer viewer={viewer} let:transform let:scale>
   <svg 
+    tabindex={0}
     class="a9s-annotationlayer a9s-osd-drawinglayer"
     class:drawing={drawingEnabled}>
 

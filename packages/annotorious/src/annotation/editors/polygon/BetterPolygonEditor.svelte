@@ -13,7 +13,7 @@
   const CLICK_THRESHOLD = 250;
 
   /** Minimum distance (px) to shape required for midpoints to show */
-  const MIN_HOVER_DISTANCE = 50;
+  const MIN_HOVER_DISTANCE = 200;
 
   /** Minimum distance (px) between corners required for midpoints to show **/
   const MIN_CORNER_DISTANCE = 12;
@@ -28,7 +28,8 @@
   export let viewportScale: number = 1;
   export let svgEl: SVGSVGElement;
 
-  /** State **/
+  /** Drawing tool layer **/
+  let polygonEl: SVGGElement;
   let visibleMidpoint: number | undefined;
   let isHandleHovered = false;
   let lastHandleClick: number | undefined;
@@ -45,7 +46,7 @@
     const dist = Math.sqrt( 
       Math.pow(nextCorner[0] - x, 2) + Math.pow(nextCorner[1] - y, 2));
 
-    const visible = dist > MIN_CORNER_DISTANCE;
+    const visible = dist > MIN_CORNER_DISTANCE / viewportScale;
 
     return { point: [x, y], visible };
   });
@@ -67,7 +68,7 @@
       .reduce((closest, midpoint) =>
         getDistSq(midpoint.point) < getDistSq(closest.point) ? midpoint : closest);
 
-    if (Math.sqrt(getDistSq(closestVisibleMidpoint.point)) > MIN_HOVER_DISTANCE) {
+    if (Math.sqrt(getDistSq(closestVisibleMidpoint.point)) > (MIN_HOVER_DISTANCE / viewportScale)) {
       visibleMidpoint = undefined;
     } else {
       visibleMidpoint = midpoints.indexOf(closestVisibleMidpoint);
@@ -239,11 +240,14 @@
   
   {#if (visibleMidpoint !== undefined && !isHandleHovered)}
     {@const { point } = midpoints[visibleMidpoint]}
+    {@const { minX, minY, maxX, maxY } = geom.bounds}
     <!-- Mask polygon by midpoint handle for nicer appearance -->
-    <mask id="midpoint-mask" class="a9s-polygon-editor-mask">
-      <rect />
-      <circle cx={point[0]} cy={point[1]} r={MIDPOINT_SIZE} />
-    </mask>
+    <defs>
+      <mask id="midpoint-mask" class="a9s-polygon-editor-mask">
+        <rect x={minX} y={minY} width={maxX - minX} height={maxY - minY} />
+        <circle cx={point[0]} cy={point[1]} r={MIDPOINT_SIZE / viewportScale} />
+      </mask>
+    </defs>
   {/if}
 
   <polygon
@@ -255,6 +259,7 @@
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
 
   <polygon
+    bind:this={polygonEl}
     class="a9s-inner a9s-shape-handle"
     style={computedStyle}
     mask="url(#midpoint-mask)"
@@ -289,8 +294,6 @@
 <style>
   mask.a9s-polygon-editor-mask > rect {
     fill: #fff;
-    height: 100%;
-    width: 100%;
   }
 
   mask.a9s-polygon-editor-mask > circle {
