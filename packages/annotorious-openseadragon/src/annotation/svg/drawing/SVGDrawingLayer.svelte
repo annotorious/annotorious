@@ -178,7 +178,8 @@
   <svg 
     tabindex={0}
     class="a9s-annotationlayer a9s-osd-drawinglayer"
-    class:drawing={drawingEnabled}>
+    class:drawing={drawingEnabled}
+    class:editing={editableAnnotations}>
 
     <g 
       bind:this={drawingEl}
@@ -223,7 +224,7 @@
     pointer-events: none;
   }
   
-  svg.drawing {
+  svg.drawing, svg.editing {
     pointer-events: all;
   }
 

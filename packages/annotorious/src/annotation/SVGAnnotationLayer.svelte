@@ -150,6 +150,7 @@
   tabindex={0}
   class="a9s-annotationlayer"
   class:drawing={tool}
+  class:editing={editableAnnotations}
   class:hidden={!visible}
   class:hover={$hover}
   on:pointerup={onPointerUp}

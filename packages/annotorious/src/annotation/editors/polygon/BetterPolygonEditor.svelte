@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, tick } from 'svelte';
   import { boundsFromPoints } from '../../../model';
-  import type { Polygon, PolygonGeometry, Shape } from '../../../model';
+  import type { Bounds, Polygon, PolygonGeometry, Shape } from '../../../model';
   import type { Transform } from '../../Transform';
   import { Editor } from '..';
   import Handle from './BetterPolygonHandle.svelte';
@@ -13,7 +13,7 @@
   const CLICK_THRESHOLD = 250;
 
   /** Minimum distance (px) to shape required for midpoints to show */
-  const MIN_HOVER_DISTANCE = 200;
+  const MIN_HOVER_DISTANCE = 100;
 
   /** Minimum distance (px) between corners required for midpoints to show **/
   const MIN_CORNER_DISTANCE = 12;
@@ -46,6 +46,7 @@
     const dist = Math.sqrt( 
       Math.pow(nextCorner[0] - x, 2) + Math.pow(nextCorner[1] - y, 2));
 
+    // Don't show if the distance between the corners is too small
     const visible = dist > MIN_CORNER_DISTANCE / viewportScale;
 
     return { point: [x, y], visible };
@@ -62,17 +63,26 @@
     const getDistSq = (pt: number[]) =>
       Math.pow(pt[0] - px, 2) + Math.pow(pt[1] - py, 2);
 
-    // The midpoint closest to the mouse pointer
+    const closestCorner = geom.points.reduce((closest, corner) =>
+      getDistSq(corner) < getDistSq(closest) ? corner : closest);
+
     const closestVisibleMidpoint = midpoints
       .filter(m => m.visible)
       .reduce((closest, midpoint) =>
         getDistSq(midpoint.point) < getDistSq(closest.point) ? midpoint : closest);
 
-    if (Math.sqrt(getDistSq(closestVisibleMidpoint.point)) > (MIN_HOVER_DISTANCE / viewportScale)) {
-      visibleMidpoint = undefined;
-    } else {
+    // Show midpoint of the mouse is at least within THRESHOLD distance
+    // of the midpoint or the closest corner. (Basically a poor man's shape buffering).
+    const threshold = Math.pow(MIN_HOVER_DISTANCE / viewportScale, 2);
+
+    const shouldShow = 
+      getDistSq(closestCorner) < threshold ||
+      getDistSq(closestVisibleMidpoint.point) < threshold;
+
+    if (shouldShow)
       visibleMidpoint = midpoints.indexOf(closestVisibleMidpoint);
-    }
+    else
+      visibleMidpoint = undefined;
   }
 
   /** 
@@ -218,6 +228,10 @@
       }
     };
 
+    svgEl.addEventListener('pointermove', () => {
+      console.log('move!');
+    })
+
     svgEl.addEventListener('pointermove', onPointerMove);
     svgEl.addEventListener('keydown', onKeydown);
 
@@ -226,6 +240,19 @@
       svgEl.removeEventListener('keydown', onKeydown);
     }
   });
+
+  const getMaskBounds = (bounds: Bounds) => {
+    const buffer = MIDPOINT_SIZE / viewportScale;
+
+    const { minX, minY, maxX, maxY } = bounds;
+
+    return {
+      x: minX - buffer,
+      y: minY - buffer,
+      w: maxX - minX + 2 * buffer,
+      h: maxY - minY + 2 * buffer
+    }
+  }
 </script>
 
 <Editor
@@ -240,11 +267,11 @@
   
   {#if (visibleMidpoint !== undefined && !isHandleHovered)}
     {@const { point } = midpoints[visibleMidpoint]}
-    {@const { minX, minY, maxX, maxY } = geom.bounds}
+    {@const { x, y, w, h } = getMaskBounds(geom.bounds)}
     <!-- Mask polygon by midpoint handle for nicer appearance -->
     <defs>
       <mask id="midpoint-mask" class="a9s-polygon-editor-mask">
-        <rect x={minX} y={minY} width={maxX - minX} height={maxY - minY} />
+        <rect x={x} y={y} width={w} height={h} />
         <circle cx={point[0]} cy={point[1]} r={MIDPOINT_SIZE / viewportScale} />
       </mask>
     </defs>
