@@ -3,14 +3,14 @@
 div[data-theme="light"] .a9s-annotationlayer .a9s-outer {
   display: block;
   stroke: rgba(0, 0, 0, 0.35);
-  stroke-width: 3.5px;
+  stroke-width: 3px;
 }
 
 .a9s-annotationlayer .a9s-inner,
 div[data-theme="light"] .a9s-annotationlayer .a9s-inner {
   fill: rgba(255, 255, 255, 0.15);
   stroke: #fff;
-  stroke-width: 2px;
+  stroke-width: 1.5px;
 }
 
 rect.a9s-handle,

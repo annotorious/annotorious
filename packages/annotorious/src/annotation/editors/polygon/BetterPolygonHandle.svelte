@@ -17,14 +17,14 @@
   const onPointerUp = () =>
     touched = false;
 
-  $: handleRadius = 5 / scale;
+  $: handleRadius = 4 / scale;
 </script>
 
 {#if isTouch}
   <circle 
     cx={x}
     cy={y}
-    r={1.75 * handleRadius} />
+    r={2 * handleRadius} />
 {:else}
   <g class="a9s-better-handle">
     <circle 
