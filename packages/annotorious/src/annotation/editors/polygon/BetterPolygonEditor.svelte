@@ -9,6 +9,18 @@
 
   const dispatch = createEventDispatcher<{ change: Polygon }>();
 
+  /** Time difference (milliseconds) required for registering a click/tap **/
+  const CLICK_THRESHOLD = 250;
+
+  /** Minimum distance (px) to shape required for midpoints to show */
+  const MIN_HOVER_DISTANCE = 50;
+
+  /** Minimum distance (px) between corners required for midpoints to show **/
+  const MIN_CORNER_DISTANCE = 12;
+
+  /** Needed for the <mask> element **/
+  const MIDPOINT_SIZE = 4.5;
+
   /** Props */
   export let shape: Polygon;
   export let computedStyle: string | undefined;
@@ -16,16 +28,13 @@
   export let viewportScale: number = 1;
   export let svgEl: SVGSVGElement;
 
-  $: geom = shape.geometry;
-  $: handleSize = 4.5;
-
-  const CLICK_THRESHOLD = 250;
-
-  const HOVER_DISTANCE_THRESHOLD = 50;
-
+  /** State **/
+  let visibleMidpoint: number | undefined;
   let isHandleHovered = false;
   let lastHandleClick: number | undefined;
   let selectedCorners: number[] = [];
+
+  $: geom = shape.geometry;
 
   $: midpoints = geom.points.map((thisCorner, idx) => {
     const nextCorner = idx === geom.points.length - 1 ? geom.points[0] : geom.points[idx + 1];
@@ -36,20 +45,55 @@
     const dist = Math.sqrt( 
       Math.pow(nextCorner[0] - x, 2) + Math.pow(nextCorner[1] - y, 2));
 
-    const visible = dist > 2.5 * handleSize;
+    const visible = dist > MIN_CORNER_DISTANCE;
 
     return { point: [x, y], visible };
   });
 
-  let visibleMidpoint: number | undefined;
+  /** Handle hover state **/
+  const onEnterHandle = () => isHandleHovered = true;
+  const onLeaveHandle = () => isHandleHovered = false;
 
-  // SVG keeps loosing focus when interacting with shapes.
-  // This way, we can refocus the SVG on user activitiy.
+  /** Determine visible midpoint, if any **/
+  const onPointerMove = (evt: PointerEvent) => {
+    const [px, py] = transform.elementToImage(evt.offsetX, evt.offsetY);
+
+    const getDistSq = (pt: number[]) =>
+      Math.pow(pt[0] - px, 2) + Math.pow(pt[1] - py, 2);
+
+    // The midpoint closest to the mouse pointer
+    const closestVisibleMidpoint = midpoints
+      .filter(m => m.visible)
+      .reduce((closest, midpoint) =>
+        getDistSq(midpoint.point) < getDistSq(closest.point) ? midpoint : closest);
+
+    if (Math.sqrt(getDistSq(closestVisibleMidpoint.point)) > MIN_HOVER_DISTANCE) {
+      visibleMidpoint = undefined;
+    } else {
+      visibleMidpoint = midpoints.indexOf(closestVisibleMidpoint);
+    }
+  }
+
+  /** 
+   * SVG element keeps loosing focus when interacting with 
+   * shapes–this function refocuses.
+   */
   const reclaimFocus = () => {
     if (document.activeElement !== svgEl)
       svgEl.focus();
   }
 
+  /**
+   * De-selects all corners and reclaims focus.
+   */
+  const onShapePointerDown = () => {
+    selectedCorners = [];
+    reclaimFocus();
+  }
+
+  /**
+   * Updates state, waiting for potential click.
+   */
   const onHandlePointerDown = (evt: PointerEvent) => {
     isHandleHovered = true;
 
@@ -59,13 +103,7 @@
     lastHandleClick = performance.now();
   }
 
-  const onShapePointerDown = () => {
-    // De-select all 
-    selectedCorners = [];
-
-    reclaimFocus();
-  }
-
+  /** Selection handling logic **/
   const onHandlePointerUp = (idx: number) => (evt: PointerEvent) => {
     if (!lastHandleClick) return;
 
@@ -81,7 +119,6 @@
       else
         selectedCorners = [...selectedCorners, idx];
     } else {
-      // Reset selection
       if (isSelected && selectedCorners.length > 1)
         // Keep selected, de-select others
         selectedCorners = [idx]
@@ -95,26 +132,9 @@
     reclaimFocus();
   }
 
-  const onPointerMove = (evt: PointerEvent) => {
-    const [px, py] = transform.elementToImage(evt.offsetX, evt.offsetY);
-
-    const getDistSq = (pt: number[]) =>
-      Math.pow(pt[0] - px, 2) + Math.pow(pt[1] - py, 2);
-
-    // The midpoint closest to the mouse pointer
-    const closestVisibleMidpoint = midpoints
-      .filter(m => m.visible)
-      .reduce((closest, midpoint) =>
-        getDistSq(midpoint.point) < getDistSq(closest.point) ? midpoint : closest);
-
-    if (Math.sqrt(getDistSq(closestVisibleMidpoint.point)) > HOVER_DISTANCE_THRESHOLD) {
-      visibleMidpoint = undefined;
-    } else {
-      visibleMidpoint = midpoints.indexOf(closestVisibleMidpoint);
-    }
-  }
-
   const editor = (polygon: Shape, handle: string, delta: [number, number]) => {
+    reclaimFocus();
+    
     let points: [number, number][];
 
     const geom = (polygon.geometry) as PolygonGeometry;
@@ -132,16 +152,13 @@
     }
 
     const bounds = boundsFromPoints(points);
-
-    reclaimFocus();
-
     return {
       ...polygon,
       geometry: { points, bounds }
     }
   }
 
-  const addPoint = (midpointIdx: number) => async (evt: PointerEvent) => {
+  const onAddPoint = (midpointIdx: number) => async (evt: PointerEvent) => {
     evt.stopPropagation();
 
     const points = [
@@ -177,7 +194,7 @@
     }
   }
 
-  const onDeleteSelectedCorners = () => {
+  const onDeleteSelected = () => {
     // Polygon needs 3 points min
     if (geom.points.length < 4) return;
 
@@ -192,22 +209,14 @@
     selectedCorners = [];
   }
 
-  const onEnterHandle = () => {
-    isHandleHovered = true;
-  }
-
-  const onLeaveHandle = () => {
-    isHandleHovered = false;
-  }
-
-  const onKeydown = (evt: KeyboardEvent) => {
-    if (evt.key === 'Delete' || evt.key === 'Backspace') {
-      evt.preventDefault();
-      onDeleteSelectedCorners();
-    }
-  };
-
   onMount(() => {
+    const onKeydown = (evt: KeyboardEvent) => {
+      if (evt.key === 'Delete' || evt.key === 'Backspace') {
+        evt.preventDefault();
+        onDeleteSelected();
+      }
+    };
+
     svgEl.addEventListener('pointermove', onPointerMove);
     svgEl.addEventListener('keydown', onKeydown);
 
@@ -227,23 +236,20 @@
   on:grab
   on:release
   let:grab={grab}>
- 
-  <mask id="ghost-handle-mask-{shape.type}">
-    <!-- Mask the polygon by midpoint handles for nicer appearance -->
-    <rect class="mask" width="100%" height="100%" fill="white"/>
-    {#if (visibleMidpoint !== undefined && !isHandleHovered)}
-      {#each midpoints as mid, idx}
-        {#if (visibleMidpoint === idx)}
-          <circle cx={mid.point[0]} cy={mid.point[1]} r={handleSize} fill="black"/>
-        {/if}
-      {/each}
-    {/if}
-  </mask>
+  
+  {#if (visibleMidpoint !== undefined && !isHandleHovered)}
+    {@const { point } = midpoints[visibleMidpoint]}
+    <!-- Mask polygon by midpoint handle for nicer appearance -->
+    <mask id="midpoint-mask" class="a9s-polygon-editor-mask">
+      <rect />
+      <circle cx={point[0]} cy={point[1]} r={MIDPOINT_SIZE} />
+    </mask>
+  {/if}
 
   <polygon
     class="a9s-outer"
     style={computedStyle ? 'display:none;' : undefined}
-    mask="url(#ghost-handle-mask-{shape.type})"
+    mask="url(#midpoint-mask)"
     on:pointerdown={onShapePointerDown}
     on:pointerdown={grab('SHAPE')}
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
@@ -251,7 +257,7 @@
   <polygon
     class="a9s-inner a9s-shape-handle"
     style={computedStyle}
-    mask="url(#ghost-handle-mask-{shape.type})"
+    mask="url(#midpoint-mask)"
     on:pointermove={onPointerMove}
     on:pointerdown={onShapePointerDown}
     on:pointerdown={grab('SHAPE')}
@@ -276,12 +282,18 @@
       x={point[0]}
       y={point[1]}
       scale={viewportScale}
-      on:pointerdown={addPoint(visibleMidpoint)} />
+      on:pointerdown={onAddPoint(visibleMidpoint)} />
   {/if}
 </Editor>
 
 <style>
-  mask > rect {
+  mask.a9s-polygon-editor-mask > rect {
     fill: #fff;
+    height: 100%;
+    width: 100%;
+  }
+
+  mask.a9s-polygon-editor-mask > circle {
+    fill: #000;
   }
 </style>
