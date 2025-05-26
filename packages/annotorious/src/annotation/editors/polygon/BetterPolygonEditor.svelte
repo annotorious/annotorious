@@ -31,10 +31,22 @@
     const x = (thisCorner[0] + nextCorner[0]) / 2;
     const y = (thisCorner[1] + nextCorner[1]) / 2;
 
-    return [x, y];
+    const dist = Math.sqrt( 
+      Math.pow(nextCorner[0] - x, 2) + Math.pow(nextCorner[1] - y, 2));
+
+    const visible = dist > 2.5 * handleSize;
+
+    return { point: [x, y], visible };
   });
 
-  let visibleMidpoints: number[] = []
+  let visibleMidpoint: number | undefined;
+
+  // SVG keeps loosing focus when interacting with shapes.
+  // This way, we can refocus the SVG on user activitiy.
+  const reclaimFocus = () => {
+    if (document.activeElement !== svgEl)
+      svgEl.focus();
+  }
 
   const onHandlePointerDown = (idx: number) => (evt: PointerEvent) => {
     isHandleHovered = true;
@@ -48,6 +60,8 @@
   const onShapePointerDown = () => {
     // De-select all 
     selectedCorners = [];
+
+    reclaimFocus();
   }
 
   const onHandlePointerUp = (idx: number) => (evt: PointerEvent) => {
@@ -75,6 +89,8 @@
       else
         selectedCorners = [idx];
     }
+
+    reclaimFocus();
   }
 
   const onPointerMove = (evt: PointerEvent) => {
@@ -84,14 +100,15 @@
       Math.pow(pt[0] - px, 2) + Math.pow(pt[1] - py, 2);
 
     // The midpoint closest to the mouse pointer
-    const closestMidpointIdx = midpoints.reduce<number>((closestIdx, midpoint, currentIdx) =>
-      getDistSq(midpoint) < getDistSq(midpoints[closestIdx]) ? currentIdx : closestIdx
-    , 0);
+    const closestVisibleMidpoint = midpoints
+      .filter(m => m.visible)
+      .reduce((closest, midpoint) =>
+        getDistSq(midpoint.point) < getDistSq(closest.point) ? midpoint : closest);
 
-    if (Math.sqrt(getDistSq(midpoints[closestMidpointIdx])) > HOVER_DISTANCE_THRESHOLD) {
-      visibleMidpoints = [];
+    if (Math.sqrt(getDistSq(closestVisibleMidpoint.point)) > HOVER_DISTANCE_THRESHOLD) {
+      visibleMidpoint = undefined;
     } else {
-      visibleMidpoints = [closestMidpointIdx];
+      visibleMidpoint = midpoints.indexOf(closestVisibleMidpoint);
     }
   }
 
@@ -114,6 +131,8 @@
 
     const bounds = boundsFromPoints(points);
 
+    reclaimFocus();
+
     return {
       ...polygon,
       geometry: { points, bounds }
@@ -125,7 +144,7 @@
 
     const points = [
       ...geom.points.slice(0, midpointIdx + 1),
-      midpoints[midpointIdx],
+      midpoints[midpointIdx].point,
       ...geom.points.slice(midpointIdx + 1)
     ] as [number, number][];
 
@@ -157,8 +176,6 @@
   }
 
   const onDeleteSelectedCorners = () => {
-    console.log('delete');
-
     // Polygon needs 3 points min
     if (geom.points.length < 4) return;
 
@@ -212,10 +229,10 @@
   <mask id="ghost-handle-mask-{shape.type}">
     <!-- Mask the polygon by midpoint handles for nicer appearance -->
     <rect class="mask" width="100%" height="100%" fill="white"/>
-    {#if (visibleMidpoints.length > 0 && !isHandleHovered)}
-      {#each midpoints as pt, idx}
-        {#if (visibleMidpoints.includes(idx))}
-          <circle cx={pt[0]} cy={pt[1]} r={handleSize - 1} fill="black"/>
+    {#if (visibleMidpoint !== undefined && !isHandleHovered)}
+      {#each midpoints as mid, idx}
+        {#if (visibleMidpoint === idx)}
+          <circle cx={mid.point[0]} cy={mid.point[1]} r={handleSize - 1} fill="black"/>
         {/if}
       {/each}
     {/if}
@@ -262,14 +279,14 @@
     </g>
   {/each}
 
-  {#if (visibleMidpoints.length > 0 && !isHandleHovered)}
+  {#if (visibleMidpoint !== undefined && !isHandleHovered)}
     <g>
-      {#each midpoints as pt, idx}
-        {#if (visibleMidpoints.includes(idx))}
+      {#each midpoints as mid, idx}
+        {#if (visibleMidpoint === idx)}
           <circle 
             class="a9s-midpoint"
-            cx={pt[0]}
-            cy={pt[1]}
+            cx={mid.point[0]}
+            cy={mid.point[1]}
             r={handleSize - 1} 
             on:pointerdown={addPoint(idx)} />
         {/if}
@@ -294,7 +311,7 @@
   }
 
   .a9s-midpoint {
-    fill: rgba(255, 255, 255, 0.15);
+    fill: rgba(0, 0, 0, 0.2);
     stroke: rgba(255, 255, 255, 0.6);
     stroke-width: 1.25px;  
     transition: fill 400ms, stroke 400ms;

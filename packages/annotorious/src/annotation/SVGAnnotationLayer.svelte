@@ -143,9 +143,11 @@
   const getEditor = (shape: Shape): typeof SvelteComponent => _getEditor(shape)!;
 </script>
 
+<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <svg
   bind:this={svgEl}
   role="application"
+  tabindex={0}
   class="a9s-annotationlayer"
   class:drawing={tool}
   class:hidden={!visible}
