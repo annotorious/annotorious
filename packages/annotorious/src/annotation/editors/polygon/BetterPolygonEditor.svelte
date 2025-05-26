@@ -97,7 +97,7 @@
   /**
    * De-selects all corners and reclaims focus.
    */
-  const onShapePointerDown = () => {
+  const onShapePointerUp = () => {
     selectedCorners = [];
     reclaimFocus();
   }
@@ -150,16 +150,14 @@
 
     const geom = (polygon.geometry) as PolygonGeometry;
 
-    if (handle === 'SHAPE') {
+    if (selectedCorners.length > 1) {
+      points = geom.points.map(([x, y], idx) =>
+          selectedCorners.includes(idx) ? [x + delta[0], y + delta[1]] : [x, y]);
+    } else if (handle === 'SHAPE') {
       points = geom.points.map(([x, y]) => [x + delta[0], y + delta[1]]);
     } else {
-      points = geom.points.map(([x, y], idx) => {
-        if (selectedCorners.length > 1) {
-          return selectedCorners.includes(idx) ? [x + delta[0], y + delta[1]] : [x, y];
-        } else {
-          return handle === `HANDLE-${idx}` ? [x + delta[0], y + delta[1]] : [x, y]
-        }
-      });
+      points = geom.points.map(([x, y], idx) =>
+        handle === `HANDLE-${idx}` ? [x + delta[0], y + delta[1]] : [x, y]);
     }
 
     const bounds = boundsFromPoints(points);
@@ -241,10 +239,10 @@
     }
   });
 
-  const getMaskBounds = (bounds: Bounds) => {
+  $: mask = (() => {
     const buffer = MIDPOINT_SIZE / viewportScale;
 
-    const { minX, minY, maxX, maxY } = bounds;
+    const { minX, minY, maxX, maxY } = geom.bounds;
 
     return {
       x: minX - buffer,
@@ -252,7 +250,7 @@
       w: maxX - minX + 2 * buffer,
       h: maxY - minY + 2 * buffer
     }
-  }
+  })();
 </script>
 
 <Editor
@@ -265,33 +263,40 @@
   on:release
   let:grab={grab}>
   
-  {#if (visibleMidpoint !== undefined && !isHandleHovered)}
-    {@const { point } = midpoints[visibleMidpoint]}
-    {@const { x, y, w, h } = getMaskBounds(geom.bounds)}
-    <!-- Mask polygon by midpoint handle for nicer appearance -->
-    <defs>
-      <mask id="midpoint-mask" class="a9s-polygon-editor-mask">
-        <rect x={x} y={y} width={w} height={h} />
+  <defs>
+    <mask id="outer-mask" class="a9s-polygon-editor-mask">
+      <rect x={mask.x} y={mask.y} width={mask.w} height={mask.h} />
+      <polygon points={geom.points.map(xy => xy.join(',')).join(' ')} />   
+      
+      {#if (visibleMidpoint !== undefined && !isHandleHovered)}
+        {@const { point } = midpoints[visibleMidpoint]}
+        <circle cx={point[0]} cy={point[1]} r={MIDPOINT_SIZE / viewportScale} />
+      {/if}  
+    </mask>
+
+    {#if (visibleMidpoint !== undefined && !isHandleHovered)}
+      {@const { point } = midpoints[visibleMidpoint]}
+      <mask id="inner-mask" class="a9s-polygon-editor-mask">
+        <rect x={mask.x} y={mask.y} width={mask.w} height={mask.h} /> 
         <circle cx={point[0]} cy={point[1]} r={MIDPOINT_SIZE / viewportScale} />
       </mask>
-    </defs>
-  {/if}
+    {/if}
+  </defs>
 
   <polygon
     class="a9s-outer"
-    style={computedStyle ? 'display:none;' : undefined}
-    mask="url(#midpoint-mask)"
-    on:pointerdown={onShapePointerDown}
+    mask="url(#outer-mask)"
+    on:pointerup={onShapePointerUp}
     on:pointerdown={grab('SHAPE')}
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
 
   <polygon
     bind:this={polygonEl}
     class="a9s-inner a9s-shape-handle"
+    mask="url(#inner-mask)"
     style={computedStyle}
-    mask="url(#midpoint-mask)"
     on:pointermove={onPointerMove}
-    on:pointerdown={onShapePointerDown}
+    on:pointerup={onShapePointerUp}
     on:pointerdown={grab('SHAPE')}
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
 
@@ -323,7 +328,8 @@
     fill: #fff;
   }
 
-  mask.a9s-polygon-editor-mask > circle {
+  mask.a9s-polygon-editor-mask > circle,
+  mask.a9s-polygon-editor-mask > polygon {
     fill: #000;
   }
 </style>

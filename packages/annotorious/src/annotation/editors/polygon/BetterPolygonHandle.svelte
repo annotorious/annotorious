@@ -17,7 +17,7 @@
   const onPointerUp = () =>
     touched = false;
 
-  $: handleRadius = 4.5 / scale;
+  $: handleRadius = 5 / scale;
 </script>
 
 {#if isTouch}
@@ -39,10 +39,18 @@
       on:pointerup
       on:pointerup={onPointerUp} />
 
+    {#if selected}
+      <circle 
+        class="a9s-better-handle-selected"
+        cx={x} 
+        cy={y} 
+        r={handleRadius + (4 / scale)} />
+    {/if}
+
     <circle 
-      class={`a9s-better-handle-dot${selected ? ' selected' : ''}`}
-      cx={x} 
-      cy={y} 
+      class={`a9s-better-handle-dot${selected ? ' selected': ''}`}
+      cx={x}
+      cy={y}
       r={handleRadius} />
   </g>
 {/if}
@@ -53,14 +61,22 @@
   }
 
   .a9s-better-handle-dot {
-    fill: #1a1a1a;
+    fill: #fff;
     pointer-events: none;
-    stroke: #fff;
-    stroke-width: 1.5px;
+    stroke: rgba(0, 0, 0, 0.35);
+    stroke-width: 1px;
     vector-effect: non-scaling-stroke;
   }
 
   .a9s-better-handle-dot.selected {
-    fill: #fff;
+    fill: #1a1a1a;
+    stroke: #fff;
+    stroke-width: 2px;
+  }
+
+  .a9s-better-handle-selected {
+    fill: rgba(0, 0, 0, 0.15);
+    pointer-events: none;
+    vector-effect: non-scaling-stroke;
   }
 </style>

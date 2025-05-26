@@ -2,7 +2,7 @@
 .a9s-annotationlayer .a9s-outer,
 div[data-theme="light"] .a9s-annotationlayer .a9s-outer {
   display: block;
-  stroke: rgba(0, 0, 0, 0.25);
+  stroke: rgba(0, 0, 0, 0.35);
   stroke-width: 3.5px;
 }
 
@@ -10,7 +10,7 @@ div[data-theme="light"] .a9s-annotationlayer .a9s-outer {
 div[data-theme="light"] .a9s-annotationlayer .a9s-inner {
   fill: rgba(255, 255, 255, 0.15);
   stroke: #fff;
-  stroke-width: 1.5px;
+  stroke-width: 2px;
 }
 
 rect.a9s-handle,
