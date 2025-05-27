@@ -5,7 +5,6 @@
   import type { Transform } from '../../Transform';
   import { Editor } from '..';
 
-
   /** Props */
   export let shape: Rectangle;
   export let computedStyle: string | undefined;
@@ -82,6 +81,8 @@
   }
 
   $: mask = getMaskDimensions(geom.bounds, 2 / viewportScale);
+  
+  const maskId = `rect-mask-${Math.random().toString(36).substring(2, 12)}`;
 </script>
 
 <Editor
@@ -95,7 +96,7 @@
   let:grab={grab}>
 
   <defs>
-    <mask id="rect-mask" class="a9s-rectangle-editor-mask">
+    <mask id={maskId} class="a9s-rectangle-editor-mask">
       <rect class="rect-mask-bg" x={mask.x} y={mask.y} width={mask.w} height={mask.h} />
       <rect class="rect-mask-fg" x={geom.x} y={geom.y} width={geom.w} height={geom.h} />
     </mask>
@@ -103,7 +104,7 @@
 
   <rect 
     class="a9s-outer"
-    mask="url(#rect-mask)"
+    mask={`url(#${maskId})`}
     on:pointerdown={grab('SHAPE')}
     x={geom.x} y={geom.y} width={geom.w} height={geom.h} />
 

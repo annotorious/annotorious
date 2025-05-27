@@ -242,6 +242,8 @@
   });
 
   $: mask = getMaskDimensions(geom.bounds, MIDPOINT_SIZE / viewportScale);
+
+  const maskId = `polygon-mask-${Math.random().toString(36).substring(2, 12)}`;
 </script>
 
 <Editor
@@ -255,7 +257,7 @@
   let:grab={grab}>
   
   <defs>
-    <mask id="outer-mask" class="a9s-polygon-editor-mask">
+    <mask id={`${maskId}-outer`} class="a9s-polygon-editor-mask">
       <rect x={mask.x} y={mask.y} width={mask.w} height={mask.h} />
       <polygon points={geom.points.map(xy => xy.join(',')).join(' ')} />   
       
@@ -267,7 +269,7 @@
 
     {#if (visibleMidpoint !== undefined && !isHandleHovered)}
       {@const { point } = midpoints[visibleMidpoint]}
-      <mask id="inner-mask" class="a9s-polygon-editor-mask">
+      <mask id={`${maskId}-inner`}  class="a9s-polygon-editor-mask">
         <rect x={mask.x} y={mask.y} width={mask.w} height={mask.h} /> 
         <circle cx={point[0]} cy={point[1]} r={MIDPOINT_SIZE / viewportScale} />
       </mask>
@@ -276,7 +278,7 @@
 
   <polygon
     class="a9s-outer"
-    mask="url(#outer-mask)"
+    mask={`url(#${maskId}-outer)`}
     on:pointerup={onShapePointerUp}
     on:pointerdown={grab('SHAPE')}
     points={geom.points.map(xy => xy.join(',')).join(' ')} />
@@ -284,7 +286,7 @@
   <polygon
     bind:this={polygonEl}
     class="a9s-inner a9s-shape-handle"
-    mask="url(#inner-mask)"
+    mask={`url(#${maskId}-inner)`}
     style={computedStyle}
     on:pointermove={onPointerMove}
     on:pointerup={onShapePointerUp}
