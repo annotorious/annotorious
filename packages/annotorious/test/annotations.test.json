@@ -1,0 +1,21 @@
+[
+  {
+    "id": "fc7306c5-39f0-43e3-8e3c-24b12cbecb60",
+    "target": {
+      "source": "sample-image",
+      "type": "SpecificResource",
+      "selector": {
+        "type": "SvgSelector",
+        "value": "<svg><polygon points=\"265.2109375,107.80078125 447.96875,28.4921875 437.26953125,230.66796875\" /></svg>"
+      }
+    },
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "type": "Annotation",
+    "body": [],
+    "created": "2025-05-23T07:42:13.795Z",
+    "creator": {
+      "isGuest": true,
+      "id": "jOVVRjpmBaktUDzXB30M"
+    }
+  }
+]

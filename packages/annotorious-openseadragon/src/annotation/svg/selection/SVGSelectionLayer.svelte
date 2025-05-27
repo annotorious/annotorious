@@ -5,6 +5,7 @@
   import type { Bounds, ImageAnnotatorState } from '@annotorious/annotorious';
   import SelectedRectangle from './shapes/SelectedRectangle.svelte';
   import SelectedPolygon from './shapes/SelectedPolygon.svelte';
+  import SelectedMultiPolygon from './shapes/SelectedMultiPolygon.svelte';
   import SelectedEllipse from './shapes/SelectedEllipse.svelte';
 
   /** Props **/
@@ -63,6 +64,8 @@
             <SelectedRectangle annotation={a} />
           {:else if (a.target.selector.type === ShapeType.POLYGON)}
             <SelectedPolygon annotation={a} />
+          {:else if (a.target.selector.type === ShapeType.MULTIPOLYGLON)}
+            <SelectedMultiPolygon annotation={a} />
           {:else if (a.target.selector.type === ShapeType.ELLIPSE)}
             <SelectedEllipse annotation={a} />
           {/if}
@@ -84,19 +87,20 @@
     pointer-events: none;
   }
 
-  :global(.a9s-osd-selectionlayer :is(rect, polygon, ellipse)) {
-    fill: transparent;
+  :global(.a9s-osd-selectionlayer :is(rect, path, polygon, ellipse)) {
+    fill: rgba(49, 130, 237, 0.25);
     stroke: #3182ed;
     stroke-width: 1.5px;
     vector-effect: non-scaling-stroke;
   }
 
   rect.a9s-union-fg  {
-    fill: #3182ed22;
+    fill: rgba(49, 130, 237, 0.12);
     stroke-width: 1px;
   }
 
   rect.a9s-union-bg {
+    fill: transparent;
     stroke: #fff;
     stroke-width: 2px;
   }

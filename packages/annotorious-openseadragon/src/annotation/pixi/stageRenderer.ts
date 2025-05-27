@@ -267,6 +267,12 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       rendered.stroke.destroy();
 
       addAnnotation(newValue, state);
+
+      if (selectedIds.has(newValue.id)) {
+        const { fill, stroke } = annotationShapes.get(newValue.id)!;
+        graphics.removeChild(fill);
+        graphics.removeChild(stroke);
+      }
     }
   }
 
@@ -310,11 +316,39 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     renderer.render(graphics);
   }
 
+  const setSelected = (selection: Selection) => {
+    const nexSelectedtIds = new Set(selection.selected.map(s => s.id));
+
+    const toSelect = 
+      selection.selected.filter(({ id }) => !selectedIds.has(id));
+
+    const toDeselect = [...selectedIds]
+      .filter(id => !nexSelectedtIds.has(id));
+
+    toSelect.forEach(({ id, editable }) => {
+      if (editable) {
+        const rendered = annotationShapes.get(id);
+        if (rendered) {
+          // Remove editable annotations from the stage
+          graphics.removeChild(rendered.fill);
+          graphics.removeChild(rendered.stroke);
+        }
+      } else {
+        redrawAnnotation(id, { selected: true, hovered: id === hovered });
+      }
+    });
+
+    toDeselect.forEach(id => redrawAnnotation(id, { hovered: id === hovered }));
+    
+    selectedIds = nexSelectedtIds;
+    renderer.render(graphics);
+  }
+
   const setHovered = (annotationId?: string) => {
     if (hovered === annotationId) return;
     
     // Unhover current, if any
-    if (hovered)
+    if (hovered && !selectedIds.has(hovered))
       redrawAnnotation(hovered, { selected: selectedIds.has(hovered) });
 
     // Set next hover
@@ -322,23 +356,6 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       redrawAnnotation(annotationId, { selected: selectedIds.has(annotationId), hovered: true });
 
     hovered = annotationId;
-
-    renderer.render(graphics);
-  }
-
-  const setSelected = (selection: Selection) => {
-    const nextIds = selection.selected.map(s => s.id);
-
-    const toSelect = 
-      nextIds.filter(id => !selectedIds.has(id));
-
-    const toDeselect = [...selectedIds]
-      .filter(id => !nextIds.includes(id));
-
-    [...toSelect, ...toDeselect].forEach(id => 
-      redrawAnnotation(id, { selected: nextIds.includes(id), hovered: id === hovered }));
-
-    selectedIds = new Set(nextIds);
 
     renderer.render(graphics);
   }

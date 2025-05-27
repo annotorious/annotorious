@@ -143,16 +143,19 @@
   const getEditor = (shape: Shape): typeof SvelteComponent => _getEditor(shape)!;
 </script>
 
+<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <svg
   bind:this={svgEl}
+  role="application"
+  tabindex={0}
   class="a9s-annotationlayer"
   class:drawing={tool}
+  class:editing={editableAnnotations}
   class:hidden={!visible}
   class:hover={$hover}
   on:pointerup={onPointerUp}
   on:pointerdown={onPointerDown}
   on:pointermove={onPointerMove}>
-  
   <g>
     {#each $store.filter(a => isImageAnnotation(a)) as annotation}
       {#if isImageAnnotation(annotation) && !isEditable(annotation)}

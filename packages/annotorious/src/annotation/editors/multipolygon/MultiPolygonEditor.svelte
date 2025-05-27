@@ -11,6 +11,7 @@
     multipolygonElementToPath 
   } from '../../../model';
   import type { Transform } from '../../Transform';
+  import { getMaskDimensions } from '../../utils';
   import { Editor, Handle } from '..';
 
   /** Props */
@@ -18,6 +19,7 @@
   export let computedStyle: string | undefined;
   export let transform: Transform;
   export let viewportScale: number = 1;
+  export let svgEl: SVGSVGElement;
 
   $: geom = shape.geometry;
 
@@ -76,22 +78,33 @@
       } 
     } as MultiPolygon;
   }
+
+  $: mask = getMaskDimensions(geom.bounds, 2 / viewportScale);
+
+  const maskId = `multipoly-mask-${Math.random().toString(36).substring(2, 12)}`;
 </script>
 
 <Editor
   shape={shape}
   transform={transform}
   editor={editor}
+  svgEl={svgEl}
   on:change 
   on:grab
   on:release
   let:grab={grab}>
-
   {#each geom.polygons as element, elementIdx}
     <g>
+      <defs>
+        <mask id={`${maskId}-${elementIdx}`} class="a9s-multipolygon-editor-mask">
+          <rect x={mask.x} y={mask.y} width={mask.w} height={mask.h} />
+          <path d={multipolygonElementToPath(element)} />   
+        </mask>
+      </defs>
+
       <path 
         class="a9s-outer"
-        style={computedStyle ? 'display:none;' : undefined}
+        mask={`url(#${maskId}-${elementIdx})`}
         fill-rule="evenodd"
         on:pointerdown={grab('SHAPE')}
         d={multipolygonElementToPath(element)} />
@@ -106,6 +119,7 @@
       {#each element.rings as ring, ringIdx}
         {#each ring.points as point, pointIdx}
           <Handle 
+            class="a9s-corner-handle"
             on:pointerdown={grab(`HANDLE-${elementIdx}-${ringIdx}-${pointIdx}`)}
             x={point[0]} y={point[1]} 
             scale={viewportScale} />
@@ -114,3 +128,13 @@
     </g>
   {/each}
 </Editor>
+
+<style>
+  mask.a9s-multipolygon-editor-mask > rect {
+    fill: #fff;
+  }
+
+  mask.a9s-multipolygon-editor-mask > path {
+    fill: #000;
+  }
+</style>

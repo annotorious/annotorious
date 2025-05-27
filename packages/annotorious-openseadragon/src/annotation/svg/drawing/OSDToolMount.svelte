@@ -59,7 +59,8 @@
         drawingMode,
         opts,
         transform, 
-        viewportScale
+        viewportScale,
+        svgEl: svg
       }
     });
 

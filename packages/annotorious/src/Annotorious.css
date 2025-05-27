@@ -50,6 +50,10 @@
   cursor: move;
 }
 
+.a9s-handle.a9s-corner-handle {
+  cursor: crosshair;
+}
+
 .a9s-edge-handle-top {
   cursor: n-resize;
 }

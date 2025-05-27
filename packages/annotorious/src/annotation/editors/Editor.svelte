@@ -9,6 +9,7 @@
   export let shape: Shape;
   export let editor: (shape: Shape, handle: string, delta: [number, number]) => Shape;
   export let transform: Transform;
+  export let svgEl: SVGSVGElement;
 
   let grabbedHandle: string | undefined;
 
@@ -18,7 +19,22 @@
 
   const onGrab = (handle: string) => (evt: PointerEvent) => {
     grabbedHandle = handle;
-    origin = transform.elementToImage(evt.offsetX, evt.offsetY);
+
+    // For legacy compatibility: offsetX and offsetY are not
+    // available on synthetic events, currently used by the
+    // new PolygonEditor. Old versions of Annotorious, however, 
+    // won't yet forward the svgEl prop!
+    if (svgEl) {
+      const { left, top } = svgEl.getBoundingClientRect();
+      const offsetX = evt.clientX - left;
+      const offsetY = evt.clientY - top;
+
+      origin = transform.elementToImage(offsetX, offsetY);
+    } else {
+      const { offsetX, offsetY } = evt;
+      origin = transform.elementToImage(offsetX, offsetY);
+    }
+
     initialShape = shape;
 
     const target = evt.target as Element;
