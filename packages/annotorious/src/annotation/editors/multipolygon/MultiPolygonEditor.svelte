@@ -108,6 +108,7 @@
       {#each element.rings as ring, ringIdx}
         {#each ring.points as point, pointIdx}
           <Handle 
+            class="a9s-corner-handle"
             on:pointerdown={grab(`HANDLE-${elementIdx}-${ringIdx}-${pointIdx}`)}
             x={point[0]} y={point[1]} 
             scale={viewportScale} />

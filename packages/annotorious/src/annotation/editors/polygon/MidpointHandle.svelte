@@ -49,6 +49,10 @@
 {/if}
 
 <style>
+  .a9s-polygon-midpoint {
+    cursor: crosshair;
+  }
+  
   .a9s-polygon-midpoint-buffer {
     fill: transparent;
   }
