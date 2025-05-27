@@ -13,7 +13,7 @@
   const CLICK_THRESHOLD = 250;
 
   /** Minimum distance (px) to shape required for midpoints to show */
-  const MIN_HOVER_DISTANCE = 100;
+  const MIN_HOVER_DISTANCE = 1000;
 
   /** Minimum distance (px) between corners required for midpoints to show **/
   const MIN_CORNER_DISTANCE = 12;

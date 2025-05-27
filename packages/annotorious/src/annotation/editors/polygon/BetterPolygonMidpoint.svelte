@@ -35,10 +35,16 @@
       on:pointerdown={onPointerDown} />
 
     <circle 
-      class="a9s-polygon-midpoint-dot"
+      class="a9s-polygon-midpoint-outer"
       cx={x} 
       cy={y} 
       r={handleRadius} />
+
+    <circle 
+      class="a9s-polygon-midpoint-inner"
+      cx={x} 
+      cy={y} 
+      r={handleRadius - 0.5 / scale} />
   </g>
 {/if}
 
@@ -47,17 +53,19 @@
     fill: transparent;
   }
 
-  .a9s-polygon-midpoint-dot {
-    fill: rgba(0, 0, 0, 0.2);
+  .a9s-polygon-midpoint-inner {
+    fill: rgba(255, 255, 255, 0);
     pointer-events: none;
-    stroke: rgba(255, 255, 255, 0.6);
-    stroke-width: 1.5px;  
-    transition: fill 400ms, stroke 400ms;
+    stroke: rgba(255, 255, 255, 0.75);
+    stroke-width: 1px;  
     vector-effect: non-scaling-stroke;
   }
 
-  .a9s-polygon-midpoint-dot:hover {
-    fill: #1a1a1a;
-    stroke: #fff;
+  .a9s-polygon-midpoint-outer {
+    fill: transparent;
+    pointer-events: none;
+    stroke: rgba(0, 0, 0, 0.15);
+    stroke-width: 2px;
+    vector-effect: non-scaling-stroke;
   }
 </style>
