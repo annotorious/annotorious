@@ -16,7 +16,7 @@
   const onPointerUp = () =>
     touched = false;
 
-  $: handleRadius = 4.5 / scale;
+  $: handleRadius = 4 / scale;
 </script>
 
 {#if isTouch}
@@ -44,7 +44,7 @@
       class="a9s-polygon-midpoint-inner"
       cx={x} 
       cy={y} 
-      r={handleRadius - 0.5 / scale} />
+      r={handleRadius} />
   </g>
 {/if}
 
@@ -53,19 +53,20 @@
     fill: transparent;
   }
 
-  .a9s-polygon-midpoint-inner {
-    fill: rgba(255, 255, 255, 0);
+  .a9s-polygon-midpoint-outer {
+    display: none;
+    fill: transparent;
     pointer-events: none;
-    stroke: rgba(255, 255, 255, 0.75);
-    stroke-width: 1px;  
+    stroke: rgba(0, 0, 0, 0.35);
+    stroke-width: 1.5px;
     vector-effect: non-scaling-stroke;
   }
 
-  .a9s-polygon-midpoint-outer {
-    fill: transparent;
+  .a9s-polygon-midpoint-inner {
+    fill: rgba(0, 0, 0, 0.25);
     pointer-events: none;
-    stroke: rgba(0, 0, 0, 0.15);
-    stroke-width: 2px;
+    stroke: #fff;
+    stroke-width: 1px;  
     vector-effect: non-scaling-stroke;
   }
 </style>

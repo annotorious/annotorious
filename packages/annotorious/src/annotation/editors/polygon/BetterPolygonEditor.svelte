@@ -226,10 +226,6 @@
       }
     };
 
-    svgEl.addEventListener('pointermove', () => {
-      console.log('move!');
-    })
-
     svgEl.addEventListener('pointermove', onPointerMove);
     svgEl.addEventListener('keydown', onKeydown);
 
