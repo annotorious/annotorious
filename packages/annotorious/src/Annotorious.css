@@ -11,7 +11,7 @@
   top: 0;
   touch-action: none;
   width: 100%;
-
+  -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none; 
      -moz-user-select: none;
       -ms-user-select: none;
@@ -34,6 +34,7 @@
   fill: transparent;
   shape-rendering: geometricPrecision;
   vector-effect: non-scaling-stroke;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .a9s-edge-handle {

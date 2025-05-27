@@ -21,10 +21,30 @@
 </script>
 
 {#if isTouch}
-  <circle 
-    cx={x}
-    cy={y}
-    r={2 * handleRadius} />
+  <g class="a9s-touch-handle">
+    <circle 
+      cx={x} 
+      cy={y} 
+      r={handleRadius * 10}
+      class="a9s-touch-halo"
+      class:touched={touched} />
+   
+    <circle 
+      cx={x} 
+      cy={y} 
+      r={handleRadius + 10 / scale}
+      class="a9s-handle-buffer"
+      on:pointerdown
+      on:pointerup
+      on:pointerdown={onPointerDown} 
+      on:pointerup={onPointerUp} /> 
+
+    <circle 
+      class="a9s-handle-dot"
+      cx={x}
+      cy={y}
+      r={handleRadius + 2 / scale} />
+  </g>
 {:else}
   <g class={`a9s-handle ${$$props.class || ''}`.trim()}>
     <circle 
@@ -44,7 +64,7 @@
         class="a9s-handle-selected"
         cx={x} 
         cy={y} 
-        r={handleRadius + (6 / scale)} />
+        r={handleRadius + (8 / scale)} />
     {/if}
 
     <circle 
@@ -56,6 +76,17 @@
 {/if}
 
 <style>
+  .a9s-touch-halo {
+    fill: transparent;
+    pointer-events: none;
+    stroke-width: 0;
+    transition: fill 150ms;
+  }
+
+  .a9s-touch-halo.touched {
+    fill: rgba(255, 255, 255, 0.4);
+  }
+
   .a9s-handle-buffer {
     fill: transparent;
   }

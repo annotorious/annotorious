@@ -2,7 +2,7 @@
   import { createEventDispatcher, onMount, tick } from 'svelte';
   import { boundsFromPoints } from '../../../model';
   import type { Polygon, PolygonGeometry, Shape } from '../../../model';
-  import { getMaskDimensions } from '../../utils';
+  import { getMaskDimensions, isTouch } from '../../utils';
   import type { Transform } from '../../Transform';
   import Editor from '../Editor.svelte';
   import Handle from '../Handle.svelte';
@@ -38,7 +38,8 @@
 
   $: geom = shape.geometry;
 
-  $: midpoints = geom.points.map((thisCorner, idx) => {
+  // No support yet for adding or removing points in mobile!
+  $: midpoints = isTouch ? [] : geom.points.map((thisCorner, idx) => {
     const nextCorner = idx === geom.points.length - 1 ? geom.points[0] : geom.points[idx + 1];
     
     const x = (thisCorner[0] + nextCorner[0]) / 2;
@@ -122,7 +123,7 @@
 
   /** Selection handling logic **/
   const onHandlePointerUp = (idx: number) => (evt: PointerEvent) => {
-    if (!lastHandleClick) return;
+    if (!lastHandleClick || isTouch) return;
 
     // Drag, not click
     if (performance.now() - lastHandleClick > CLICK_THRESHOLD) return;
@@ -225,6 +226,8 @@
   }
 
   onMount(() => {
+    if (isTouch) return;
+
     const onKeydown = (evt: KeyboardEvent) => {
       if (evt.key === 'Delete' || evt.key === 'Backspace') {
         evt.preventDefault();
