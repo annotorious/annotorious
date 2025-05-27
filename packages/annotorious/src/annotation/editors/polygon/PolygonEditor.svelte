@@ -2,6 +2,7 @@
   import { createEventDispatcher, onMount, tick } from 'svelte';
   import { boundsFromPoints } from '../../../model';
   import type { Polygon, PolygonGeometry, Shape } from '../../../model';
+  import { getMaskDimensions } from '../../utils';
   import type { Transform } from '../../Transform';
   import Editor from '../Editor.svelte';
   import Handle from '../Handle.svelte';
@@ -240,18 +241,7 @@
     }
   });
 
-  $: mask = (() => {
-    const buffer = MIDPOINT_SIZE / viewportScale;
-
-    const { minX, minY, maxX, maxY } = geom.bounds;
-
-    return {
-      x: minX - buffer,
-      y: minY - buffer,
-      w: maxX - minX + 2 * buffer,
-      h: maxY - minY + 2 * buffer
-    }
-  })();
+  $: mask = getMaskDimensions(geom.bounds, MIDPOINT_SIZE / viewportScale);
 </script>
 
 <Editor
