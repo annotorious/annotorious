@@ -31,7 +31,7 @@
       class="a9s-better-handle-buffer"
       cx={x}
       cy={y}
-      r={1.75 * handleRadius} 
+      r={handleRadius + (6 / scale)} 
       on:pointerenter
       on:pointerleave
       on:pointerdown
@@ -44,7 +44,7 @@
         class="a9s-better-handle-selected"
         cx={x} 
         cy={y} 
-        r={handleRadius + (4 / scale)} />
+        r={handleRadius + (6 / scale)} />
     {/if}
 
     <circle 
@@ -70,13 +70,25 @@
 
   .a9s-better-handle-dot.selected {
     fill: #1a1a1a;
-    stroke: #fff;
-    stroke-width: 2px;
+    stroke: none;
   }
 
   .a9s-better-handle-selected {
-    fill: rgba(0, 0, 0, 0.15);
+    animation: dash-rotate 350ms linear infinite reverse;
+    fill: rgba(255, 255, 255, 0.25);
+    stroke: rgba(0, 0, 0, 0.9);
+    stroke-dasharray: 2 2;
+    stroke-width: 1px;
     pointer-events: none;
     vector-effect: non-scaling-stroke;
+  }
+
+  @keyframes dash-rotate {
+    0% {
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dashoffset: 4; /* Sum of dash + gap */
+    }
   }
 </style>

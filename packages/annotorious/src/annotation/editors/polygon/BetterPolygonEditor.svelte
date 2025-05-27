@@ -58,6 +58,11 @@
 
   /** Determine visible midpoint, if any **/
   const onPointerMove = (evt: PointerEvent) => {
+    if (selectedCorners.length > 0) {
+      visibleMidpoint = undefined;
+      return;
+    }
+    
     const [px, py] = transform.elementToImage(evt.offsetX, evt.offsetY);
 
     const getDistSq = (pt: number[]) =>
