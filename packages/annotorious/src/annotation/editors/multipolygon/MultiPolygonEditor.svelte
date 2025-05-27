@@ -11,6 +11,7 @@
     multipolygonElementToPath 
   } from '../../../model';
   import type { Transform } from '../../Transform';
+  import { getMaskDimensions } from '../../utils';
   import { Editor, Handle } from '..';
 
   /** Props */
@@ -77,6 +78,10 @@
       } 
     } as MultiPolygon;
   }
+
+  $: mask = getMaskDimensions(geom.bounds, 2 / viewportScale);
+
+  const maskId = `multipoly-mask-${Math.random().toString(36).substring(2, 12)}`;
 </script>
 
 <Editor
@@ -88,12 +93,18 @@
   on:grab
   on:release
   let:grab={grab}>
-
   {#each geom.polygons as element, elementIdx}
     <g>
+      <defs>
+        <mask id={`${maskId}-${elementIdx}`} class="a9s-multipolygon-editor-mask">
+          <rect x={mask.x} y={mask.y} width={mask.w} height={mask.h} />
+          <path d={multipolygonElementToPath(element)} />   
+        </mask>
+      </defs>
+
       <path 
         class="a9s-outer"
-        style={computedStyle ? 'display:none;' : undefined}
+        mask={`url(#${maskId}-${elementIdx})`}
         fill-rule="evenodd"
         on:pointerdown={grab('SHAPE')}
         d={multipolygonElementToPath(element)} />
@@ -117,3 +128,13 @@
     </g>
   {/each}
 </Editor>
+
+<style>
+  mask.a9s-multipolygon-editor-mask > rect {
+    fill: #fff;
+  }
+
+  mask.a9s-multipolygon-editor-mask > path {
+    fill: #000;
+  }
+</style>
