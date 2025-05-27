@@ -124,6 +124,7 @@
   });
   
   const maskId = `rect-mask-${Math.random().toString(36).substring(2, 12)}`;
+  
   $: buffer = 2 / viewportScale;
 </script>
 
