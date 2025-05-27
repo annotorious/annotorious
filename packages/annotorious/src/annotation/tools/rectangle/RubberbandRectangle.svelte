@@ -2,7 +2,7 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import type { DrawingMode } from '../../../AnnotoriousOpts';
   import { ShapeType, type Rectangle } from '../../../model';
-  import type { Transform } from '../..';
+  import { getMaskDimensions, type Transform } from '../..';
 
   const dispatch = createEventDispatcher<{ create: Rectangle }>();
   
@@ -121,12 +121,22 @@
     addEventListener('pointermove', onPointerMove);
     addEventListener('pointerup', onPointerUp, true);
   });
+  
+  const maskId = `rect-mask-${Math.random().toString(36).substring(2, 12)}`;
 </script>
 
 <g class="a9s-annotation a9s-rubberband">
   {#if origin}
+    <defs>
+      <mask id={maskId} class="a9s-rubberband-rectangle-mask">
+        <rect class="rect-mask-bg" x={0} y={0} width="100%" height="100%" /> 
+        <rect class="rect-mask-fg" x={x} y={y} width={w} height={h} />
+      </mask>
+    </defs>
+    
     <rect
       class="a9s-outer"
+      mask={`url(#${maskId})`}
       x={x} 
       y={y} 
       width={w} 
@@ -140,3 +150,13 @@
       height={h} />
   {/if}
 </g>
+
+<style>
+  mask.a9s-rubberband-rectangle-mask > rect.rect-mask-bg {
+    fill: #fff;
+  }
+
+  mask.a9s-rubberband-rectangle-mask > rect.rect-mask-fg {
+    fill: #000;
+  }
+</style>
