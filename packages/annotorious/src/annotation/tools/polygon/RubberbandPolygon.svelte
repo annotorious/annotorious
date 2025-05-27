@@ -2,7 +2,7 @@
   import { onMount, createEventDispatcher } from 'svelte';
   import type { DrawingMode } from '../../../AnnotoriousOpts';
   import { boundsFromPoints, computeArea, ShapeType, type Polygon } from '../../../model';
-  import { distance } from '../../utils';
+  import { distance, getMaskDimensions } from '../../utils';
   import type { Transform } from '../..';
 
   const dispatch = createEventDispatcher<{ create: Polygon }>();
@@ -167,18 +167,33 @@
     addEventListener('pointerup', onPointerUp, true);
     addEventListener('dblclick', onDblClick, true);
   });
+
+  $: coords = cursor ? (isClosable ? points : [...points, cursor]) : [];
+
+  $: mask = coords.length > 0 ? getMaskDimensions(boundsFromPoints(coords), 2 / viewportScale) : undefined;
+
+  const maskId = `polygon-mask-${Math.random().toString(36).substring(2, 12)}`;
 </script>
 
 <g class="a9s-annotation a9s-rubberband">
-  {#if cursor}
-    {@const coords = (isClosable ? points : [...points, cursor]).map(xy => xy.join(',')).join(' ')}
-      <polygon 
-        class="a9s-outer"
-        points={coords} />
+  {#if mask}
+    {@const str = coords.map(xy => xy.join(',')).join(' ')}
 
-      <polygon 
-        class="a9s-inner"
-        points={coords} />
+    <defs>
+      <mask id={maskId} class="a9s-rubberband-polygon-mask">
+        <rect x={mask.x} y={mask.y} width={mask.w} height={mask.h} />
+        <polygon points={str} />
+      </mask>
+    </defs>
+
+    <polygon 
+      class="a9s-outer"
+      mask={`url(#${maskId})`}
+      points={str} />
+
+    <polygon 
+      class="a9s-inner"
+      points={str} />
         
     {#if isClosable}
       <rect 
@@ -190,3 +205,13 @@
     {/if}
   {/if}
 </g>
+
+<style>
+  mask.a9s-rubberband-polygon-mask > rect {
+    fill: #fff;
+  }
+
+  mask.a9s-rubberband-polygon-mask > polygon {
+    fill: #000;
+  }
+</style>
