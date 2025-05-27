@@ -30,7 +30,7 @@
 
   const TOUCH_PAUSE_LIMIT = 1500;
 
-  $: handleSize = 10 / viewportScale;
+  $: handleRadius = 4 / viewportScale;
 
   const onPointerDown = (event: Event) => {
     const evt = event as PointerEvent;
@@ -196,12 +196,11 @@
       points={str} />
         
     {#if isClosable}
-      <rect 
+      <circle 
         class="a9s-handle"
-        x={points[0][0] - handleSize / 2} 
-        y={points[0][1] - handleSize / 2} 
-        height={handleSize} 
-        width={handleSize} />
+        cx={points[0][0]} 
+        cy={points[0][1]} 
+        r={handleRadius} />
     {/if}
   {/if}
 </g>
@@ -213,5 +212,13 @@
 
   mask.a9s-rubberband-polygon-mask > polygon {
     fill: #000;
+  }
+
+  circle.a9s-handle {
+    fill: #fff;
+    pointer-events: none;
+    stroke: rgba(0, 0, 0, 0.35);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
   }
 </style>
