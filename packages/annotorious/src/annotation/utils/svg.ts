@@ -1,4 +1,4 @@
-import type { Bounds } from "src/model";
+import type { Bounds } from '../../model';
 
 export const getMaskDimensions = (bounds: Bounds, buffer: number = 0) => {
   const { minX, minY, maxX, maxY } = bounds;
