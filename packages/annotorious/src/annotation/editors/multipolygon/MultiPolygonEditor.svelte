@@ -336,15 +336,28 @@
   {#each geom.polygons as element, elementIdx}
     <g>
       <defs>
-        <mask id={`${maskId}-${elementIdx}`} class="a9s-multipolygon-editor-mask">
+        <mask id={`${maskId}-${elementIdx}-outer`} class="a9s-multipolygon-editor-mask">
           <rect x={mask.x} y={mask.y} width={mask.w} height={mask.h} />
-          <path d={multipolygonElementToPath(element)} />   
+          <path d={multipolygonElementToPath(element)} /> 
+          
+          {#if (visibleMidpoint !== undefined && !isHandleHovered)}
+            {@const { point } = midpoints[visibleMidpoint]}
+            <circle cx={point[0]} cy={point[1]} r={MIDPOINT_SIZE / viewportScale} />
+          {/if}
         </mask>
+
+        {#if (visibleMidpoint !== undefined && !isHandleHovered)}
+          {@const { point } = midpoints[visibleMidpoint]}
+          <mask id={`${maskId}-${elementIdx}-inner`}  class="a9s-multipolygon-editor-mask">
+            <rect x={mask.x} y={mask.y} width={mask.w} height={mask.h} /> 
+            <circle cx={point[0]} cy={point[1]} r={MIDPOINT_SIZE / viewportScale} />
+          </mask>
+        {/if}
       </defs>
 
       <path 
         class="a9s-outer"
-        mask={`url(#${maskId}-${elementIdx})`}
+        mask={`url(#${maskId}-${elementIdx}-outer)`}
         fill-rule="evenodd"
         on:pointerup={onShapePointerUp}
         on:pointerdown={grab('SHAPE')}
@@ -352,6 +365,7 @@
 
       <path 
         class="a9s-inner"
+        mask={`url(#${maskId}-${elementIdx}-inner)`}
         style={computedStyle}
         fill-rule="evenodd"
         on:pointerup={onShapePointerUp}
@@ -392,6 +406,7 @@
     fill: #fff;
   }
 
+  mask.a9s-multipolygon-editor-mask > circle,
   mask.a9s-multipolygon-editor-mask > path {
     fill: #000;
   }
