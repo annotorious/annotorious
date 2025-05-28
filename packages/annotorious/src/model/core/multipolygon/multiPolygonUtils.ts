@@ -1,7 +1,7 @@
 import { ShapeType } from '../Shape';
 import type { ShapeUtil } from '../shapeUtils';
 import { boundsFromPoints, computePolygonArea, isPointInPolygon, pointsToPath, registerShapeUtil } from '../shapeUtils';
-import type { MultiPolygon, MultiPolygonElement } from './MultiPolygon';
+import type { MultiPolygon, MultiPolygonElement, MultiPolygonGeometry } from './MultiPolygon';
 
 const MultiPolygonUtil: ShapeUtil<MultiPolygon> = {
 
@@ -59,5 +59,15 @@ export const multipolygonElementToPath = (element: MultiPolygonElement) => {
   const paths = element.rings.map(ring => pointsToPath(ring.points));
   return paths.join(' ');
 }
+
+export const getAllCorners = (geom: MultiPolygonGeometry) => 
+  geom.polygons.reduce<[number, number][]>((all, element) => (
+    [
+      ...all, 
+      ...element.rings.reduce<[number, number][]>((onThisElement, ring) => (
+        [...onThisElement, ...ring.points]
+      ), [])
+    ]
+  ), []);
 
 registerShapeUtil(ShapeType.MULTIPOLYGLON, MultiPolygonUtil);

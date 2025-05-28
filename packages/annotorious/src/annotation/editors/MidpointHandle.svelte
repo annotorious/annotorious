@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { isTouch } from '../../utils';
+  import { isTouch } from '../utils';
 
   /** props **/
   export let x: number;

@@ -1,14 +1,20 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, tick } from 'svelte';
-  import { boundsFromPoints } from '../../../model';
-  import type { Polygon, PolygonGeometry, Shape } from '../../../model';
+  import type { MultiPolygon, MultiPolygonElement, MultiPolygonGeometry, Shape } from '../../../model';
   import { getMaskDimensions, isTouch } from '../../utils';
   import type { Transform } from '../../Transform';
   import Editor from '../Editor.svelte';
   import Handle from '../Handle.svelte';
   import MidpointHandle from '../MidpointHandle.svelte';
+  import { computeMidpoints } from './utils';
+  import { 
+    boundsFromMultiPolygonElements, 
+    boundsFromPoints, 
+    getAllCorners, 
+    multipolygonElementToPath 
+  } from '../../../model';
 
-  const dispatch = createEventDispatcher<{ change: Polygon }>();
+  const dispatch = createEventDispatcher<{ change: MultiPolygon }>();
 
   /** Time difference (milliseconds) required for registering a click/tap **/
   const CLICK_THRESHOLD = 250;
@@ -16,14 +22,11 @@
   /** Minimum distance (px) to shape required for midpoints to show */
   const MIN_HOVER_DISTANCE = 1000;
 
-  /** Minimum distance (px) between corners required for midpoints to show **/
-  const MIN_CORNER_DISTANCE = 12;
-
   /** Needed for the <mask> element **/
   const MIDPOINT_SIZE = 4.5;
 
   /** Props */
-  export let shape: Polygon;
+  export let shape: MultiPolygon;
   export let computedStyle: string | undefined;
   export let transform: Transform;
   export let viewportScale: number = 1;
@@ -38,20 +41,7 @@
   $: geom = shape.geometry;
 
   // No support yet for adding or removing points in mobile!
-  $: midpoints = isTouch ? [] : geom.points.map((thisCorner, idx) => {
-    const nextCorner = idx === geom.points.length - 1 ? geom.points[0] : geom.points[idx + 1];
-    
-    const x = (thisCorner[0] + nextCorner[0]) / 2;
-    const y = (thisCorner[1] + nextCorner[1]) / 2;
-
-    const dist = Math.sqrt( 
-      Math.pow(nextCorner[0] - x, 2) + Math.pow(nextCorner[1] - y, 2));
-
-    // Don't show if the distance between the corners is too small
-    const visible = dist > MIN_CORNER_DISTANCE / viewportScale;
-
-    return { point: [x, y], visible };
-  });
+  $: midpoints = isTouch ? [] : computeMidpoints(geom, viewportScale);
 
   /** Handle hover state **/
   const onEnterHandle = () => isHandleHovered = true;
@@ -69,7 +59,7 @@
     const getDistSq = (pt: number[]) =>
       Math.pow(pt[0] - px, 2) + Math.pow(pt[1] - py, 2);
 
-    const closestCorner = geom.points.reduce((closest, corner) =>
+    const closestCorner = getAllCorners(geom).reduce((closest, corner) =>
       getDistSq(corner) < getDistSq(closest) ? corner : closest);
 
     const closestVisibleMidpoint = midpoints
@@ -149,45 +139,99 @@
     reclaimFocus();
   }
 
-  const editor = (polygon: Shape, handle: string, delta: [number, number]) => {
+  const editor = (shape: Shape, handle: string, delta: [number, number]) => {
     reclaimFocus();
     
-    let points: [number, number][];
+    const elements = ((shape.geometry) as MultiPolygonGeometry).polygons;
 
-    const geom = (polygon.geometry) as PolygonGeometry;
+    let updated: MultiPolygonElement[];
 
-    if (selectedCorners.length > 1) {
-      points = geom.points.map(([x, y], idx) =>
-          selectedCorners.includes(idx) ? [x + delta[0], y + delta[1]] : [x, y]);
-    } else if (handle === 'SHAPE') {
-      points = geom.points.map(([x, y]) => [x + delta[0], y + delta[1]]);
+    if (handle === 'SHAPE') {
+      updated = elements.map(element => {
+        const rings = element.rings.map((ring, r) => {
+          const points = ring.points.map((point, p) => {
+            return [point[0] + delta[0], point[1] + delta[1]];
+          });
+
+          return { points };
+        });
+
+        const bounds = boundsFromPoints(rings[0].points as [number, number][]);
+        return { rings, bounds } as MultiPolygonElement;
+      });
     } else {
-      points = geom.points.map(([x, y], idx) =>
-        handle === `HANDLE-${idx}` ? [x + delta[0], y + delta[1]] : [x, y]);
+      const [_, elementIdx, ringIdx, pointIdx] = handle.split('-').map(str => parseInt(str));
+
+      updated = elements.map((element, e) => {
+        if (e === elementIdx) {
+          const rings = element.rings.map((ring, r) => {
+            if (r === ringIdx) {
+              const points = ring.points.map((point, p) => {
+                if (p === pointIdx) {
+                  return [point[0] + delta[0], point[1] + delta[1]];
+                } else {
+                  return point;
+                }
+              });
+
+              return { points };
+            } else {
+              return ring;
+            }
+          });
+
+          const bounds = boundsFromPoints(rings[0].points as [number, number][]);
+          return { rings, bounds } as MultiPolygonElement;
+        } else {
+          return element;
+        }
+      });
     }
 
-    const bounds = boundsFromPoints(points);
-    return {
-      ...polygon,
-      geometry: { points, bounds }
-    }
+    return { 
+      ...shape, 
+      geometry: {
+        polygons: updated,
+        bounds: boundsFromMultiPolygonElements(updated)
+      } 
+    } as MultiPolygon;
   }
 
   const onAddPoint = (midpointIdx: number) => async (evt: PointerEvent) => {
     evt.stopPropagation();
 
-    const points = [
-      ...geom.points.slice(0, midpointIdx + 1),
-      midpoints[midpointIdx].point,
-      ...geom.points.slice(midpointIdx + 1)
-    ] as [number, number][];
+    const midpoint = midpoints[midpointIdx];
+    
+    const updated = geom.polygons.map((element, elIdx) => {
+      if (elIdx === midpoint.elementIdx) {
+        const rings = element.rings.map((ring, ringIdx) => {
+          if (ringIdx === midpoint.ringIdx) {
+            const points = [
+              ...ring.points.slice(0, midpoint.pointIdx + 1),
+              midpoint.point,
+              ...ring.points.slice(midpoint.pointIdx + 1)
+            ] as [number, number][];
 
-    const bounds = boundsFromPoints(points);
+            return { points };
+          } else {
+            return ring;
+          }
+        });
+
+        const bounds = boundsFromPoints(rings[0].points as [number, number][]);
+        return { rings, bounds } as MultiPolygonElement;
+      } else {
+        return element;
+      }
+    });
 
     dispatch('change', {
-      ...shape,
-      geometry: { points, bounds }
-    });
+      ...shape, 
+      geometry: {
+        polygons: updated,
+        bounds: boundsFromMultiPolygonElements(updated)
+      } 
+    } as MultiPolygon);
 
     await tick();
 
@@ -209,6 +253,7 @@
     }
   }
 
+  /*
   const onDeleteSelected = () => {
     // Polygon needs 3 points min
     if (geom.points.length < 4) return;
@@ -223,6 +268,7 @@
 
     selectedCorners = [];
   }
+  */
 
   onMount(() => {
     if (isTouch) return;
@@ -230,7 +276,7 @@
     const onKeydown = (evt: KeyboardEvent) => {
       if (evt.key === 'Delete' || evt.key === 'Backspace') {
         evt.preventDefault();
-        onDeleteSelected();
+        // onDeleteSelected();
       }
     };
 
@@ -257,55 +303,44 @@
   on:grab
   on:release
   let:grab={grab}>
-  
-  <defs>
-    <mask id={`${maskId}-outer`} class="a9s-polygon-editor-mask">
-      <rect x={mask.x} y={mask.y} width={mask.w} height={mask.h} />
-      <polygon points={geom.points.map(xy => xy.join(',')).join(' ')} />   
-      
-      {#if (visibleMidpoint !== undefined && !isHandleHovered)}
-        {@const { point } = midpoints[visibleMidpoint]}
-        <circle cx={point[0]} cy={point[1]} r={MIDPOINT_SIZE / viewportScale} />
-      {/if}  
-    </mask>
+  {#each geom.polygons as element, elementIdx}
+    <g>
+      <defs>
+        <mask id={`${maskId}-${elementIdx}`} class="a9s-multipolygon-editor-mask">
+          <rect x={mask.x} y={mask.y} width={mask.w} height={mask.h} />
+          <path d={multipolygonElementToPath(element)} />   
+        </mask>
+      </defs>
 
-    {#if (visibleMidpoint !== undefined && !isHandleHovered)}
-      {@const { point } = midpoints[visibleMidpoint]}
-      <mask id={`${maskId}-inner`}  class="a9s-polygon-editor-mask">
-        <rect x={mask.x} y={mask.y} width={mask.w} height={mask.h} /> 
-        <circle cx={point[0]} cy={point[1]} r={MIDPOINT_SIZE / viewportScale} />
-      </mask>
-    {/if}
-  </defs>
+      <path 
+        class="a9s-outer"
+        mask={`url(#${maskId}-${elementIdx})`}
+        fill-rule="evenodd"
+        on:pointerup={onShapePointerUp}
+        on:pointerdown={grab('SHAPE')}
+        d={multipolygonElementToPath(element)} />
 
-  <polygon
-    class="a9s-outer"
-    mask={`url(#${maskId}-outer)`}
-    on:pointerup={onShapePointerUp}
-    on:pointerdown={grab('SHAPE')}
-    points={geom.points.map(xy => xy.join(',')).join(' ')} />
+      <path 
+        class="a9s-inner"
+        style={computedStyle}
+        fill-rule="evenodd"
+        on:pointerup={onShapePointerUp}
+        on:pointerdown={grab('SHAPE')}
+        d={multipolygonElementToPath(element)} />
 
-  <polygon
-    class="a9s-inner a9s-shape-handle"
-    mask={`url(#${maskId}-inner)`}
-    style={computedStyle}
-    on:pointermove={onPointerMove}
-    on:pointerup={onShapePointerUp}
-    on:pointerdown={grab('SHAPE')}
-    points={geom.points.map(xy => xy.join(',')).join(' ')} />
-
-  {#each geom.points as point, idx}
-    <Handle 
-      class="a9s-corner-handle"
-      x={point[0]}
-      y={point[1]}
-      scale={viewportScale}
-      selected={selectedCorners.includes(idx)}
-      on:pointerenter={onEnterHandle}
-      on:pointerleave={onLeaveHandle}
-      on:pointerdown={onHandlePointerDown}
-      on:pointerdown={grab(`HANDLE-${idx}`)}
-      on:pointerup={onHandlePointerUp(idx)} />
+      {#each element.rings as ring, ringIdx}
+        {#each ring.points as point, pointIdx}
+          <Handle 
+            class="a9s-corner-handle"
+            on:pointerenter={onEnterHandle}
+            on:pointerleave={onLeaveHandle}
+            on:pointerdown={onHandlePointerDown}
+            on:pointerdown={grab(`HANDLE-${elementIdx}-${ringIdx}-${pointIdx}`)}
+            x={point[0]} y={point[1]} 
+            scale={viewportScale} />
+        {/each}
+      {/each}
+    </g>
   {/each}
 
   {#if (visibleMidpoint !== undefined && !isHandleHovered)}
@@ -313,18 +348,17 @@
     <MidpointHandle 
       x={point[0]}
       y={point[1]}
-      scale={viewportScale}
+      scale={viewportScale} 
       on:pointerdown={onAddPoint(visibleMidpoint)} />
   {/if}
 </Editor>
 
 <style>
-  mask.a9s-polygon-editor-mask > rect {
+  mask.a9s-multipolygon-editor-mask > rect {
     fill: #fff;
   }
 
-  mask.a9s-polygon-editor-mask > circle,
-  mask.a9s-polygon-editor-mask > polygon {
+  mask.a9s-multipolygon-editor-mask > path {
     fill: #000;
   }
 </style>
