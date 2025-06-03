@@ -50,7 +50,7 @@
 
   /** Determine visible midpoint, if any **/
   const onPointerMove = (evt: PointerEvent) => {
-    if (selectedCorners.length > 0) {
+    if (selectedCorners.length > 0 || !midpoints.some(m => m.visible)) {
       visibleMidpoint = undefined;
       return;
     }
