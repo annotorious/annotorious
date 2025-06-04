@@ -1,3 +1,4 @@
+import simplify from 'simplify-js';
 import type { Bounds, Shape, ShapeType } from './Shape';
 
 export interface ShapeUtil<T extends Shape> {
@@ -102,4 +103,9 @@ export const pointsToPath = (points: [number, number][], close: boolean = true):
     d += ' Z';
 
   return d;
+}
+
+export const simplifyPoints = (points: number[][], tolerance = 1): [number, number][] => {
+  const mapped = points.map(([x, y]) => ({ x, y }));
+  return simplify(mapped, tolerance, true).map(pt => [pt.x, pt.y]);
 }

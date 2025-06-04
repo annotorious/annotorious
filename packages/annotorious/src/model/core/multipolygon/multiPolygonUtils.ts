@@ -1,7 +1,7 @@
 import { ShapeType } from '../Shape';
 import type { ShapeUtil } from '../shapeUtils';
-import { boundsFromPoints, computePolygonArea, isPointInPolygon, pointsToPath, registerShapeUtil } from '../shapeUtils';
-import type { MultiPolygon, MultiPolygonElement, MultiPolygonGeometry } from './MultiPolygon';
+import { boundsFromPoints, computePolygonArea, isPointInPolygon, pointsToPath, registerShapeUtil, simplifyPoints } from '../shapeUtils';
+import type { MultiPolygon, MultiPolygonElement, MultiPolygonGeometry, MultiPolygonRing } from './MultiPolygon';
 
 const MultiPolygonUtil: ShapeUtil<MultiPolygon> = {
 
@@ -69,5 +69,36 @@ export const getAllCorners = (geom: MultiPolygonGeometry) =>
       ), [])
     ]
   ), []);
+
+export const simplifyMultiPolygon = (multi: MultiPolygon, tolerance = 1): MultiPolygon => {
+  const polygons = multi.geometry.polygons.map(polygon => {
+    const rings: MultiPolygonRing[] = polygon.rings.map(ring => {
+      const points = simplifyPoints(ring.points, tolerance);
+      return {
+        ...ring,
+        points
+      }
+    });
+
+    const bounds = boundsFromPoints(rings[0].points);
+
+    return {
+      ...polygon,
+      rings,
+      bounds
+    }
+  });
+
+  const bounds = boundsFromMultiPolygonElements(polygons);
+
+  return {
+    ...multi,
+    geometry: {
+      ...multi.geometry,
+      polygons,
+      bounds
+    }
+  }
+}
 
 registerShapeUtil(ShapeType.MULTIPOLYGLON, MultiPolygonUtil);

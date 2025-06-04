@@ -1,6 +1,6 @@
 import { ShapeType } from '../Shape';
 import type { ShapeUtil } from '../shapeUtils';
-import { computePolygonArea, isPointInPolygon, registerShapeUtil } from '../shapeUtils';
+import { boundsFromPoints, computePolygonArea, isPointInPolygon, registerShapeUtil, simplifyPoints } from '../shapeUtils';
 import type { Polygon } from './Polygon';
 
 const PolygonUtil: ShapeUtil<Polygon> = {
@@ -16,5 +16,19 @@ const PolygonUtil: ShapeUtil<Polygon> = {
   }
   
 };
+
+export const simplifyPolygon = (polygon: Polygon, tolerance = 1): Polygon => {
+  const points = simplifyPoints(polygon.geometry.points, tolerance);
+  const bounds = boundsFromPoints(points);
+
+  return {
+    ...polygon,
+    geometry: {
+      ...polygon.geometry,
+      bounds,
+      points
+    }
+  }
+}
 
 registerShapeUtil(ShapeType.POLYGON, PolygonUtil);
