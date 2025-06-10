@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/react",
-  "version": "3.4.4",
+  "version": "3.4.5",
   "description": "Annotorious React bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -26,9 +26,9 @@
     "./annotorious-react.css": "./dist/annotorious-react.css"
   },
   "devDependencies": {
-    "@types/react": "^19.1.6",
-    "@types/react-dom": "^19.1.5",
-    "@vitejs/plugin-react": "^4.5.0",
+    "@types/react": "^19.1.7",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
     "typescript": "5.8.3",
     "vite": "^5.4.19",
     "vite-plugin-dts": "^4.5.4",
@@ -45,10 +45,10 @@
     }
   },
   "dependencies": {
-    "@annotorious/annotorious": "3.4.4",
-    "@annotorious/core": "3.4.4",
-    "@annotorious/openseadragon": "3.4.4",
-    "@floating-ui/react": "^0.27.9",
+    "@annotorious/annotorious": "3.4.5",
+    "@annotorious/core": "3.4.5",
+    "@annotorious/openseadragon": "3.4.5",
+    "@floating-ui/react": "^0.27.12",
     "zustand": "^5.0.5"
   },
   "sideEffects": false

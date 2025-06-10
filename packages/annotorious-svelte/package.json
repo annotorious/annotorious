@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/svelte",
-  "version": "3.4.4",
+  "version": "3.4.5",
   "description": "Annotorious Svelte bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -25,7 +25,7 @@
     "tslib": "^2.8.1",
     "typescript": "5.8.3",
     "vite": "^5.4.19",
-    "vite-plugin-dts": "^4.5.3"
+    "vite-plugin-dts": "^4.5.4"
   },
   "peerDependencies": {
     "openseadragon": "^3.0.0 || ^4.0.0 || ^5.0.0"
@@ -36,9 +36,9 @@
     }
   },
   "dependencies": {
-    "@annotorious/core": "3.4.4",
-    "@annotorious/annotorious": "3.4.4",
-    "@annotorious/openseadragon": "3.4.4",
+    "@annotorious/core": "3.4.5",
+    "@annotorious/annotorious": "3.4.5",
+    "@annotorious/openseadragon": "3.4.5",
     "@neodrag/svelte": "^2.0.6"
   },
   "sideEffects": false
