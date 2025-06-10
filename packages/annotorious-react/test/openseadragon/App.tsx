@@ -5,7 +5,8 @@ import { useAnnotator, AnnotoriousOpenSeadragonAnnotator, Filter } from '../../s
 import {
   OpenSeadragonViewer, 
   OpenSeadragonAnnotator, 
-  OpenSeadragonAnnotationPopup, 
+  OpenSeadragonAnnotationPopup,
+  OpenSeadragonHoverTooltip, 
 } from '../../src/openseadragon';
 
 import '@annotorious/openseadragon/annotorious-openseadragon.css';
@@ -97,7 +98,7 @@ export const App = () => {
   }
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 999 }}>
         <button
           onClick={toggleFilter}>
@@ -133,6 +134,11 @@ export const App = () => {
               <button onClick={() => anno.setSelected()}>OK</button>
             </div>
           )} />
+
+        <OpenSeadragonHoverTooltip 
+          tooltip={() => (
+            <div>Hello World</div>
+          )}/>
       </OpenSeadragonAnnotator>
     </div>
   )

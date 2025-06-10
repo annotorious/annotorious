@@ -12,6 +12,8 @@ export {
   OpenSeadragonAnnotationPopup, 
 } from './OpenSeadragonAnnotationPopup';
 
+export * from './OpenSeadragonHoverTooltip';
+
 export * from './OpenSeadragonViewer';
 
 // Re-export essentials from @annotorious/openseadragon 

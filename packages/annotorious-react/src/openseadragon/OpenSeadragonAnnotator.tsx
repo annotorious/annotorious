@@ -1,4 +1,12 @@
-import { createContext, forwardRef, ReactNode, useContext, useEffect, useImperativeHandle, useState } from 'react';
+import { 
+  createContext, 
+  forwardRef, 
+  ReactNode, 
+  useContext, 
+  useEffect, 
+  useImperativeHandle, 
+  useState 
+} from 'react';
 import OpenSeadragon from 'openseadragon';
 import { createAnonymousGuest } from '@annotorious/core';
 import { AnnotoriousOSDOpts, createOSDAnnotator } from '@annotorious/openseadragon';
