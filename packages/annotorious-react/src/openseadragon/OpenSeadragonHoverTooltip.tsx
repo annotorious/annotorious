@@ -54,7 +54,7 @@ export const OpenSeadragonHoverTooltip = (props: OpenSeadragonHoverTooltipProps)
     const unsubscribe = anno.state.hover.subscribe(onHover);
 
     return () => {
-      viewer.element.removeEventListener('pointermove', onPointerMove);
+      viewer.element?.removeEventListener('pointermove', onPointerMove);
       unsubscribe();
     }
   }, [anno, viewer]);
