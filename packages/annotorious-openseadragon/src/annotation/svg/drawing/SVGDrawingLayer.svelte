@@ -1,5 +1,5 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
-  import type { SvelteComponent } from 'svelte';
+  import { onMount, type SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, Filter, StoreChangeEvent, User } from '@annotorious/core';
@@ -20,6 +20,9 @@
   export let toolName: string = listDrawingTools()[0];
   export let user: User;
   export let viewer: OpenSeadragon.Viewer;
+
+  // SVG element
+  let isHovered = false;
 
   // Trick to force tool re-mounting on cancelDrawing
   let toolMountKey = 0;
@@ -171,6 +174,24 @@
 
   // To get around lack of TypeScript support in Svelte markup
   const getEditor = (shape: Shape): typeof SvelteComponent => _getEditor(shape)!;
+
+  onMount(() => {
+    const onPointerMove = (evt: PointerEvent) => {
+      if ($selection.selected.length === 0) return;
+
+      const { offsetX, offsetY } = evt;
+      const pt = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(offsetX, offsetY));
+      const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
+
+      isHovered = Boolean(store.getAt(x, y, filter));    
+    }
+
+    viewer.element.addEventListener('pointermove', onPointerMove);
+
+    return () => {
+      viewer.element?.removeEventListener('pointermove', onPointerMove);
+    }
+  });
 </script>
 
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -179,7 +200,8 @@
     tabindex={0}
     class="a9s-annotationlayer a9s-osd-drawinglayer"
     class:drawing={drawingEnabled}
-    class:editing={editableAnnotations}>
+    class:editing={editableAnnotations}
+    class:hover={isHovered}>
 
     <g 
       bind:this={drawingEl}
@@ -226,6 +248,10 @@
   
   svg.drawing, svg.editing {
     pointer-events: all;
+  }
+
+  svg.hover {
+    cursor: pointer;
   }
 
   svg * {
