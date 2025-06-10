@@ -130,6 +130,10 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
     setSelected(currentSelection.selected.map(({ id }) => id));
   };
 
+  // Utility to evaluate what the select action will be for the given annotation
+  const evalSelectAction = (annotation: I) =>
+    onUserSelect(annotation, currentUserSelectAction, adapter)
+
   // Track store delete and update events
   store.observe(
     ({ changes }) => removeFromSelection((changes.deleted || []).map(a => a.id))
@@ -146,6 +150,7 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
       return currentUserSelectAction;
     },
     clear,
+    evalSelectAction,
     isEmpty,
     isSelected,
     setSelected,
