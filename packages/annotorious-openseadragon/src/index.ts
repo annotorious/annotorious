@@ -1,4 +1,5 @@
 export * from './Annotorious';
+export * from './AnnotoriousOSDOpts';
 
 // Essential re-exports from @annotorious/core
 export type {
@@ -42,6 +43,10 @@ export type {
   ImageAnnotation,
   ImageAnnotator,
   ImageAnnotatorState,
+  MultiPolygon,
+  MultiPolygonElement,
+  MultiPolygonGeometry,
+  MultiPolygonRing,
   Polygon,
   PolygonGeometry,
   Rectangle,

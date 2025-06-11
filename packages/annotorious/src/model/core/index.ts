@@ -1,4 +1,5 @@
 export * from './ellipse';
+export * from './multipolygon';
 export * from './polygon';
 export * from './rectangle';
 export * from './ImageAnnotation';

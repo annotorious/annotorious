@@ -40,6 +40,12 @@
         'SHOW_POLYGONS': a => a.target.selector.type === 'POLYGON'
       };
 
+      // Ashmolean Museum Evans Architectural Plans HF/2
+      // const IMAGE = 'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c/info.json';
+
+      // Balliol College MS 238A
+      const IMAGE = 'https://iiif.bodleian.ox.ac.uk/iiif/image/79bf8325-22fa-4696-afe5-7d827d84f393/info.json';
+
       window.onload = function() {
         var viewer = OpenSeadragon({
           id: 'openseadragon',
@@ -52,51 +58,32 @@
             pinchRotate: true
           },
           showRotationControl: true,
-          tileSources: {
-            '@context' : 'http://iiif.io/api/image/2/context.json',
-            protocol : 'http://iiif.io/api/image',
-            width : 7808,
-            height : 5941,
-            sizes : [
-              { width : 244, height : 185 },
-              { width : 488, height : 371 },
-              { width : 976, height : 742 }
-            ],
-            tiles : [
-              { width : 256, height : 256, scaleFactors : [ 1, 2, 4, 8, 16, 32 ] }
-            ],
-            '@id' : 'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c',
-            profile : [
-              'http://iiif.io/api/image/2/level2.json',
-              { formats : [ 'jpg', 'png', 'webp' ],
-                qualities : ['native','color','gray','bitonal'],
-                supports : ['regionByPct','regionSquare','sizeByForcedWh','sizeByWh','sizeAboveFull','sizeUpscaling','rotationBy90s','mirroring'],
-                maxWidth : 1000,
-                maxHeight : 1000
-              }
-            ]
-          }
+          tileSources: IMAGE
         });
 
         const BASE_STYLE = function(a, state) {
           const { hovered, selected } = state || {};
           return {
-            fill: hovered ? '#00ff00' : '#ff0000', 
+            fill: hovered ? 'rgba(180,0,60,0.7)' : 'rgba(180,0,60,0.5)',
             stroke: '#ff0000', 
-            fillOpacity: 0.1,
+            // fillOpacity: 0.1,
             strokeOpacity: 0.9,
-            strokeWidth: 1
+            strokeWidth: 3
           }
         };
 
         var anno = createOSDAnnotator(viewer, {
           autoSave: true,
-          adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c'),
+          // adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c'),
           drawingEnabled: false,
-          style: BASE_STYLE
+          multiSelect: true,
+          // style: BASE_STYLE
         });
 
-        fetch('annotations.json').then((response) => response.json())
+        anno.setDrawingTool('polygon');
+
+        // fetch('annotations.w3c.json').then((response) => response.json())
+        fetch('annotations.core.json').then((response) => response.json())
           .then(annotations =>
             anno.setAnnotations(annotations));
 

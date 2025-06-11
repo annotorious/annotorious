@@ -6,6 +6,7 @@ import {
   toSvelteStore,
   type Annotation,
   type AnnotatorState, 
+  type Filter, 
   type HoverState,
   type SelectionState
 } from '@annotorious/core';
@@ -53,13 +54,24 @@ export const createImageAnnotatorState = <I extends Annotation, E extends unknow
       tree.update(oldValue.target, newValue.target));
   });
 
-  const getAt = (x: number, y: number): ImageAnnotation | undefined => {
-    const target = tree.getAt(x, y);
-    return target ? store.getAnnotation(target.annotation) as unknown as ImageAnnotation : undefined; 
+  const getAt = (x: number, y: number, filter?: Filter<I>): I | undefined => {
+    const targets = tree.getAt(x, y, filter as Filter<Annotation>);
+
+    if (filter) {
+      // Resolve annotations first, so we can filter
+      const annotations = targets.map(t => store.getAnnotation(t.annotation)!)
+        .filter(Boolean)
+        .filter(filter);
+        
+      return annotations[0];
+    } else {
+      const top = targets[0];
+      return top ? store.getAnnotation(top.annotation) : undefined;
+    }
   }
 
   const getIntersecting = (x: number, y: number, width: number, height: number) =>
-    tree.getIntersecting(x, y, width, height).map(target => store.getAnnotation(target.annotation) as unknown as ImageAnnotation);
+    tree.getIntersecting(x, y, width, height).map(target => store.getAnnotation(target.annotation) as I);
 
   return {
     store: {

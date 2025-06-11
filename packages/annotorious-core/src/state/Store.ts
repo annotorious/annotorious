@@ -110,7 +110,16 @@ export const createStore = <T extends Annotation>() => {
       emit(origin, { updated: [update] })
   }
 
-  const bulkUpdateAnnotation = (annotations: T[], origin = Origin.LOCAL) => {
+  const upsertAnnotation = (annotation: T, origin = Origin.LOCAL) => {
+    const exists = Boolean(annotationIndex.get(annotation.id));
+    if (exists) {
+      updateAnnotation(annotation, origin);
+    } else {
+      addAnnotation(annotation, origin);
+    }
+  }
+
+  const bulkUpdateAnnotations = (annotations: T[], origin = Origin.LOCAL) => {
     const updated = annotations.reduce((updated, annotation) => {
       const u = updateOneAnnotation(annotation);
       return u ? [...updated, u] : updated;
@@ -118,6 +127,28 @@ export const createStore = <T extends Annotation>() => {
 
     if (updated.length > 0)
       emit(origin, { updated });
+  }
+
+  const bulkUpsertAnnotations = (annotations: Partial<T>[], origin = Origin.LOCAL) => {
+    const sanitized = annotations.map(sanitize);
+
+    const { toAdd, toUpdate } = sanitized.reduce<{ toAdd: T[], toUpdate: T[] }>((agg, annotation) => {
+      const exists = Boolean(annotationIndex.get(annotation.id));
+      if (exists) {
+        return {...agg, toUpdate: [...agg.toUpdate, annotation]};
+      } else {
+        return {...agg, toAdd: [...agg.toAdd, annotation]}
+      }
+    }, { toAdd: [], toUpdate: [] });
+
+    const updated = toUpdate.map(a => updateOneAnnotation(a, origin)!).filter(Boolean);
+
+    toAdd.forEach(annotation => {
+      annotationIndex.set(annotation.id, annotation);
+      annotation.bodies.forEach(b => bodyIndex.set(b.id, annotation.id));
+    });
+
+    emit(origin, { created: toAdd, updated });
   }
 
   const addBody = (body: T['bodies'][number], origin = Origin.LOCAL) => {
@@ -153,7 +184,7 @@ export const createStore = <T extends Annotation>() => {
     emit(origin, { deleted: all });
   }
 
-  const bulkAddAnnotation = (annotations: Partial<T>[], replace = true, origin = Origin.LOCAL) => {
+  const bulkAddAnnotations = (annotations: Partial<T>[], replace = true, origin = Origin.LOCAL) => {
     const sanitized = annotations.map(sanitize);
 
     if (replace) {
@@ -206,7 +237,7 @@ export const createStore = <T extends Annotation>() => {
       emit(origin, { deleted: [ deleted  ]});
   }
 
-  const bulkDeleteAnnotation = (annotationsOrIds: (T | string)[], origin = Origin.LOCAL) => {
+  const bulkDeleteAnnotations = (annotationsOrIds: (T | string)[], origin = Origin.LOCAL) => {
     const deleted = annotationsOrIds.reduce((deleted, arg) => {
       const existing = deleteOneAnnotation(arg);
       return existing ? [...deleted, existing] : deleted;
@@ -366,12 +397,13 @@ export const createStore = <T extends Annotation>() => {
     addAnnotation,
     addBody,
     all,
-    bulkAddAnnotation,
-    bulkDeleteAnnotation,
+    bulkAddAnnotations,
+    bulkDeleteAnnotations,
     bulkDeleteBodies,
-    bulkUpdateAnnotation,
+    bulkUpdateAnnotations,
     bulkUpdateBodies,
     bulkUpdateTargets,
+    bulkUpsertAnnotations,
     clear,
     deleteAnnotation,
     deleteBody,
@@ -381,7 +413,8 @@ export const createStore = <T extends Annotation>() => {
     unobserve,
     updateAnnotation,
     updateBody,
-    updateTarget
+    updateTarget,
+    upsertAnnotation
 	};
 
 }

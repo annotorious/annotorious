@@ -11,7 +11,7 @@
   top: 0;
   touch-action: none;
   width: 100%;
-
+  -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none; 
      -moz-user-select: none;
       -ms-user-select: none;
@@ -28,11 +28,13 @@
 }
 
 .a9s-annotationlayer ellipse, 
+.a9s-annotationlayer path,
 .a9s-annotationlayer polygon,
 .a9s-annotationlayer rect  {
   fill: transparent;
   shape-rendering: geometricPrecision;
   vector-effect: non-scaling-stroke;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .a9s-edge-handle {
@@ -47,6 +49,10 @@
 
 .a9s-handle {
   cursor: move;
+}
+
+.a9s-handle.a9s-corner-handle {
+  cursor: crosshair;
 }
 
 .a9s-edge-handle-top {

@@ -33,3 +33,19 @@ export const insertSVGNamespace = (originalDoc: Document): Element => {
   const namespacedDoc = parser.parseFromString(namespaced, "image/svg+xml");
   return namespacedDoc.documentElement;
 }
+
+export const parseSVGXML = (value: string): Element => {
+  const parser = new DOMParser();
+
+  const doc = parser.parseFromString(value, 'image/svg+xml');
+
+  // SVG needs a namespace declaration - check if it's set or insert if not
+  const isPrefixDeclared = doc.lookupPrefix(SVG_NAMESPACE); // SVG declared via prefix
+  const isDefaultNamespaceSVG = doc.lookupNamespaceURI(null); // SVG declared as default namespace
+
+  if (isPrefixDeclared || isDefaultNamespaceSVG) {
+    return sanitize(doc).firstChild as Element;
+  } else {
+    return sanitize(insertSVGNamespace(doc)).firstChild as Element;
+  }
+}

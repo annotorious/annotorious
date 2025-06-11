@@ -1,44 +1,75 @@
 [
-  { 
+  {
     "@context": "http://www.w3.org/ns/anno.jsonld",
     "id": "#a88b22d0-6106-4872-9435-c78b5e89fede",
     "type": "Annotation",
-    "body": [{
-      "type": "TextualBody",
-      "value": "It's Hallstatt in Upper Austria"
-    }, {
-      "type": "TextualBody",
-      "purpose": "tagging",
-      "value": "Hallstatt"
-    }, {
-      "type": "TextualBody",
-      "purpose": "tagging",
-      "value": "Upper Austria"
-    }],
+    "body": [
+      {
+        "type": "TextualBody",
+        "value": "It's Hallstatt in Upper Austria"
+      },
+      {
+        "type": "TextualBody",
+        "purpose": "tagging",
+        "value": "Hallstatt"
+      },
+      {
+        "type": "TextualBody",
+        "purpose": "tagging",
+        "value": "Upper Austria"
+      }
+    ],
     "target": {
-      "selector": [{
-        "type": "FragmentSelector",
-        "conformsTo": "http://www.w3.org/TR/media-frags/",
-        "value": "xywh=pixel:273,171,123,94"
-      }]
+      "selector": [
+        {
+          "type": "FragmentSelector",
+          "conformsTo": "http://www.w3.org/TR/media-frags/",
+          "value": "xywh=pixel:273,171,123,94"
+        }
+      ]
     }
-  }, { 
+  },
+  {
     "@context": "http://www.w3.org/ns/anno.jsonld",
     "id": "#218d01ff-f077-4cc3-992d-1c81c426e51b",
     "type": "Annotation",
-    "body": [{
-      "type": "TextualBody",
-      "value": "Evangelische Pfarrkirche Hallstatt"
-    }, {
-      "type": "TextualBody",
-      "purpose": "tagging",
-      "value": "Church"
-    }],
+    "body": [
+      {
+        "type": "TextualBody",
+        "value": "Evangelische Pfarrkirche Hallstatt"
+      },
+      {
+        "type": "TextualBody",
+        "purpose": "tagging",
+        "value": "Church"
+      }
+    ],
     "target": {
-      "selector": [{
-        "type": "SvgSelector",
-        "value": "<svg><polygon points='172,160 199,15 223,6 239,132 244,173 285,179 313,208 313,251 218,306 170,290 172,160'></polygon></svg>"
-      }]
+      "selector": [
+        {
+          "type": "SvgSelector",
+          "value": "<svg><polygon points='172,160 199,15 223,6 239,132 244,173 285,179 313,208 313,251 218,306 170,290'></polygon></svg>"
+        }
+      ]
     }
+  },
+  {
+    "id": "31d824ce-089f-4bb3-9871-422bf9f2ef4f",
+    "target": {
+      "source": "sample-image",
+      "selector": {
+        "type": "SvgSelector",
+        "value": "<svg><g><path fill-rule=\"evenodd\" d=\"M 478.65133212051086,234.49738591539688 L 583.0160670565832,232.59967525843268 L 595.9948440900438,324.5922113030464 L 461.84661911724714,316.5340511085419 Z M 518.2974615750816,263.18082664581027 L 513.8912115750816,300.21709653835717 L 564.9195329502184,308.68584653835717 L 554.8375017002184,262.56754539581027 Z\" /></g></svg>"
+      }
+    },
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "type": "Annotation",
+    "body": [],
+    "created": "2025-03-13T09:06:02.869Z",
+    "creator": {
+      "isGuest": true,
+      "id": "zN5Es1Zl1sBw0JJxrtzF"
+    },
+    "modified": "2025-03-13T10:24:24.531Z"
   }
 ]

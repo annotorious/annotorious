@@ -1,15 +1,17 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
+  import { simplifyMultiPolygon, simplifyPolygon } from '@annotorious/annotorious/src';
   import { createEventDispatcher, onMount } from 'svelte';
   import OpenSeadragon from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, StoreChangeEvent, Update } from '@annotorious/core';
-  import { isImageAnnotation, type Filter, type ImageAnnotation, type ImageAnnotatorState } from '@annotorious/annotorious';
+  import { isImageAnnotation, ShapeType } from '@annotorious/annotorious';
+  import type { Filter, ImageAnnotation, ImageAnnotatorState, MultiPolygon, Polygon } from '@annotorious/annotorious';
   import type { PixiLayerClickEvent } from './PixiLayerClickEvent';
   import { createStage } from './stageRenderer';
 
   import './PixiLayer.css';
 
   /** Props */
-  export let filter: Filter<ImageAnnotation> | undefined;
+  export let filter: Filter<I> | undefined;
   export let state: ImageAnnotatorState<I, E>;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined;
   export let viewer: OpenSeadragon.Viewer;
@@ -17,13 +19,13 @@
 
   const { store, hover, selection, viewport } = state;
   
-  const dispatch = createEventDispatcher<{ click: PixiLayerClickEvent}>();
+  const dispatch = createEventDispatcher<{ click: PixiLayerClickEvent<I>}>();
 
   let stage: ReturnType<typeof createStage>;
 
   let lastPress: { x: number, y: number } | undefined;
 
-  $: stage?.setFilter(filter);
+  $: stage?.setFilter(filter as Filter<ImageAnnotation> | undefined);
 
   $: stage?.setSelected($selection);
 
@@ -46,10 +48,8 @@
   const onPointerMove = (canvas: HTMLCanvasElement) => (evt: PointerEvent) => {
     const {x, y} = getImageXY(new OpenSeadragon.Point(evt.offsetX, evt.offsetY));
     
-    const hit = store.getAt(x, y);
-    const isVisibleHit = hit && (!filter || filter(hit));
-
-    if (isVisibleHit) {
+    const hit = store.getAt(x, y, filter);
+    if (hit) {
       canvas.classList.add('hover');
 
       if ($hover !== hit.id) {
@@ -79,12 +79,13 @@
 
     if (dist < 5) {
       const {x, y} = getImageXY(evt.position);
-      const annotation = store.getAt(x, y);
+      const annotation = store.getAt(x, y, filter);
 
-      if (annotation)
+      if (annotation) {
         dispatch('click', { originalEvent, annotation });
-      else
+      } else {
         dispatch('click', { originalEvent });
+      }
     }
 
     lastPress = undefined;
@@ -145,15 +146,50 @@
 
     const isImageAnnotationUpdate = (u: Update<I | ImageAnnotation>): u is Update<ImageAnnotation> =>
       isImageAnnotation(u.oldValue) && isImageAnnotation(u.newValue);
+
+    const simplify = (a: ImageAnnotation) => {
+      const { selector }  = a.target;
+
+      if (selector.type === ShapeType.POLYGON) {
+        const shape = simplifyPolygon(selector as Polygon);
+        return {
+          ...a,
+          target: {
+            ...a.target,
+            selector: {
+              ...shape
+            }
+          }
+        }
+      } else if (selector.type === ShapeType.MULTIPOLYGLON) {
+        const shape = simplifyMultiPolygon(selector as MultiPolygon);
+        return {
+          ...a,
+          target: {
+            ...a.target,
+            selector: {
+              ...shape
+            }
+          }
+        }
+      } else {
+        return a;
+      }
+    }
   
     const onStoreChange = (event: StoreChangeEvent<I>) => {
       const { created, updated, deleted } = event.changes;
 
-      filterAnnotations((created || [])).forEach(annotation => stage.addAnnotation(annotation));
+      const simplifiedCreated = (created || [])
+        .filter(i => isImageAnnotation(i))
+        .map(simplify);
+
+      simplifiedCreated.forEach(annotation => stage.addAnnotation(annotation));
       filterAnnotations((deleted || [])).forEach(annotation => stage.removeAnnotation(annotation));
       
       (updated || [])
         .filter(u => isImageAnnotationUpdate(u))
+        .map(({ oldValue, newValue }) => ({ oldValue, newValue: simplify(newValue) }))
         .forEach(({ oldValue, newValue }) => stage.updateAnnotation(oldValue, newValue));
 
       if (currentViewportBounds) {

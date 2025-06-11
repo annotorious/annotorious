@@ -38,6 +38,8 @@ export interface W3CAnnotationBody {
 
   id?: string;
 
+  format?: string;
+
   purpose?: string;
 
   value?: string;

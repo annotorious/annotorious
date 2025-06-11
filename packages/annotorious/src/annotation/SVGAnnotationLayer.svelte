@@ -12,6 +12,7 @@
   import { addEventListeners, getSVGPoint } from './SVGAnnotationLayerPointerEvent';
   import type { SvelteImageAnnotatorState } from 'src/state';
   import type { DrawingMode } from 'src/AnnotoriousOpts';
+    import MultiPolygon from './shapes/MultiPolygon.svelte';
 
   /** Props **/
   export let drawingEnabled: boolean;
@@ -23,7 +24,11 @@
   export let user: User;
   export let visible = true;
 
+  // Trick to force tool re-mounting on cancelDrawing
+  let toolMountKey = 0;
+
   /** API methods */
+  export const cancelDrawing = () => toolMountKey += 1;
   export const getDrawingTool = () => toolName;
   export const isDrawingEnabled = () => drawingEnabled;
 
@@ -138,21 +143,24 @@
   const getEditor = (shape: Shape): typeof SvelteComponent => _getEditor(shape)!;
 </script>
 
+<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <svg
   bind:this={svgEl}
+  role="application"
+  tabindex={0}
   class="a9s-annotationlayer"
   class:drawing={tool}
+  class:editing={editableAnnotations}
   class:hidden={!visible}
   class:hover={$hover}
   on:pointerup={onPointerUp}
   on:pointerdown={onPointerDown}
   on:pointermove={onPointerMove}>
-  
   <g>
     {#each $store.filter(a => isImageAnnotation(a)) as annotation}
       {#if isImageAnnotation(annotation) && !isEditable(annotation)}
         {@const selector = annotation.target.selector}
-        {#key annotation.id}
+        {#key annotation}
           {#if (selector?.type === ShapeType.ELLIPSE)}
             <Ellipse 
               annotation={annotation} 
@@ -167,6 +175,11 @@
             <Polygon 
               annotation={annotation} 
               geom={selector.geometry} 
+              style={style} />
+          {:else if (selector?.type === ShapeType.MULTIPOLYGLON)}
+            <MultiPolygon
+              annotation={annotation}
+              geom={selector.geometry}
               style={style} />
           {/if}
         {/key}
@@ -195,7 +208,7 @@
           {/if}
         {/each}
       {:else if (tool && drawingEnabled)} 
-        {#key toolName}
+        {#key `${toolName}-${toolMountKey}`}
           <ToolMount 
             target={drawingEl}
             tool={tool}

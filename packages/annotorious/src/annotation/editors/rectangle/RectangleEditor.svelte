@@ -1,5 +1,6 @@
 <script lang="ts">
   import Handle from '../Handle.svelte';
+  import { getMaskDimensions } from '../../utils';
   import type { Rectangle, Shape } from '../../../model';
   import type { Transform } from '../../Transform';
   import { Editor } from '..';
@@ -9,6 +10,7 @@
   export let computedStyle: string | undefined;
   export let transform: Transform;
   export let viewportScale: number = 1;
+  export let svgEl: SVGSVGElement;
 
   $: geom = shape.geometry;
 
@@ -77,20 +79,32 @@
       }
     };
   }
+
+  $: mask = getMaskDimensions(geom.bounds, 2 / viewportScale);
+  
+  const maskId = `rect-mask-${Math.random().toString(36).substring(2, 12)}`;
 </script>
 
 <Editor
   shape={shape}
   transform={transform}
   editor={editor}
+  svgEl={svgEl}
   on:grab
   on:change 
   on:release
   let:grab={grab}>
 
+  <defs>
+    <mask id={maskId} class="a9s-rectangle-editor-mask">
+      <rect class="rect-mask-bg" x={mask.x} y={mask.y} width={mask.w} height={mask.h} />
+      <rect class="rect-mask-fg" x={geom.x} y={geom.y} width={geom.w} height={geom.h} />
+    </mask>
+  </defs>
+
   <rect 
     class="a9s-outer"
-    style={computedStyle ? 'display:none;' : undefined}
+    mask={`url(#${maskId})`}
     on:pointerdown={grab('SHAPE')}
     x={geom.x} y={geom.y} width={geom.w} height={geom.h} />
 
@@ -144,3 +158,13 @@
     x={geom.x} y={geom.y + geom.h} 
     scale={viewportScale} />
 </Editor>
+
+<style>
+  mask.a9s-rectangle-editor-mask > rect.rect-mask-bg {
+    fill: #fff;
+  }
+
+  mask.a9s-rectangle-editor-mask > rect.rect-mask-fg {
+    fill: #000;
+  }
+</style>

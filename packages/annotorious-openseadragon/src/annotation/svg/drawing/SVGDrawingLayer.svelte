@@ -1,17 +1,19 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
-  import type { SvelteComponent } from 'svelte';
+  import { onMount, type SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, Filter, StoreChangeEvent, User } from '@annotorious/core';
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
   import { getEditor as _getEditor, getTool, isImageAnnotation, listDrawingTools } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
+  import { updateSelection } from '../../../utils';
   import OSDLayer from '../OSDLayer.svelte';
   import OSDToolMount from './OSDToolMount.svelte';
 
   /** Props **/
   export let drawingEnabled: boolean;
-  export let filter: Filter<ImageAnnotation> | undefined;
+  export let filter: Filter<I> | undefined;
+  export let multiSelect: boolean | undefined;
   export let preferredDrawingMode: DrawingMode;
   export let state: ImageAnnotatorState<I, E>;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined = undefined;
@@ -19,21 +21,25 @@
   export let user: User;
   export let viewer: OpenSeadragon.Viewer;
 
+  // SVG element
+  let isHovered = false;
+
+  // Trick to force tool re-mounting on cancelDrawing
+  let toolMountKey = 0;
+
   /** API methods */
+  export const cancelDrawing = () => toolMountKey += 1;
   export const getDrawingTool = () => toolName;
   export const isDrawingEnabled = () => drawingEnabled;
 
-  // I hate you
-  const isFirefox = navigator.userAgent.match(/firefox|fxios/i);
-
   $: ({ tool, opts } = getTool(toolName) || { tool: undefined, opts: undefined });
-
+  
   /** Drawing tool layer **/
   let drawingEl: SVGGElement;
 
   /** Tool lifecycle **/
   $: drawingMode = opts?.drawingMode || preferredDrawingMode;
-
+  
   $: drawingEnabled && drawingMode === 'drag' ? viewer.setMouseNavEnabled(false) : viewer.setMouseNavEnabled(true); 
 
   $: drawingEnabled && selection.clear();
@@ -70,21 +76,20 @@
       
       store.observe(storeObserver, { annotations: editableIds });
 
-      if (isFirefox) {
-        // As of May 16, 2024 Firefox has the following fun bug: despite the SVG elements
-        // being properly in the markup, FF DOES NOT RENDER THEM VISIBLY on the screen.
-        // This doesn't always happen. I can't figure out a reliable pattern, but timing
-        // must play a role. (It doesn't happen in the simple examples. But happens in 
-        // the Recogito React-based interface.) 
-        //
-        // As soon as the first re-render is triggered, FF wakes up, and the shapes display
-        // correctly. One reliable way of 'waking up' the FF renderer is to change the
-        // transform attribute on an SVG element. By panning OpenSeadragon by one tenth of a 
-        // pixel (!), we're triggering such a refresh without causing a change that's visible
-        // to the user. *sigh* 
-        const { width } = viewer.viewport.viewerElementToViewportRectangle(new OpenSeadragon.Rect(0, 0, 1, 1));
-        viewer.viewport.panBy(new OpenSeadragon.Point(Math.abs(width / 10), 0));
-      }
+      // As of May 16, 2024 Firefox has the following fun bug: despite the SVG elements
+      // being properly in the markup, FF DOES NOT RENDER THEM VISIBLY on the screen.
+      // This doesn't always happen. I can't figure out a reliable pattern, but timing
+      // must play a role. (It doesn't happen in the simple examples. But happens in 
+      // the Recogito React-based interface.) 
+      //
+      // As soon as the first re-render is triggered, FF wakes up, and the shapes display
+      // correctly. One reliable way of 'waking up' the FF renderer is to change the
+      // transform attribute on an SVG element. By panning OpenSeadragon by one tenth of a 
+      // pixel (!), we're triggering such a refresh without causing a change that's visible
+      // to the user. *sigh* 
+
+      // Update: same now happens on Chrome...
+      viewer.forceRedraw();
     } else {
       editableAnnotations = undefined;
     }
@@ -118,7 +123,9 @@
 
       if (isVisibleHit && !editableAnnotations!.find(e => e.id === hit.id)) {
         hover.set(hit.id);
-        selection.setSelected(hit.id);
+
+        const next = updateSelection(hit.id, evt.detail, selection, multiSelect);
+        selection.userSelect(next);
       }
     }
   }
@@ -167,17 +174,39 @@
 
   // To get around lack of TypeScript support in Svelte markup
   const getEditor = (shape: Shape): typeof SvelteComponent => _getEditor(shape)!;
+
+  onMount(() => {
+    const onPointerMove = (evt: PointerEvent) => {
+      if ($selection.selected.length === 0) return;
+
+      const { offsetX, offsetY } = evt;
+      const pt = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(offsetX, offsetY));
+      const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
+
+      isHovered = Boolean(store.getAt(x, y, filter));    
+    }
+
+    viewer.element.addEventListener('pointermove', onPointerMove);
+
+    return () => {
+      viewer.element?.removeEventListener('pointermove', onPointerMove);
+    }
+  });
 </script>
 
+<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <OSDLayer viewer={viewer} let:transform let:scale>
   <svg 
+    tabindex={0}
     class="a9s-annotationlayer a9s-osd-drawinglayer"
-    class:drawing={drawingEnabled}>
+    class:drawing={drawingEnabled}
+    class:editing={editableAnnotations}
+    class:hover={isHovered}>
 
     <g 
       bind:this={drawingEl}
       transform={transform}>
-      {#if drawingEl && editableAnnotations}
+      {#if drawingEl && editableAnnotations?.length === 1}
         {#each editableAnnotations.filter(a => isImageAnnotation(a)) as editable}
           {@const editor = getEditor(editable.target.selector)}
           {#if editor}
@@ -196,7 +225,7 @@
           {/if}
         {/each}
       {:else if (drawingEl && tool && drawingEnabled)} 
-        {#key toolName} 
+        {#key `${toolName}-${toolMountKey}`}
           <OSDToolMount
             target={drawingEl}
             tool={tool}
@@ -204,6 +233,7 @@
             transform={{ elementToImage: toolTransform }}
             viewer={viewer}
             viewportScale={scale}
+            opts={opts}
             on:create={onSelectionCreated} />
         {/key}
       {/if}
@@ -216,8 +246,12 @@
     pointer-events: none;
   }
   
-  svg.drawing {
+  svg.drawing, svg.editing {
     pointer-events: all;
+  }
+
+  svg.hover {
+    cursor: pointer;
   }
 
   svg * {

@@ -127,21 +127,24 @@ export const AnnotoriousManifold = (props: { children: ReactNode }) => {
 }
 
 export const useAnnotoriousManifold = <I extends Annotation = Annotation, E extends { id: string } = Annotation>() => {
-  const { annotators } = useContext(AnnotoriousManifoldContext);
-  return createManifoldInstance(annotators) as AnnotoriousManifoldInstance<I, E>;
+  const ctx = useContext(AnnotoriousManifoldContext);
+  if (ctx)
+    return createManifoldInstance(ctx.annotators) as AnnotoriousManifoldInstance<I, E>;
 }
 
 export const useAnnotator = <I extends Annotation = Annotation, E extends { id: string } = Annotation>(id: string) => {
-  const { annotators } = useContext(AnnotoriousManifoldContext);
-  return annotators.get(id) as Annotator<I, E>;
+  const ctx = useContext(AnnotoriousManifoldContext);
+    return ctx.annotators.get(id) as Annotator<I, E>;
 }
 
 export const useAnnotations = <T extends Annotation>() => {
-  const { annotations } = useContext(AnnotoriousManifoldContext);
-  return annotations as Map<string, T[]>;
+  const ctx = useContext(AnnotoriousManifoldContext);
+  if (ctx)
+    return ctx.annotations as Map<string, T[]>;
 }
 
 export const useSelection = <T extends Annotation>() => {
-  const { selection } = useContext(AnnotoriousManifoldContext);
-  return selection as ManifoldSelection<T>;
+  const ctx = useContext(AnnotoriousManifoldContext);
+  if (ctx)
+    return ctx.selection as ManifoldSelection<T>;
 }

@@ -2,11 +2,12 @@ import * as PIXI from 'pixi.js';
 import type OpenSeadragon from 'openseadragon';
 import { ShapeType } from '@annotorious/annotorious';
 import type { AnnotationState, DrawingStyle, DrawingStyleExpression, Filter, Selection } from '@annotorious/core';
-import type { Ellipse, ImageAnnotation, Polygon, Rectangle, Shape } from '@annotorious/annotorious';
+import type { Ellipse, ImageAnnotation, MultiPolygon, MultiPolygonRing, Polygon, Rectangle, Shape } from '@annotorious/annotorious';
 
 const DEFAULT_FILL = 0xffffff;
 const DEFAULT_FILL_ALPHA = 0.25;
 const DEFAULT_STROKE = 0xffffff;
+const DEFAULT_STROKE_ALPHA = 1;
 const DEFAULT_STROKE_WIDTH = 1.5;
 
 // Fast redraws skip counter-scaling operations
@@ -30,12 +31,20 @@ interface AnnotationShape {
 const getGraphicsStyle = (style?: DrawingStyle) => {
   const fillStyle = {
     tint: style?.fill ? new PIXI.Color(style.fill).toNumber() : DEFAULT_FILL,
-    alpha: style?.fillOpacity === undefined ? DEFAULT_FILL_ALPHA : Math.min(style.fillOpacity, 1)
+    alpha: style?.fillOpacity !== undefined ?
+      Math.min(style.fillOpacity, 1) :
+      String(style?.fill).toLowerCase().startsWith('rgba(') ?
+        (new PIXI.Color(style?.fill)).alpha :
+        DEFAULT_FILL_ALPHA
   };
 
   const strokeStyle = {
     tint: style?.stroke ? new PIXI.Color(style.stroke).toNumber() : DEFAULT_STROKE,
-    alpha: style?.strokeOpacity === undefined ? 1 : Math.min(style.strokeOpacity, 1),
+    alpha: style?.strokeOpacity !== undefined ?
+      Math.min(style.strokeOpacity, 1) :
+      String(style?.stroke).toLowerCase().startsWith('rgba(') ?
+        (new PIXI.Color(style?.stroke)).alpha :
+          DEFAULT_STROKE_ALPHA,
     lineWidth: style?.strokeWidth === undefined ? DEFAULT_STROKE_WIDTH : style.strokeWidth
   }
 
@@ -66,19 +75,35 @@ const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (co
   return { fill: fillGraphics, stroke: strokeGraphics, strokeWidth: strokeStyle.lineWidth };
 }
 
+const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
+  const { x, y, w, h } = rectangle.geometry;
+  g.drawRect(x, y, w, h);
+});
+
 const drawEllipse = drawShape((ellipse: Ellipse, g: PIXI.Graphics) => {
   const { cx, cy, rx, ry } = ellipse.geometry;
   g.drawEllipse(cx, cy, rx, ry)
 });
 
 const drawPolygon = drawShape((polygon: Polygon, g: PIXI.Graphics) => {
-  const flattened = polygon.geometry.points.reduce((flat, xy) => ([...flat, ...xy]), []);   
+  const flattened = polygon.geometry.points.reduce<number[]>((flat, xy) => ([...flat, ...xy]), []);   
   g.drawPolygon(flattened);
 });
 
-const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
-  const { x, y, w, h } = rectangle.geometry;
-  g.drawRect(x, y, w, h);
+const drawMultiPolygon = drawShape((multiPolygon: MultiPolygon, g: PIXI.Graphics) => {
+  const flattenRing = (ring: MultiPolygonRing) => 
+    ring.points.reduce<number[]>((flat, xy) => ([...flat, ...xy]), []);
+
+  multiPolygon.geometry.polygons.forEach(element => {
+    const [outer, ...holes] = element.rings;
+    g.drawPolygon(flattenRing(outer));
+
+    holes.forEach(hole => {
+      g.beginHole();
+      g.drawPolygon(flattenRing(hole));
+      g.endHole();
+    });
+  });
 });
 
 const getCurrentScale = (viewer: OpenSeadragon.Viewer) => {
@@ -211,6 +236,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       rendered = drawPolygon(graphics, selector as Polygon, s);
     } else if (selector.type === ShapeType.ELLIPSE) {
       rendered = drawEllipse(graphics, selector as Ellipse, s);
+    } else if (selector.type === ShapeType.MULTIPOLYGLON) {
+      rendered = drawMultiPolygon(graphics, selector as MultiPolygon, s);
     } else {
       console.warn(`Unsupported shape type: ${selector.type}`)
     }
@@ -240,6 +267,12 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       rendered.stroke.destroy();
 
       addAnnotation(newValue, state);
+
+      if (selectedIds.has(newValue.id)) {
+        const { fill, stroke } = annotationShapes.get(newValue.id)!;
+        graphics.removeChild(fill);
+        graphics.removeChild(stroke);
+      }
     }
   }
 
@@ -283,11 +316,39 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     renderer.render(graphics);
   }
 
+  const setSelected = (selection: Selection) => {
+    const nexSelectedtIds = new Set(selection.selected.map(s => s.id));
+
+    const toSelect = 
+      selection.selected.filter(({ id }) => !selectedIds.has(id));
+
+    const toDeselect = [...selectedIds]
+      .filter(id => !nexSelectedtIds.has(id));
+
+    toSelect.forEach(({ id, editable }) => {
+      if (editable) {
+        const rendered = annotationShapes.get(id);
+        if (rendered) {
+          // Remove editable annotations from the stage
+          graphics.removeChild(rendered.fill);
+          graphics.removeChild(rendered.stroke);
+        }
+      } else {
+        redrawAnnotation(id, { selected: true, hovered: id === hovered });
+      }
+    });
+
+    toDeselect.forEach(id => redrawAnnotation(id, { hovered: id === hovered }));
+    
+    selectedIds = nexSelectedtIds;
+    renderer.render(graphics);
+  }
+
   const setHovered = (annotationId?: string) => {
     if (hovered === annotationId) return;
     
     // Unhover current, if any
-    if (hovered)
+    if (hovered && !selectedIds.has(hovered))
       redrawAnnotation(hovered, { selected: selectedIds.has(hovered) });
 
     // Set next hover
@@ -295,23 +356,6 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       redrawAnnotation(annotationId, { selected: selectedIds.has(annotationId), hovered: true });
 
     hovered = annotationId;
-
-    renderer.render(graphics);
-  }
-
-  const setSelected = (selection: Selection) => {
-    const nextIds = selection.selected.map(s => s.id);
-
-    const toSelect = 
-      nextIds.filter(id => !selectedIds.has(id));
-
-    const toDeselect = [...selectedIds]
-      .filter(id => !nextIds.includes(id));
-
-    [...toSelect, ...toDeselect].forEach(id => 
-      redrawAnnotation(id, { selected: nextIds.includes(id), hovered: id === hovered }));
-
-    selectedIds = new Set(nextIds);
 
     renderer.render(graphics);
   }

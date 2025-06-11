@@ -15,11 +15,10 @@ export const parseFragmentSelector = (
   fragmentOrSelector: FragmentSelector | string,
   invertY = false
 ): Rectangle => {
-
   const fragment =
     typeof fragmentOrSelector === 'string' ? fragmentOrSelector : fragmentOrSelector.value;
 
-  const regex = /^(xywh)=(pixel|percent)?:?(.+?),(.+?),(.+?),(.+)*/g;
+  const regex = /(xywh)=(pixel|percent)?:?(.+?),(.+?),(.+?),(.+)*/g;
 
   const matches = [...fragment.matchAll(regex)][0];
   const [_, prefix, unit, a, b, c, d] = matches;

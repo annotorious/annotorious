@@ -111,7 +111,7 @@ describe('store', () => {
       },
     ];
 
-    store.bulkAddAnnotation(newAnnotations);
+    store.bulkAddAnnotations(newAnnotations);
 
     expect(store.getAnnotation('annotation-1')).toBeDefined();
     expect(store.getAnnotation('annotation-2')).toBeDefined();
