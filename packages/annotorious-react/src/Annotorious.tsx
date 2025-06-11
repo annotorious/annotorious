@@ -117,7 +117,7 @@ export const useAnnotator = <T extends unknown = Annotator<any, unknown>>() => {
 }
 
 export const useAnnotationStore = <T extends unknown = Store<Annotation>>() => {
-  const { anno } = useContext(AnnotoriousContext);
+  const anno = useAnnotator();
   return anno?.state.store as T | undefined;
 }
 
@@ -176,7 +176,7 @@ export const useSelection = <T extends Annotation = ImageAnnotation>() => {
 }
 
 export const useHover = <T extends Annotation = ImageAnnotation>() => {
-  const { anno } = useContext(AnnotoriousContext);
+  const anno = useAnnotator();
 
   const [hover, setHover] = useState<T | undefined>();
 
@@ -203,12 +203,12 @@ export const useHover = <T extends Annotation = ImageAnnotation>() => {
 }
 
 export const useAnnotatorUser = (): User => {
-  const { anno } = useContext(AnnotoriousContext);
+  const anno = useAnnotator();
   return anno?.getUser();
 }
 
 const _useViewportState = <T extends Annotation>() => {
-  const { anno } = useContext(AnnotoriousContext);
+  const anno = useAnnotator();
 
   const [inViewport, setInViewport] = useState<T[]>([]);
 
