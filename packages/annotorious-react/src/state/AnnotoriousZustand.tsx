@@ -1,13 +1,12 @@
 import { forwardRef, ReactNode, useEffect, useImperativeHandle, useState } from 'react';
 import { create } from 'zustand';
-import { onUserSelect } from '@annotorious/core';
-import type { StoreObserveOptions, UserSelectActionExpression } from '@annotorious/core';
+import type { StoreObserveOptions } from '@annotorious/core';
 import { useDebounce } from '../useDebounce';
 import type {
   Annotation,
   Annotator,
-  Selection as CoreSelection,
   ImageAnnotation,
+  Selection as CoreSelection,
   Store,
   StoreChangeEvent,
   User
@@ -144,15 +143,12 @@ export const useAnnotation = <T extends Annotation = ImageAnnotation>(
   return annotation;
 };
 
-export const useAnnotationSelectAction = <
-  I extends Annotation = ImageAnnotation,
-  E extends unknown = ImageAnnotation
->(
+export const useAnnotationSelectAction = <I extends Annotation = ImageAnnotation>(
   id: string,
-  action: UserSelectActionExpression<E>
 ) => {
+  const anno = useAnnotator();
   const annotation = useAnnotation<I>(id);
-  return annotation ? onUserSelect<I, E>(annotation, action) : undefined;
+  return anno && annotation ? anno.state.selection.evalSelectAction(annotation) : undefined;
 };
 
 export const useSelection = <T extends Annotation = ImageAnnotation>() => {

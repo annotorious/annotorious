@@ -77,7 +77,7 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
     }
 
     const selected = annotations.reduce<{ id: string, editable?: boolean }[]>((sel, a) => {
-      const action = onUserSelect(a, currentUserSelectAction, adapter);
+      const action = evalSelectAction(a);
       if (action === UserSelectAction.EDIT)
         return [...sel, { id: a.id, editable: true }];
       else if (action === UserSelectAction.SELECT) 
@@ -102,7 +102,7 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
 
         // If editable isn't set, use the default behavior
         const isEditable = editable === undefined
-          ? onUserSelect(annotation, currentUserSelectAction, adapter) === UserSelectAction.EDIT
+          ? evalSelectAction(annotation) === UserSelectAction.EDIT
           : editable;
 
         return { id: annotation.id, editable: isEditable }
