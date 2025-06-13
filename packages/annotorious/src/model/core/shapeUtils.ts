@@ -5,7 +5,7 @@ export interface ShapeUtil<T extends Shape> {
 
   area: (shape: T) => number;
 
-  intersects: (shape: T, x: number, y: number) => boolean;
+  intersects: (shape: T, x: number, y: number, scale?: number) => boolean;
 
 }
 
@@ -33,8 +33,8 @@ export const computeArea = (shape: Shape) => Utils[shape.type].area(shape);
  * @param y point y coord
  * @returns true if shape and point intersect
  */
-export const intersects = (shape: Shape, x: number, y: number): boolean =>
-  Utils[shape.type].intersects(shape, x, y);
+export const intersects = (shape: Shape, x: number, y: number, scale?: number): boolean =>
+  Utils[shape.type].intersects(shape, x, y, scale);
 
 /**
  * Computes Bounds from a given list of points.
