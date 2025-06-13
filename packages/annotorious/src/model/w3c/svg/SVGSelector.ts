@@ -4,6 +4,8 @@ import { svgPathToMultiPolygonElement } from './pathParser';
 import type { 
   Ellipse, 
   EllipseGeometry, 
+  Line,
+  LineGeometry,
   MultiPolygon,
   MultiPolygonGeometry, 
   Polygon, 
@@ -59,6 +61,30 @@ const parseSVGEllipse = (value: string): Ellipse => {
   };
 }
 
+const parseSVGLine = (value: string): Line => {
+  const doc = parseSVGXML(value);
+
+  const x1 = parseFloat(doc.getAttribute("x1")!);
+  const x2 = parseFloat(doc.getAttribute("x2")!);
+  const y1 = parseFloat(doc.getAttribute("y1")!);
+  const y2 = parseFloat(doc.getAttribute("y2")!);
+
+  const bounds = {
+    minX: Math.min(x1, x2),
+    minY: Math.min(y1, y2),
+    maxX: Math.max(x1, x2),
+    maxY: Math.max(y1, y2),
+  };
+
+  return {
+    type: ShapeType.LINE,
+    geometry: {
+      points: [[x1, y1], [x2, y2]],
+      bounds,
+    },
+  };
+}
+
 const parseSVGPath = (value: string): Polygon | MultiPolygon => {
   const doc = parseSVGXML(value);
 
@@ -99,6 +125,8 @@ export const parseSVGSelector = <T extends Shape>(valueOrSelector: SVGSelector |
     return parseSVGPath(value) as unknown as T;
   else if (value.includes('<ellipse ')) 
     return parseSVGEllipse(value) as unknown as T;
+  else if (value.includes("<line "))
+    return parseSVGLine(value) as unknown as T;
   else 
     throw 'Unsupported SVG shape: ' + value;
 }
@@ -123,6 +151,10 @@ export const serializeSVGSelector = (shape: Shape): SVGSelector => {
   } else if (shape.type === ShapeType.MULTIPOLYGLON) {
     const geom = shape.geometry as MultiPolygonGeometry;
     value = `<svg>${serializeMultiPolygon(geom)}</svg>`;
+  } else if (shape.type === ShapeType.LINE) {
+    const geom = shape.geometry as LineGeometry;
+    const [[x1, y1], [x2, y2]] = geom.points;
+    value = `<svg><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" /></svg>`;
   }
 
   if (value) {

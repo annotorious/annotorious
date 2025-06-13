@@ -75,7 +75,7 @@ export const createSpatialTree = () => {
   };
 
 
-  const getAt = (x: number, y: number, filter?: Filter<Annotation>): ImageAnnotationTarget[] => {
+  const getAt = (x: number, y: number, filter?: Filter<Annotation>, scale?: number): ImageAnnotationTarget[] => {
     const idxHits = tree.search({
       minX: x,
       minY: y,
@@ -86,7 +86,7 @@ export const createSpatialTree = () => {
     // Exact hit test on shape (not needed for rectangles!)
     const exactHits = idxHits.filter(target => {
       return (target.selector.type === ShapeType.RECTANGLE) ||
-        intersects(target.selector, x, y);
+        intersects(target.selector, x, y, scale);
     });
 
     // Get smallest shape

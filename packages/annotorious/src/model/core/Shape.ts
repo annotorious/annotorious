@@ -16,7 +16,9 @@ export enum ShapeType {
 
   POLYGON = 'POLYGON',
 
-  RECTANGLE = 'RECTANGLE'
+  RECTANGLE = 'RECTANGLE',
+
+  LINE = 'LINE'
 
 }
 
