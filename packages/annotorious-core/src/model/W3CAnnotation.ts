@@ -130,3 +130,6 @@ export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[
 
     return w3cBody;
   });
+
+export const isW3CAnnotation = (annotation: any): annotation is W3CAnnotation =>
+  annotation && annotation['@context'] === 'http://www.w3.org/ns/anno.jsonld' && 'creator' in annotation
