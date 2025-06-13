@@ -1,4 +1,4 @@
-import type { AnnotationBody } from './Annotation';
+import type { Annotation, AnnotationBody } from './Annotation';
 
 export interface W3CAnnotation {
 
@@ -131,5 +131,5 @@ export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[
     return w3cBody;
   });
 
-export const isW3CAnnotation = (annotation: any): annotation is W3CAnnotation =>
-  annotation && annotation['@context'] === 'http://www.w3.org/ns/anno.jsonld' && 'creator' in annotation
+export const isW3CAnnotation = (annotation: Annotation | W3CAnnotation): annotation is W3CAnnotation =>
+  '@context' in annotation && 'creator' in annotation;
