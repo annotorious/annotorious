@@ -54,8 +54,8 @@ export const createImageAnnotatorState = <I extends Annotation, E extends unknow
       tree.update(oldValue.target, newValue.target));
   });
 
-  const getAt = (x: number, y: number, filter?: Filter<I>): I | undefined => {
-    const targets = tree.getAt(x, y, filter as Filter<Annotation>);
+  const getAt = (x: number, y: number, filter?: Filter<I>, scale?: number): I | undefined => {
+    const targets = tree.getAt(x, y, filter as Filter<Annotation>, scale);
 
     if (filter) {
       // Resolve annotations first, so we can filter

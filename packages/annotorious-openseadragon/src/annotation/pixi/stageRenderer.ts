@@ -435,6 +435,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   return {
     addAnnotation,
     destroy,
+    getScale: () => lastScale,
     redraw: redrawStage(viewer, graphics, annotationShapes, renderer),
     removeAnnotation,
     resize,

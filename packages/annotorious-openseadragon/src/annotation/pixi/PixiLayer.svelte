@@ -47,8 +47,8 @@
 
   const onPointerMove = (canvas: HTMLCanvasElement) => (evt: PointerEvent) => {
     const {x, y} = getImageXY(new OpenSeadragon.Point(evt.offsetX, evt.offsetY));
-    
-    const hit = store.getAt(x, y, filter);
+    const scale = stage.getScale();
+    const hit = store.getAt(x, y, filter, scale);
     if (hit) {
       canvas.classList.add('hover');
 
@@ -79,7 +79,8 @@
 
     if (dist < 5) {
       const {x, y} = getImageXY(evt.position);
-      const annotation = store.getAt(x, y, filter);
+      const scale = stage.getScale();
+      const annotation = store.getAt(x, y, filter, scale);
 
       if (annotation) {
         dispatch('click', { originalEvent, annotation });
