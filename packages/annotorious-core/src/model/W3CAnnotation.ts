@@ -132,4 +132,4 @@ export const serializeW3CBodies = (bodies: AnnotationBody[]): W3CAnnotationBody[
   });
 
 export const isW3CAnnotation = (annotation: Annotation | W3CAnnotation): annotation is W3CAnnotation =>
-  '@context' in annotation && 'creator' in annotation;
+  '@context' in annotation && 'creator' in annotation && 'body' in annotation;
