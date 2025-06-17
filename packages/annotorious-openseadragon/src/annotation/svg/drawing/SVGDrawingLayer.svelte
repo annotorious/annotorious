@@ -125,9 +125,9 @@
       // Click - check if another shape needs selecting
       const { offsetX, offsetY } = evt.detail;
       const [x, y] = toolTransform(offsetX, offsetY);
-      const scale = getCurrentScale();
+      const buffer = getIntersectionBuffer();
 
-      const hit = store.getAt(x, y, undefined, scale);
+      const hit = store.getAt(x, y, undefined, buffer);
       const isVisibleHit = hit && (!filter || filter(hit));
 
       if (isVisibleHit && !editableAnnotations!.find(e => e.id === hit.id)) {
