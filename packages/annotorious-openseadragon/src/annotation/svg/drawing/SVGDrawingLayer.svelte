@@ -107,6 +107,8 @@
     return zoom * containerWidth / viewer.world.getContentFactor();
   }
 
+  const getIntersectionBuffer = () => 2 / getCurrentScale();
+
   const onGrab = (evt: CustomEvent<PointerEvent>) => {
     viewer.setMouseNavEnabled(false);
 
@@ -189,9 +191,9 @@
       const { offsetX, offsetY } = evt;
       const pt = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(offsetX, offsetY));
       const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
-      const scale = getCurrentScale();
+      const buffer = getIntersectionBuffer();
 
-      isHovered = Boolean(store.getAt(x, y, filter, scale));    
+      isHovered = Boolean(store.getAt(x, y, filter, buffer));    
     }
 
     viewer.element.addEventListener('pointermove', onPointerMove);
