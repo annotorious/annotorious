@@ -179,14 +179,17 @@
   
     const onStoreChange = (event: StoreChangeEvent<I>) => {
       const { created, updated, deleted } = event.changes;
-
+      
       const simplifiedCreated = (created || [])
         .filter(i => isImageAnnotation(i))
         .map(simplify);
 
-      simplifiedCreated.forEach(annotation => stage.addAnnotation(annotation));
+      // Order is important! The edge case is that annotations with the same ID are
+      // added and removed in the same change. Deleting first makes sure we don't loose
+      // graphics object references on the stage.
       filterAnnotations((deleted || [])).forEach(annotation => stage.removeAnnotation(annotation));
-      
+      simplifiedCreated.forEach(annotation => stage.addAnnotation(annotation));
+
       (updated || [])
         .filter(u => isImageAnnotationUpdate(u))
         .map(({ oldValue, newValue }) => ({ oldValue, newValue: simplify(newValue) }))
