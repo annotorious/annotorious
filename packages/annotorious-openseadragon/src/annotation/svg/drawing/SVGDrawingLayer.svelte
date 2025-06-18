@@ -246,7 +246,8 @@
     pointer-events: none;
   }
   
-  svg.drawing, svg.editing {
+  svg.drawing, 
+  svg.editing * {
     pointer-events: all;
   }
 
