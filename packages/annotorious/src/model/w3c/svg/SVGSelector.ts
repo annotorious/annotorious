@@ -141,20 +141,29 @@ const serializeMultiPolygon = (geom: MultiPolygonGeometry) => {
 export const serializeSVGSelector = (shape: Shape): SVGSelector => {
   let value: string | undefined;
 
-  if (shape.type === ShapeType.POLYGON) {
-    const geom = shape.geometry as PolygonGeometry;
-    const { points } = geom;
-    value = `<svg><polygon points="${points.map((xy) => xy.join(',')).join(' ')}" /></svg>`;
-  } else if (shape.type === ShapeType.ELLIPSE) {
-    const geom = shape.geometry as EllipseGeometry;
-    value = `<svg><ellipse cx="${geom.cx}" cy="${geom.cy}" rx="${geom.rx}" ry="${geom.ry}" /></svg>`;
-  } else if (shape.type === ShapeType.MULTIPOLYGLON) {
-    const geom = shape.geometry as MultiPolygonGeometry;
-    value = `<svg>${serializeMultiPolygon(geom)}</svg>`;
-  } else if (shape.type === ShapeType.LINE) {
-    const geom = shape.geometry as LineGeometry;
-    const [[x1, y1], [x2, y2]] = geom.points;
-    value = `<svg><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" /></svg>`;
+  switch (shape.type) {
+    case ShapeType.POLYGON: {
+      const geom = shape.geometry as PolygonGeometry;
+      const { points } = geom;
+      value = `<svg><polygon points="${points.map((xy) => xy.join(',')).join(' ')}" /></svg>`;
+      break;
+    }
+    case ShapeType.ELLIPSE: {
+      const geom = shape.geometry as EllipseGeometry;
+      value = `<svg><ellipse cx="${geom.cx}" cy="${geom.cy}" rx="${geom.rx}" ry="${geom.ry}" /></svg>`;
+      break;
+    }
+    case ShapeType.MULTIPOLYGLON: {
+      const geom = shape.geometry as MultiPolygonGeometry;
+      value = `<svg>${serializeMultiPolygon(geom)}</svg>`;
+      break;
+    }
+    case ShapeType.LINE: {
+      const geom = shape.geometry as LineGeometry;
+      const [[x1, y1], [x2, y2]] = geom.points;
+      value = `<svg><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" /></svg>`;
+      break;
+    }
   }
 
   if (value) {
