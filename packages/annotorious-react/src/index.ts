@@ -77,6 +77,7 @@ export type {
 } from '@annotorious/annotorious';
 
 export {   
+  boundsFromPoints,
   chainStyles,
   computeStyle,
   createImageAnnotator,
