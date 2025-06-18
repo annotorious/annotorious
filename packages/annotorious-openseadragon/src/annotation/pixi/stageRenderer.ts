@@ -224,6 +224,15 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     // In case this annotation adds stroke > 1
     fastRedraw = false; 
 
+    // Robustness: make sure to delete any annotation with the same ID, because 
+    // otherwise we'd replace the annotation in `annotationShapes` and leave 
+    // zombie references on Pixi!
+    const previous = annotationShapes.get(annotation.id);
+    if (previous) {
+      previous.fill.destroy();
+      previous.stroke.destroy();
+    }
+
     const { selector } = annotation.target;
 
     const s = typeof style == 'function' ? style(annotation, state) : style;
