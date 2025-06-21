@@ -2,7 +2,7 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import type { DrawingMode } from '../../../AnnotoriousOpts';
   import { ShapeType, type Rectangle } from '../../../model';
-  import { getMaskDimensions, type Transform } from '../..';
+  import type { Transform } from '../..';
 
   const dispatch = createEventDispatcher<{ create: Rectangle }>();
   

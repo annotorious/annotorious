@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount, createEventDispatcher } from 'svelte';
   import type { DrawingMode } from '../../../AnnotoriousOpts';
-  import { boundsFromPoints, computeArea, ShapeType, type Polygon } from '../../../model';
-  import { distance, getMaskDimensions } from '../../utils';
+  import { boundsFromPoints, computeArea, distance, ShapeType, type Polygon } from '../../../model';
+  import { getMaskDimensions } from '../../utils';
   import type { Transform } from '../..';
 
   const dispatch = createEventDispatcher<{ create: Polygon }>();

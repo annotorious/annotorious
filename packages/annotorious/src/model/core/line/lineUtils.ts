@@ -1,7 +1,6 @@
 import { ShapeType } from '../Shape';
-import { boundsFromPoints, registerShapeUtil, simplifyPoints, type ShapeUtil } from '../shapeUtils';
+import { distance, registerShapeUtil, type ShapeUtil } from '../shapeUtils';
 import type { Line } from './Line';
-import { distance } from '../../../annotation/utils';
 
 const LineUtil: ShapeUtil<Line> = {
 
@@ -18,20 +17,7 @@ const LineUtil: ShapeUtil<Line> = {
 
     return area / length <= buffer;
   }
+  
 };
-
-export const simplifyLine = (line: Line, tolerance = 1): Line => {
-  const points = simplifyPoints(line.geometry.points, tolerance) as [[number, number], [number, number]];
-  const bounds = boundsFromPoints(points);
-
-  return {
-    ...line,
-    geometry: {
-      ...line.geometry,
-      bounds,
-      points
-    }
-  }
-}
 
 registerShapeUtil(ShapeType.LINE, LineUtil);

@@ -1,5 +1,5 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
-  import { simplifyLine, simplifyMultiPolygon, simplifyPolygon } from '@annotorious/annotorious/src';
+  import { simplifyMultiPolygon, simplifyPolygon } from '@annotorious/annotorious/src';
   import { createEventDispatcher, onMount } from 'svelte';
   import OpenSeadragon from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, StoreChangeEvent, Update } from '@annotorious/core';
@@ -166,17 +166,6 @@
         }
       } else if (selector.type === ShapeType.MULTIPOLYGLON) {
         const shape = simplifyMultiPolygon(selector as MultiPolygon);
-        return {
-          ...a,
-          target: {
-            ...a.target,
-            selector: {
-              ...shape
-            }
-          }
-        }
-      } else if (selector.type === ShapeType.LINE) {
-        const shape = simplifyLine(selector as Line);
         return {
           ...a,
           target: {
