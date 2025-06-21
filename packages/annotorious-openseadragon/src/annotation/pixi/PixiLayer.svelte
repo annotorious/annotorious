@@ -40,7 +40,7 @@
     return viewer.viewport.viewportToImageCoordinates(x, y);
   }
 
-  const getIntersectionBuffer = () => 2 / stage.getScale();
+  const getHitTolerance= () => 2 / stage.getScale();
 
   const onCanvasPress = (evt: OpenSeadragon.CanvasPressEvent) => {
     const { x, y } = evt.position;
@@ -49,7 +49,7 @@
 
   const onPointerMove = (canvas: HTMLCanvasElement) => (evt: PointerEvent) => {
     const {x, y} = getImageXY(new OpenSeadragon.Point(evt.offsetX, evt.offsetY));
-    const buffer = getIntersectionBuffer();
+    const buffer = getHitTolerance();
     const hit = store.getAt(x, y, filter, buffer);
     if (hit) {
       canvas.classList.add('hover');
@@ -81,7 +81,7 @@
 
     if (dist < 5) {
       const {x, y} = getImageXY(evt.position);
-      const buffer = getIntersectionBuffer();
+      const buffer = getHitTolerance();
       const annotation = store.getAt(x, y, filter, buffer);
 
       if (annotation) {
