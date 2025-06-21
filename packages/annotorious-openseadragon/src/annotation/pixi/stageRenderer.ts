@@ -85,6 +85,13 @@ const drawEllipse = drawShape((ellipse: Ellipse, g: PIXI.Graphics) => {
   g.drawEllipse(cx, cy, rx, ry)
 });
 
+const drawLine = drawShape((line: Line, g: PIXI.Graphics) => {
+  const [[x1, y1], [x2, y2]] = line.geometry.points;
+  g.moveTo(x1, y1);
+  g.lineTo(x2, y2);
+  g.closePath();
+});
+
 const drawPolygon = drawShape((polygon: Polygon, g: PIXI.Graphics) => {
   const flattened = polygon.geometry.points.reduce<number[]>((flat, xy) => ([...flat, ...xy]), []);   
   g.drawPolygon(flattened);
@@ -104,13 +111,6 @@ const drawMultiPolygon = drawShape((multiPolygon: MultiPolygon, g: PIXI.Graphics
       g.endHole();
     });
   });
-});
-
-const drawLine = drawShape((line: Line, g: PIXI.Graphics) => {
-  const [[x1, y1], [x2, y2]] = line.geometry.points;
-  g.moveTo(x1, y1);
-  g.lineTo(x2, y2);
-  g.closePath();
 });
 
 const getCurrentScale = (viewer: OpenSeadragon.Viewer) => {
