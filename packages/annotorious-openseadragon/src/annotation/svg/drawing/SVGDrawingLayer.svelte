@@ -101,6 +101,14 @@
     return [x, y];
   }
 
+  const getCurrentScale = () => {
+    const containerWidth = viewer.viewport.getContainerSize().x;
+    const zoom = viewer.viewport.getZoom(true);
+    return zoom * containerWidth / viewer.world.getContentFactor();
+  }
+
+  const getIntersectionBuffer = () => 2 / getCurrentScale();
+
   const onGrab = (evt: CustomEvent<PointerEvent>) => {
     viewer.setMouseNavEnabled(false);
 
@@ -117,8 +125,9 @@
       // Click - check if another shape needs selecting
       const { offsetX, offsetY } = evt.detail;
       const [x, y] = toolTransform(offsetX, offsetY);
+      const buffer = getIntersectionBuffer();
 
-      const hit = store.getAt(x, y);
+      const hit = store.getAt(x, y, undefined, buffer);
       const isVisibleHit = hit && (!filter || filter(hit));
 
       if (isVisibleHit && !editableAnnotations!.find(e => e.id === hit.id)) {
@@ -182,8 +191,9 @@
       const { offsetX, offsetY } = evt;
       const pt = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(offsetX, offsetY));
       const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
+      const buffer = getIntersectionBuffer();
 
-      isHovered = Boolean(store.getAt(x, y, filter));    
+      isHovered = Boolean(store.getAt(x, y, filter, buffer));    
     }
 
     viewer.element.addEventListener('pointermove', onPointerMove);

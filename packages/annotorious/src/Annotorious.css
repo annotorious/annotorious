@@ -28,6 +28,7 @@
 }
 
 .a9s-annotationlayer ellipse, 
+.a9s-annotationlayer line, 
 .a9s-annotationlayer path,
 .a9s-annotationlayer polygon,
 .a9s-annotationlayer rect  {
@@ -132,4 +133,8 @@
 
 .a9s-handle.a9s-corner-handle-bottomleft {
   cursor: sw-resize;
+}
+
+.a9s-rubberband {
+  vector-effect: non-scaling-stroke;
 }

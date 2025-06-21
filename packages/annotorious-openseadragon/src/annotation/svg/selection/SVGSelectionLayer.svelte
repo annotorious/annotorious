@@ -7,6 +7,7 @@
   import SelectedPolygon from './shapes/SelectedPolygon.svelte';
   import SelectedMultiPolygon from './shapes/SelectedMultiPolygon.svelte';
   import SelectedEllipse from './shapes/SelectedEllipse.svelte';
+  import SelectedLine from './shapes/SelectedLine.svelte';
 
   /** Props **/
   export let state: ImageAnnotatorState<I, E>;
@@ -68,6 +69,8 @@
             <SelectedMultiPolygon annotation={a} />
           {:else if (a.target.selector.type === ShapeType.ELLIPSE)}
             <SelectedEllipse annotation={a} />
+          {:else if (a.target.selector.type === ShapeType.LINE)}
+            <SelectedLine annotation={a} />
           {/if}
         {/each}
       </g>
@@ -87,7 +90,7 @@
     pointer-events: none;
   }
 
-  :global(.a9s-osd-selectionlayer :is(rect, path, polygon, ellipse)) {
+  :global(.a9s-osd-selectionlayer :is(rect, path, polygon, ellipse, line)) {
     fill: rgba(49, 130, 237, 0.25);
     stroke: #3182ed;
     stroke-width: 1.5px;
