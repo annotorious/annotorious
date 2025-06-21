@@ -75,13 +75,12 @@ export const createSpatialTree = () => {
   };
 
 
-  const getAt = (x: number, y: number, filter?: Filter<Annotation>, buffer?: number): ImageAnnotationTarget[] => {
-    const bufferValue = buffer || 0;
+  const getAt = (x: number, y: number, filter?: Filter<Annotation>, buffer: number = 0): ImageAnnotationTarget[] => {
     const idxHits = tree.search({
-      minX: x - bufferValue,
-      minY: y - bufferValue,
-      maxX: x + bufferValue,
-      maxY: y + bufferValue
+      minX: x - buffer,
+      minY: y - buffer,
+      maxX: x + buffer,
+      maxY: y + buffer
     }).map(item => item.target);
 
     // Exact hit test on shape (not needed for rectangles!)
