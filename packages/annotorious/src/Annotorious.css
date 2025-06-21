@@ -134,7 +134,3 @@
 .a9s-handle.a9s-corner-handle-bottomleft {
   cursor: sw-resize;
 }
-
-.a9s-rubberband {
-  vector-effect: non-scaling-stroke;
-}
