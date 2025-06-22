@@ -36,11 +36,11 @@ anno.on('createAnnotation', function(annotation) {
 Visit the [Discussion Forum](https://github.com/annotorious/annotorious/discussions) for community support, or file an
 issue on the [Issue Tracker](https://github.com/annotorious/annotorious/issues).
 
-## Become a Sponsor
+## Professional Support
 
-Using Annotorious at work? Become a sponsor! Your support helps me cover hosting costs, spend more 
-time supporting the community, and make Annotorious better for everyone. [Make a one-time or monthly
-donation via my SteadyHQ account](https://steadyhq.com/rainer-simon).
+Need help with Annotorious integration, custom development, or support? I offer **integration consulting**, **custom feature development**, and ongoing **support retainers**. I only take on a limited number of projects to ensure quality service and timely delivery.
+
+Want to work with me? Drop me a line at (hello@rainersimon.io)[mailto:hello@rainersimon.io] to explore options for your project.
 
 ## Older Versions
 
