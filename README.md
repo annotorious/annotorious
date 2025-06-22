@@ -40,7 +40,7 @@ issue on the [Issue Tracker](https://github.com/annotorious/annotorious/issues).
 
 Need help with Annotorious integration, custom development, or support? I offer **integration consulting**, **custom feature development**, and ongoing **support retainers**. I only take on a limited number of projects to ensure quality service and timely delivery.
 
-Want to work with me? Drop me a line at (hello@rainersimon.io)[mailto:hello@rainersimon.io] to explore options for your project.
+Want to work with me? Drop me a line at hello@rainersimon.io to explore options for your project.
 
 ## Older Versions
 
