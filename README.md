@@ -36,7 +36,7 @@ anno.on('createAnnotation', function(annotation) {
 Visit the [Discussion Forum](https://github.com/annotorious/annotorious/discussions) for community support, or file an
 issue on the [Issue Tracker](https://github.com/annotorious/annotorious/issues).
 
-## Professional Support
+## Professional Support Available
 
 Looking for help with integration, customization, or feature development? I offer consulting and professional services for teams and organizations that need dedicated support or technical guidance.
 
