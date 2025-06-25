@@ -107,7 +107,7 @@
     return zoom * containerWidth / viewer.world.getContentFactor();
   }
 
-  const getIntersectionBuffer = () => 2 / getCurrentScale();
+  const getHitTolerance = () => 2 / getCurrentScale();
 
   const onGrab = (evt: CustomEvent<PointerEvent>) => {
     viewer.setMouseNavEnabled(false);
@@ -125,7 +125,7 @@
       // Click - check if another shape needs selecting
       const { offsetX, offsetY } = evt.detail;
       const [x, y] = toolTransform(offsetX, offsetY);
-      const buffer = getIntersectionBuffer();
+      const buffer = getHitTolerance();
 
       const hit = store.getAt(x, y, undefined, buffer);
       const isVisibleHit = hit && (!filter || filter(hit));
@@ -191,7 +191,7 @@
       const { offsetX, offsetY } = evt;
       const pt = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(offsetX, offsetY));
       const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
-      const buffer = getIntersectionBuffer();
+      const buffer = getHitTolerance();
 
       isHovered = Boolean(store.getAt(x, y, filter, buffer));    
     }
