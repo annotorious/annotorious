@@ -269,7 +269,6 @@
           // Rings needs 3 points min
           if (selectedCornersInRing.length && ring.points.length - selectedCornersInRing.length >= 3) {
             const points = ring.points.filter((_, i) => !selectedCornersInRing.some(s => s.point === i));
-
             return { points };
           } else {
             // No points selected on this ring
