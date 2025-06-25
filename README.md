@@ -38,8 +38,6 @@ issue on the [Issue Tracker](https://github.com/annotorious/annotorious/issues).
 
 ## Professional Support
 
-Want to work with me? Drop me a line at hello@rainersimon.io to explore options for your project.
-
 Looking for help with integration, customization, or feature development? I offer consulting and professional services for teams and organizations that need dedicated support or technical guidance.
 
 Contact me at hello@rainersimon.io to discuss your project.
