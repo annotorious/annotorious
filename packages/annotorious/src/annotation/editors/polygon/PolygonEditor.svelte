@@ -211,7 +211,7 @@
 
   const onDeleteSelected = () => {
     // Polygon needs 3 points min
-    if (geom.points.length < 4) return;
+    if (geom.points.length - selectedCorners.length < 3) return;
 
     const points = geom.points.filter((_, i) => !selectedCorners.includes(i)) as [number, number][];
     const bounds = boundsFromPoints(points);
