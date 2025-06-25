@@ -29,7 +29,7 @@ anno.on('createAnnotation', function(annotation) {
 
 ## License
 
-[BSD 3-Clause](LICENSE) (= feel free to use this code in whatever way you wish. But keep the attribution/license file, and if this code breaks something, don't complain to me :-)
+Annotorious is licensed under the [BSD 3-Clause](LICENSE) license.
 
 ## Community
 
