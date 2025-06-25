@@ -5,14 +5,13 @@
   import { isImageAnnotation, ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
   import { getEditor as _getEditor, EditorMount } from './editors';
-  import { Ellipse, Polygon, Rectangle} from './shapes';
+  import { Ellipse, Line, MultiPolygon, Polygon, Rectangle} from './shapes';
   import { getTool, listDrawingTools, ToolMount } from './tools';
   import { enableResponsive } from './utils';
   import { createSVGTransform } from './Transform';
   import { addEventListeners, getSVGPoint } from './SVGAnnotationLayerPointerEvent';
   import type { SvelteImageAnnotatorState } from 'src/state';
   import type { DrawingMode } from 'src/AnnotoriousOpts';
-    import MultiPolygon from './shapes/MultiPolygon.svelte';
 
   /** Props **/
   export let drawingEnabled: boolean;
@@ -178,6 +177,11 @@
               style={style} />
           {:else if (selector?.type === ShapeType.MULTIPOLYGLON)}
             <MultiPolygon
+              annotation={annotation}
+              geom={selector.geometry}
+              style={style} />
+          {:else if (selector?.type === ShapeType.LINE)}
+            <Line
               annotation={annotation}
               geom={selector.geometry}
               style={style} />

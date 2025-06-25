@@ -4,7 +4,7 @@
   import OpenSeadragon from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, StoreChangeEvent, Update } from '@annotorious/core';
   import { isImageAnnotation, ShapeType } from '@annotorious/annotorious';
-  import type { Filter, ImageAnnotation, ImageAnnotatorState, MultiPolygon, Polygon } from '@annotorious/annotorious';
+  import type { Filter, ImageAnnotation, ImageAnnotatorState, Line, MultiPolygon, Polygon } from '@annotorious/annotorious';
   import type { PixiLayerClickEvent } from './PixiLayerClickEvent';
   import { createStage } from './stageRenderer';
 
@@ -40,6 +40,8 @@
     return viewer.viewport.viewportToImageCoordinates(x, y);
   }
 
+  const getHitTolerance= () => 2 / stage.getScale();
+
   const onCanvasPress = (evt: OpenSeadragon.CanvasPressEvent) => {
     const { x, y } = evt.position;
     lastPress = { x, y };
@@ -47,8 +49,8 @@
 
   const onPointerMove = (canvas: HTMLCanvasElement) => (evt: PointerEvent) => {
     const {x, y} = getImageXY(new OpenSeadragon.Point(evt.offsetX, evt.offsetY));
-    
-    const hit = store.getAt(x, y, filter);
+    const buffer = getHitTolerance();
+    const hit = store.getAt(x, y, filter, buffer);
     if (hit) {
       canvas.classList.add('hover');
 
@@ -79,7 +81,8 @@
 
     if (dist < 5) {
       const {x, y} = getImageXY(evt.position);
-      const annotation = store.getAt(x, y, filter);
+      const buffer = getHitTolerance();
+      const annotation = store.getAt(x, y, filter, buffer);
 
       if (annotation) {
         dispatch('click', { originalEvent, annotation });

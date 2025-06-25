@@ -1,4 +1,3 @@
-export * from './math';
 export * from './responsive';
 export * from './styling';
 export * from './svg';

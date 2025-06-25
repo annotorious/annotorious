@@ -5,7 +5,7 @@ export interface ShapeUtil<T extends Shape> {
 
   area: (shape: T) => number;
 
-  intersects: (shape: T, x: number, y: number) => boolean;
+  intersects: (shape: T, x: number, y: number, buffer?: number) => boolean;
 
 }
 
@@ -31,10 +31,11 @@ export const computeArea = (shape: Shape) => Utils[shape.type].area(shape);
  * @param shape the shape
  * @param x point x coord
  * @param y point y coord
+ * @param buffer optional buffer around the point to consider as intersection
  * @returns true if shape and point intersect
  */
-export const intersects = (shape: Shape, x: number, y: number): boolean =>
-  Utils[shape.type].intersects(shape, x, y);
+export const intersects = (shape: Shape, x: number, y: number, buffer?: number): boolean =>
+  Utils[shape.type].intersects(shape, x, y, buffer);
 
 /**
  * Computes Bounds from a given list of points.
@@ -108,4 +109,11 @@ export const pointsToPath = (points: [number, number][], close: boolean = true):
 export const simplifyPoints = (points: number[][], tolerance = 1): [number, number][] => {
   const mapped = points.map(([x, y]) => ({ x, y }));
   return simplify(mapped, tolerance, true).map(pt => [pt.x, pt.y]);
+}
+
+export const distance = (a: [number, number], b: [number, number]): number => {
+  const dx = Math.abs(b[0] - a[0]);
+  const dy = Math.abs(b[1] - a[1]);
+
+  return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 }

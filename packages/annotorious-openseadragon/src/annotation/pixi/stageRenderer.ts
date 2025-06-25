@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import type OpenSeadragon from 'openseadragon';
 import { ShapeType } from '@annotorious/annotorious';
 import type { AnnotationState, DrawingStyle, DrawingStyleExpression, Filter, Selection } from '@annotorious/core';
-import type { Ellipse, ImageAnnotation, MultiPolygon, MultiPolygonRing, Polygon, Rectangle, Shape } from '@annotorious/annotorious';
+import type { Ellipse, ImageAnnotation, Line, MultiPolygon, MultiPolygonRing, Polygon, Rectangle, Shape } from '@annotorious/annotorious';
 
 const DEFAULT_FILL = 0xffffff;
 const DEFAULT_FILL_ALPHA = 0.25;
@@ -83,6 +83,13 @@ const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
 const drawEllipse = drawShape((ellipse: Ellipse, g: PIXI.Graphics) => {
   const { cx, cy, rx, ry } = ellipse.geometry;
   g.drawEllipse(cx, cy, rx, ry)
+});
+
+const drawLine = drawShape((line: Line, g: PIXI.Graphics) => {
+  const [[x1, y1], [x2, y2]] = line.geometry.points;
+  g.moveTo(x1, y1);
+  g.lineTo(x2, y2);
+  g.closePath();
 });
 
 const drawPolygon = drawShape((polygon: Polygon, g: PIXI.Graphics) => {
@@ -247,6 +254,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       rendered = drawEllipse(graphics, selector as Ellipse, s);
     } else if (selector.type === ShapeType.MULTIPOLYGLON) {
       rendered = drawMultiPolygon(graphics, selector as MultiPolygon, s);
+    } else if (selector.type === ShapeType.LINE) {
+      rendered = drawLine(graphics, selector as Line, s);
     } else {
       console.warn(`Unsupported shape type: ${selector.type}`)
     }
@@ -426,6 +435,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   return {
     addAnnotation,
     destroy,
+    getScale: () => lastScale,
     redraw: redrawStage(viewer, graphics, annotationShapes, renderer),
     removeAnnotation,
     resize,

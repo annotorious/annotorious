@@ -75,18 +75,18 @@ export const createSpatialTree = () => {
   };
 
 
-  const getAt = (x: number, y: number, filter?: Filter<Annotation>): ImageAnnotationTarget[] => {
+  const getAt = (x: number, y: number, filter?: Filter<Annotation>, buffer: number = 0): ImageAnnotationTarget[] => {
     const idxHits = tree.search({
-      minX: x,
-      minY: y,
-      maxX: x,
-      maxY: y
+      minX: x - buffer,
+      minY: y - buffer,
+      maxX: x + buffer,
+      maxY: y + buffer
     }).map(item => item.target);
 
     // Exact hit test on shape (not needed for rectangles!)
     const exactHits = idxHits.filter(target => {
       return (target.selector.type === ShapeType.RECTANGLE) ||
-        intersects(target.selector, x, y);
+        intersects(target.selector, x, y, buffer);
     });
 
     // Get smallest shape
