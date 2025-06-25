@@ -38,7 +38,7 @@ issue on the [Issue Tracker](https://github.com/annotorious/annotorious/issues).
 
 ## Professional Support Available
 
-Looking for help with integration, customization, or feature development? I offer consulting and professional services for teams and organizations that need dedicated support or technical guidance.
+Looking for help with integration, customization, or feature development? I offer consulting and professional services for teams and organizations that need dedicated support or technical guidance. Services are available on an hourly basis.
 
 Contact me at hello@rainersimon.io to discuss your project.
 
