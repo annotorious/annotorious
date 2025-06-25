@@ -1,7 +1,6 @@
 import { forwardRef, ReactNode, useEffect, useImperativeHandle, useState } from 'react';
 import { create } from 'zustand';
 import type { StoreObserveOptions } from '@annotorious/core';
-import { useDebounce } from '../useDebounce';
 import type {
   Annotation,
   Annotator,
@@ -11,6 +10,7 @@ import type {
   StoreChangeEvent,
   User
 } from '@annotorious/annotorious';
+import { useDebounce } from '../useDebounce';
 
 interface Selection<T extends Annotation = Annotation> extends Omit<CoreSelection, 'selected'> {
   selected: { annotation: T; editable?: boolean }[];
@@ -107,17 +107,17 @@ const useAnnotoriousStore = create<AnnotoriousState>((set, get) => ({
 // Custom hooks that use the store
 export const useAnnotator = <T extends unknown = Annotator<any, unknown>>() => {
   return useAnnotoriousStore((state) => state.anno) as T;
-};
+}
 
 export const useAnnotationStore = <T extends unknown = Store<Annotation>>() => {
   const anno = useAnnotoriousStore((state) => state.anno);
   return anno?.state.store as T | undefined;
-};
+}
 
 export const useAnnotations = <T extends Annotation = ImageAnnotation>(debounce?: number) => {
   const annotations = useAnnotoriousStore((state) => state.annotations) as T[];
   return debounce ? useDebounce(annotations, debounce) : annotations;
-};
+}
 
 export const useAnnotation = <T extends Annotation = ImageAnnotation>(
   id: string,
@@ -141,7 +141,7 @@ export const useAnnotation = <T extends Annotation = ImageAnnotation>(
   }, [store, id]);
 
   return annotation;
-};
+}
 
 export const useAnnotationSelectAction = <I extends Annotation = ImageAnnotation>(
   id: string,
@@ -149,34 +149,34 @@ export const useAnnotationSelectAction = <I extends Annotation = ImageAnnotation
   const anno = useAnnotator();
   const annotation = useAnnotation<I>(id);
   return anno && annotation ? anno.state.selection.evalSelectAction(annotation) : undefined;
-};
+}
 
 export const useSelection = <T extends Annotation = ImageAnnotation>() => {
   return useAnnotoriousStore((state) => state.selection) as Selection<T>;
-};
+}
 
 export const useHover = <T extends Annotation = ImageAnnotation>() => {
   return useAnnotoriousStore((state) => state.hover) as T | undefined;
-};
+}
 
 export const useAnnotatorUser = (): User => {
   const anno = useAnnotoriousStore((state) => state.anno);
   return anno?.getUser();
-};
+}
 
 export const useViewportState = <T extends Annotation = ImageAnnotation>(debounce?: number) => {
   const inViewport = useAnnotoriousStore((state) => state.inViewport) as T[];
   return debounce ? useDebounce(inViewport, debounce) : inViewport;
-};
+}
 
 // Provider component (much simpler now!)
 export const Annotorious = forwardRef<Annotator, { children: ReactNode }>(
   (props: { children: ReactNode }, ref) => {
-    const setAnno = useAnnotoriousStore((state) => state.setAnno);
+    // const setAnno = useAnnotoriousStore((state) => state.setAnno);
     const anno = useAnnotoriousStore((state) => state.anno);
 
     useImperativeHandle(ref, () => anno);
 
     return props.children;
   }
-);
+)
