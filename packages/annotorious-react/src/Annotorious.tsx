@@ -1,20 +1,11 @@
-import { onUserSelect } from '@annotorious/core';
-import type { StoreObserveOptions, UserSelectActionExpression} from '@annotorious/core';
+import type { StoreObserveOptions } from '@annotorious/core';
 import { useDebounce } from './useDebounce';
-import { 
-  createContext, 
-  forwardRef, 
-  type ReactNode, 
-  useContext, 
-  useEffect, 
-  useImperativeHandle, 
-  useState 
-} from 'react';
+import { createContext, forwardRef, type ReactNode, useContext, useEffect, useImperativeHandle, useState } from 'react';
 import type {
   Annotation,
   Annotator,
-  Selection as CoreSelection,
   ImageAnnotation,
+  Selection as CoreSelection,
   Store,
   StoreChangeEvent,
   User
@@ -26,13 +17,13 @@ interface Selection<T extends Annotation = Annotation> extends Omit<CoreSelectio
 
 }
 
-export const AnnotoriousContext = createContext({ 
+export const AnnotoriousContext = createContext({
 
-  anno: undefined, 
+  anno: undefined,
 
-  setAnno: undefined, 
+  setAnno: undefined,
 
-  annotations: [], 
+  annotations: [],
 
   selection: { selected: [] }
 
@@ -68,7 +59,7 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
       let selectionStoreObserver: (event: StoreChangeEvent<Annotation>) => void;
 
       const unsubscribeSelection = selection.subscribe(({ selected, ...rest }) => {
-        if (selectionStoreObserver) 
+        if (selectionStoreObserver)
           store.unobserve(selectionStoreObserver);
 
         const resolved = (selected || [])
@@ -86,7 +77,7 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
               return next ? { annotation: next.newValue, editable } : { annotation, editable };
             })
           }));
-        }
+        };
 
         store.observe(selectionStoreObserver, { annotations: selected.map(({ id }) => id) });
       });
@@ -94,48 +85,48 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
       return () => {
         store.unobserve(onStoreChange);
         unsubscribeSelection();
-      }
+      };
     }
   }, [anno]);
 
   return (
-    <AnnotoriousContext.Provider value={{ 
-      anno, 
+    <AnnotoriousContext.Provider value={{
+      anno,
       setAnno,
-      annotations, 
-      selection 
+      annotations,
+      selection
     }}>
-       {props.children}
+      {props.children}
     </AnnotoriousContext.Provider>
-  )
+  );
 
 });
 
 export const useAnnotator = <T extends unknown = Annotator<any, unknown>>() => {
   const { anno } = useContext(AnnotoriousContext);
   return anno as T;
-}
+};
 
 export const useAnnotationStore = <T extends unknown = Store<Annotation>>() => {
-  const { anno } = useContext(AnnotoriousContext);
+  const anno = useAnnotator();
   return anno?.state.store as T | undefined;
-}
+};
 
 const _useAnnotations = <T extends Annotation>() => {
   const { annotations } = useContext(AnnotoriousContext);
   return annotations as T[];
-}
+};
 
 const _useAnnotationsDebounced = <T extends Annotation>(debounce: number) => {
   const { annotations } = useContext(AnnotoriousContext);
   return useDebounce(annotations, debounce) as T[];
-}
+};
 
 export const useAnnotations = <T extends Annotation = ImageAnnotation>(debounce?: number) =>
   debounce ? _useAnnotationsDebounced<T>(debounce) : _useAnnotations<T>();
 
 export const useAnnotation = <T extends Annotation = ImageAnnotation>(
-  id: string, 
+  id: string,
   options?: Omit<StoreObserveOptions, 'annotations'>
 ) => {
   const store = useAnnotationStore<Store<T>>();
@@ -159,20 +150,23 @@ export const useAnnotation = <T extends Annotation = ImageAnnotation>(
   }, []);
 
   return annotation;
-}
+};
 
-export const useAnnotationSelectAction = <I extends Annotation = ImageAnnotation, E extends unknown = ImageAnnotation>(id: string, action: UserSelectActionExpression<E>) => {
+export const useAnnotationSelectAction = <I extends Annotation = ImageAnnotation>(
+  id: string
+) => {
+  const anno = useAnnotator();
   const annotation = useAnnotation<I>(id);
-  return annotation ? onUserSelect<I, E>(annotation, action) : undefined;
-}
+  return anno && annotation ? anno.state.selection.evalSelectAction(annotation) : undefined;
+};
 
 export const useSelection = <T extends Annotation = ImageAnnotation>() => {
   const { selection } = useContext(AnnotoriousContext);
   return selection as Selection<T>;
-}
+};
 
 export const useHover = <T extends Annotation = ImageAnnotation>() => {
-  const { anno } = useContext(AnnotoriousContext);
+  const anno = useAnnotator();
 
   const [hover, setHover] = useState<T | undefined>();
 
@@ -189,22 +183,22 @@ export const useHover = <T extends Annotation = ImageAnnotation>() => {
         setHover(undefined);
       }
     });
-  
+
     return () => {
       unsubscribeHover();
-    }
+    };
   }, [anno]);
 
   return hover;
-}
+};
 
 export const useAnnotatorUser = (): User => {
-  const { anno } = useContext(AnnotoriousContext);
+  const anno = useAnnotator();
   return anno?.getUser();
-}
+};
 
 const _useViewportState = <T extends Annotation>() => {
-  const { anno } = useContext(AnnotoriousContext);
+  const anno = useAnnotator();
 
   const [inViewport, setInViewport] = useState<T[]>([]);
 
@@ -220,7 +214,7 @@ const _useViewportState = <T extends Annotation>() => {
       let viewportStoreObserver: (event: StoreChangeEvent<T>) => void;
 
       const unsubscribeViewport = viewport.subscribe(ids => {
-        if (viewportStoreObserver) 
+        if (viewportStoreObserver)
           store.unobserve(viewportStoreObserver);
 
         const resolved = ids.map(id => store.getAnnotation(id)) as T[];
@@ -233,24 +227,24 @@ const _useViewportState = <T extends Annotation>() => {
             const next = updated.find(u => u.oldValue.id === annotation.id);
             return next ? next.newValue : annotation;
           }));
-        }
+        };
 
         store.observe(viewportStoreObserver, { annotations: ids });
       });
 
       return () => {
         unsubscribeViewport();
-      }
+      };
     }
   }, [anno]);
 
   return inViewport;
-}
+};
 
-const _useViewportStateDebounced =  <T extends Annotation>(debounce: number) => {
+const _useViewportStateDebounced = <T extends Annotation>(debounce: number) => {
   const inViewport = _useViewportState();
   return useDebounce(inViewport, debounce) as T[];
-}
+};
 
-export const useViewportState =  <T extends Annotation = ImageAnnotation>(debounce?: number) =>
+export const useViewportState = <T extends Annotation = ImageAnnotation>(debounce?: number) =>
   debounce ? _useViewportStateDebounced<T>(debounce) : _useViewportState<T>();
