@@ -175,7 +175,7 @@
               annotation={annotation} 
               geom={selector.geometry} 
               style={style} />
-          {:else if (selector?.type === ShapeType.MULTIPOLYGLON)}
+          {:else if (selector?.type === ShapeType.MULTIPOLYGON)}
             <MultiPolygon
               annotation={annotation}
               geom={selector.geometry}

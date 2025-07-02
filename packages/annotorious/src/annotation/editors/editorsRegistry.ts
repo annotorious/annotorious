@@ -7,7 +7,7 @@ import { RectangleEditor } from './rectangle';
 const REGISTERED = new Map<ShapeType, typeof SvelteComponent>([
   [ShapeType.RECTANGLE, RectangleEditor as typeof SvelteComponent],
   [ShapeType.POLYGON, PolygonEditor as typeof SvelteComponent],
-  [ShapeType.MULTIPOLYGLON, MultiPolygonEditor as typeof SvelteComponent]
+  [ShapeType.MULTIPOLYGON, MultiPolygonEditor as typeof SvelteComponent]
 ]);
 
 export const getEditor = (shape: Shape) => REGISTERED.get(shape.type);

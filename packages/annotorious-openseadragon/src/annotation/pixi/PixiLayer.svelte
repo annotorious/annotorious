@@ -164,7 +164,7 @@
             }
           }
         }
-      } else if (selector.type === ShapeType.MULTIPOLYGLON) {
+      } else if (selector.type === ShapeType.MULTIPOLYGON) {
         const shape = simplifyMultiPolygon(selector as MultiPolygon);
         return {
           ...a,

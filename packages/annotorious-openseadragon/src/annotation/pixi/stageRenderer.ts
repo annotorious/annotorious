@@ -252,7 +252,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       rendered = drawPolygon(graphics, selector as Polygon, s);
     } else if (selector.type === ShapeType.ELLIPSE) {
       rendered = drawEllipse(graphics, selector as Ellipse, s);
-    } else if (selector.type === ShapeType.MULTIPOLYGLON) {
+    } else if (selector.type === ShapeType.MULTIPOLYGON) {
       rendered = drawMultiPolygon(graphics, selector as MultiPolygon, s);
     } else if (selector.type === ShapeType.LINE) {
       rendered = drawLine(graphics, selector as Line, s);

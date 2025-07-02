@@ -65,7 +65,7 @@
             <SelectedRectangle annotation={a} />
           {:else if (a.target.selector.type === ShapeType.POLYGON)}
             <SelectedPolygon annotation={a} />
-          {:else if (a.target.selector.type === ShapeType.MULTIPOLYGLON)}
+          {:else if (a.target.selector.type === ShapeType.MULTIPOLYGON)}
             <SelectedMultiPolygon annotation={a} />
           {:else if (a.target.selector.type === ShapeType.ELLIPSE)}
             <SelectedEllipse annotation={a} />

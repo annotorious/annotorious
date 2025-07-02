@@ -15,7 +15,7 @@ describe('parseW3CImageAnnotation', () => {
     expect(polygon.parsed?.target.selector.type).toBe(ShapeType.POLYGON);
     expect(ellipse.parsed?.target.selector.type).toBe(ShapeType.ELLIPSE);
     expect(path.parsed?.target.selector.type).toBe(ShapeType.POLYGON);
-    expect(multi.parsed?.target.selector.type).toBe(ShapeType.MULTIPOLYGLON);
+    expect(multi.parsed?.target.selector.type).toBe(ShapeType.MULTIPOLYGON);
     expect(rectangle.parsed?.target.selector.type).toBe(ShapeType.RECTANGLE);
     expect(line.parsed?.target.selector.type).toBe(ShapeType.LINE);
   });

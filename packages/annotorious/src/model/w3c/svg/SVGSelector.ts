@@ -108,7 +108,7 @@ const parseSVGPath = (value: string): Polygon | MultiPolygon => {
       bounds
     }
   } : {
-    type: ShapeType.MULTIPOLYGLON,
+    type: ShapeType.MULTIPOLYGON,
     geometry: {
       polygons,
       bounds
@@ -153,7 +153,7 @@ export const serializeSVGSelector = (shape: Shape): SVGSelector => {
       value = `<svg><ellipse cx="${geom.cx}" cy="${geom.cy}" rx="${geom.rx}" ry="${geom.ry}" /></svg>`;
       break;
     }
-    case ShapeType.MULTIPOLYGLON: {
+    case ShapeType.MULTIPOLYGON: {
       const geom = shape.geometry as MultiPolygonGeometry;
       value = `<svg>${serializeMultiPolygon(geom)}</svg>`;
       break;

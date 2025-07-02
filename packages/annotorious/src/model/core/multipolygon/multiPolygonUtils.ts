@@ -101,4 +101,4 @@ export const simplifyMultiPolygon = (multi: MultiPolygon, tolerance = 1): MultiP
   }
 }
 
-registerShapeUtil(ShapeType.MULTIPOLYGLON, MultiPolygonUtil);
+registerShapeUtil(ShapeType.MULTIPOLYGON, MultiPolygonUtil);
