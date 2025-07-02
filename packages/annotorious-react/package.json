@@ -48,8 +48,8 @@
     "@annotorious/annotorious": "3.5.0",
     "@annotorious/core": "3.5.0",
     "@annotorious/openseadragon": "3.5.0",
-    "@floating-ui/react": "^0.27.12",
-    "zustand": "^5.0.5"
+    "@floating-ui/react": "^0.27.13",
+    "zustand": "^5.0.6"
   },
   "sideEffects": false
 }
