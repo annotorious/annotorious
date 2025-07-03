@@ -47,16 +47,7 @@ const intersectsLineSegment = (
   if (length === 0)
     return distance([x, y], [x1, y1]) <= buffer;
 
-  // Check if the point is within the segment bounds (not just the infinite line)
-  const distanceToLine = area / length;
-  if (distanceToLine <= buffer) {
-    // Dot product computes the projection onto the line segment. Dividing by length^2
-    // normalizes on the length–0 means the point is at the start, 1 at the end.
-    const dot = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / (length * length);
-    return dot >= 0 && dot <= 1;
-  }
-  
-  return false;
+  return area / length <= buffer;
 }
 
 const intersectsCubicBezier = (
