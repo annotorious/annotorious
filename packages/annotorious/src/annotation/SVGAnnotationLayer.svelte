@@ -12,6 +12,7 @@
   import { addEventListeners, getSVGPoint } from './SVGAnnotationLayerPointerEvent';
   import type { SvelteImageAnnotatorState } from 'src/state';
   import type { DrawingMode } from 'src/AnnotoriousOpts';
+    import Polyline from './shapes/Polyline.svelte';
 
   /** Props **/
   export let drawingEnabled: boolean;
@@ -178,6 +179,11 @@
           {:else if (selector?.type === ShapeType.MULTIPOLYGON)}
             <MultiPolygon
               annotation={annotation}
+              geom={selector.geometry}
+              style={style} />
+          {:else if (selector?.type === ShapeType.POLYLINE)}
+            <Polyline 
+              annotation={annotation} 
               geom={selector.geometry}
               style={style} />
           {:else if (selector?.type === ShapeType.LINE)}

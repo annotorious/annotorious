@@ -10,19 +10,19 @@ const PolylineUtil: ShapeUtil<Polyline> = {
   },
 
   intersects: (polyline: Polyline, x: number, y: number, buffer: number = 2): boolean => {
-    const { startPoint, segments } = polyline.geometry;
+    const { start, segments } = polyline.geometry;
     
-    let currentPoint = startPoint;
+    let currentPoint = start;
     
     for (const segment of segments) {
       if (segment.type === PolylineSegmentType.LINE) {
-        if (intersectsLineSegment(currentPoint, segment.endPoint, x, y, buffer))
+        if (intersectsLineSegment(currentPoint, segment.end, x, y, buffer))
           return true;
-      } else if (segment.type === PolylineSegmentType.CURVE && segment.controlPoint1 && segment.controlPoint2) {
-        if (intersectsCubicBezier(currentPoint, segment.controlPoint1, segment.controlPoint2, segment.endPoint, x, y, buffer))
+      } else if (segment.type === PolylineSegmentType.CURVE && segment.cp1 && segment.cp2) {
+        if (intersectsCubicBezier(currentPoint, segment.cp1, segment.cp2, segment.end, x, y, buffer))
           return true;
       }
-      currentPoint = segment.endPoint;
+      currentPoint = segment.end;
     }
     
     return false;
@@ -102,18 +102,17 @@ const intersectsCubicBezier = (
 };
 
 export const getPolylinePoints = (polyline: Polyline): [number, number][] => {
-  const points: [number, number][] = [polyline.geometry.startPoint];
+  const points: [number, number][] = [polyline.geometry.start];
   
   for (const segment of polyline.geometry.segments) {
-    points.push(segment.endPoint);
+    points.push(segment.end);
     
     // Include control points for more accurate bounds
-    if (segment.controlPoint1) {
-      points.push(segment.controlPoint1);
-    }
-    if (segment.controlPoint2) {
-      points.push(segment.controlPoint2);
-    }
+    if (segment.cp1)
+      points.push(segment.cp1);
+    
+    if (segment.cp2)
+      points.push(segment.cp2);
   }
   
   return points;

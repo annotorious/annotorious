@@ -12,15 +12,15 @@
   $: computedStyle = computeStyle(annotation, style);
 
   const computePath = (geom: PolylineGeometry) => {
-    const { startPoint, segments } = geom;
+    const { start, segments } = geom;
     
-    let path = `M ${startPoint[0]},${startPoint[1]}`;
+    let path = `M ${start[0]},${start[1]}`;
     
     segments.forEach(s => {
       if (s.type === PolylineSegmentType.LINE) {
-        path += ` L ${s.endPoint[0]},${s.endPoint[1]}`;
-      } else if (s.type === PolylineSegmentType.CURVE && s.controlPoint1 && s.controlPoint2) {
-        path += ` C ${s.controlPoint1[0]},${s.controlPoint1[1]} ${s.controlPoint2[0]},${s.controlPoint2[1]} ${s.endPoint[0]},${s.endPoint[1]}`;
+        path += ` L ${s.end[0]},${s.end[1]}`;
+      } else if (s.type === PolylineSegmentType.CURVE && s.cp1 && s.cp2) {
+        path += ` C ${s.cp1[0]},${s.cp1[1]} ${s.cp2[0]},${s.cp2[1]} ${s.end[0]},${s.end[1]}`;
       }
     });
     
