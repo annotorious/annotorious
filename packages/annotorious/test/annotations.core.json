@@ -13,35 +13,38 @@
             "maxX": 583.05859375,
             "maxY": 328.109375
           },
-          "start": [
-            583.05859375,
-            82.30078125
-          ],
-          "segments": [
+          "points": [
             {
-              "type": "LINE",
-              "end": [
+              "type": "CORNER",
+              "point": [
+                583.05859375,
+                82.30078125
+              ]
+            },
+            {
+              "type": "CORNER",
+              "point": [
                 539.48046875,
                 140.48828125
               ]
             },
             {
-              "type": "LINE",
-              "end": [
+              "type": "CORNER",
+              "point": [
                 537.1015625,
                 209.09375
               ]
             },
             {
-              "type": "LINE",
-              "end": [
+              "type": "CORNER",
+              "point": [
                 578.7578125,
                 249.93359375
               ]
             },
             {
-              "type": "LINE",
-              "end": [
+              "type": "CORNER",
+              "point": [
                 579.61328125,
                 328.109375
               ]

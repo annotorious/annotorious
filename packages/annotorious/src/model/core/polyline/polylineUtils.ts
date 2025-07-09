@@ -1,121 +1,198 @@
 import { ShapeType } from '../Shape';
-import { distance, registerShapeUtil, type ShapeUtil } from '../shapeUtils';
-import { type Polyline, PolylineSegmentType } from './Polyline';
+import { computePolygonArea, isPointInPolygon, registerShapeUtil, type ShapeUtil } from '../shapeUtils';
+import type { Polyline, PolylineGeometry } from './Polyline';
 
 const PolylineUtil: ShapeUtil<Polyline> = {
 
-  area: (_: Polyline): number => {
-    // TODO closed polylines!
-    return 0;
+  area: (polyline: Polyline): number => {
+    const geom = polyline.geometry;
+    
+    if (!geom.closed || geom.points.length < 3)
+      return 0;
+
+    const points = approximateAsPolygon(geom);
+    return computePolygonArea(points);
   },
 
   intersects: (polyline: Polyline, x: number, y: number, buffer: number = 2): boolean => {
-    const { start, segments } = polyline.geometry;
+    const geom = polyline.geometry;
     
-    let currentPoint = start;
-    
-    for (const segment of segments) {
-      if (segment.type === PolylineSegmentType.LINE) {
-        if (intersectsLineSegment(currentPoint, segment.end, x, y, buffer))
-          return true;
-      } else if (segment.type === PolylineSegmentType.CURVE && segment.cp1 && segment.cp2) {
-        if (intersectsCubicBezier(currentPoint, segment.cp1, segment.cp2, segment.end, x, y, buffer))
-          return true;
-      }
-      currentPoint = segment.end;
+    if (geom.closed) {
+      const points = approximateAsPolygon(geom);
+      return isPointInPolygon(points, x, y);
+    } else {
+      // For open polylines, check distance to path segments with buffer
+      return isPointNearPath(geom, [x, y], buffer);
     }
-    
-    return false;
   }
   
 };
 
-// See https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line#Line_defined_by_two_points
-const intersectsLineSegment = (
-  start: [number, number], 
-  end: [number, number], 
-  x: number, 
-  y: number, 
-  buffer: number
-): boolean => {
-  const [[x1, y1], [x2, y2]] = [start, end];
+export const approximateAsPolygon = (geom: PolylineGeometry): [number, number][] => {
+  const points: [number, number][] = [];
   
-  // Twice the area of the triangle formed by connecting the three points
-  const area = Math.abs(((y2 - y1) * x) - ((x2 - x1) * y) + (x2 * y1) - (y2 * x1));
-  
-  const length = distance([x1, y1], [x2, y2]);
-  if (length === 0)
-    return distance([x, y], [x1, y1]) <= buffer;
-
-  return area / length <= buffer;
-}
-
-const intersectsCubicBezier = (
-  start: [number, number],
-  cp1: [number, number],
-  cp2: [number, number],
-  end: [number, number],
-  x: number,
-  y: number,
-  buffer: number,
-  samples = 10 // Sample the curve and check each segment
-): boolean => {
-
-  // Calculate a point on a cubic Bezier curve at parameter t (0-1)
-  const getCubicBezierPoint = (
-    start: [number, number],
-    cp1: [number, number],
-    cp2: [number, number],
-    end: [number, number],
-    t: number
-  ): [number, number] => {
-    const [x0, y0] = start;
-    const [x1, y1] = cp1;
-    const [x2, y2] = cp2;
-    const [x3, y3] = end;
+  for (let i = 0; i < geom.points.length; i++) {
+    const currentPoint = geom.points[i];
+    const nextPoint = geom.points[(i + 1) % geom.points.length];
     
-    const mt = 1 - t;
-    const mt2 = mt * mt;
-    const mt3 = mt2 * mt;
-    const t2 = t * t;
-    const t3 = t2 * t;
+    points.push(currentPoint.point);
     
-    const x = mt3 * x0 + 3 * mt2 * t * x1 + 3 * mt * t2 * x2 + t3 * x3;
-    const y = mt3 * y0 + 3 * mt2 * t * y1 + 3 * mt * t2 * y2 + t3 * y3;
-    
-    return [x, y];
-  };
-
-  let prevPoint = start;
-  
-  for (let i = 1; i <= samples; i++) {
-    const t = i / samples;
-    const currentPoint = getCubicBezierPoint(start, cp1, cp2, end, t);
-    
-    if (intersectsLineSegment(prevPoint, currentPoint, x, y, buffer))
-      return true;
-    
-    prevPoint = currentPoint;
-  }
-  
-  return false;
-};
-
-export const getPolylinePoints = (polyline: Polyline): [number, number][] => {
-  const points: [number, number][] = [polyline.geometry.start];
-  
-  for (const segment of polyline.geometry.segments) {
-    points.push(segment.end);
-    
-    // Include control points for more accurate bounds
-    if (segment.cp1)
-      points.push(segment.cp1);
-    
-    if (segment.cp2)
-      points.push(segment.cp2);
+    // If there's a curve to the next point, approximate it
+    if (i < geom.points.length - 1 || geom.closed) {
+      const hasCurve = currentPoint.outHandle || nextPoint.inHandle;
+      if (hasCurve) {
+        const curvePoints = approximateBezierCurve(
+          currentPoint.point,
+          currentPoint.outHandle || currentPoint.point,
+          nextPoint.inHandle || nextPoint.point,
+          nextPoint.point,
+          10 // number of approximation segments
+        );
+        points.push(...curvePoints.slice(1)); // Skip first point (already added)
+      }
+    }
   }
   
   return points;
+}
+
+const approximateBezierCurve = (
+  p0: [number, number], 
+  p1: [number, number], 
+  p2: [number, number], 
+  p3: [number, number], 
+  segments: number = 10
+): [number, number][] => {
+  const points: [number, number][] = [];
+  
+  for (let i = 0; i <= segments; i++) {
+    const t = i / segments;
+    const x = Math.pow(1 - t, 3) * p0[0] + 
+              3 * Math.pow(1 - t, 2) * t * p1[0] + 
+              3 * (1 - t) * Math.pow(t, 2) * p2[0] + 
+              Math.pow(t, 3) * p3[0];
+    const y = Math.pow(1 - t, 3) * p0[1] + 
+              3 * Math.pow(1 - t, 2) * t * p1[1] + 
+              3 * (1 - t) * Math.pow(t, 2) * p2[1] + 
+              Math.pow(t, 3) * p3[1];
+    points.push([x, y]);
+  }
+  
+  return points;
+}
+
+const isPointNearPath = (geom: PolylineGeometry, point: [number, number], buffer: number): boolean => {  
+  for (let i = 0; i < geom.points.length - 1; i++) {
+    const currentPoint = geom.points[i];
+    const nextPoint = geom.points[i + 1];
+    
+    const hasCurve = currentPoint.outHandle || nextPoint.inHandle;
+    
+    if (hasCurve) {
+      // For curves, approximate and check distance to segments
+      const curvePoints = approximateBezierCurve(
+        currentPoint.point,
+        currentPoint.outHandle || currentPoint.point,
+        nextPoint.inHandle || nextPoint.point,
+        nextPoint.point,
+        20 // more segments for better accuracy
+      );
+      
+      for (let j = 0; j < curvePoints.length - 1; j++) {
+        const distance = distanceToLineSegment(point, curvePoints[j], curvePoints[j + 1]);
+        if (distance <= buffer) return true;
+      }
+    } else {
+      // Straight line segment
+      const distance = distanceToLineSegment(point, currentPoint.point, nextPoint.point);
+      if (distance <= buffer) return true;
+    }
+  }
+  
+  return false;
+}
+
+const distanceToLineSegment = (
+  point: [number, number], 
+  lineStart: [number, number], 
+  lineEnd: [number, number]
+): number => {
+  const [px, py] = point;
+  const [x1, y1] = lineStart;
+  const [x2, y2] = lineEnd;
+  
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const length = Math.sqrt(dx * dx + dy * dy);
+  
+  if (length === 0) {
+    // Line segment is a point
+    return Math.sqrt((px - x1) * (px - x1) + (py - y1) * (py - y1));
+  }
+  
+  // Calculate the projection parameter t to see where the perpendicular falls
+  const t = ((px - x1) * dx + (py - y1) * dy) / (length * length);
+  
+  if (t <= 0) {
+    // Closest point is the start of the segment
+    return Math.sqrt((px - x1) * (px - x1) + (py - y1) * (py - y1));
+  } else if (t >= 1) {
+    // Closest point is the end of the segment
+    return Math.sqrt((px - x2) * (px - x2) + (py - y2) * (py - y2));
+  } else {
+    // Closest point is on the segment - use the exact line distance formula
+    // This is the same formula as your LineUtil.intersects
+    const area = Math.abs(((y2 - y1) * px) - ((x2 - x1) * py) + (x2 * y1) - (y2 * x1));
+    return area / length;
+  }
+};
+
+export const computeSVGPath = (geom: PolylineGeometry) => {
+  if (!geom.points || geom.points.length === 0)
+    return '';
+
+  const pathCommands: string[] = [];
+
+  const firstPoint = geom.points[0];
+  pathCommands.push(`M ${firstPoint.point[0]} ${firstPoint.point[1]}`);
+
+  for (let i = 1; i < geom.points.length; i++) {
+    const currentPoint = geom.points[i];
+    const previousPoint = geom.points[i - 1];
+    
+    const hasCurve = previousPoint.outHandle || currentPoint.inHandle;
+    if (hasCurve) {
+      // Cubic Bézier curve
+      const cp1 = previousPoint.outHandle || previousPoint.point;
+      const cp2 = currentPoint.inHandle || currentPoint.point;
+      const endPoint = currentPoint.point;
+      
+      pathCommands.push(`C ${cp1[0]} ${cp1[1]} ${cp2[0]} ${cp2[1]} ${endPoint[0]} ${endPoint[1]}`);
+    } else {
+      // Straight line
+      pathCommands.push(`L ${currentPoint.point[0]} ${currentPoint.point[1]}`);
+    }
+  }
+
+  if (geom.closed) {
+    // Handle curve from last point back to first point
+    const lastPoint = geom.points[geom.points.length - 1];
+    const firstPointRef = geom.points[0];
+    
+    const hasClosingCurve = lastPoint.outHandle || firstPointRef.inHandle;
+    
+    if (hasClosingCurve) {
+      const cp1 = lastPoint.outHandle || lastPoint.point;
+      const cp2 = firstPointRef.inHandle || firstPointRef.point;
+      const endPoint = firstPointRef.point;
+      
+      pathCommands.push(`C ${cp1[0]} ${cp1[1]} ${cp2[0]} ${cp2[1]} ${endPoint[0]} ${endPoint[1]}`);
+    }
+    
+    pathCommands.push('Z');
+  }
+  
+  return pathCommands.join(' ');
 }
 
 registerShapeUtil(ShapeType.POLYLINE, PolylineUtil);

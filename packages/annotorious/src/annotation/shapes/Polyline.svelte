@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { DrawingStyleExpression } from '@annotorious/core';
-  import type { Geometry, ImageAnnotation, PolylineGeometry } from '../../model';
-  import { PolylineSegmentType } from '../../model';
+  import { computeSVGPath, type Geometry, type ImageAnnotation, type PolylineGeometry } from '../../model';
   import { computeStyle } from '../utils/styling';
   
   /** Props **/
@@ -11,23 +10,7 @@
 
   $: computedStyle = computeStyle(annotation, style);
 
-  const computePath = (geom: PolylineGeometry) => {
-    const { start, segments } = geom;
-    
-    let path = `M ${start[0]},${start[1]}`;
-    
-    segments.forEach(s => {
-      if (s.type === PolylineSegmentType.LINE) {
-        path += ` L ${s.end[0]},${s.end[1]}`;
-      } else if (s.type === PolylineSegmentType.CURVE && s.cp1 && s.cp2) {
-        path += ` C ${s.cp1[0]},${s.cp1[1]} ${s.cp2[0]},${s.cp2[1]} ${s.end[0]},${s.end[1]}`;
-      }
-    });
-    
-    return path;
-  }
-
-  $: d = computePath(geom as PolylineGeometry);
+  $: d = computeSVGPath(geom as PolylineGeometry);
 </script>
 
 <g class="a9s-annotation" data-id={annotation.id}>

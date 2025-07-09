@@ -8,9 +8,7 @@ export interface Polyline extends Shape {
 
 export interface PolylineGeometry extends Geometry {
 
-  start: [number, number];
-
-  segments: PolylineSegment[];
+  points: PolylinePoint[];
 
   closed?: boolean;
 
@@ -18,24 +16,16 @@ export interface PolylineGeometry extends Geometry {
 
 }
 
-export interface PolylineSegment {
+export interface PolylinePoint {
 
-  type: PolylineSegmentType;
+  type: 'CORNER' | 'CURVE';
 
-  end: [number, number];
+  point: [number, number];
 
-  cp1?: [number, number];
+  inHandle?: [number, number];
 
-  cp2?: [number, number];
+  outHandle?: [number, number];
 
-}
-
-export enum PolylineSegmentType {
-  
-  LINE = 'LINE',
-  
-  CURVE = 'CURVE'
+  locked?: boolean;
 
 }
-
-
