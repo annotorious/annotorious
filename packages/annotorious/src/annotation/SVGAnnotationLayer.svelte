@@ -4,7 +4,7 @@
   import type { Annotation, DrawingStyleExpression, StoreChangeEvent, User } from '@annotorious/core';
   import { isImageAnnotation, ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
-  import { getEditor as _getEditor, EditorMount } from './editors';
+  import { getEditor, EditorMount } from './editors';
   import { Ellipse, Line, MultiPolygon, Polygon, Polyline, Rectangle} from './shapes';
   import { getTool, listDrawingTools, ToolMount } from './tools';
   import { enableResponsive } from './utils';
@@ -55,8 +55,6 @@
   let storeObserver: (event: StoreChangeEvent<I>) => void | undefined;
 
   let editableAnnotations: ImageAnnotation[] | undefined;
-
-  $: isEditable = (a: ImageAnnotation) => $selection.selected.find(s => s.id === a.id && s.editable);
 
   $: trackSelection($selection.selected);
 
@@ -138,8 +136,13 @@
     }
   }
 
-  // To get around lack of TypeScript support in Svelte markup
-  const getEditor = (shape: Shape): typeof SvelteComponent => _getEditor(shape)!;
+  // [annotation -> editor] - note that we may not have editors available for
+  // all annotations, because they might rely on plugins in some cases!
+  $: editors = editableAnnotations ? editableAnnotations.map(annotation => ({ 
+    annotation, editor: getEditor(annotation.target.selector)! 
+  })).filter(t => t.editor) : undefined; 
+
+  $: isEditable = (a: ImageAnnotation) => editors && editors.some(t => t.annotation.id === a.id);
 </script>
 
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -200,21 +203,18 @@
     bind:this={drawingEl}
     class="drawing" >
     {#if drawingEl}
-      {#if editableAnnotations}
-        {#each editableAnnotations as editable}
-          {@const editor = getEditor(editable.target.selector)}
-          {#if editor}
-            {#key editable.id}        
-              <EditorMount
-                target={drawingEl}
-                editor={getEditor(editable.target.selector)}
-                annotation={editable}
-                style={style}
-                transform={transform}
-                viewportScale={$scale}
-                on:change={onChangeSelected(editable)} />
-            {/key}
-          {/if}
+      {#if editors}
+        {#each editors as editable}
+          {#key editable.annotation.id}        
+            <EditorMount
+              target={drawingEl}
+              editor={editable.editor}
+              annotation={editable.annotation}
+              style={style}
+              transform={transform}
+              viewportScale={$scale}
+              on:change={onChangeSelected(editable.annotation)} />
+          {/key}
         {/each}
       {:else if (tool && drawingEnabled)} 
         {#key `${toolName}-${toolMountKey}`}
