@@ -5,14 +5,13 @@
   import { isImageAnnotation, ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
   import { getEditor as _getEditor, EditorMount } from './editors';
-  import { Ellipse, Line, MultiPolygon, Polygon, Rectangle} from './shapes';
+  import { Ellipse, Line, MultiPolygon, Polygon, Polyline, Rectangle} from './shapes';
   import { getTool, listDrawingTools, ToolMount } from './tools';
   import { enableResponsive } from './utils';
   import { createSVGTransform } from './Transform';
   import { addEventListeners, getSVGPoint } from './SVGAnnotationLayerPointerEvent';
   import type { SvelteImageAnnotatorState } from 'src/state';
   import type { DrawingMode } from 'src/AnnotoriousOpts';
-    import Polyline from './shapes/Polyline.svelte';
 
   /** Props **/
   export let drawingEnabled: boolean;
@@ -129,7 +128,7 @@
   const onPointerMove = (evt: PointerEvent) => {
     const { x, y } = getSVGPoint(evt, svgEl);
 
-    const hit = store.getAt(x, y);
+    const hit = store.getAt(x, y, undefined, 2);
     if (hit) {
       if ($hover !== hit.id) {
         hover.set(hit.id);

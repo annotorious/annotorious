@@ -21,7 +21,6 @@ const PolylineUtil: ShapeUtil<Polyline> = {
       const points = approximateAsPolygon(geom);
       return isPointInPolygon(points, x, y);
     } else {
-      // For open polylines, check distance to path segments with buffer
       return isPointNearPath(geom, [x, y], buffer);
     }
   }
@@ -87,15 +86,13 @@ const isPointNearPath = (geom: PolylineGeometry, point: [number, number], buffer
     const nextPoint = geom.points[i + 1];
     
     const hasCurve = currentPoint.outHandle || nextPoint.inHandle;
-    
     if (hasCurve) {
-      // For curves, approximate and check distance to segments
       const curvePoints = approximateBezierCurve(
         currentPoint.point,
         currentPoint.outHandle || currentPoint.point,
         nextPoint.inHandle || nextPoint.point,
         nextPoint.point,
-        20 // more segments for better accuracy
+        20 // TODO make configurable? Based on scale factor? Length?
       );
       
       for (let j = 0; j < curvePoints.length - 1; j++) {
@@ -103,7 +100,6 @@ const isPointNearPath = (geom: PolylineGeometry, point: [number, number], buffer
         if (distance <= buffer) return true;
       }
     } else {
-      // Straight line segment
       const distance = distanceToLineSegment(point, currentPoint.point, nextPoint.point);
       if (distance <= buffer) return true;
     }
