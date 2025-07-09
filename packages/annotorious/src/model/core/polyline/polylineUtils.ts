@@ -156,8 +156,7 @@ export const computeSVGPath = (geom: PolylineGeometry) => {
     const currentPoint = geom.points[i];
     const previousPoint = geom.points[i - 1];
     
-    const hasCurve = previousPoint.outHandle || currentPoint.inHandle;
-    if (hasCurve) {
+    if (currentPoint.type === 'CURVE') {
       // Cubic Bézier curve
       const cp1 = previousPoint.outHandle || previousPoint.point;
       const cp2 = currentPoint.inHandle || currentPoint.point;
