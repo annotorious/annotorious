@@ -1,5 +1,65 @@
 [
   {
+    "id": "ec2dbf64-58fd-4b38-a096-d98243d78423",
+    "bodies": [],
+    "target": {
+      "annotation": "ec2dbf64-58fd-4b38-a096-d98243d78423",
+      "selector": {
+        "type": "POLYLINE",
+        "geometry": {
+          "bounds": {
+            "minX": 537.1015625,
+            "minY": 82.30078125,
+            "maxX": 583.05859375,
+            "maxY": 328.109375
+          },
+          "points": [
+            {
+              "type": "CORNER",
+              "point": [
+                583.05859375,
+                82.30078125
+              ]
+            },
+            {
+              "type": "CORNER",
+              "point": [
+                539.48046875,
+                140.48828125
+              ]
+            },
+            {
+              "type": "CORNER",
+              "point": [
+                537.1015625,
+                209.09375
+              ]
+            },
+            {
+              "type": "CORNER",
+              "point": [
+                578.7578125,
+                249.93359375
+              ]
+            },
+            {
+              "type": "CORNER",
+              "point": [
+                579.61328125,
+                328.109375
+              ]
+            }
+          ]
+        }
+      },
+      "creator": {
+        "isGuest": true,
+        "id": "UE6YTC_AW_y8EvsqZbsM"
+      },
+      "created": "2025-07-04T08:42:32.465Z"
+    }
+  },
+  {
     "id": "3bf464c1-34cc-4454-9686-0d8b43135d2f",
     "bodies": [],
     "target": {

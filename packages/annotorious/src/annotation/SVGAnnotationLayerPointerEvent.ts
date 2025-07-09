@@ -27,7 +27,7 @@ export const addEventListeners = <T extends Annotation>(svg: SVGSVGElement, stor
     if (duration < MAX_CLICK_DURATION) {
       const { x, y } = getSVGPoint(evt, svg);
 
-      const annotation = store.getAt(x, y) as T | undefined;
+      const annotation = store.getAt(x, y, undefined, 2) as T | undefined;
 
       if (annotation)
         dispatch('click', { originalEvent: evt, annotation });

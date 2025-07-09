@@ -1,8 +1,25 @@
 import * as PIXI from 'pixi.js';
 import type OpenSeadragon from 'openseadragon';
-import { ShapeType } from '@annotorious/annotorious';
-import type { AnnotationState, DrawingStyle, DrawingStyleExpression, Filter, Selection } from '@annotorious/core';
-import type { Ellipse, ImageAnnotation, Line, MultiPolygon, MultiPolygonRing, Polygon, Rectangle, Shape } from '@annotorious/annotorious';
+import { getEditor, ShapeType } from '@annotorious/annotorious';
+import type { 
+  AnnotationState, 
+  DrawingStyle, 
+  DrawingStyleExpression, 
+  Filter, 
+  Selection 
+} from '@annotorious/core';
+import type { 
+  Ellipse, 
+  ImageAnnotation, 
+  Line, 
+  MultiPolygon, 
+  MultiPolygonRing, 
+  Polygon, 
+  Polyline, 
+  PolylinePoint, 
+  Rectangle,
+  Shape 
+} from '@annotorious/annotorious';
 
 const DEFAULT_FILL = 0xffffff;
 const DEFAULT_FILL_ALPHA = 0.25;
@@ -51,18 +68,24 @@ const getGraphicsStyle = (style?: DrawingStyle) => {
   return { fillStyle, strokeStyle };
 }
 
-const drawShape = <T extends Shape>(fn: (s: T, g: PIXI.Graphics) => void) => (container: PIXI.Graphics, shape: T, style?: DrawingStyle) => {
+const drawShape = <T extends Shape>(
+  fn: (s: T, g: PIXI.Graphics) => void,
+  options: { strokeOnly?: boolean } = {}
+) => (container: PIXI.Graphics, shape: T, style?: DrawingStyle) => {
   const { fillStyle, strokeStyle } = getGraphicsStyle(style);
 
   const fillGraphics = new PIXI.Graphics();
-  fillGraphics.beginFill(0xffffff);
-  fn(shape, fillGraphics); 
-  fillGraphics.endFill();
-  fillGraphics.tint = fillStyle.tint;
-  fillGraphics.alpha = fillStyle.alpha;
-
+  
+  if (!options.strokeOnly) {
+    fillGraphics.beginFill(0xffffff);
+    fn(shape, fillGraphics); 
+    fillGraphics.endFill();
+    fillGraphics.tint = fillStyle.tint;
+    fillGraphics.alpha = fillStyle.alpha;
+  }
+  
   container.addChild(fillGraphics);
-    
+
   const strokeGraphics = new PIXI.Graphics();
   const lineWidth = strokeStyle.lineWidth === 1 ? 1 : strokeStyle.lineWidth / lastScale;
   strokeGraphics.lineStyle(lineWidth, 0xffffff, 1, 0.5, strokeStyle.lineWidth === 1);
@@ -96,6 +119,53 @@ const drawPolygon = drawShape((polygon: Polygon, g: PIXI.Graphics) => {
   const flattened = polygon.geometry.points.reduce<number[]>((flat, xy) => ([...flat, ...xy]), []);   
   g.drawPolygon(flattened);
 });
+
+const drawPolyline = drawShape((polyline: Polyline, g: PIXI.Graphics) => {
+  const { points, closed } = polyline.geometry;
+  
+  if (points.length === 0) return;
+
+  if (!closed)
+    g.beginFill(0x000000, 0); // Transparent fill
+
+  const drawSegment = (fromPoint: PolylinePoint, toPoint: PolylinePoint) => {
+    const [fromX, fromY] = fromPoint.point;
+    const [toX, toY] = toPoint.point;
+  
+    if (fromPoint.type === 'CURVE' || toPoint.type === 'CURVE') {
+      const cp1X = fromPoint.outHandle ? fromPoint.outHandle[0] : fromX;
+      const cp1Y = fromPoint.outHandle ? fromPoint.outHandle[1] : fromY;
+      const cp2X = toPoint.inHandle ? toPoint.inHandle[0] : toX;
+      const cp2Y = toPoint.inHandle ? toPoint.inHandle[1] : toY;
+      
+      g.bezierCurveTo(cp1X, cp1Y, cp2X, cp2Y, toX, toY);
+    } else {
+      g.lineTo(toX, toY);
+    }
+  }
+  
+  // Start at the first point
+  const firstPoint = points[0];
+  g.moveTo(firstPoint.point[0], firstPoint.point[1]);
+  
+  // Draw segments between consecutive points
+  for (let i = 1; i < points.length; i++) {
+    const prevPoint = points[i - 1];
+    const currentPoint = points[i];
+    
+    drawSegment(prevPoint, currentPoint);
+  }
+  
+  // Handle closing the path if specified
+  if (closed && points.length > 2) {
+    const lastPoint = points[points.length - 1];
+    const firstPoint = points[0];
+    drawSegment(lastPoint, firstPoint);
+    g.closePath();
+  } else {
+    g.endFill();
+  }
+}, { strokeOnly: true });
 
 const drawMultiPolygon = drawShape((multiPolygon: MultiPolygon, g: PIXI.Graphics) => {
   const flattenRing = (ring: MultiPolygonRing) => 
@@ -254,6 +324,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       rendered = drawEllipse(graphics, selector as Ellipse, s);
     } else if (selector.type === ShapeType.MULTIPOLYGON) {
       rendered = drawMultiPolygon(graphics, selector as MultiPolygon, s);
+    } else if (selector.type === ShapeType.POLYLINE) {
+      rendered = drawPolyline(graphics, selector as Polyline, s);
     } else if (selector.type === ShapeType.LINE) {
       rendered = drawLine(graphics, selector as Line, s);
     } else {
@@ -337,8 +409,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   const setSelected = (selection: Selection) => {
     const nexSelectedtIds = new Set(selection.selected.map(s => s.id));
 
-    const toSelect = 
-      selection.selected.filter(({ id }) => !selectedIds.has(id));
+    const toSelect = selection.selected
+      .filter(({ id }) => !selectedIds.has(id))
 
     const toDeselect = [...selectedIds]
       .filter(id => !nexSelectedtIds.has(id));
@@ -347,9 +419,13 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       if (editable) {
         const rendered = annotationShapes.get(id);
         if (rendered) {
-          // Remove editable annotations from the stage
-          graphics.removeChild(rendered.fill);
-          graphics.removeChild(rendered.stroke);
+          const editor = getEditor(rendered.annotation.target.selector);
+
+          // Remove editable annotations from the stage if an editor exists
+          if (editor) {
+            graphics.removeChild(rendered.fill);
+            graphics.removeChild(rendered.stroke);
+          }
         }
       } else {
         redrawAnnotation(id, { selected: true, hovered: id === hovered });
