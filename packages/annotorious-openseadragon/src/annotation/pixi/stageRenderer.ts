@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import type OpenSeadragon from 'openseadragon';
-import { ShapeType } from '@annotorious/annotorious';
+import { getEditor, ShapeType } from '@annotorious/annotorious';
 import type { 
   AnnotationState, 
   DrawingStyle, 
@@ -409,8 +409,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   const setSelected = (selection: Selection) => {
     const nexSelectedtIds = new Set(selection.selected.map(s => s.id));
 
-    const toSelect = 
-      selection.selected.filter(({ id }) => !selectedIds.has(id));
+    const toSelect = selection.selected
+      .filter(({ id }) => !selectedIds.has(id))
 
     const toDeselect = [...selectedIds]
       .filter(id => !nexSelectedtIds.has(id));
@@ -419,9 +419,13 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
       if (editable) {
         const rendered = annotationShapes.get(id);
         if (rendered) {
-          // Remove editable annotations from the stage
-          graphics.removeChild(rendered.fill);
-          graphics.removeChild(rendered.stroke);
+          const editor = getEditor(rendered.annotation.target.selector);
+
+          // Remove editable annotations from the stage if an editor exists
+          if (editor) {
+            graphics.removeChild(rendered.fill);
+            graphics.removeChild(rendered.stroke);
+          }
         }
       } else {
         redrawAnnotation(id, { selected: true, hovered: id === hovered });
