@@ -1,6 +1,6 @@
-import { boundsFromPoints, multipolygonElementToPath, ShapeType } from '../../core';
+import { boundsFromPoints, computeSVGPath, multipolygonElementToPath, ShapeType } from '../../core';
 import { parseSVGXML } from './SVG';
-import { svgPathToMultiPolygonElement } from './pathParser';
+import { svgPathToMultiPolygonElement, svgPathToPolyline } from './pathParser';
 import type { 
   Ellipse, 
   EllipseGeometry, 
@@ -10,6 +10,8 @@ import type {
   MultiPolygonGeometry, 
   Polygon, 
   PolygonGeometry, 
+  Polyline,
+  PolylineGeometry, 
   Shape 
 } from '../../core';
 
@@ -85,7 +87,27 @@ const parseSVGLine = (value: string): Line => {
   };
 }
 
-const parseSVGPath = (value: string): Polygon | MultiPolygon => {
+const parseSVGPathToPolyline = (value: string): Polyline => {
+  const doc = parseSVGXML(value);
+
+  const path = doc.nodeName === 'path' ? doc : Array.from(doc.querySelectorAll('path'))[0];
+  const d = path?.getAttribute('d');
+
+  if (!d)
+    throw new Error('Could not parse SVG path');
+
+  const polyline = svgPathToPolyline(d);
+
+  if (!polyline)
+    throw new Error('Could not parse SVG path');
+
+  return {
+    type: ShapeType.POLYLINE,
+    geometry: polyline
+  }
+}
+
+const parseSVGPathToPolygon = (value: string): Polygon | MultiPolygon => {
   const doc = parseSVGXML(value);
 
   const paths = doc.nodeName === 'path' ? [doc] : Array.from(doc.querySelectorAll('path'));
@@ -121,8 +143,10 @@ export const parseSVGSelector = <T extends Shape>(valueOrSelector: SVGSelector |
 
   if (value.includes('<polygon points='))
     return parseSVGPolygon(value) as unknown as T;
+  else if (value.includes('<path ') && (value.includes(' C ') || !value.includes('Z')))
+    return parseSVGPathToPolyline(value) as unknown as T;
   else if (value.includes('<path '))
-    return parseSVGPath(value) as unknown as T;
+    return parseSVGPathToPolygon(value) as unknown as T;
   else if (value.includes('<ellipse ')) 
     return parseSVGEllipse(value) as unknown as T;
   else if (value.includes("<line "))
@@ -163,6 +187,10 @@ export const serializeSVGSelector = (shape: Shape): SVGSelector => {
       const [[x1, y1], [x2, y2]] = geom.points;
       value = `<svg><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" /></svg>`;
       break;
+    }
+    case ShapeType.POLYLINE: {
+      const d = computeSVGPath(shape.geometry as PolylineGeometry);
+      value = `<svg><path d="${d}" /></svg>`;
     }
   }
 

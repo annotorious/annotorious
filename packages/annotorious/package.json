@@ -53,7 +53,6 @@
     "dequal": "^2.0.3",
     "rbush": "^4.0.1",
     "simplify-js": "^1.2.4",
-    "svg-pathdata": "^8.0.0",
     "uuid": "^11.1.0"
   }
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { W3CAnnotation } from '@annotorious/core';
-import { parseW3CImageAnnotation, serializeW3CImageAnnotation, ShapeType } from '../../../src/model';
+import { parseW3CImageAnnotation, Polyline, serializeW3CImageAnnotation, ShapeType } from '../../../src/model';
 
 import { annotations } from './fixtures';
 
@@ -10,14 +10,31 @@ describe('parseW3CImageAnnotation', () => {
 
     expect(parsed.some(r => r.error)).toBeFalsy();
     
-    const [polygon, ellipse, path, multi, rectangle, line] = parsed;
+    const [
+      polygon, 
+      ellipse, 
+      closedPath,
+      multiPolygon, 
+      rectangle, 
+      line,
+      openCurve,
+      closedCurve
+      ] = parsed;
 
     expect(polygon.parsed?.target.selector.type).toBe(ShapeType.POLYGON);
     expect(ellipse.parsed?.target.selector.type).toBe(ShapeType.ELLIPSE);
-    expect(path.parsed?.target.selector.type).toBe(ShapeType.POLYGON);
-    expect(multi.parsed?.target.selector.type).toBe(ShapeType.MULTIPOLYGON);
+    expect(closedPath.parsed?.target.selector.type).toBe(ShapeType.POLYGON);
+    expect(multiPolygon.parsed?.target.selector.type).toBe(ShapeType.MULTIPOLYGON);
     expect(rectangle.parsed?.target.selector.type).toBe(ShapeType.RECTANGLE);
     expect(line.parsed?.target.selector.type).toBe(ShapeType.LINE);
+
+    const parsedOpenCurve = openCurve.parsed?.target?.selector as Polyline | undefined;
+    expect(parsedOpenCurve?.type).toBe(ShapeType.POLYLINE);
+    expect(parsedOpenCurve?.geometry.closed).toBeFalsy();
+
+    const parsedClosedCurve = closedCurve.parsed?.target?.selector as Polyline | undefined;
+    expect(parsedClosedCurve?.type).toBe(ShapeType.POLYLINE);
+    expect(parsedClosedCurve?.geometry.closed).toBeTruthy();
   });
 });
 
