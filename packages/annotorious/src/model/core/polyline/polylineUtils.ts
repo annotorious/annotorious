@@ -1,6 +1,6 @@
 import { ShapeType } from '../Shape';
 import { computePolygonArea, isPointInPolygon, registerShapeUtil, type ShapeUtil } from '../shapeUtils';
-import type { Polyline, PolylineGeometry } from './Polyline';
+import type { Polyline, PolylineGeometry, PolylinePoint } from './Polyline';
 
 const PolylineUtil: ShapeUtil<Polyline> = {
 
@@ -10,7 +10,7 @@ const PolylineUtil: ShapeUtil<Polyline> = {
     if (!geom.closed || geom.points.length < 3)
       return 0;
 
-    const points = approximateAsPolygon(geom);
+    const points = approximateAsPolygon(geom.points, geom.closed);
     return computePolygonArea(points);
   },
 
@@ -18,7 +18,7 @@ const PolylineUtil: ShapeUtil<Polyline> = {
     const geom = polyline.geometry;
     
     if (geom.closed) {
-      const points = approximateAsPolygon(geom);
+      const points = approximateAsPolygon(geom.points, geom.closed);
       return isPointInPolygon(points, x, y);
     } else {
       return isPointNearPath(geom, [x, y], buffer);
@@ -27,17 +27,17 @@ const PolylineUtil: ShapeUtil<Polyline> = {
   
 };
 
-export const approximateAsPolygon = (geom: PolylineGeometry): [number, number][] => {
+export const approximateAsPolygon = (corners: PolylinePoint[], closed = false): [number, number][] => {
   const points: [number, number][] = [];
   
-  for (let i = 0; i < geom.points.length; i++) {
-    const currentPoint = geom.points[i];
-    const nextPoint = geom.points[(i + 1) % geom.points.length];
+  for (let i = 0; i < corners.length; i++) {
+    const currentPoint = corners[i];
+    const nextPoint = corners[(i + 1) % corners.length];
     
     points.push(currentPoint.point);
     
     // If there's a curve to the next point, approximate it
-    if (i < geom.points.length - 1 || geom.closed) {
+    if (i < corners.length - 1 || closed) {
       const hasCurve = currentPoint.outHandle || nextPoint.inHandle;
       if (hasCurve) {
         const curvePoints = approximateBezierCurve(
