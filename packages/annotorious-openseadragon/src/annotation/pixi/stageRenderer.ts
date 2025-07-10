@@ -69,9 +69,8 @@ const getGraphicsStyle = (style?: DrawingStyle) => {
 }
 
 const drawShape = <T extends Shape>(
-  fn: (s: T, g: PIXI.Graphics) => void,
-  options: { strokeOnly?: boolean } = {}
-) => (container: PIXI.Graphics, shape: T, style?: DrawingStyle) => {
+  fn: (s: T, g: PIXI.Graphics) => void
+) => (container: PIXI.Graphics, shape: T, style?: DrawingStyle, options: { strokeOnly?: boolean } = {}) => {
   const { fillStyle, strokeStyle } = getGraphicsStyle(style);
 
   const fillGraphics = new PIXI.Graphics();
@@ -120,7 +119,7 @@ const drawPolygon = drawShape((polygon: Polygon, g: PIXI.Graphics) => {
   g.drawPolygon(flattened);
 });
 
-const drawPolyline = drawShape((polyline: Polyline, g: PIXI.Graphics) => {
+const drawPolyline = drawShape<Polyline>((polyline, g) => {
   const { points, closed } = polyline.geometry;
   
   if (points.length === 0) return;
@@ -165,7 +164,7 @@ const drawPolyline = drawShape((polyline: Polyline, g: PIXI.Graphics) => {
   } else {
     g.endFill();
   }
-}, { strokeOnly: true });
+});
 
 const drawMultiPolygon = drawShape((multiPolygon: MultiPolygon, g: PIXI.Graphics) => {
   const flattenRing = (ring: MultiPolygonRing) => 
@@ -325,7 +324,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
     } else if (selector.type === ShapeType.MULTIPOLYGON) {
       rendered = drawMultiPolygon(graphics, selector as MultiPolygon, s);
     } else if (selector.type === ShapeType.POLYLINE) {
-      rendered = drawPolyline(graphics, selector as Polyline, s);
+      const polyline = selector as Polyline;
+      rendered = drawPolyline(graphics, polyline, s, { strokeOnly: !polyline.geometry.closed });
     } else if (selector.type === ShapeType.LINE) {
       rendered = drawLine(graphics, selector as Line, s);
     } else {
