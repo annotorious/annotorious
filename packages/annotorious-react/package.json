@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/react",
-  "version": "3.6.1",
+  "version": "3.6.2",
   "description": "Annotorious React bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -45,9 +45,9 @@
     }
   },
   "dependencies": {
-    "@annotorious/annotorious": "3.6.1",
-    "@annotorious/core": "3.6.1",
-    "@annotorious/openseadragon": "3.6.1",
+    "@annotorious/annotorious": "3.6.2",
+    "@annotorious/core": "3.6.2",
+    "@annotorious/openseadragon": "3.6.2",
     "@floating-ui/react": "^0.27.13",
     "zustand": "^5.0.6"
   },
