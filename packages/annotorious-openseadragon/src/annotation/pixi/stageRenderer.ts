@@ -133,10 +133,10 @@ const drawPolyline = drawShape((polyline: Polyline, g: PIXI.Graphics) => {
     const [toX, toY] = toPoint.point;
   
     if (fromPoint.type === 'CURVE' || toPoint.type === 'CURVE') {
-      const cp1X = fromPoint.outHandle ? fromPoint.outHandle[0] : fromX;
-      const cp1Y = fromPoint.outHandle ? fromPoint.outHandle[1] : fromY;
-      const cp2X = toPoint.inHandle ? toPoint.inHandle[0] : toX;
-      const cp2Y = toPoint.inHandle ? toPoint.inHandle[1] : toY;
+      const cp1X = fromPoint.type === 'CURVE' && fromPoint.outHandle ? fromPoint.outHandle[0] : fromX;
+      const cp1Y = fromPoint.type === 'CURVE' && fromPoint.outHandle ? fromPoint.outHandle[1] : fromY;
+      const cp2X = toPoint.type === 'CURVE' && toPoint.inHandle ? toPoint.inHandle[0] : toX;
+      const cp2Y = toPoint.type === 'CURVE' && toPoint.inHandle ? toPoint.inHandle[1] : toY;
       
       g.bezierCurveTo(cp1X, cp1Y, cp2X, cp2Y, toX, toY);
     } else {

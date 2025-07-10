@@ -158,8 +158,8 @@ export const computeSVGPath = (geom: PolylineGeometry) => {
     
     if (currentPoint.type === 'CURVE' || previousPoint.type === 'CURVE') {
       // Cubic Bézier curve
-      const cp1 = previousPoint.outHandle || previousPoint.point;
-      const cp2 = currentPoint.inHandle || currentPoint.point;
+      const cp1 = previousPoint.type === 'CURVE' ? previousPoint.outHandle || previousPoint.point : previousPoint.point;
+      const cp2 = currentPoint.type === 'CURVE' ? currentPoint.inHandle || currentPoint.point : currentPoint.point;
       const endPoint = currentPoint.point;
       
       pathCommands.push(`C ${cp1[0]} ${cp1[1]} ${cp2[0]} ${cp2[1]} ${endPoint[0]} ${endPoint[1]}`);
