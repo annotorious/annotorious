@@ -26,6 +26,6 @@ export interface PolylinePoint {
 
   outHandle?: [number, number];
 
-  locked?: boolean;
+  unlocked?: boolean;
 
 }
