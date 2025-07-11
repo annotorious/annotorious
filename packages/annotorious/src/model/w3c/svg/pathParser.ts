@@ -60,10 +60,26 @@ export const svgPathToMultiPolygonElement = (d: string): MultiPolygonElement | u
   }
 }
 
+const areHandlesSymmetrical = (pt: PolylinePoint) => {
+  // Check if all three points are on a straight line (with a bit of tolerance)
+  const { point, inHandle, outHandle } = pt;
+
+  if (!inHandle || !outHandle) return false;
+
+  const dx1 = inHandle[0] - point[0];
+  const dy1 = inHandle[1] - point[1];
+  const dx2 = outHandle[0] - point[0];
+  const dy2 = outHandle[1] - point[1];
+
+  const cross = dx1 * dy2 - dy1 * dx2;
+
+  return Math.abs(cross) < 0.01;
+}
+
 export const svgPathToPolyline = (d: string): PolylineGeometry => {
   const commands = parsePathCommands(d);
 
-  const points: PolylinePoint[] = [];
+  let points: PolylinePoint[] = [];
 
   let currentPoint: [number, number] = [0, 0];
   let closed = false;
@@ -125,6 +141,7 @@ export const svgPathToPolyline = (d: string): PolylineGeometry => {
     }
   }
 
+  points = points.map(pt => areHandlesSymmetrical(pt) ? {...pt, locked: true } : pt);
   const bounds = boundsFromPoints(approximateAsPolygon(points, closed));
 
   return {

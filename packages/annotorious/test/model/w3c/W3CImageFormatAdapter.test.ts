@@ -32,9 +32,16 @@ describe('parseW3CImageAnnotation', () => {
     expect(parsedOpenCurve?.type).toBe(ShapeType.POLYLINE);
     expect(parsedOpenCurve?.geometry.closed).toBeFalsy();
 
+    // Expect all curve points have locked handles
+    const openCurveCorners = parsedOpenCurve?.geometry.points.filter(pt => pt.locked).length;
+    expect(openCurveCorners).toBe(3);
+
     const parsedClosedCurve = closedCurve.parsed?.target?.selector as Polyline | undefined;
     expect(parsedClosedCurve?.type).toBe(ShapeType.POLYLINE);
     expect(parsedClosedCurve?.geometry.closed).toBeTruthy();
+
+    const closedCurveCorners = parsedClosedCurve?.geometry.points.filter(pt => pt.locked).length;
+    expect(closedCurveCorners).toBe(3);
   });
 });
 
