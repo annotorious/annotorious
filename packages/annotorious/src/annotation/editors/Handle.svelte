@@ -52,6 +52,9 @@
       cx={x}
       cy={y}
       r={handleRadius + (6 / scale)} 
+      role="button"
+      tabindex="0"
+      on:dblclick
       on:pointerenter
       on:pointerleave
       on:pointerdown
