@@ -3,11 +3,14 @@
   import type { Annotation } from '@annotorious/core';
   import { isImageAnnotation, ShapeType } from '@annotorious/annotorious';
   import type { Bounds, ImageAnnotatorState } from '@annotorious/annotorious';
-  import SelectedRectangle from './shapes/SelectedRectangle.svelte';
-  import SelectedPolygon from './shapes/SelectedPolygon.svelte';
-  import SelectedMultiPolygon from './shapes/SelectedMultiPolygon.svelte';
-  import SelectedEllipse from './shapes/SelectedEllipse.svelte';
-  import SelectedLine from './shapes/SelectedLine.svelte';
+  import {
+    SelectedEllipse,
+    SelectedLine,
+    SelectedMultiPolygon,
+    SelectedPolygon,
+    SelectedPolyline,
+    SelectedRectangle
+  } from './shapes'
 
   /** Props **/
   export let state: ImageAnnotatorState<I, E>;
@@ -67,6 +70,8 @@
             <SelectedPolygon annotation={a} />
           {:else if (a.target.selector.type === ShapeType.MULTIPOLYGON)}
             <SelectedMultiPolygon annotation={a} />
+          {:else if (a.target.selector.type === ShapeType.POLYLINE)}
+            <SelectedPolyline annotation={a} />
           {:else if (a.target.selector.type === ShapeType.ELLIPSE)}
             <SelectedEllipse annotation={a} />
           {:else if (a.target.selector.type === ShapeType.LINE)}
