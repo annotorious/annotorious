@@ -7,13 +7,15 @@
   export let annotation: ImageAnnotation;
   export let geom: Geometry;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined;
+  export let isNoneSelection: boolean = false;
 
   $: computedStyle = computeStyle(annotation, style);
 
   const { cx, cy, rx, ry } = geom as EllipseGeometry;
 </script>
 
-<g class="a9s-annotation" data-id={annotation.id}>
+<g class={"a9s-annotation " + (isNoneSelection ? "a9s-none-select":  "")}
+   data-id={annotation.id}>
   <ellipse
     class="a9s-outer"
     style={computedStyle ? 'display:none;' : undefined}
