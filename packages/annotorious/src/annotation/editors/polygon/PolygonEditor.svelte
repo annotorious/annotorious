@@ -77,7 +77,7 @@
       .reduce((closest, midpoint) =>
         getDistSq(midpoint.point) < getDistSq(closest.point) ? midpoint : closest);
 
-    // Show midpoint of the mouse is at least within THRESHOLD distance
+    // Show midpoint if the mouse is at least within THRESHOLD distance
     // of the midpoint or the closest corner. (Basically a poor man's shape buffering).
     const threshold = Math.pow(MIN_HOVER_DISTANCE / viewportScale, 2);
 
