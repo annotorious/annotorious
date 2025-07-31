@@ -440,6 +440,8 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
   const setHovered = (annotationId?: string) => {
     if (hovered === annotationId) return;
+
+    if (annotationId && selectedIds.has(annotationId)) return;
     
     // Unhover current, if any
     if (hovered && !selectedIds.has(hovered))
