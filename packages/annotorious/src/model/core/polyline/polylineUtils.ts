@@ -85,7 +85,7 @@ const isPointNearPath = (geom: PolylineGeometry, point: [number, number], buffer
     const currentPoint = geom.points[i];
     const nextPoint = geom.points[i + 1];
     
-    const hasCurve = currentPoint.outHandle || nextPoint.inHandle;
+    const hasCurve = currentPoint.type === 'CURVE' || nextPoint.type === 'CURVE';
     if (hasCurve) {
       const curvePoints = approximateBezierCurve(
         currentPoint.point,
@@ -174,8 +174,7 @@ export const computeSVGPath = (geom: PolylineGeometry) => {
     const lastPoint = geom.points[geom.points.length - 1];
     const firstPointRef = geom.points[0];
     
-    const hasClosingCurve = lastPoint.outHandle || firstPointRef.inHandle;
-    
+    const hasClosingCurve = lastPoint.type === 'CURVE' || firstPointRef.type === 'CURVE';
     if (hasClosingCurve) {
       const cp1 = lastPoint.outHandle || lastPoint.point;
       const cp2 = firstPointRef.inHandle || firstPointRef.point;
