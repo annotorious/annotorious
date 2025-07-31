@@ -38,7 +38,7 @@ export const approximateAsPolygon = (corners: PolylinePoint[], closed = false): 
     
     // If there's a curve to the next point, approximate it
     if (i < corners.length - 1 || closed) {
-      const hasCurve = currentPoint.outHandle || nextPoint.inHandle;
+      const hasCurve = currentPoint.type === 'CURVE' || nextPoint.type == 'CURVE';
       if (hasCurve) {
         const curvePoints = approximateBezierCurve(
           currentPoint.point,

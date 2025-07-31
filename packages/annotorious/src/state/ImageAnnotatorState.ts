@@ -55,7 +55,7 @@ export const createImageAnnotatorState = <I extends Annotation, E extends unknow
   });
 
   const getAt = (x: number, y: number, filter?: Filter<I>, buffer?: number): I | undefined => {
-    const targets = tree.getAt(x, y, filter as Filter<Annotation>, buffer);
+    const targets = tree.getAt(x, y, buffer);
 
     if (filter) {
       // Resolve annotations first, so we can filter
@@ -72,8 +72,8 @@ export const createImageAnnotatorState = <I extends Annotation, E extends unknow
 
   const getIntersecting = (x: number, y: number, width: number, height: number) =>
     tree.getIntersecting(x, y, width, height)
-    .map(target => store.getAnnotation(target.annotation) as I)
-    .filter(Boolean); // Race conditions may have deleted annotations concurrently
+      .map(target => store.getAnnotation(target.annotation) as I)
+      .filter(Boolean); // Race conditions may have deleted annotations concurrently
 
   return {
     store: {

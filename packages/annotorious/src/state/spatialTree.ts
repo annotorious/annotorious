@@ -75,7 +75,7 @@ export const createSpatialTree = () => {
   };
 
 
-  const getAt = (x: number, y: number, filter?: Filter<Annotation>, buffer: number = 0): ImageAnnotationTarget[] => {
+  const getAt = (x: number, y: number, buffer: number = 0): ImageAnnotationTarget[] => {
     const idxHits = tree.search({
       minX: x - buffer,
       minY: y - buffer,
