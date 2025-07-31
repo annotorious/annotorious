@@ -19,12 +19,12 @@
           user-select: none;
 }
 
-.a9s-annotationlayer.hidden {
-  display: none;
+.a9s-annotationlayer.hover {
+  cursor: pointer;
 }
 
-.a9s-annotationlayer .a9s-annotation {
-  cursor: pointer;
+.a9s-annotationlayer.hidden {
+  display: none;
 }
 
 .a9s-annotationlayer ellipse, 
