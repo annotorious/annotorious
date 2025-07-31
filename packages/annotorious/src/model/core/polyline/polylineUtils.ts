@@ -42,8 +42,8 @@ export const approximateAsPolygon = (corners: PolylinePoint[], closed = false): 
       if (hasCurve) {
         const curvePoints = approximateBezierCurve(
           currentPoint.point,
-          currentPoint.outHandle || currentPoint.point,
-          nextPoint.inHandle || nextPoint.point,
+          currentPoint.type === 'CURVE' ? currentPoint.outHandle || currentPoint.point : currentPoint.point,
+          nextPoint.type === 'CURVE' ? nextPoint.inHandle || nextPoint.point : nextPoint.point,
           nextPoint.point,
           10 // number of approximation segments
         );
@@ -89,8 +89,8 @@ const isPointNearPath = (geom: PolylineGeometry, point: [number, number], buffer
     if (hasCurve) {
       const curvePoints = approximateBezierCurve(
         currentPoint.point,
-        currentPoint.outHandle || currentPoint.point,
-        nextPoint.inHandle || nextPoint.point,
+        currentPoint.type === 'CURVE' ? currentPoint.outHandle || currentPoint.point : currentPoint.point,
+        nextPoint.type === 'CURVE' ? nextPoint.inHandle || nextPoint.point : nextPoint.point,
         nextPoint.point,
         20 // TODO make configurable? Based on scale factor? Length?
       );
