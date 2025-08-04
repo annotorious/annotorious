@@ -25,6 +25,8 @@ export type OpenSeadragonAnnotatorProps<I extends Annotation, E extends unknown>
 
   filter?: Filter<I>;
 
+  hideAnnotations?: boolean;
+
   style?: DrawingStyle | ((annotation: I) => DrawingStyle);
 
   tool?: string | null;
@@ -64,6 +66,10 @@ export const OpenSeadragonAnnotator = forwardRef(<I extends Annotation, E extend
   useEffect(() => {
     if (anno) anno.setFilter(props.filter);
   }, [anno, props.filter]);
+
+  useEffect(() => {
+    if (anno) anno.setVisible(!props.hideAnnotations);
+  }, [anno, props.hideAnnotations]);
 
   useEffect(() => {
     if (anno) anno.setStyle(props.style);
