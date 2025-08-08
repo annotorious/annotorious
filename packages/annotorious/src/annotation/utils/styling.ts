@@ -16,7 +16,7 @@ export const computeStyle = (
       css += `fill:${fill};`;
 
     if (fillOpacity || fillOpacity === 0) {
-      css += `fill-opacity:${fillOpacity}`;
+      css += `fill-opacity:${fillOpacity};`;
     } else if (fill) {
       // If we have no fill opacity, but a fill, set default opacity
       css += 'fill-opacity:0.25';
