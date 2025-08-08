@@ -38,7 +38,9 @@
           adapter: W3CImageFormat('sample-image'),
           autoSave: true,
           style: function(annotation) {
-            return annotation.target.selector.type === 'RECTANGLE' ? { fill: 'red' } : { fill: 'blue' };
+            return annotation.target.selector.type === 'RECTANGLE' 
+              ? { fillOpacity: 0 } 
+              : { fill: 'blue' };
           }
         });
 

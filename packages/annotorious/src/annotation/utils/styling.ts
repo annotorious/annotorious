@@ -12,9 +12,14 @@ export const computeStyle = (
 
     let css = '';
 
-    if (fill) {
+    if (fill)
       css += `fill:${fill};`;
-      css += `fill-opacity:${fillOpacity || '0.25'};`;
+
+    if (fillOpacity || fillOpacity === 0) {
+      css += `fill-opacity:${fillOpacity}`;
+    } else if (fill) {
+      // If we have no fill opacity, but a fill, set default opacity
+      css += 'fill-opacity:0.25';
     }
 
     if (stroke) {
