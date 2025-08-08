@@ -20,10 +20,10 @@
     "@tsconfig/svelte": "^5.0.4",
     "@types/openseadragon": "^4.1.0",
     "svelte": "^4.2.20",
-    "svelte-check": "^4.3.0",
+    "svelte-check": "^4.3.1",
     "svelte-preprocess": "^6.0.3",
     "tslib": "^2.8.1",
-    "typescript": "5.8.3",
+    "typescript": "^5.9.2",
     "vite": "^5.4.19",
     "vite-plugin-dts": "^4.5.4"
   },
