@@ -19,7 +19,7 @@ export const computeStyle = (
       css += `fill-opacity:${fillOpacity};`;
     } else if (fill) {
       // If we have no fill opacity, but a fill, set default opacity
-      css += 'fill-opacity:0.25';
+      css += 'fill-opacity:0.25;';
     }
 
     if (stroke) {
