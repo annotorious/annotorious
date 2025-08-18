@@ -5,13 +5,17 @@
 Add image annotation functionality to any web page with a few lines of JavaScript. Visit the
 [project website](https://annotorious.dev) for documentation and live demos.
 
+## License
+
+Annotorious is licensed under the [BSD 3-Clause](LICENSE) license.
+
 ## Community
 
 Visit the [Discussion Forum](https://github.com/annotorious/annotorious/discussions) for community support, or file an
 issue on the [Issue Tracker](https://github.com/annotorious/annotorious/issues).
 
-## Become a Sponsor
+## Professional Support Available
 
-Using Annotorious at work? Become a sponsor! Your support helps me cover hosting costs, spend more 
-time supporting the community, and make Annotorious better for everyone. [Make a one-time or monthly
-donation via my SteadyHQ account](https://steadyhq.com/rainer-simon).
+Looking for help with integration, customization, or feature development? I offer consulting and professional services for teams and organizations that need dedicated support or technical guidance. Services are available on an hourly basis.
+
+Contact me at hello@rainersimon.io to discuss your project.
