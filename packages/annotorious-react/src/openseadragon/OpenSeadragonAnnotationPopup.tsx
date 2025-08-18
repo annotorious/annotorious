@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import OpenSeadragon from 'openseadragon';
 import { v4 as uuidv4 } from 'uuid';
 import { useAnnotator, useSelection, useViewer} from '@annotorious/react';
@@ -146,7 +147,7 @@ export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopup
     anno.state.store.updateBody(current, updated);
   }
 
-  return (isOpen && annotation) ? (
+  return (isOpen && annotation) ? createPortal(
     <div
       className="a9s-popup a9s-image-popup"
       ref={refs.setFloating}
@@ -168,6 +169,6 @@ export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopup
         onUpdateBody
       })}
     </div>
-  ) : null;
+  , viewer.element) : null;
 
 }

@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Annotation } from '@annotorious/core';
 import { ImageAnnotation } from '@annotorious/annotorious';
 import { useAnnotator } from '../Annotorious';
@@ -59,7 +60,7 @@ export const OpenSeadragonHoverTooltip = (props: OpenSeadragonHoverTooltipProps)
     }
   }, [anno, viewer]);
 
-  return (hovered && pos) && (
+  return (hovered && pos) && createPortal(
     <div 
       style={{ 
         position: 'absolute',
@@ -68,6 +69,6 @@ export const OpenSeadragonHoverTooltip = (props: OpenSeadragonHoverTooltipProps)
       }}>
       {props.tooltip({ annotation: hovered })}
     </div>
-  )
+  , viewer.element)
 
 }
