@@ -53,6 +53,10 @@
   fill: transparent;
 }
 
+.a9s-handle [role="button"] {
+  cursor: inherit !important; /** Overrides default Tailwind cursor! **/
+}
+
 .a9s-handle-dot {
   fill: #fff;
   pointer-events: none;
