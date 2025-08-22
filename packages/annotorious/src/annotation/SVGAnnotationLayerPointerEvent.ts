@@ -1,6 +1,7 @@
 import { createEventDispatcher } from 'svelte';
-import type { SvelteImageAnnotationStore } from '../state';
 import type { Annotation } from '@annotorious/core';
+import type { SvelteImageAnnotationStore } from '../state';
+import { isTouch } from './utils';
 
 export interface SVGAnnotationLayerPointerEvent<T extends Annotation> {
     
@@ -27,7 +28,8 @@ export const addEventListeners = <T extends Annotation>(svg: SVGSVGElement, stor
     if (duration < MAX_CLICK_DURATION) {
       const { x, y } = getSVGPoint(evt, svg);
 
-      const annotation = store.getAt(x, y, undefined, 2) as T | undefined;
+      const buffer = isTouch ? 10 : 2;
+      const annotation = store.getAt(x, y, undefined, buffer) as T | undefined;
 
       if (annotation)
         dispatch('click', { originalEvent: evt, annotation });

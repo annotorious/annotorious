@@ -4,7 +4,7 @@
   import OpenSeadragon from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, Filter, StoreChangeEvent, User } from '@annotorious/core';
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
-  import { getEditor as _getEditor, getTool, isImageAnnotation, listDrawingTools } from '@annotorious/annotorious';
+  import { getEditor as _getEditor, getTool, isImageAnnotation, isTouch, listDrawingTools } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
   import { updateSelection } from '../../../utils';
   import OSDLayer from '../OSDLayer.svelte';
@@ -20,6 +20,8 @@
   export let toolName: string = listDrawingTools()[0];
   export let user: User;
   export let viewer: OpenSeadragon.Viewer;
+
+  const HIT_TOLERANCE_BASE = isTouch ? 10 : 2;
 
   // SVG element
   let isHovered = false;
@@ -107,7 +109,7 @@
     return zoom * containerWidth / viewer.world.getContentFactor();
   }
 
-  const getHitTolerance = () => 2 / getCurrentScale();
+  const getHitTolerance = () => HIT_TOLERANCE_BASE / getCurrentScale();
 
   const onGrab = (evt: CustomEvent<PointerEvent>) => {
     viewer.setMouseNavEnabled(false);

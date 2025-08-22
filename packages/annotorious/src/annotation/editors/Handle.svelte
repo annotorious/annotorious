@@ -30,13 +30,16 @@
       class:touched={touched} />
    
     <circle 
-      cx={x} 
+      cx={x}
       cy={y} 
       r={handleRadius + 10 / scale}
       class="a9s-handle-buffer"
+      role="button"
+      tabindex="0"
+      on:dblclick
       on:pointerdown
-      on:pointerup
       on:pointerdown={onPointerDown} 
+      on:pointerup
       on:pointerup={onPointerUp} /> 
 
     <circle 
@@ -77,3 +80,14 @@
       r={handleRadius} />
   </g>
 {/if}
+
+<style>
+  circle.a9s-handle-buffer:focus {
+    outline: none;
+  }
+
+  circle.a9s-handle-buffer:focus-visible {
+    stroke: rgba(255, 255, 255, 0.8);
+    stroke-width: 3px;
+  }
+</style>

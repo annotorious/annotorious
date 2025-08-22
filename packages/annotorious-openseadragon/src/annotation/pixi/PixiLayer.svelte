@@ -3,8 +3,8 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import OpenSeadragon from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, StoreChangeEvent, Update } from '@annotorious/core';
-  import { isImageAnnotation, ShapeType } from '@annotorious/annotorious';
-  import type { Filter, ImageAnnotation, ImageAnnotatorState, Line, MultiPolygon, Polygon } from '@annotorious/annotorious';
+  import { isImageAnnotation, isTouch, ShapeType } from '@annotorious/annotorious';
+  import type { Filter, ImageAnnotation, ImageAnnotatorState, MultiPolygon, Polygon } from '@annotorious/annotorious';
   import type { PixiLayerClickEvent } from './PixiLayerClickEvent';
   import { createStage } from './stageRenderer';
 
@@ -18,8 +18,10 @@
   export let visible = true;
 
   const { store, hover, selection, viewport } = state;
-  
+
   const dispatch = createEventDispatcher<{ click: PixiLayerClickEvent<I>}>();
+
+  const HIT_TOLERANCE_BASE = isTouch ? 10 : 2;
 
   let stage: ReturnType<typeof createStage>;
 
@@ -40,7 +42,7 @@
     return viewer.viewport.viewportToImageCoordinates(x, y);
   }
 
-  const getHitTolerance= () => 2 / stage.getScale();
+  const getHitTolerance= () => HIT_TOLERANCE_BASE / stage.getScale();
 
   const onCanvasPress = (evt: OpenSeadragon.CanvasPressEvent) => {
     const { x, y } = evt.position;
