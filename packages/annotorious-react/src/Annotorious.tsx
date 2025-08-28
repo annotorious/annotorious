@@ -5,6 +5,7 @@ import {
   useContext, 
   useEffect, 
   useImperativeHandle, 
+  useRef,
   useState 
 } from 'react';
 import type { StoreObserveOptions } from '@annotorious/core';
@@ -22,6 +23,8 @@ import { useDebounce } from './useDebounce';
 interface Selection<T extends Annotation = Annotation> extends Omit<CoreSelection, 'selected'> {
 
   selected: { annotation: T, editable?: boolean }[];
+
+  previous: { annotation: T, editable?: boolean }[];
 
 }
 
@@ -43,13 +46,15 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
 
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
 
-  const [selection, setSelection] = useState<Selection>({ selected: [] });
+  const [selection, setSelection] = useState<Selection>({ selected: [], previous: [] });
+
+  const previousSelectionRef = useRef<{ annotation: Annotation, editable?: boolean }[]>([]);
 
   useImperativeHandle(ref, () => anno);
 
   useEffect(() => {
     if (anno) {
-      const { selection, store, hover } = anno.state;
+      const { selection, store } = anno.state;
 
       // Components below <Annotorious /> may have
       // loaded annotations into the store already! 
@@ -73,7 +78,17 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
         const resolved = (selected || [])
           .map(({ id, editable }) => ({ annotation: store.getAnnotation(id), editable }));
 
-        setSelection({ selected: resolved, ...rest });
+        setSelection(currentSelection => {
+          const next = {
+            selected: resolved,
+            previous: currentSelection.selected,
+            ...rest
+          } as Selection;
+          
+          previousSelectionRef.current = currentSelection.selected;
+          
+          return next;
+        });
 
         selectionStoreObserver = event => {
           const { updated } = event.changes;
