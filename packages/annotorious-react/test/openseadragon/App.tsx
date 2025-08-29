@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import OpenSeadragon from 'openseadragon';
 import { Annotation, DrawingStyleExpression, ImageAnnotation, W3CImageAnnotation, W3CImageFormat } from '@annotorious/openseadragon';
-import { useAnnotator, AnnotoriousOpenSeadragonAnnotator, Filter } from '../../src';
+import { useAnnotator, AnnotoriousOpenSeadragonAnnotator, Filter, useSelection } from '../../src';
 import {
   OpenSeadragonViewer, 
   OpenSeadragonAnnotator, 
@@ -72,6 +72,8 @@ export const App = () => {
 
   const [filter, setFilter] = useState<{ key: String, filter: Filter | undefined }>(FILTERS[0]);
 
+  const selection = useSelection();
+
   useEffect(() => {
     if (anno) {
       fetch('annotations.json')
@@ -79,9 +81,6 @@ export const App = () => {
         .then(annotations => { 
           anno.setAnnotations(annotations)
         });
-
-      console.log('viewerRef', viewerRef);
-      console.log('annoRef', annoRef);
     }
   }, [anno]);
 
@@ -89,6 +88,10 @@ export const App = () => {
     if (anno)
       anno.setDrawingEnabled(mode === 'draw');
   }, [mode]);
+
+  useEffect(() => {
+    console.log(selection);
+  }, [selection]);
 
   const toggleFilter = () => {
     // @ts-ignore

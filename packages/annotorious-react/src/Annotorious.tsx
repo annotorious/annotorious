@@ -84,6 +84,9 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
             previous: currentSelection.selected,
             ...rest
           } as Selection;
+
+          if (JSON.stringify(currentSelection) === JSON.stringify(next)) 
+            return currentSelection;
           
           previousSelectionRef.current = currentSelection.selected;
           
