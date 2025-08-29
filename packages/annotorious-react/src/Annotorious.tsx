@@ -40,6 +40,15 @@ export const AnnotoriousContext = createContext({
 
 });
 
+const isSelectionEqual = (a: Selection, b: Selection) => {
+  const { event: eventA, ...restA } = a; 
+  const { event: eventB, ...restB } = b; 
+
+  if (JSON.stringify(restA) !== JSON.stringify(restB)) return false;
+
+  return eventA?.timeStamp === eventB?.timeStamp;
+}
+
 export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props: { children: ReactNode }, ref) => {
 
   const [anno, setAnno] = useState<Annotator>(null);
@@ -85,7 +94,8 @@ export const Annotorious = forwardRef<Annotator, { children: ReactNode }>((props
             ...rest
           } as Selection;
 
-          if (JSON.stringify(currentSelection) === JSON.stringify(next)) 
+          // Prevent unnecessary re-renders
+          if (isSelectionEqual(currentSelection, next))
             return currentSelection;
           
           previousSelectionRef.current = currentSelection.selected;
