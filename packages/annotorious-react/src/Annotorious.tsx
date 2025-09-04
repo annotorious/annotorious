@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { dequal } from 'dequal/lite';
 import { 
   createContext, 
   forwardRef,
@@ -44,7 +45,7 @@ const isSelectionEqual = (a: Selection, b: Selection) => {
   const { event: eventA, ...restA } = a; 
   const { event: eventB, ...restB } = b; 
 
-  if (JSON.stringify(restA) !== JSON.stringify(restB)) return false;
+  if (!dequal(restA, restB)) return false;
 
   return eventA?.timeStamp === eventB?.timeStamp;
 }
