@@ -17,9 +17,7 @@ interface AnnotoriousManifoldContextValue {
 
 interface ManifoldSelection<T extends Annotation = Annotation> {
 
-  id?: string;
-
-  selected: { annotation: T, editable?: boolean }[],
+  selected: { annotation: T, editable?: boolean, annotatorId: string }[],
 
   event?: PointerEvent | KeyboardEvent;
 
@@ -28,7 +26,15 @@ interface ManifoldSelection<T extends Annotation = Annotation> {
 // @ts-ignore
 export const AnnotoriousManifoldContext = createContext<AnnotoriousManifoldContextValue>();
 
-export const AnnotoriousManifold = (props: { children: ReactNode }) => {
+export interface AnnotoriousManifoldProps {
+
+  crossAnnotatorSelect?: true;
+
+  children: ReactNode;
+
+}
+
+export const AnnotoriousManifold = (props: AnnotoriousManifoldProps) => {
 
   const [annotators, setAnnotators] = useState<Map<string, Annotator<any, { id: string }>>>(new Map());
 
@@ -64,21 +70,41 @@ export const AnnotoriousManifold = (props: { children: ReactNode }) => {
         store.unobserve(selectionStoreObserver);
 
       const resolved = (selected || [])
-        .map(({ id, editable }) => ({ annotation: store.getAnnotation(id), editable }));
+        .map(t => ({ annotation: store.getAnnotation(t.id), editable: t.editable, annotatorId: id }));
 
       // Set the new selection
-      if (!muteSelectionEvents.current)
-        setSelection({ id, selected: resolved, event });
+      if (!muteSelectionEvents.current) {
+        if (props.crossAnnotatorSelect) {
+          if (resolved.length === 0) {
+            setSelection({ selected: [], event });
+          } else {
+            const isMultiSelect = event?.ctrlKey || event?.metaKey;
+            if (isMultiSelect) {
+              setSelection(current => {
+                const other = current.selected.filter(s => s.annotatorId !== id);
+                return {
+                  selected: [...resolved, ...other],
+                  event
+                };
+              })
+            } else {
+              setSelection({ selected: resolved, event });
+            }
+          }
+        } else {
+          setSelection({ selected: resolved, event });
+        }
+      }
 
       // Track the state of the selected annotations in the store
       selectionStoreObserver = e => {
         const { updated } = e.changes;
 
-        setSelection(({ id, selected }) => ({
-          id,
-          selected: selected.map(({ annotation, editable }) => {
-            const next = updated.find(u => u.oldValue.id === annotation.id);
-            return next ? { annotation: next.newValue, editable } : { annotation, editable };
+        setSelection(({ selected }) => ({
+          id: props.crossAnnotatorSelect ? undefined : id,
+          selected: selected.map(s => {
+            const next = updated.find(u => u.oldValue.id === s.annotation.id);
+            return next ? { annotation: next.newValue, editable: s.editable, annotatorId: s.annotatorId } : s;            
           }),
           event
         }));
@@ -101,16 +127,23 @@ export const AnnotoriousManifold = (props: { children: ReactNode }) => {
   }
 
   useEffect(() => {
-    if (selection.id) {
-      muteSelectionEvents.current = true;
+    muteSelectionEvents.current = true;
 
-      Array.from(annotators.entries()).forEach(([source, anno]) => {
-        if (source !== selection.id)
-          anno.setSelected();
-      });
+    Array.from(annotators.entries()).forEach(([source, anno]) => {
+      const currentSelection = new Set(anno.getSelected().map(s => s.id));
 
-      muteSelectionEvents.current = false;
-    }
+      const nextSelection = new Set(selection.selected
+        .filter(s => s.annotatorId === source)
+        .map(s => s.annotation.id));
+
+      const isEqual = currentSelection.size === nextSelection.size &&
+        [...currentSelection].every(id => nextSelection.has(id));
+
+      if (!isEqual)
+        anno.setSelected([...nextSelection]);
+    });
+
+    muteSelectionEvents.current = false;
   }, [selection, annotators]);
 
   return (

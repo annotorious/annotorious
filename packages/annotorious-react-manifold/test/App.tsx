@@ -1,11 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import type OpenSeadragon from 'openseadragon';
 import { OpenSeadragonAnnotator, OpenSeadragonViewer } from '@annotorious/react';
 import { Annotorious } from '../src';
 
 import '@annotorious/react/annotorious-react.css';
 
-const ViewerTile = (props: { id: string, url: string }) => {
+type Mode = 'draw' | 'select';
+
+const ViewerTile = (props: { id: string, url: string, mode: Mode }) => {
 
   const options: OpenSeadragon.Options = useMemo(() => ({
     prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@3.1/build/openseadragon/images/', 
@@ -26,7 +28,7 @@ const ViewerTile = (props: { id: string, url: string }) => {
         <OpenSeadragonAnnotator 
           drawingMode="click"
           tool="rectangle"
-          drawingEnabled={true}>
+          drawingEnabled={props.mode === 'draw'}>
 
           <OpenSeadragonViewer
             className="osd-container"
@@ -40,12 +42,37 @@ const ViewerTile = (props: { id: string, url: string }) => {
 
 export const App = () => {
 
+  const [mode, setMode] = useState<Mode>('draw');
+
+  const toggleMode = () => setMode(current => current === 'draw' ? 'select' : 'draw');
+
   return (
     <div className="container">
-      <ViewerTile id="01" url="33054-000002-0001.jpg" />
-      <ViewerTile id="02" url="33054-000002-0001.jpg" />
-      <ViewerTile id="03" url="33054-000002-0001.jpg" />
-      <ViewerTile id="04" url="33054-000002-0001.jpg" />
+      <div id="toolbar">
+        <button onClick={toggleMode}>
+          Mode: {mode.toUpperCase()}
+        </button>
+      </div>
+
+      <ViewerTile 
+        id="01" 
+        url="33054-000002-0001.jpg" 
+        mode={mode} />
+
+      <ViewerTile 
+        id="02" 
+        url="33054-000002-0001.jpg" 
+        mode={mode} />
+
+      <ViewerTile 
+        id="03" 
+        url="33054-000002-0001.jpg" 
+        mode={mode} />
+
+      <ViewerTile 
+        id="04" 
+        url="33054-000002-0001.jpg" 
+        mode={mode} />
     </div>
   )
 
