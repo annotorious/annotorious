@@ -78,7 +78,7 @@ export const AnnotoriousManifold = (props: AnnotoriousManifoldProps) => {
           if (resolved.length === 0) {
             setSelection({ selected: [], event });
           } else {
-            const isMultiSelect = event?.ctrlKey || event?.metaKey;
+            const isMultiSelect = event?.ctrlKey || event?.metaKey || event?.shiftKey;
             if (isMultiSelect) {
               setSelection(current => {
                 const other = current.selected.filter(s => s.annotatorId !== id);
