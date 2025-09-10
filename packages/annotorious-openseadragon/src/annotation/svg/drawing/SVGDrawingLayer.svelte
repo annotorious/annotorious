@@ -141,6 +141,23 @@
     }
   }
 
+  const onPointerMove = (evt: PointerEvent) => {
+    const offsetXY = new OpenSeadragon.Point(evt.offsetX, evt.offsetY);
+    const pt = viewer.viewport.pointFromPixel(offsetXY);
+    const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
+
+    const buffer = getHitTolerance();
+    const hit = store.getAt(x, y, filter, buffer);
+    if (hit) {
+      if ($hover !== hit.id)
+        hover.set(hit.id);
+    } else {
+      // Should never happen, since move would only fire above an SVG shape
+      if ($hover)
+        hover.set(undefined);
+    }
+  }
+
   const onChangeSelected = (annotation: ImageAnnotation) => (event: CustomEvent<Shape>) => {  
     const { target } = annotation;
 
@@ -213,8 +230,8 @@
     class="a9s-annotationlayer a9s-osd-drawinglayer"
     class:drawing={drawingEnabled}
     class:editing={editableAnnotations}
-    class:hover={isHovered}>
-
+    class:hover={isHovered}
+    on:pointermove={onPointerMove}>
     <g 
       bind:this={drawingEl}
       transform={transform}>

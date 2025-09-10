@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type OpenSeadragon from 'openseadragon';
 import { OpenSeadragonAnnotator, OpenSeadragonViewer } from '@annotorious/react';
 import { Annotorious } from '../src';
@@ -26,6 +26,7 @@ const ViewerTile = (props: { id: string, url: string, mode: Mode }) => {
     <div className="viewer-tile">
       <Annotorious id={props.id}>
         <OpenSeadragonAnnotator 
+          multiSelect
           drawingMode="click"
           tool="rectangle"
           drawingEnabled={props.mode === 'draw'}>

@@ -162,10 +162,11 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
       // Ignore click event if drawing is currently active with mode 'click'
       const blockEvent = (drawingMode === 'click' && drawingEnabled);
 
-      if (annotation && !blockEvent)
+      if (annotation && !blockEvent) {
         selection.userSelect(getNextSelection(annotation), originalEvent);
-      else if (!selection.isEmpty())
-        selection.clear();
+      } else if (!selection.isEmpty()) {
+        selection.userSelect([], originalEvent);
+      }
     }
   });
 
