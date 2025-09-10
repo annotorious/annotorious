@@ -165,7 +165,16 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
       if (annotation && !blockEvent) {
         selection.userSelect(getNextSelection(annotation), originalEvent);
       } else if (!selection.isEmpty()) {
-        selection.userSelect([], originalEvent);
+        // Click on empty space while there is currently a selection
+        if (opts.multiSelect) {
+          // Only clear selection if no modifier key pressed
+          const hasModifier = originalEvent.metaKey || originalEvent.shiftKey || originalEvent.ctrlKey;
+          if (!hasModifier) 
+            selection.userSelect([], originalEvent);
+        } else {
+          // Always clear selection
+          selection.userSelect([], originalEvent);
+        }
       }
     }
   });
