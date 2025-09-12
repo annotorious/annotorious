@@ -39,7 +39,7 @@ interface OpenSeadragonAnnotationPopupProps {
 
   arrow?: boolean;
 
-  arrowProps?: Omit<FloatingArrowProps, 'context' | 'ref'>;
+  arrowProps?: Omit<FloatingArrowProps, 'context' | 'ref'> & { padding?: number };
 
   placement?: Placement;
 
@@ -78,7 +78,7 @@ export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopup
       }),
       arrow({
         element: arrowRef,
-        padding: 5
+        padding: props.arrowProps?.padding ||  5
       })
     ],
     whileElementsMounted: autoUpdate
