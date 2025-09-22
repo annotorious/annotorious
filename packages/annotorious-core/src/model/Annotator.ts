@@ -184,7 +184,6 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
   }
 
   const setUserSelectAction = (action: UserSelectActionExpression<E>) => {
-    selection.clear();
     selection.setUserSelectAction(action);
   }
 
