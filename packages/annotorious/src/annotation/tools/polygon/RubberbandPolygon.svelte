@@ -71,11 +71,6 @@
   }
 
   const onPointerUp = (event: Event) => {
-    // Edge case: if anno.setDrawingEnabled(true) is called
-    // while the pointer is down, this handler may fire with
-    // an undefined cursor. In this case: ignore.
-    if (drawingMode === 'drag' && !cursor) return;
-
     const evt = event as PointerEvent;
 
     if (touchPauseTimer) clearTimeout(touchPauseTimer);
@@ -99,9 +94,15 @@
 
         cursor = point;
       } else {
-        points.push(cursor!);
+        if (cursor)
+          points.push(cursor);
       }
     } else {
+      // Edge case: if anno.setDrawingEnabled(true) is called while
+      // the pointer is down, this handler may fire with an undefined
+      // cursor (in drag mode). In this case: ignore.
+      if (!cursor) return;
+      
       // Require minimum drag of 4px
       if (points.length === 1) {
         const dist = distance(points[0], cursor!);
@@ -121,7 +122,7 @@
       if (isClosable) {
         stopDrawing();
       } else {
-        points.push(cursor!);
+        points.push(cursor);
       }
     }
   }
