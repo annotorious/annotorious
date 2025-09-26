@@ -74,7 +74,7 @@
     // Edge case: if anno.setDrawingEnabled(true) is called
     // while the pointer is down, this handler may fire with
     // an undefined cursor. In this case: ignore.
-    if (!cursor) return;
+    if (drawingMode === 'drag' && !cursor) return;
 
     const evt = event as PointerEvent;
 
