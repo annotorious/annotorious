@@ -1,8 +1,8 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Annotation } from '@annotorious/core';
 import { ImageAnnotation } from '@annotorious/annotorious';
-import { useAnnotator } from '../Annotorious';
+import { useAnnotator, useSelection } from '../Annotorious';
 import { AnnotoriousOpenSeadragonAnnotator, useViewer } from '.';
 
 interface HoverTooltipContentProps <T extends Annotation = ImageAnnotation> {
@@ -29,6 +29,10 @@ export const OpenSeadragonHoverTooltip = (props: OpenSeadragonHoverTooltipProps)
   const offsetY = props.offsetY || DEFAULT_OFFSET;
 
   const anno = useAnnotator<AnnotoriousOpenSeadragonAnnotator>();
+
+  const selection = useSelection();
+
+  const hasSelection = useMemo(() => selection.selected.length > 0, [selection]);
 
   const viewer = useViewer();
 
@@ -60,7 +64,7 @@ export const OpenSeadragonHoverTooltip = (props: OpenSeadragonHoverTooltipProps)
     }
   }, [anno, viewer]);
 
-  return (hovered && pos) && createPortal(
+  return (hovered && pos && !hasSelection) && createPortal(
     <div 
       style={{ 
         position: 'absolute',
