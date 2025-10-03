@@ -69,7 +69,8 @@ export const OpenSeadragonHoverTooltip = (props: OpenSeadragonHoverTooltipProps)
       style={{ 
         position: 'absolute',
         top: `${pos.y + offsetY}px`,
-        left: `${pos.x + offsetX}px`
+        left: `${pos.x + offsetX}px`,
+        pointerEvents: 'none'
       }}>
       {props.tooltip({ annotation: hovered })}
     </div>
