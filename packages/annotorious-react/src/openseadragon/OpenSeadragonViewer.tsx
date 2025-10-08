@@ -73,9 +73,11 @@ export const OpenSeadragonViewer = forwardRef<OpenSeadragon.Viewer, OpenSeadrago
       v.world.removeAll();
 
       tileSources.forEach((tileSource, index) => {
-        const tileConfig = typeof tileSource === 'string' 
-          ? { tileSource } : tileSource;
-
+        const tileConfig = (typeof tileSource === 'object') && 'tileSource' in tileSource
+          // Special case: handling nested notation
+          // https://github.com/openseadragon/openseadragon/issues/2659#issuecomment-2583944426
+          ? tileSource : { tileSource }
+        
         v.addTiledImage({
           ...tileConfig,
           index,

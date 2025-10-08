@@ -11,7 +11,7 @@ import {
 
 import '@annotorious/openseadragon/annotorious-openseadragon.css';
 
-const IIIF_SAMPLE = {
+const IIIF_OBJECT_SAMPLE = {
   "@context" : "http://iiif.io/api/image/2/context.json",
   "protocol" : "http://iiif.io/api/image",
   "width" : 7808,
@@ -36,9 +36,21 @@ const IIIF_SAMPLE = {
   ]
 };
 
-const OSD_OPTIONS: OpenSeadragon.Options = {
+// Special case: nested notation
+// https://github.com/openseadragon/openseadragon/issues/2659#issuecomment-2583944426
+const IIIF_CUSTOM_SAMPLE = {
+  "tileSource": "https://images.collections.yale.edu/iiif/2/ycba:7a68aab0-8e92-4968-9b2b-0f45dadfa307/info.json",
+  "loadTilesWithAjax": false,
+  "crossOriginPolicy": "Anonymous",
+  "ajaxWithCredentials": false
+};
+
+const TILESOURCES = IIIF_OBJECT_SAMPLE;
+// const TILESOURCES = 'https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c/info.json'
+// const TILESOURCES = IIIF_CUSTOM_SAMPLE;
+
+const OSD_BASE_OPTIONS: OpenSeadragon.Options = {
   prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@3.1/build/openseadragon/images/',
-  tileSources: IIIF_SAMPLE,
   crossOriginPolicy: 'Anonymous',
   showRotationControl: true,
   gestureSettingsMouse: {
@@ -72,7 +84,19 @@ export const App = () => {
 
   const [filter, setFilter] = useState<{ key: String, filter: Filter | undefined }>(FILTERS[0]);
 
+  const [options, setOptions] = useState<OpenSeadragon.Options>(OSD_BASE_OPTIONS);
+
   const selection = useSelection();
+
+  useEffect(() => {
+    // Simulate deferred load
+    setTimeout(() => {
+      setOptions(({
+        ...OSD_BASE_OPTIONS,
+        tileSources: TILESOURCES
+      }))
+    }, 1000)
+  }, []);
 
   useEffect(() => {
     if (anno) {
@@ -128,7 +152,7 @@ export const App = () => {
         <OpenSeadragonViewer 
           ref={viewerRef}
           className="openseadragon" 
-          options={OSD_OPTIONS} />
+          options={options} />
 
         <OpenSeadragonAnnotationPopup 
           popup={() => (
