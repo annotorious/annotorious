@@ -12,10 +12,10 @@ export interface OpenSeadragonViewerProps {
 }
 
 /**
- * If the only thing that's changed about the options are the tileSources, there's no 
- * need to destroy and re-generate the viewer, which can introduce dangerous race
- * conditions and break interop with plugins. Changing the tileSource is probably 90%
- * of the use case!
+ * If the only thing that changes about the options are the tileSources, 
+ * there's no need to destroy and re-create the viewer, which can introduce
+ * dangerous race conditions and break interop with plugins. (Changing 
+ * tileSources is probably the main use case by far.)
  */
 const onlyTileSourcesChanged = (prev: OpenSeadragon.Options | undefined, next: OpenSeadragon.Options): boolean => {
     if (!prev) return false;
