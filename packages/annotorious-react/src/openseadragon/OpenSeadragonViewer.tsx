@@ -73,16 +73,21 @@ export const OpenSeadragonViewer = forwardRef<OpenSeadragon.Viewer, OpenSeadrago
       v.world.removeAll();
 
       tileSources.forEach((tileSource, index) => {
+        const tileConfig = typeof tileSource === 'string' 
+          ? { tileSource } : tileSource;
+
         v.addTiledImage({
-          tileSource,
+          ...tileConfig,
           index,
           success: () => {
             if (index === 0) {
               v.viewport.goHome();
             }
           }
-        });
+        } as OpenSeadragon.TiledImageOptions);
       });
+
+      prevOptionsRef.current = options;
     } else if (!dequal(prev, options)) {
       console.warn('Forced re-creation of OpenSeadragon viewer. Beware of race conditions!');
       
