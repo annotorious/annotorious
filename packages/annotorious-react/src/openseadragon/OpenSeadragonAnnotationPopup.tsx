@@ -1,10 +1,10 @@
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import OpenSeadragon from 'openseadragon';
 import { v4 as uuidv4 } from 'uuid';
 import { useAnnotator, useSelection, useViewer} from '@annotorious/react';
 import type { PopupProps } from '@annotorious/react';
-import type { AnnotationBody, Annotator, Geometry, ImageAnnotation } from '@annotorious/annotorious';
+import type { Annotation, AnnotationBody, Annotator, Geometry, ImageAnnotation } from '@annotorious/annotorious';
 import { toClientRects } from '../utils/toClientRects';
 import {
   useFloating,
@@ -35,6 +35,13 @@ const toDOMRect = (viewer: OpenSeadragon.Viewer, geometry: Geometry) => {
   );
 }
 
+/**
+ * Note that the store may hold different types of annotations.
+ * Ignore any that the popup cannot handle.
+ */
+const isImageAnnotationLike = (annotation?: Annotation) =>
+  annotation?.target?.selector && 'geometry' in annotation.target.selector;
+
 interface OpenSeadragonAnnotationPopupProps {
 
   arrow?: boolean;
@@ -59,9 +66,15 @@ export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopup
 
   const { selected, event } = useSelection();
 
-  const annotation = selected[0]?.annotation;
-
-  const editable = selected[0]?.editable;
+  const [annotation, editable]= useMemo(() => {
+    const first = selected[0];
+  
+    if (isImageAnnotationLike(first?.annotation)) {
+      return [first.annotation, first.editable];
+    } else {
+      return [undefined, undefined];
+    }
+  }, [selected]);
 
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
@@ -85,7 +98,7 @@ export const OpenSeadragonAnnotationPopup = (props: OpenSeadragonAnnotationPopup
   });
 
   useEffect(() => {
-    if (selected.length === 0) {
+    if (selected.length === 0 || !annotation) {
       setIsOpen(false);
     } else {  
       const setPosition = () => { 
