@@ -9,6 +9,12 @@ A JavaScript image annotation library. Add drawing, commenting and labeling func
 in Web pages with just a few lines of code. Weighs less than 300kB. See the [project website](https://annotorious.github.io/)
 for details and live demos.
 
+
+## New Features in v2.7.14
+
+*   **Edge Dragging for Rectangles:**  Rectangular annotations can now be resized by dragging directly on their edges, providing a more intuitive resizing experience.
+*   **Automatic Cursor Updates:** The appropriate resize cursors (e.g., `ew-resize`, `ns-resize`, `nwse-resize`, `nesw-resize`) are automatically displayed when hovering over the edges or handles of a rectangle, giving a clear visual indication of available resizing actions.
+
 <img width="620" src="https://raw.githubusercontent.com/recogito/annotorious/master/screenshot.jpg" />
 
 ## Installing
