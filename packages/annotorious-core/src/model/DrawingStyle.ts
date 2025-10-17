@@ -1,5 +1,5 @@
-import type { Annotation } from "./Annotation";
-import type { AnnotationState } from "./AnnotationState";
+import type { Annotation } from './Annotation';
+import type { AnnotationState } from './AnnotationState';
 
 type RGB = `rgb(${number}, ${number}, ${number})`;
 

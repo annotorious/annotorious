@@ -1,6 +1,4 @@
-import type { Annotation, Annotator, AnnotatorState } from '../model';
-import type { Store } from './Store';
-import type { StoreChangeEvent } from './StoreObserver';
+import type { Annotation, Annotator, AnnotatorState, Store, StoreChangeEvent } from '@annotorious/core';
 
 type Subscriber<T extends Annotation> = (annotation: T[]) => void; 
 

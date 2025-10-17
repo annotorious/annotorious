@@ -1,8 +1,8 @@
 import { createNanoEvents, type Unsubscribe } from 'nanoevents';
 import type { Annotation } from '../model';
 import type { Store } from './Store';
-import { Origin } from './StoreObserver';
-import { mergeChanges, type ChangeSet, type StoreChangeEvent, type Update } from './StoreObserver';
+import { mergeChanges, Origin } from './StoreObserver';
+import type { ChangeSet, StoreChangeEvent, Update } from './StoreObserver';
 
 // Duration with fast successive changes get merged 
 // with the last event in the stack, rather than getting stacked

@@ -1,4 +1,5 @@
-import type { Annotation, Filter, Store, SvelteAnnotatorState, SvelteStore } from '@annotorious/core';
+import type { Annotation, Filter, Store } from '@annotorious/core';
+import type { SvelteAnnotatorState, SvelteStore } from './SvelteStore';
 
 export type ImageAnnotationStore<I extends Annotation> = Store<I> & {
 

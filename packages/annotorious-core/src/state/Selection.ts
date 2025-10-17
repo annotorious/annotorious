@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { atom } from 'nanostores';
 import { dequal } from 'dequal/lite';
 import type { Annotation, FormatAdapter } from '../model';
 import type { Store } from './Store';
@@ -32,28 +32,23 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
   defaultSelectionAction?: UserSelectActionExpression<E>,
   adapter?: FormatAdapter<I, E>
 ) => {
-  const { subscribe, set } = writable<Selection>(EMPTY);
+  const selection = atom<Selection>(EMPTY);
 
   let currentUserSelectAction = defaultSelectionAction;
 
-  let currentSelection: Selection = EMPTY;
-
-  subscribe(updated => currentSelection = updated);
-
   const clear = () => {
-    if (!dequal(currentSelection, EMPTY)) {
-      set(EMPTY);
-    }
+    if (!dequal(selection.get(), EMPTY))
+      selection.set(EMPTY);
   };
 
-  const isEmpty = () => currentSelection.selected?.length === 0;
+  const isEmpty = () => selection.get().selected?.length === 0;
 
   const isSelected = (annotationOrId: I | string) => {
     if (isEmpty())
       return false;
 
     const id = typeof annotationOrId === 'string' ? annotationOrId : annotationOrId.id;
-    return currentSelection.selected.some(i => i.id === id);
+    return selection.get().selected.some(i => i.id === id);
   }
 
   const userSelect = (idOrIds: string | string[], event?: Selection['event']) => {
@@ -86,7 +81,7 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
         return sel;
     }, []);
 
-    set({ selected, event });
+    selection.set({ selected, event });
   }
 
   const setSelected = (idOrIds: string | string[], editable?: boolean) => {
@@ -97,7 +92,7 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
       .map(id => store.getAnnotation(id))
       .filter((a): a is I => Boolean(a));
 
-    set({
+    selection.set({
       selected: annotations.map(annotation => {
 
         // If editable isn't set, use the default behavior
@@ -117,17 +112,17 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
     if (isEmpty())
       return false;
 
-    const { selected } = currentSelection;
+    const { selected } = selection.get();
 
     // Checks which of the given annotations are actually in the selection
     const shouldRemove = selected.some(({ id }) => ids.includes(id));
     if (shouldRemove)
-      set({ selected: selected.filter(({ id }) => !ids.includes(id)) });
+      selection.set({ selected: selected.filter(({ id }) => !ids.includes(id)) });
   }
 
   const setUserSelectAction = (action: UserSelectActionExpression<E> | undefined) => {
     currentUserSelectAction = action;
-    setSelected(currentSelection.selected.map(({ id }) => id));
+    setSelected(selection.get().selected.map(({ id }) => id));
   };
 
   // Utility to evaluate what the select action will be for the given annotation
@@ -141,10 +136,12 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
 
   return {
     get event() {
-      return currentSelection ? currentSelection.event : null;
+      const current = selection.get();
+      return current ? current.event : null;
     },
     get selected() {
-      return currentSelection ? [...currentSelection.selected] : null;
+      const current = selection.get();
+      return current ? [...current.selected] : null;
     },
     get userSelectAction() {
       return currentUserSelectAction;
@@ -155,7 +152,7 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
     isSelected,
     setSelected,
     setUserSelectAction,
-    subscribe,
+    subscribe: selection.subscribe.bind(selection),
     userSelect
   };
 

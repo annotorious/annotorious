@@ -1,9 +1,9 @@
 import type { ImageAnnotation, ImageAnnotationTarget } from '../model';
 import type { AnnotoriousOpts } from '../AnnotoriousOpts';
 import { createSpatialTree } from './spatialTree';
+import { toSvelteStore } from './SvelteStore';
 import { 
   createViewportState,
-  toSvelteStore,
   type Annotation,
   type AnnotatorState, 
   type Filter, 
