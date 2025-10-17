@@ -32,14 +32,9 @@ export const createSelectionState = <I extends Annotation, E extends unknown>(
   defaultSelectionAction?: UserSelectActionExpression<E>,
   adapter?: FormatAdapter<I, E>
 ) => {
-  // const { subscribe, set } = writable<Selection>(EMPTY);
   const selection = atom<Selection>(EMPTY);
 
   let currentUserSelectAction = defaultSelectionAction;
-
-  // let currentSelection: Selection = EMPTY;
-
-  // selection.subscribe(updated => currentSelection = updated);
 
   const clear = () => {
     if (!dequal(selection.get(), EMPTY))
