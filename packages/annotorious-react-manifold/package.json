@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.1",
+    "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^4.7.0",
     "typescript": "^5.9.3",
     "vite": "^5.4.20",
@@ -41,8 +41,8 @@
   },
   "peerDependencies": {
     "@annotorious/react": "3.7.12",
-    "openseadragon": "^5.0.1",
-    "react": "16.8.0 || >=17.x || >=18.x || >=19.x",
-    "react-dom": "16.8.0 || >=17.x || >=18.x|| >=19.x"
+    "openseadragon": ">= ^4.0.0 || >= ^5.0.0",
+    "react": "^16.8.0 || >= ^17.x || >= ^18.x || >= ^19.x",
+    "react-dom": "^16.8.0 || >= ^17.x || >= ^18.x|| >= ^19.x"
   }
 }

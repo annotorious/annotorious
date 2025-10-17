@@ -39,7 +39,7 @@
     "@annotorious/core": "3.7.12",
     "@annotorious/annotorious": "3.7.12",
     "@annotorious/openseadragon": "3.7.12",
-    "@neodrag/svelte": "^2.0.6"
+    "@neodrag/svelte": "^2.3.3"
   },
   "sideEffects": false
 }
