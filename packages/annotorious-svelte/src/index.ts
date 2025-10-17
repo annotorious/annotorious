@@ -24,8 +24,6 @@ export type {
   Store,
   StoreChangeEvent,
   StoreObserver,
-  SvelteAnnotator,
-  SvelteAnnotatorState,
   User,
   W3CAnnotation,
   W3CAnnotationBody,
@@ -53,7 +51,9 @@ export type {
   PolygonGeometry,
   Rectangle,
   RectangleGeometry,
-  Shape
+  Shape,
+  SvelteAnnotator,
+  SvelteAnnotatorState
 } from '@annotorious/annotorious';
 
 export {   

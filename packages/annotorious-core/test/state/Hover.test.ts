@@ -36,7 +36,7 @@ describe('createHoverState', () => {
   it('should remove the hover when the annotation is deleted', () => {
     hoverState.set(testAnnotation.id);
 
-    let hover: string | undefined;
+    let hover: string | null;
 
     const mockObserver = vi.fn(id => hover = id);
     hoverState.subscribe(mockObserver);
@@ -44,7 +44,7 @@ describe('createHoverState', () => {
     store.deleteAnnotation(testAnnotation);
 
     expect(mockObserver).toHaveBeenCalled();
-    expect(hover).toBeUndefined();
+    expect(hover).toBeNull();
   });
 
 });

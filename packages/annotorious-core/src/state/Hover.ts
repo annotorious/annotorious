@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { atom } from 'nanostores';
 import type { Annotation } from '../model';
 import type { Store } from './Store';
 
@@ -6,29 +6,26 @@ export type HoverState<T extends Annotation> = ReturnType<typeof createHoverStat
 
 export const createHoverState = <T extends Annotation>(store: Store<T>) => {
 
-  const { subscribe, set } = writable<string | undefined>();
-
-  let currentHover: string | undefined;
-
-  subscribe(updated => currentHover = updated);
+  const hovered = atom<string | null>(null);
 
   // Track store delete and update events
   store.observe(( { changes }) => {    
-    if (currentHover) {
-      const isDeleted = (changes.deleted || []).some(a => a.id === currentHover);
+    const current = hovered.get();
+    if (current) {
+      const isDeleted = (changes.deleted || []).some(a => a.id === current);
       if (isDeleted)
-        set(undefined);
+        hovered.set(null);
     
-      const updated = (changes.updated || []).find(({ oldValue }) => oldValue.id === currentHover);
+      const updated = (changes.updated || []).find(({ oldValue }) => oldValue.id === current);
       if (updated)
-        set(updated.newValue.id);
+        hovered.set(updated.newValue.id);
     }
   });
 
   return { 
-    get current() { return currentHover },
-    subscribe, 
-    set 
+    get current() { return hovered.get() },
+    subscribe: hovered.subscribe.bind(hovered), 
+    set: hovered.set.bind(hovered)
   };
 
 }
