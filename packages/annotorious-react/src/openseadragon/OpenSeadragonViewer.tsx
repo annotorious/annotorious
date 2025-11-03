@@ -67,7 +67,7 @@ export const OpenSeadragonViewer = forwardRef<OpenSeadragon.Viewer, OpenSeadrago
     if (!v || !prev) return; 
 
     if (onlyTileSourcesChanged(prev, options)) {      
-      const tileSources: OpenSeadragon.Options['tileSources'][] = 
+      const tileSources = 
         Array.isArray(options.tileSources) ? options.tileSources : [options.tileSources];
       
       v.world.removeAll();
