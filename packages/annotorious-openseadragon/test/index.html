@@ -62,6 +62,8 @@
         });
 
         const BASE_STYLE = function(a, state) {
+          console.log(state);
+
           const { hovered, selected } = state || {};
           return {
             fill: hovered ? 'rgba(180,0,60,0.7)' : 'rgba(180,0,60,0.5)',
@@ -77,7 +79,8 @@
           // adapter: W3CImageFormat('https://iiif.bodleian.ox.ac.uk/iiif/image/af315e66-6a85-445b-9e26-012f729fc49c'),
           drawingEnabled: false,
           multiSelect: true,
-          // style: BASE_STYLE
+          style: BASE_STYLE,
+          // userSelectAction: 'SELECT'
         });
 
         anno.setDrawingTool('polygon');

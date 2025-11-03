@@ -1,11 +1,12 @@
-import type { DrawingStyleExpression } from '@annotorious/core';
+import type { AnnotationState, DrawingStyleExpression } from '@annotorious/core';
 import type { ImageAnnotation } from '../../model';
 
 export const computeStyle = (
   annotation: ImageAnnotation,
-  style?: DrawingStyleExpression<ImageAnnotation>
+  style?: DrawingStyleExpression<ImageAnnotation>,
+  state?: AnnotationState
 ) => {
-  const computed = typeof style === 'function' ? style(annotation) : style;
+  const computed = typeof style === 'function' ? style(annotation, state) : style;
 
   if (computed) {
     const { fill, fillOpacity, stroke, strokeWidth, strokeOpacity } = computed;

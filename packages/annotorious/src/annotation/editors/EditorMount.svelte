@@ -17,7 +17,7 @@
 
   let editorComponent: SvelteComponent;
 
-  $: computedStyle = computeStyle(annotation, style);
+  $: computedStyle = computeStyle(annotation, style, { selected: true, hovered: true });
 
   $: if (annotation) editorComponent?.$set({ shape: annotation.target.selector });
   $: if (editorComponent) editorComponent.$set({ transform });

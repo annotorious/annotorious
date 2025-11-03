@@ -2,7 +2,7 @@
   import { onMount, type SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import OpenSeadragon from 'openseadragon';
-  import type { Annotation, DrawingStyleExpression, Filter, StoreChangeEvent, User } from '@annotorious/core';
+  import type { Annotation, DrawingStyleExpression, Filter, Selection, StoreChangeEvent, User } from '@annotorious/core';
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
   import { getEditor as _getEditor, getTool, isImageAnnotation, isTouch, listDrawingTools } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
@@ -55,9 +55,9 @@
 
   let grabbedAt: number | undefined;
  
-  $: if ($selection.selected.length === 0 && drawingMode === 'drag' && drawingEnabled) { viewer.setMouseNavEnabled(false) }
+  $: if (($selection as Selection).selected.length === 0 && drawingMode === 'drag' && drawingEnabled) { viewer.setMouseNavEnabled(false) }
 
-  $: trackSelection($selection.selected);
+  $: trackSelection(($selection as Selection).selected);
 
   const trackSelection = (selected: { id: string, editable?: boolean}[]) => {
     store.unobserve(storeObserver);
@@ -205,7 +205,7 @@
 
   onMount(() => {
     const onPointerMove = (evt: PointerEvent) => {
-      if ($selection.selected.length === 0) return;
+      if (($selection as Selection).selected.length === 0) return;
 
       const { offsetX, offsetY } = evt;
       const pt = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(offsetX, offsetY));
@@ -215,10 +215,10 @@
       isHovered = Boolean(store.getAt(x, y, filter, buffer));    
     }
 
-    viewer.element.addEventListener('pointermove', onPointerMove);
+    (viewer.element as HTMLElement).addEventListener('pointermove', onPointerMove);
 
     return () => {
-      viewer.element?.removeEventListener('pointermove', onPointerMove);
+      (viewer.element as HTMLElement)?.removeEventListener('pointermove', onPointerMove);
     }
   });
 </script>
