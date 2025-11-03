@@ -62,7 +62,6 @@ export const OpenSeadragonAnnotator = forwardRef(<I extends Annotation, E extend
       } catch (error) {
         // Typical scenario: hardware acceleration is disabled  
         props.onInitError?.(error);
-        throw error;
       }
     }
   }, [viewer]);
