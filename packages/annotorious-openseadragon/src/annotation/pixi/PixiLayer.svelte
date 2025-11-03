@@ -2,7 +2,7 @@
   import { simplifyMultiPolygon, simplifyPolygon } from '@annotorious/annotorious/src';
   import { createEventDispatcher, onMount } from 'svelte';
   import OpenSeadragon from 'openseadragon';
-  import type { Annotation, DrawingStyleExpression, StoreChangeEvent, Update } from '@annotorious/core';
+  import type { Annotation, DrawingStyleExpression, Selection, StoreChangeEvent, Update } from '@annotorious/core';
   import { isImageAnnotation, isTouch, ShapeType } from '@annotorious/annotorious';
   import type { Filter, ImageAnnotation, ImageAnnotatorState, MultiPolygon, Polygon } from '@annotorious/annotorious';
   import type { PixiLayerClickEvent } from './PixiLayerClickEvent';
@@ -29,7 +29,7 @@
 
   $: stage?.setFilter(filter as Filter<ImageAnnotation> | undefined);
 
-  $: stage?.setSelected($selection);
+  $: stage?.setSelected($selection as Selection);
 
   $: stage?.setStyle(style);
 

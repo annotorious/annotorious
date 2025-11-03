@@ -33,6 +33,8 @@ export type OpenSeadragonAnnotatorProps<I extends Annotation, E extends unknown>
 
   user?: User;
 
+  onInitError?(error: Error): void;
+
 }
 
 export const OpenSeadragonAnnotator = forwardRef(<I extends Annotation, E extends unknown>(
@@ -49,12 +51,18 @@ export const OpenSeadragonAnnotator = forwardRef(<I extends Annotation, E extend
 
   useEffect(() => {
     if (viewer?.element) {
-      const anno = createOSDAnnotator<I, E>(viewer, opts as AnnotoriousOSDOpts<I, E>);
-      setAnno(anno);
+      try {
+        const anno = createOSDAnnotator<I, E>(viewer, opts as AnnotoriousOSDOpts<I, E>);
+        setAnno(anno);
 
-      return () => {
-        anno.destroy();
-        setAnno(undefined);
+        return () => {
+          anno.destroy();
+          setAnno(undefined);
+        }
+      } catch (error) {
+        // Typical scenario: hardware acceleration is disabled  
+        props.onInitError?.(error);
+        throw error;
       }
     }
   }, [viewer]);
