@@ -16,7 +16,9 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "vite build",
+    "build:es": "vite build",
+    "build:umd": "vite build --config vite.config.umd.js",
+    "build": "npm run build:es && npm run build:umd",
     "preview": "vite preview",
     "test": "vitest"
   },

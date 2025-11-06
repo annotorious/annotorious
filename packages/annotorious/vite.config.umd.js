@@ -1,22 +1,19 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import sveltePreprocess from 'svelte-preprocess';
-import dts from 'vite-plugin-dts';
 
 export default defineConfig({
   plugins: [
-    svelte({ preprocess: sveltePreprocess() }),
-    dts({ insertTypesEntry: true, include: ['./src/'], entryRoot: './src' })
+    svelte({ preprocess: sveltePreprocess() })
   ],
-  server: {
-    open: '/test/index.html'
-  },
   build: {
     sourcemap: true,
+    emptyOutDir: false,
     lib: {
       entry: './src/index.ts',
-      formats: ['es'],
-      fileName: 'annotorious.es'
+      name: 'Annotorious',
+      formats: ['umd'],
+      fileName: () => 'annotorious.js'
     },
     rollupOptions: {
       external: ['test/*'],
@@ -24,5 +21,8 @@ export default defineConfig({
         assetFileNames: 'annotorious.[ext]'
       }
     }
+  },
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('production')
   }
 });

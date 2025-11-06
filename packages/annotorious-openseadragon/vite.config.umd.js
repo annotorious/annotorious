@@ -1,24 +1,24 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import sveltePreprocess from 'svelte-preprocess';
-import dts from 'vite-plugin-dts';
 
 import * as packageJson from './package.json';
 
 export default defineConfig({
   plugins: [
-    svelte({ preprocess: sveltePreprocess() }),
-    dts({ insertTypesEntry: true, include: ['./src/'], entryRoot: './src' })
+    svelte({ preprocess: sveltePreprocess() })
   ],
   server: {
     open: '/test/index.html'
   },
   build: {
     sourcemap: true,
+    emptyOutDir: false,
     lib: {
       entry: './src/index.ts',
-      formats: ['es'],
-      fileName: 'annotorious-openseadragon.es'
+      name: 'AnnotoriousOSD',
+      formats: ['umd'],
+      fileName: () => 'annotorious-openseadragon.js' 
     },
     rollupOptions: {
       external: Object.keys(packageJson.peerDependencies),
@@ -29,5 +29,9 @@ export default defineConfig({
         }
       }
     }
+  },
+  // process.env polyfill for nanostores
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('production')
   }
 });
