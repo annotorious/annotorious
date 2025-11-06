@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/monorepo",
-  "version": "3.7.13",
+  "version": "3.7.14-beta",
   "description": "Annotorious v3 monorepo",
   "author": "Rainer Simon",
   "repository": {
