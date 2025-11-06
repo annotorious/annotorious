@@ -22,6 +22,7 @@ export default defineConfig({
       }
     }
   },
+  // process.env polyfill for nanostores
   define: {
     'process.env.NODE_ENV': JSON.stringify('production')
   }
