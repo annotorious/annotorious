@@ -23,6 +23,11 @@
       "import": "./dist/annotorious-react.es.js",
       "default": "./dist/annotorious-react.es.js"
     },
+    "./openseadragon": {
+      "types": "./dist/openseadragon.d.ts",
+      "import": "./dist/openseadragon.es.js",
+      "default": "./dist/openseadragon.es.js"
+    },
     "./annotorious-react.css": "./dist/annotorious-react.css"
   },
   "devDependencies": {
@@ -35,19 +40,18 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "peerDependencies": {
-    "openseadragon": ">= ^4.0.0 || >= ^5.0.0",
+    "@annotorious/openseadragon": "3.7.14-beta",
     "react": "^16.8.0 || >= ^17.x || >= ^18.x || >= ^19.x",
     "react-dom": "^16.8.0 || >= ^17.x || >= ^18.x || >= ^19.x"
   },
   "peerDependenciesMeta": {
-    "openseadragon": {
+    "@annotorious/openseadragon": {
       "optional": true
     }
   },
   "dependencies": {
     "@annotorious/annotorious": "3.7.14-beta",
     "@annotorious/core": "3.7.14-beta",
-    "@annotorious/openseadragon": "3.7.14-beta",
     "@floating-ui/react": "^0.27.16",
     "dequal": "^2.0.3"
   },
