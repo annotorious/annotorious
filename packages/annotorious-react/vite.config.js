@@ -19,9 +19,12 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: './src/index.ts',
+      entry: {
+        'annotorious-react': './src/index.ts',
+        'openseadragon': './src/openseadragon.ts'
+      },
       formats: ['es'],
-      fileName: (format) => `annotorious-react.${format}.js`
+      fileName: (format, entryName) => `${entryName}.${format}.js`
     },
     rollupOptions: {
       external: [

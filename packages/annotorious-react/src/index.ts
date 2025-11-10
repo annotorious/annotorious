@@ -4,11 +4,8 @@ export * from './ImageAnnotationPopup';
 export * from './ImageAnnotator';
 export * from './PopupProps';
 
-export * from './openseadragon';
-
 // This ensures the Annotorious stylesheet gets packaged into annotorious-react
 import '@annotorious/annotorious/annotorious.css';
-import '@annotorious/openseadragon/annotorious-openseadragon.css';
 
 // Essential re-exports from @annotorious/core
 export type {
@@ -90,10 +87,3 @@ export {
   ShapeType,
   W3CImageFormat
 } from '@annotorious/annotorious';
-
-// Essential re-exports from @annotorious/openseadragon 
-export type {
-  OpenSeadragonAnnotator as AnnotoriousOpenSeadragonAnnotator
-} from '@annotorious/openseadragon';
-
-export type { Viewer } from 'openseadragon';
