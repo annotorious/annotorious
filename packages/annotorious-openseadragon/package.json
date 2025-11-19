@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/openseadragon",
-  "version": "3.7.15",
+  "version": "3.7.16",
   "description": "Annotorious for OpenSeadragon",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -51,8 +51,8 @@
     "openseadragon": "^3.0.0 || ^4.0.0 || ^5.0.0"
   },
   "dependencies": {
-    "@annotorious/annotorious": "3.7.15",
-    "@annotorious/core": "3.7.15",
+    "@annotorious/annotorious": "3.7.16",
+    "@annotorious/core": "3.7.16",
     "pixi.js": "^7.4.3",
     "uuid": "^13.0.0"
   }
