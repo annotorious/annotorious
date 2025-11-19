@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { W3CAnnotation } from '@annotorious/core';
-import { parseW3CImageAnnotation, Polyline, serializeW3CImageAnnotation, ShapeType } from '../../../src/model';
+import { parseW3CImageAnnotation, Polyline, serializeW3CImageAnnotation, ShapeType, W3CImageAnnotation } from '../../../src/model';
 
 import { annotations } from './fixtures';
 
@@ -19,7 +19,7 @@ describe('parseW3CImageAnnotation', () => {
       line,
       openCurve,
       closedCurve
-      ] = parsed;
+    ] = parsed;
 
     expect(polygon.parsed?.target.selector.type).toBe(ShapeType.POLYGON);
     expect(ellipse.parsed?.target.selector.type).toBe(ShapeType.ELLIPSE);
@@ -42,6 +42,24 @@ describe('parseW3CImageAnnotation', () => {
 
     const closedCurveCorners = parsedClosedCurve?.geometry.points.filter(pt => pt.locked).length;
     expect(closedCurveCorners).toBe(3);
+  });
+
+  it('should reject parsing a canvas-level annotation', () => {
+    const annotation: W3CImageAnnotation = {
+      '@context': 'http://www.w3.org/ns/anno.jsonld',
+      id: 'http://www.example.com/annotation/cf5c808a-3c36-4dc4-a8bf-b4acbc4b1ec2',
+      type: 'Annotation',
+      body: {
+        type: 'TextualBody',
+        value: 'A comment'
+      },
+      target: 'https://www.example.com/iiif/image1/canvas/p1'
+    };
+
+    const { parsed, error } = parseW3CImageAnnotation(annotation);
+    expect(parsed).toBeUndefined();
+    expect(error).toBeDefined();
+    expect(error?.message.startsWith('Invalid selector:')).toBeTruthy();
   });
 });
 

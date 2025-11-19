@@ -11,6 +11,23 @@ export interface FragmentSelector {
 
 }
 
+export const isFragmentSelector = (
+  selector: any
+): boolean => {
+  if (selector?.type === 'FragmentSelector')
+    return true;
+
+  if (typeof selector === 'string') {
+    const hashIndex = selector.indexOf("#");
+    if (hashIndex < 0) return false;
+
+    const xywh = /^#xywh(?:=(?:pixel:|percent:)?)\s*\d+(\.\d*)?,\s*\d+(\.\d*)?,\s*\d+(\.\d*)?,\s*\d+(\.\d*)?$/i;
+    return xywh.test(selector);
+  }
+
+  return false;
+}
+
 export const parseFragmentSelector = (
   fragmentOrSelector: FragmentSelector | string,
   invertY = false
@@ -21,6 +38,9 @@ export const parseFragmentSelector = (
   const regex = /(xywh)=(pixel|percent)?:?(.+?),(.+?),(.+?),(.+)*/g;
 
   const matches = [...fragment.matchAll(regex)][0];
+
+  if (!matches) throw new Error('Not a MediaFragment: ' + fragment);
+
   const [_, prefix, unit, a, b, c, d] = matches;
 
   if (prefix !== 'xywh') throw new Error('Unsupported MediaFragment: ' + fragment);

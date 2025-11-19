@@ -16,7 +16,7 @@ export interface W3CAnnotation {
 
   body: W3CAnnotationBody | W3CAnnotationBody[];
 
-  target: W3CAnnotationTarget | W3CAnnotationTarget[];
+  target: W3CAnnotationTarget | W3CAnnotationTarget[] | string;
 
   [key: string]: any;
 

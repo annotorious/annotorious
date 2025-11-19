@@ -38,7 +38,17 @@ describe('parseFragmentSelector', () => {
     try {
       parseFragmentSelector(fragment);
     } catch (error) {
-      expect(error.message).toBe('Unsupported MediaFragment unit: percent');
+      expect((error as Error).message).toBe('Unsupported MediaFragment unit: percent');
     }
   });
+
+  it('should fail for a canvas-level annotation without fragment', () => {
+    const target = 'https://www.example.com/iiif/image1/canvas/p1';
+
+    try {
+      parseFragmentSelector(target);
+    } catch (error) {
+      expect((error as Error).message.startsWith('Not a MediaFragment')).toBeTruthy();
+    }
+  })
 });

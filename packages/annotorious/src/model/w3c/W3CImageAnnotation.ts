@@ -4,7 +4,7 @@ import type { SVGSelector } from './svg';
 
 export interface W3CImageAnnotation extends W3CAnnotation {
 
-  target: W3CImageAnnotationTarget | W3CImageAnnotationTarget[];
+  target: W3CImageAnnotationTarget | W3CImageAnnotationTarget[] | string;
 
 }
 

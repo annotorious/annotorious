@@ -4,7 +4,7 @@ import type { FormatAdapter, ParseResult, W3CAnnotation } from '@annotorious/cor
 import { ShapeType } from '../core';
 import type { ImageAnnotation, RectangleGeometry } from '../core';
 import type {FragmentSelector } from './fragment';
-import { parseFragmentSelector, serializeFragmentSelector } from './fragment';
+import { isFragmentSelector, parseFragmentSelector, serializeFragmentSelector } from './fragment';
 import type { SVGSelector } from './svg';
 import { parseSVGSelector, serializeSVGSelector } from './svg';
 import type { W3CImageAnnotation } from './W3CImageAnnotation';
@@ -58,7 +58,7 @@ export const parseW3CImageAnnotation = (
         ? w3cTarget.selector[0] : w3cTarget.selector;
 
   const selector = 
-    typeof w3cSelector === 'string' || w3cSelector?.type === 'FragmentSelector' ?
+    isFragmentSelector(w3cSelector) ?
       parseFragmentSelector(w3cSelector as FragmentSelector, opts.invertY) :
     w3cSelector?.type === 'SvgSelector' ?
       parseSVGSelector(w3cSelector as SVGSelector) : undefined;
@@ -133,7 +133,7 @@ export const serializeW3CImageAnnotation = (
   // Remove core properties that should not appear in the W3C annotation
   delete serialized.bodies;
   
-  if ('annotation' in serialized.target)
+  if (typeof serialized.target !== 'string' && 'annotation' in serialized.target)
     delete serialized.target.annotation;
 
   return serialized;
