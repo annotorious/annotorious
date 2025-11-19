@@ -18,7 +18,7 @@ export const isFragmentSelector = (
     return true;
 
   if (typeof selector === 'string') {
-    const hashIndex = selector.indexOf("#");
+    const hashIndex = selector.indexOf('#');
     if (hashIndex < 0) return false;
 
     const xywh = /^#xywh(?:=(?:pixel:|percent:)?)\s*\d+(\.\d*)?,\s*\d+(\.\d*)?,\s*\d+(\.\d*)?,\s*\d+(\.\d*)?$/i;
