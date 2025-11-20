@@ -31,7 +31,7 @@ export interface AnnotoriousManifoldInstance<I extends Annotation = Annotation, 
 
   getAnnotator(id: string): Annotator<I, E> | undefined;
   
-  setSelected(annotationId: string, editable?: boolean): void;
+  setSelected(annotationId: string | string[], editable?: boolean): void;
 
   updateAnnotation(arg1: string | I, arg2?: I | Origin, arg3?: Origin): void;
 
@@ -146,10 +146,32 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
       annotator.state.store.updateAnnotation(arg1, arg2, arg3);
   }
 
-  const setSelected = (id: string, editable?: boolean) => {
-    const { annotator } = find(id);
-    if (annotator)
-      annotator.setSelected(id, editable);
+  const setSelected = (id: string | string[], editable?: boolean) => {
+    const byAnnotator = new Map<string, string[]>();
+
+    // Group annotations by annotator source
+    const ids = Array.isArray(id) ? id : [id];
+    ids.forEach(id => {
+      const { source } = find(id);
+      const atThisSource = [...(byAnnotator.get(source) || []), id];
+      byAnnotator.set(source, atThisSource);
+    });
+
+    // byAnnotator will now include all annotators that have selected
+    // annotations. But there may be an existing selection on annotators
+    // that are not in byAnnotator. We need to clear it.
+    const toClear = annotators
+      .entries()
+      .filter(([source, _]) => !byAnnotator.has(source))
+      .map(t => t[1]);
+
+    toClear.forEach(annotator => annotator.cancelSelected());
+
+    byAnnotator.entries().forEach(([source, ids]) => {
+      const annotator = annotators.get(source);
+      if (annotator)
+        annotator.setSelected(id, editable);
+    });
   }
 
   return {
