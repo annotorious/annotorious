@@ -1,6 +1,6 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
   import OSDLayer from '../OSDLayer.svelte';
-  import type { Annotation } from '@annotorious/core';
+  import type { Annotation, Selection } from '@annotorious/core';
   import { isImageAnnotation, ShapeType } from '@annotorious/annotorious';
   import type { Bounds, ImageAnnotatorState } from '@annotorious/annotorious';
   import {
@@ -20,7 +20,7 @@
 
   const { selection } = state;
 
-  $: selectedAnnotations = $selection.selected.map(({ id }) => store.getAnnotation(id)!);
+  $: selectedAnnotations = ($selection as Selection).selected.map(({ id }) => store.getAnnotation(id)!);
 
   $: union = selectedAnnotations.length > 1 ? computeUnionBounds(selectedAnnotations) : undefined;
 

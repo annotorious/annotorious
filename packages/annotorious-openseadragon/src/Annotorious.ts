@@ -139,13 +139,13 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     }
   });
 
-  const selectionLayer = new SVGSelectionLayer({
+  const selectionLayer = options.multiSelect ? new SVGSelectionLayer({
     target: viewer.element.querySelector('.openseadragon-canvas')!,
     props: {
       state,
       viewer
     }
-  });
+  }) : undefined;
 
   displayLayer.$on('click', (evt: CustomEvent<PixiLayerClickEvent<I>>) => {    
     const { originalEvent, annotation } = evt.detail;
@@ -203,7 +203,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     displayLayer.$destroy();
     presenceLayer.$destroy();
     drawingLayer.$destroy();
-    selectionLayer.$destroy();
+    selectionLayer?.$destroy();
 
     // Other cleanup actions
     keyboardCommands.destroy();
