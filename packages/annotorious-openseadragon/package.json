@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
-    "@tsconfig/svelte": "^5.0.5",
+    "@tsconfig/svelte": "^5.0.6",
     "@types/openseadragon": "^5.0.1",
     "@types/rbush": "^4.0.0",
     "svelte": "^4.2.20",
