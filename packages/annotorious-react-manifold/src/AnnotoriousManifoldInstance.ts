@@ -170,7 +170,7 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
     byAnnotator.entries().forEach(([source, ids]) => {
       const annotator = annotators.get(source);
       if (annotator)
-        annotator.setSelected(id, editable);
+        annotator.setSelected(ids, editable);
     });
   }
 
