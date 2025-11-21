@@ -73,17 +73,20 @@ export const AnnotoriousManifold = (props: AnnotoriousManifoldProps) => {
         .map(t => ({ annotation: store.getAnnotation(t.id), editable: t.editable, annotatorId: id }));
 
       // Set the new selection
-      if (!muteSelectionEvents.current) {
-        const isMultiSelect = event?.ctrlKey || event?.metaKey || event?.shiftKey;        
+      if (!muteSelectionEvents.current) {    
         if (props.crossAnnotatorSelect) {
-          if (resolved.length === 0 && !isMultiSelect) {
+          const allowMultiSelect = 
+            !event // Always allow programmatic cross-annotator multi-select 
+            || (event?.ctrlKey || event?.metaKey || event?.shiftKey); // Manual multi-select
+
+          if (resolved.length === 0 && !allowMultiSelect) {
             // When crossAnnotatorSelect is enabled, clearing the selection in one image
             // clears everything
             setSelection({ selected: [], event });
           } else {
-            // If this is CMD/CTRL/SHIFT-select, modify the global selection instead
+            // If this is CMD/CTRL/SHIFT- or programmatic select, modify the global selection instead
             // of replacing it.
-            if (isMultiSelect) {
+            if (allowMultiSelect) {
               setSelection(current => {
                 const other = current.selected.filter(s => s.annotatorId !== id);
                 return {
