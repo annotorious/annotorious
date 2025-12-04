@@ -71,6 +71,10 @@ export const OpenSeadragonAnnotator = forwardRef(<I extends Annotation, E extend
   }, [anno, props.drawingEnabled]);
 
   useEffect(() => {
+    if (anno) anno.setDrawingMode(props.drawingMode);
+  }, [props.drawingMode]);
+
+  useEffect(() => {
     if (anno) anno.setFilter(props.filter);
   }, [anno, props.filter]);
 

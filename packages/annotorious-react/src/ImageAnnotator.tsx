@@ -42,6 +42,10 @@ export const ImageAnnotator = <I extends Annotation, E extends unknown>(props: I
   }, [props.drawingEnabled]);
 
   useEffect(() => {
+    if (anno) anno.setDrawingMode(props.drawingMode);
+  }, [props.drawingMode]);
+
+  useEffect(() => {
     if (anno) anno.setFilter(props.filter);
   }, [props.filter]);
 

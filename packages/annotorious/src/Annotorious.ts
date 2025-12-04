@@ -10,7 +10,7 @@ import type { ImageAnnotation, ShapeType } from './model';
 import { createSvelteImageAnnotatorState } from './state';
 import { setTheme as _setTheme } from './themes';
 import { fillDefaults, type Theme } from './AnnotoriousOpts';
-import type { AnnotoriousOpts } from './AnnotoriousOpts';
+import type { AnnotoriousOpts, DrawingMode } from './AnnotoriousOpts';
 import { initKeyboardCommands } from './keyboardCommands';
 
 import './Annotorious.css';
@@ -36,6 +36,8 @@ export interface ImageAnnotator<I extends Annotation = ImageAnnotation, E extend
   setDrawingTool(name: DrawingTool): void; 
 
   setDrawingEnabled(enabled: boolean): void;
+
+  setDrawingMode(mode: DrawingMode): void;
 
   setTheme(theme: Theme): void;
 
@@ -156,6 +158,9 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
 
   const setDrawingEnabled = (enabled: boolean) =>
     annotationLayer.$set({ drawingEnabled: enabled });
+
+  const setDrawingMode = (mode: DrawingMode) =>
+    annotationLayer.$set({ preferredDrawingMode: mode });
   
   const setFilter = (_: Filter) => {
     console.warn('Filter not implemented yet');
@@ -188,6 +193,7 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
     registerDrawingTool,
     registerShapeEditor,
     setDrawingEnabled,
+    setDrawingMode,
     setDrawingTool,
     setFilter,
     setStyle,
