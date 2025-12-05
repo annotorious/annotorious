@@ -30,7 +30,8 @@ import type {
   DrawingToolOpts, 
   ImageAnnotation,
   ShapeType, 
-  Theme
+  Theme,
+  DrawingMode,
 } from '@annotorious/annotorious';
 import type { PixiLayerClickEvent } from './annotation';
 import { PixiLayer, SVGDrawingLayer, SVGPresenceLayer, SVGSelectionLayer } from './annotation';
@@ -68,6 +69,8 @@ export interface OpenSeadragonAnnotator<I extends Annotation = ImageAnnotation, 
   setDrawingTool(name: DrawingTool): void;
 
   setDrawingEnabled(enabled: boolean): void;
+
+  setDrawingMode(mode: DrawingMode): void;
 
   setModalSelect(modalSelect: boolean): void;
 
@@ -243,6 +246,11 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     drawingLayer.$set({ drawingEnabled: enabled });
   }
 
+  const setDrawingMode = (mode: DrawingMode) => {
+    drawingMode = mode;
+    drawingLayer.$set({ preferredDrawingMode: mode });
+  }
+
   const setFilter = (filter: Filter<I> | undefined) => {
     // @ts-ignore
     displayLayer.$set({ filter });
@@ -288,6 +296,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     registerDrawingTool,
     registerShapeEditor,
     setDrawingEnabled,
+    setDrawingMode,
     setDrawingTool,
     setFilter,
     setModalSelect,
