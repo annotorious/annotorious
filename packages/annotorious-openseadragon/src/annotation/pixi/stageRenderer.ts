@@ -297,8 +297,15 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   lastScale = getCurrentScale(viewer);
 
   const addAnnotation = (annotation: ImageAnnotation, state?: AnnotationState) => {
+    // Ensure lastScale reflects this viewer's current viewport scale.
+    // lastScale is module-scoped and shared across all createStage instances,
+    // so it may hold a stale value from a different viewer. drawShape reads
+    // lastScale to compute counter-scaled stroke widths, so we must sync it
+    // here before any shapes are drawn.
+    lastScale = getCurrentScale(viewer);
+
     // In case this annotation adds stroke > 1
-    fastRedraw = false; 
+    fastRedraw = false;
 
     // Robustness: make sure to delete any annotation with the same ID, because 
     // otherwise we'd replace the annotation in `annotationShapes` and leave 
