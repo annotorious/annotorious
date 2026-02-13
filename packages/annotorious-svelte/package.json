@@ -5,7 +5,6 @@
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
   "homepage": "https://annotorious.dev",
-  "funding": "https://steadyhq.com/rainer-simon",
   "type": "module",
   "scripts": {
     "start": "vite",
