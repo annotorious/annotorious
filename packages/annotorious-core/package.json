@@ -1,11 +1,15 @@
 {
   "name": "@annotorious/core",
-  "version": "3.7.19",
+  "version": "3.7.20",
   "description": "Annotorious core types and functions",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
   "homepage": "https://annotorious.dev",
-  "keywords": ["annotation", "image annotation", "data annotation"],
+  "keywords": [
+    "annotation",
+    "image annotation",
+    "data annotation"
+  ],
   "type": "module",
   "repository": {
     "type": "git",

@@ -1,11 +1,19 @@
 {
   "name": "@annotorious/openseadragon",
-  "version": "3.7.19",
+  "version": "3.7.20",
   "description": "Annotorious for OpenSeadragon",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
   "homepage": "https://annotorious.dev",
-  "keywords": ["annotation", "image annotation", "iiif", "openseadragon", "iiif annotation", "openseadragon annotation", "data annotation"],
+  "keywords": [
+    "annotation",
+    "image annotation",
+    "iiif",
+    "openseadragon",
+    "iiif annotation",
+    "openseadragon annotation",
+    "data annotation"
+  ],
   "type": "module",
   "repository": {
     "type": "git",
@@ -51,8 +59,8 @@
     "openseadragon": "^3.0.0 || ^4.0.0 || ^5.0.0"
   },
   "dependencies": {
-    "@annotorious/annotorious": "3.7.19",
-    "@annotorious/core": "3.7.19",
+    "@annotorious/annotorious": "3.7.20",
+    "@annotorious/core": "3.7.20",
     "pixi.js": "^7.4.3",
     "uuid": "^13.0.0"
   }

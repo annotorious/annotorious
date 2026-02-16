@@ -1,11 +1,20 @@
 {
   "name": "@annotorious/react",
-  "version": "3.7.19",
+  "version": "3.7.20",
   "description": "Annotorious React bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
   "homepage": "https://annotorious.dev",
-  "keywords": ["annotation", "image annotation", "react image annotation", "iiif", "openseadragon", "iiif annotation", "openseadragon annotation", "data annotation"],
+  "keywords": [
+    "annotation",
+    "image annotation",
+    "react image annotation",
+    "iiif",
+    "openseadragon",
+    "iiif annotation",
+    "openseadragon annotation",
+    "data annotation"
+  ],
   "type": "module",
   "scripts": {
     "start": "vite",
@@ -45,9 +54,9 @@
     }
   },
   "dependencies": {
-    "@annotorious/annotorious": "3.7.19",
-    "@annotorious/core": "3.7.19",
-    "@annotorious/openseadragon": "3.7.19",
+    "@annotorious/annotorious": "3.7.20",
+    "@annotorious/core": "3.7.20",
+    "@annotorious/openseadragon": "3.7.20",
     "@floating-ui/react": "^0.27.17",
     "dequal": "^2.0.3"
   },

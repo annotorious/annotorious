@@ -1,11 +1,21 @@
 {
   "name": "@annotorious/react-manifold",
-  "version": "3.7.19",
+  "version": "3.7.20",
   "description": "A utility to manage multiple parallel Annotorious instances more efficiently",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
   "homepage": "https://annotorious.dev",
-  "keywords": ["annotation", "image annotation", "multi image annotation", "react image annotation", "iiif", "openseadragon", "iiif annotation", "openseadragon annotation", "data annotation"],
+  "keywords": [
+    "annotation",
+    "image annotation",
+    "multi image annotation",
+    "react image annotation",
+    "iiif",
+    "openseadragon",
+    "iiif annotation",
+    "openseadragon annotation",
+    "data annotation"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/annotorious/annotorious-react-manifold.git"
@@ -40,7 +50,7 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "peerDependencies": {
-    "@annotorious/react": "3.7.19",
+    "@annotorious/react": "3.7.20",
     "openseadragon": ">= ^4.0.0 || >= ^5.0.0",
     "react": "^16.8.0 || >= ^17.x || >= ^18.x || >= ^19.x",
     "react-dom": "^16.8.0 || >= ^17.x || >= ^18.x|| >= ^19.x"
