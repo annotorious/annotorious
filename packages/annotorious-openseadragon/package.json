@@ -5,6 +5,7 @@
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
   "homepage": "https://annotorious.dev",
+  "keywords": ["annotation", "image annotation", "iiif", "openseadragon", "iiif annotation", "openseadragon annotation", "data annotation"],
   "type": "module",
   "repository": {
     "type": "git",

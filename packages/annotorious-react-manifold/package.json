@@ -5,6 +5,7 @@
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
   "homepage": "https://annotorious.dev",
+  "keywords": ["annotation", "image annotation", "multi image annotation", "react image annotation", "iiif", "openseadragon", "iiif annotation", "openseadragon annotation", "data annotation"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/annotorious/annotorious-react-manifold.git"
