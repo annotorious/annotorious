@@ -26,7 +26,7 @@
     "./annotorious-react.css": "./dist/annotorious-react.css"
   },
   "devDependencies": {
-    "@types/react": "^19.2.6",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.7.0",
     "typescript": "^5.9.3",
@@ -48,7 +48,7 @@
     "@annotorious/annotorious": "3.7.19",
     "@annotorious/core": "3.7.19",
     "@annotorious/openseadragon": "3.7.19",
-    "@floating-ui/react": "^0.27.16",
+    "@floating-ui/react": "^0.27.17",
     "dequal": "^2.0.3"
   },
   "sideEffects": false

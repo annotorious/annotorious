@@ -31,7 +31,7 @@
     "test": "echo 'Skipping tests in @annotorious/annotorious-react-manifold package'"
   },
   "devDependencies": {
-    "@types/react": "^19.2.6",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.7.0",
     "typescript": "^5.9.3",

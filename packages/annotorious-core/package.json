@@ -36,7 +36,7 @@
     "dequal": "^2.0.3",
     "nanoevents": "^9.1.0",
     "nanoid": "^5.1.6",
-    "nanostores": "^1.0.1",
+    "nanostores": "^1.1.0",
     "uuid": "^13.0.0"
   }
 }
