@@ -38,10 +38,6 @@ issue on the [Issue Tracker](https://github.com/annotorious/annotorious/issues).
 
 ## Professional Support Available
 
-Looking for help with integration, customization, or feature development? I offer consulting and professional services for teams and organizations that need dedicated support or technical guidance. Services are available on an hourly basis.
+Looking for help with integration, customization, or feature development? I offer consulting and professional services for teams and organizations that need dedicated support or technical guidance. 
 
 Contact me at hello@rainersimon.io to discuss your project.
-
-## Older Versions
-
-Documentation for Annotorious version 2.7 [is available here](https://annotorious.github.io).
