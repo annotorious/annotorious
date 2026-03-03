@@ -66,5 +66,3 @@ export {
 export type {
   OpenSeadragonAnnotator as AnnotoriousOpenSeadragonAnnotator
 } from '@annotorious/openseadragon';
-
-export type { Viewer } from 'openseadragon';

@@ -86,7 +86,7 @@ export const OpenSeadragonViewer = forwardRef<OpenSeadragon.Viewer, OpenSeadrago
               v.viewport.goHome();
             }
           }
-        } as OpenSeadragon.TiledImageOptions);
+        } as OpenSeadragon.TileSourceSpecifier);
       });
 
       prevOptionsRef.current = options;
