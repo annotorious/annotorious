@@ -21,7 +21,7 @@ export const isFragmentSelector = (
     const hashIndex = selector.indexOf('#');
     if (hashIndex < 0) return false;
 
-    const xywh = /^#xywh(?:=(?:pixel:|percent:)?)\s*\d+(\.\d*)?,\s*\d+(\.\d*)?,\s*\d+(\.\d*)?,\s*\d+(\.\d*)?$/i;
+    const xywh = /#xywh(?:=(?:pixel:|percent:)?)\s*\d+(\.\d*)?,\s*\d+(\.\d*)?,\s*\d+(\.\d*)?,\s*\d+(\.\d*)?$/i;
     return xywh.test(selector);
   }
 
@@ -35,8 +35,7 @@ export const parseFragmentSelector = (
   const fragment =
     typeof fragmentOrSelector === 'string' ? fragmentOrSelector : fragmentOrSelector.value;
 
-  const regex = /(xywh)=(pixel|percent)?:?(.+?),(.+?),(.+?),(.+)*/g;
-
+  const regex = /(xywh)=(?:(pixel|percent):)?:?(.+?),(.+?),(.+?),(.+)*/g;
   const matches = [...fragment.matchAll(regex)][0];
 
   if (!matches) throw new Error('Not a MediaFragment: ' + fragment);

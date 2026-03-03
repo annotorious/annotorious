@@ -16,6 +16,7 @@ describe('parseW3CImageAnnotation', () => {
       closedPath,
       multiPolygon, 
       rectangle, 
+      rectangleFragment,
       line,
       openCurve,
       closedCurve
@@ -26,6 +27,7 @@ describe('parseW3CImageAnnotation', () => {
     expect(closedPath.parsed?.target.selector.type).toBe(ShapeType.POLYGON);
     expect(multiPolygon.parsed?.target.selector.type).toBe(ShapeType.MULTIPOLYGON);
     expect(rectangle.parsed?.target.selector.type).toBe(ShapeType.RECTANGLE);
+    expect(rectangleFragment.parsed?.target.selector.type).toBe(ShapeType.RECTANGLE);
     expect(line.parsed?.target.selector.type).toBe(ShapeType.LINE);
 
     const parsedOpenCurve = openCurve.parsed?.target?.selector as Polyline | undefined;
@@ -62,6 +64,7 @@ describe('parseW3CImageAnnotation', () => {
     expect(error?.message.startsWith('Invalid selector:')).toBeTruthy();
   });
 });
+
 
 describe('serializeW3CImageAnnotation', () => {
   it('should serialize the sample annotations correctly', () => {
