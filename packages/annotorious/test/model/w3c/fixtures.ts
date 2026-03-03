@@ -99,7 +99,7 @@ export const annotations = [{
       language: 'en',
       format: 'text/html'
   },
-  target: 'https://www.example.com/canvases/1#xywh=346,597,8800,4812'
+  target: 'https://www.example.com/canvases/1#xywh=-346,597,8800,4812'
 }, {
   '@context': 'http://www.w3.org/ns/anno.jsonld',
   id: 'http://www.example.com/annotation/185fb0e5-a6e1-42c3-b97d-b7da3ad023b9',

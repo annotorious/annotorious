@@ -21,7 +21,7 @@ export const isFragmentSelector = (
     const hashIndex = selector.indexOf('#');
     if (hashIndex < 0) return false;
 
-    const xywh = /#xywh(?:=(?:pixel:|percent:)?)\s*\d+(\.\d*)?,\s*\d+(\.\d*)?,\s*\d+(\.\d*)?,\s*\d+(\.\d*)?$/i;
+    const xywh = /#xywh(?:=(?:pixel:|percent:)?)(.+?),(.+?),(.+?),(.+)$/i;
     return xywh.test(selector);
   }
 
