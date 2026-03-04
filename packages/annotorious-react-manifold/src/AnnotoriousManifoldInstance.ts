@@ -1,5 +1,5 @@
 import { Origin } from '@annotorious/react';
-import type { Annotation, AnnotationBody, Annotator } from '@annotorious/react';
+import type { Annotation, AnnotationBody, Annotator, Filter } from '@annotorious/react';
 
 export interface AnnotoriousManifoldInstance<I extends Annotation = Annotation, E extends { id: string } = Annotation> {
 
@@ -30,6 +30,8 @@ export interface AnnotoriousManifoldInstance<I extends Annotation = Annotation, 
   getAnnotations(): I[];
 
   getAnnotator(id: string): Annotator<I, E> | undefined;
+
+  setFilter(filter?: Filter<I>): void;
   
   setSelected(annotationId: string | string[], editable?: boolean): void;
 
@@ -146,6 +148,9 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
       annotator.state.store.updateAnnotation(arg1, arg2, arg3);
   }
 
+  const setFilter = (filter?: Filter<I>) =>
+    Array.from(annotators.values()).forEach(a => a.setFilter(filter));
+
   const setSelected = (id: string | string[], editable?: boolean) => {
     const byAnnotator = new Map<string, string[]>();
 
@@ -189,6 +194,7 @@ export const createManifoldInstance = <I extends Annotation = Annotation, E exte
     getAnnotation,
     getAnnotations,
     getAnnotator,
+    setFilter,
     setSelected,
     updateAnnotation
   }
