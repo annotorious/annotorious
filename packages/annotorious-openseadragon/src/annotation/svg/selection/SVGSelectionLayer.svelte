@@ -1,8 +1,9 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
-  import OSDLayer from '../OSDLayer.svelte';
+  import OpenSeadragon from 'openseadragon';
   import type { Annotation, Selection } from '@annotorious/core';
   import { isImageAnnotation, ShapeType } from '@annotorious/annotorious';
   import type { Bounds, ImageAnnotatorState } from '@annotorious/annotorious';
+  import OSDLayer from '../OSDLayer.svelte';
   import {
     SelectedEllipse,
     SelectedLine,
