@@ -1,7 +1,7 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
-  import { type SvelteComponent, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-  import type { Annotation, DrawingStyleExpression, StoreChangeEvent, User } from '@annotorious/core';
+  import type { Annotation, DrawingStyleExpression, Selection, StoreChangeEvent, User } from '@annotorious/core';
   import { isImageAnnotation, ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
   import { getEditor, EditorMount } from './editors';
@@ -56,7 +56,7 @@
 
   let editableAnnotations: ImageAnnotation[] | undefined;
 
-  $: trackSelection($selection.selected);
+  $: trackSelection(($selection as Selection).selected);
 
   const trackSelection = (selected: { id: string, editable?: boolean }[]) => {
     if (storeObserver)
