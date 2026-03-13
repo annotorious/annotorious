@@ -4,12 +4,13 @@ import { parseFragmentSelector } from '../../../../src/model/w3c/fragment';
 describe('parseFragmentSelector', () => {
   it('should parse a fragment with pixel unit correctly', () => {
     const fragment = 'xywh=pixel:160,120,320,240';
-    const { geometry: { x, y, w, h, bounds } } = parseFragmentSelector(fragment);
+    const { geometry: { x, y, w, h, rot, bounds } } = parseFragmentSelector(fragment);
 
     expect(x).toBe(160);
     expect(y).toBe(120);
     expect(w).toBe(320);
     expect(h).toBe(240);
+    expect(rot).toBe(0);
 
     expect(bounds.minX).toBe(160);
     expect(bounds.minY).toBe(120);
@@ -19,12 +20,13 @@ describe('parseFragmentSelector', () => {
 
   it('should parse a fragment without unit as pixel fragment', () => {
     const fragment = 'xywh=160,120,320,240';
-    const { geometry: { x, y, w, h, bounds } } = parseFragmentSelector(fragment);
+    const { geometry: { x, y, w, h, rot, bounds } } = parseFragmentSelector(fragment);
 
     expect(x).toBe(160);
     expect(y).toBe(120);
     expect(w).toBe(320);
     expect(h).toBe(240);
+    expect(rot).toBe(0);
 
     expect(bounds.minX).toBe(160);
     expect(bounds.minY).toBe(120);
@@ -34,12 +36,13 @@ describe('parseFragmentSelector', () => {
 
   it('should parse a fragment with negative values', () => {
     const fragment = 'xywh=160,-120,320,240';
-    const { geometry: { x, y, w, h, bounds } } = parseFragmentSelector(fragment);
+    const { geometry: { x, y, w, h, rot, bounds } } = parseFragmentSelector(fragment);
 
     expect(x).toBe(160);
     expect(y).toBe(-120);
     expect(w).toBe(320);
     expect(h).toBe(240);
+    expect(rot).toBe(0);
 
     expect(bounds.minX).toBe(160);
     expect(bounds.minY).toBe(-120);

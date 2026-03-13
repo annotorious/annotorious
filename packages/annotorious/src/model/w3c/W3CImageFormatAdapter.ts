@@ -103,14 +103,16 @@ export const serializeW3CImageAnnotation = (
   let w3cSelector: FragmentSelector | SVGSelector | unknown;
 
   try {
-    w3cSelector = selector.type == ShapeType.RECTANGLE ?
-      serializeFragmentSelector(selector.geometry as RectangleGeometry) :
-      serializeSVGSelector(selector);
+    if (selector.type === ShapeType.RECTANGLE && (selector.geometry as RectangleGeometry).rot === 0) {
+      w3cSelector = serializeFragmentSelector(selector.geometry as RectangleGeometry);
+    } else {
+      w3cSelector = serializeSVGSelector(selector);
+    }
   } catch (error) {
     if (opts.strict)
       throw error;
     else 
-     w3cSelector = selector;
+      w3cSelector = selector;
   }
 
   const serialized = {
