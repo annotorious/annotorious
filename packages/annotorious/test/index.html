@@ -35,7 +35,7 @@
 
       window.onload = function() {
         var anno = createImageAnnotator('sample-image', {
-          adapter: W3CImageFormat('sample-image'),
+          // adapter: W3CImageFormat('sample-image'),
           autoSave: true,
           style: function(annotation) {
             return annotation.target.selector.type === 'RECTANGLE' 

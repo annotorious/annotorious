@@ -98,7 +98,7 @@ export const transformDeltaToLocalCoords = (
 }
 
 /**
- * Calculates the rotation angle between a point and the origin, relative to a center
+ * Calculates the rotation angle between a point and the origin, relative to a center.
  */
 export const angleFromPoints = (
   point1: [number, number],
@@ -114,47 +114,6 @@ export const angleFromPoints = (
   const angle2 = Math.atan2(dy2, dx2);
 
   return angle2 - angle1;
-}
-
-/**
- * Normalizes a rectangle's rotation to the range [0, π/2)
- * When rotation >= π/2, swaps width/height and adjusts position to keep center fixed
- */
-export const normalizeRotation = (
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  rot: number
-): {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  rot: number;
-} => {
-  let angle = rot;
-  let width = w;
-  let height = h;
-  let posX = x;
-  let posY = y;
-
-  // Normalize angle to [0, π/2)
-  while (angle >= Math.PI / 2) {
-    angle -= Math.PI / 2;
-
-    const centerX = posX + width / 2;
-    const centerY = posY + height / 2;
-
-    // Swap width and height
-    [width, height] = [height, width];
-
-    // Recalculate position to keep center fixed
-    posX = centerX - width / 2;
-    posY = centerY - height / 2;
-  }
-
-  return { x: posX, y: posY, w: width, h: height, rot: angle };
 }
 
 /**
