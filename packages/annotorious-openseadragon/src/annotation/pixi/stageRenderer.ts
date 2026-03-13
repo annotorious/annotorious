@@ -103,7 +103,6 @@ const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
    g.drawRect(x, y, w, h);
   } else {
     g.position.set(x + w/2, y + h/2);
-    g.pivot.set(0, 0);
     g.rotation = rot;
     g.drawRect(-w/2, -h/2, w, h);
   }
