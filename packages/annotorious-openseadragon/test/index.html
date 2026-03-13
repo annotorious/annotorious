@@ -62,8 +62,6 @@
         });
 
         const BASE_STYLE = function(a, state) {
-          console.log(state);
-
           const { hovered, selected } = state || {};
           return {
             fill: hovered ? 'rgba(180,0,60,0.7)' : 'rgba(180,0,60,0.5)',

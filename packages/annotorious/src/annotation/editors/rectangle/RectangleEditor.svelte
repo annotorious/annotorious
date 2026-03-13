@@ -23,7 +23,7 @@
 
   let shiftPressed = false;
 
-  const ROTATION_HANDLE_OFFSET = 20 / viewportScale;
+  $: ROTATION_HANDLE_OFFSET = 20 / viewportScale;
 
   $: geom = shape.geometry;
   $: rotatedCorners = getRotatedCorners(geom.x, geom.y, geom.w, geom.h, geom.rot);
