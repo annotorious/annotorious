@@ -106,6 +106,7 @@
             maxX: x + w,
             maxY: y + h
           },
+          rot: 0,
           x, y, w, h
         }
       }

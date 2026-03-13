@@ -10,23 +10,30 @@
 
   $: computedStyle = computeStyle(annotation, style);
 
-  $: ({ x, y, w, h } = geom as RectangleGeometry);
+  $: ({ x, y, w, h, rot } = geom as RectangleGeometry);
+
+  // Calculate transform for rotation
+  $: rectTransform = rot !== 0 ? 
+    `translate(${x + w / 2}, ${y + h / 2}) rotate(${(rot * 180) / Math.PI}) translate(${-(x + w / 2)}, ${-(y + h / 2)})` :
+    undefined;
 </script>
 
 <g class="a9s-annotation" data-id={annotation.id}>
-  <rect
-    class="a9s-outer"
-    style={computedStyle ? 'display:none;' : undefined}
-    x={x} 
-    y={y} 
-    width={w} 
-    height={h} />
+  <g transform={rectTransform}>
+    <rect
+      class="a9s-outer"
+      style={computedStyle ? 'display:none;' : undefined}
+      x={x} 
+      y={y} 
+      width={w} 
+      height={h} />
 
-  <rect
-    class="a9s-inner"
-    style={computedStyle}
-    x={x} 
-    y={y} 
-    width={w} 
-    height={h} />
+    <rect
+      class="a9s-inner"
+      style={computedStyle}
+      x={x} 
+      y={y} 
+      width={w} 
+      height={h} />
+  </g>
 </g>
