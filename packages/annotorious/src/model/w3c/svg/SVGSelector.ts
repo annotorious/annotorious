@@ -236,7 +236,7 @@ export const serializeSVGSelector = (shape: Shape): SVGSelector => {
       const geom = shape.geometry as RectangleGeometry;
       const { x, y, w, h, rot } = geom;
 
-      if (rot === 0) {
+      if (!rot) {
         value = `<svg><rect x="${x}" y="${y}" width="${w}" height="${h}" /></svg>`;
       } else {
         const cx = x + w / 2;
