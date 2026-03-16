@@ -2,12 +2,11 @@
   import { onMount } from 'svelte';
   import Handle from '../Handle.svelte';
   import { getMaskDimensions } from '../../utils';
-  import type { Rectangle, RectangleGeometry, Shape } from '../../../model';
+  import { boundsFromPoints, type Rectangle, type RectangleGeometry, type Shape } from '../../../model';
   import type { Transform } from '../../Transform';
   import { Editor } from '..';
   import {
     getRotatedCorners,
-    getBoundsFromRotatedRect,
     getRotationHandlePosition,
     transformDeltaToLocalCoords,
     angleFromPoints,
@@ -118,7 +117,7 @@
     }
 
     // Calculate new bounds
-    const bounds = getBoundsFromRotatedRect(x, y, w, h, rot);
+    const bounds = boundsFromPoints(rotatedCorners);
 
     return {
       ...rectangle,

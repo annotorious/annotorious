@@ -46,28 +46,6 @@ export const getRotatedCorners = (
 }
 
 /** 
- * Calculates the axis-aligned bounding box of a rotated rectangle.
- */
-export const getBoundsFromRotatedRect = (
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  rot: number
-): Bounds => {
-  const corners = getRotatedCorners(x, y, w, h, rot);
-  const xs = corners.map(c => c[0]);
-  const ys = corners.map(c => c[1]);
-
-  return {  
-    minX: Math.min(...xs),
-    minY: Math.min(...ys),
-    maxX: Math.max(...xs),
-    maxY: Math.max(...ys)
-  };
-}
-
-/** 
  * Calculates the position of the rotation handle.
  */
 export const getRotationHandlePosition = (
