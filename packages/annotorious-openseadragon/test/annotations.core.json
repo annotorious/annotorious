@@ -1,5 +1,32 @@
 [
   {
+    "id": "ca3beec3-d73e-4893-9871-acd4e30ef6f8",
+    "bodies": [],
+    "target": {
+      "annotation": "ca3beec3-d73e-4893-9871-acd4e30ef6f8",
+      "selector": {
+        "type": "RECTANGLE",
+        "geometry": {
+          "x": 776.6638044268843,
+          "y": 1325.5515644955299,
+          "w": 929.0114650907483,
+          "h": 787.6476692209455,
+          "bounds": {
+            "minX": 776.6638044268843,
+            "minY": 1325.5515644955299,
+            "maxX": 1705.6752695176326,
+            "maxY": 2113.1992337164756
+          }
+        }
+      },
+      "creator": {
+        "isGuest": true,
+        "id": "1HyYU8ipIejMn7BmaTo1"
+      },
+      "created": "2026-03-16T06:39:16.572Z"
+    }
+  },
+  {
     "id": "ec2dbf64-58fd-4b38-a096-d98243d78423",
     "bodies": [],
     "target": {
