@@ -98,7 +98,7 @@ const drawShape = <T extends Shape>(
 }
 
 const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
-  const { x, y, w, h, rot } = rectangle.geometry;
+  const { x, y, w, h, rot = 0 } = rectangle.geometry;
   if (rot === 0) {
    g.drawRect(x, y, w, h);
   } else {
