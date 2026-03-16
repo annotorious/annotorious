@@ -93,6 +93,7 @@
   fill: transparent;
   stroke: transparent;
   stroke-width: 6px;
+  vector-effect: non-scaling-stroke;
 }
 
 .a9s-shape-handle {

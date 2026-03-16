@@ -271,13 +271,6 @@
     fill: #000;
   }
 
-  :global(.a9s-edge-handle) {
-    stroke-width: 4px;
-    stroke: rgba(0, 0, 0, 0.1);
-    pointer-events: stroke;
-    vector-effect: non-scaling-stroke;
-  }
-
   :global(.a9s-rotation-handle-line-bg) {
     stroke: rgba(0, 0, 0, 0.5);
     stroke-width: 1.5px;
