@@ -29,7 +29,7 @@
   $: rotationHandlePos = getRotationHandlePosition(geom, ROTATION_HANDLE_OFFSET);
 
   const editor = (rectangle: Shape, handle: string, delta: [number, number]) => {
-    let { x, y, w, h, rot } = (rectangle.geometry as RectangleGeometry);
+    let { x, y, w, h, rot = 0 } = (rectangle.geometry as RectangleGeometry);
 
     const [dx, dy] = delta;
 

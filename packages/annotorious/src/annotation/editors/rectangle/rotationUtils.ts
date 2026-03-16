@@ -31,7 +31,7 @@ export const getRotatedCorners = (
   y: number,
   w: number,
   h: number,
-  rot: number
+  rot: number = 0
 ): [[number, number], [number, number], [number, number], [number, number]] => {
   const corners: [number, number][] = [
     [x, y],
@@ -52,7 +52,7 @@ export const getRotatedCorners = (
 export const getRotationHandlePosition = (
   geom: RectangleGeometry, offset: number
 ): [number, number] => {
-  const { x , y, w, h, rot } = geom;
+  const { x , y, w, h, rot = 0 } = geom;
   const center: [number, number] = [x + w / 2, y + h / 2];
   let topCenter: [number, number] = [x + w / 2, y - offset];
   return rotatePoint(topCenter, center, rot);
