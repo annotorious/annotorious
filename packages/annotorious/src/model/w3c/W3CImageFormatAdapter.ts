@@ -103,7 +103,7 @@ export const serializeW3CImageAnnotation = (
   let w3cSelector: FragmentSelector | SVGSelector | unknown;
 
   try {
-    if (selector.type === ShapeType.RECTANGLE && (selector.geometry as RectangleGeometry).rot === 0) {
+    if (selector.type === ShapeType.RECTANGLE && !(selector.geometry as RectangleGeometry).rot) {
       w3cSelector = serializeFragmentSelector(selector.geometry as RectangleGeometry);
     } else {
       w3cSelector = serializeSVGSelector(selector);

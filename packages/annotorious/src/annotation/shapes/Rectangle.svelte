@@ -13,8 +13,8 @@
   $: ({ x, y, w, h, rot } = geom as RectangleGeometry);
 
   // Calculate transform for rotation
-  $: rectTransform = rot !== 0 ? 
-    `translate(${x + w / 2}, ${y + h / 2}) rotate(${(rot * 180) / Math.PI}) translate(${-(x + w / 2)}, ${-(y + h / 2)})` :
+  $: rectTransform = (rot ?? 0) !== 0 ? 
+    `translate(${x + w / 2}, ${y + h / 2}) rotate(${((rot ?? 0) * 180) / Math.PI}) translate(${-(x + w / 2)}, ${-(y + h / 2)})` :
     undefined;
 </script>
 

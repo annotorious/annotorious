@@ -10,6 +10,7 @@ export const rotatePoint = (
 ): [number, number] => {
   const [px, py] = point;
   const [cx, cy] = center;
+  
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
 
