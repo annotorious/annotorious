@@ -241,7 +241,7 @@ export const serializeSVGSelector = (shape: Shape): SVGSelector => {
       } else {
         const cx = x + w / 2;
         const cy = y + h / 2;
-        const angle = (rot * 180) / Math.PI;
+        const angle = ((rot ?? 0) * 180) / Math.PI;
 
         value = `<svg><rect x="${x}" y="${y}" width="${w}" height="${h}" transform="rotate(${angle} ${cx} ${cy})" /></svg>`;
       }

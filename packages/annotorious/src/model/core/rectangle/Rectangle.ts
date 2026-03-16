@@ -16,7 +16,7 @@ export interface RectangleGeometry extends Geometry {
 
   h: number;
 
-  rot: number;
+  rot?: number;
 
   bounds: Bounds;
 
