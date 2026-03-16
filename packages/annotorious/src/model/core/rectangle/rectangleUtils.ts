@@ -9,7 +9,7 @@ export const RectangleUtil: ShapeUtil<Rectangle> = {
   intersects: (rect: Rectangle, x: number, y: number): boolean => {
     const geom = rect.geometry;
     
-    if (geom.rot === 0) {
+    if (!geom.rot) {
       return x >= geom.x &&
         x <= geom.x + geom.w &&
         y >= geom.y &&
