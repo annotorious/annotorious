@@ -98,8 +98,14 @@ const drawShape = <T extends Shape>(
 }
 
 const drawRectangle = drawShape((rectangle: Rectangle, g: PIXI.Graphics) => {
-  const { x, y, w, h } = rectangle.geometry;
-  g.drawRect(x, y, w, h);
+  const { x, y, w, h, rot = 0 } = rectangle.geometry;
+  if (rot === 0) {
+   g.drawRect(x, y, w, h);
+  } else {
+    g.position.set(x + w/2, y + h/2);
+    g.rotation = rot;
+    g.drawRect(-w/2, -h/2, w, h);
+  }
 });
 
 const drawEllipse = drawShape((ellipse: Ellipse, g: PIXI.Graphics) => {

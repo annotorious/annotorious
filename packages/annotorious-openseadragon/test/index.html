@@ -62,8 +62,6 @@
         });
 
         const BASE_STYLE = function(a, state) {
-          console.log(state);
-
           const { hovered, selected } = state || {};
           return {
             fill: hovered ? 'rgba(180,0,60,0.7)' : 'rgba(180,0,60,0.5)',
@@ -82,8 +80,6 @@
           style: BASE_STYLE,
           // userSelectAction: 'SELECT'
         });
-
-        anno.setDrawingTool('polygon');
 
         // fetch('annotations.w3c.json').then((response) => response.json())
         fetch('annotations.core.json').then((response) => response.json())

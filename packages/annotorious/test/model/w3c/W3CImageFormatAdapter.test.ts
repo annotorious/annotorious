@@ -1,6 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { W3CAnnotation } from '@annotorious/core';
-import { parseW3CImageAnnotation, Polyline, serializeW3CImageAnnotation, ShapeType, W3CImageAnnotation } from '../../../src/model';
+import { 
+  parseW3CImageAnnotation, 
+  type Polyline, 
+  type RectangleGeometry, 
+  serializeW3CImageAnnotation, 
+  ShapeType, 
+  type W3CImageAnnotation, 
+  type W3CImageAnnotationTarget, 
+  type W3CImageSelector 
+} from '../../../src/model';
 
 import { annotations } from './fixtures';
 
@@ -80,6 +89,60 @@ describe('serializeW3CImageAnnotation', () => {
       expect(a.id).toBe(e.id);
       expect('bodies' in a).toBeFalsy();
     })
-  })
+  });
+
+  it('should serialize axis-aligned rectangles as FragmentSelector', () => {
+    const annotation = {
+      id: 'test-rect',
+      bodies: [],
+      target: {
+        annotation: 'test-rect',
+        selector: {
+          type: ShapeType.RECTANGLE,
+          geometry: {
+            x: 10,
+            y: 20,
+            w: 100,
+            h: 50,
+            rot: 0,
+            bounds: { minX: 10, minY: 20, maxX: 110, maxY: 70 }
+          } as RectangleGeometry
+        }
+      }
+    };
+
+    const serialized = serializeW3CImageAnnotation(annotation, 'http://example.com/image');
+    const selector = (serialized.target as W3CImageAnnotationTarget).selector as W3CImageSelector;
+
+    expect(selector.type).toBe('FragmentSelector');
+    expect(selector.value).toBe('xywh=pixel:10,20,100,50');
+  });
+
+  it('should serialize rotated rectangles as SvgSelector', () => {
+    const annotation = {
+      id: 'test-rotated-rect',
+      bodies: [],
+      target: {
+        annotation: 'test-rotated-rect',
+        selector: {
+          type: ShapeType.RECTANGLE,
+          geometry: {
+            x: 10,
+            y: 20,
+            w: 100,
+            h: 50,
+            rot: Math.PI / 4, // 45 degrees
+            bounds: { minX: 10, minY: 20, maxX: 110, maxY: 70 }
+          }
+        }
+      }
+    };
+
+    const serialized = serializeW3CImageAnnotation(annotation, 'http://example.com/image');
+    const selector = (serialized.target as W3CImageAnnotationTarget).selector as W3CImageSelector;
+
+    expect(selector.type).toBe('SvgSelector');
+    expect(selector.value).toContain('<rect x="10" y="20" width="100" height="50" transform="rotate(45 60 45)"');
+  });
 });
 

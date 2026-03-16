@@ -55,6 +55,7 @@ export const parseFragmentSelector = (
       y,
       w,
       h,
+      rot: 0,
       bounds: {
         minX: x,
         minY: invertY ? y - h : y,

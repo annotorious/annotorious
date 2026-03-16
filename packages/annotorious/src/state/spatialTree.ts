@@ -83,11 +83,8 @@ export const createSpatialTree = () => {
       maxY: y + buffer
     }).map(item => item.target);
 
-    // Exact hit test on shape (not needed for rectangles!)
-    const exactHits = idxHits.filter(target => {
-      return (target.selector.type === ShapeType.RECTANGLE) ||
-        intersects(target.selector, x, y, buffer);
-    });
+    // Exact hit test on shape
+    const exactHits = idxHits.filter(({ selector }) => intersects(selector, x, y, buffer));
 
     // Get smallest shape
     if (exactHits.length > 0) {

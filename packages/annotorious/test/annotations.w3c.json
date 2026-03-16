@@ -1,4 +1,4 @@
-[ 
+[
   {
     "@context": "http://www.w3.org/ns/anno.jsonld",
     "id": "e23b9018-54ed-495b-be64-9743f022e042",
@@ -18,7 +18,21 @@
       ]
     }
   },
-    {
+  {
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "id": "655b3800-3020-4f94-b6fc-17f5f6cd085e",
+    "type": "Annotation",
+    "body": [],
+    "target": {
+      "source": "sample-image",
+      "type": "SpecificResource",
+      "selector": {
+        "type": "SvgSelector",
+        "value": "<svg><rect x=\"427.69921875\" y=\"258.79296875\" width=\"134.64453125\" height=\"55.453125\" transform=\"rotate(21.421795454004197 495.021484375 286.51953125)\" /></svg>"
+      }
+    }
+  },
+  {
     "@context": "http://www.w3.org/ns/anno.jsonld",
     "id": "ce06734b-cc9a-462e-bb9f-b8c22c8c807d",
     "type": "Annotation",

@@ -12,6 +12,8 @@ import type {
   PolygonGeometry, 
   Polyline,
   PolylineGeometry, 
+  Rectangle,
+  RectangleGeometry,
   Shape 
 } from '../../core';
 
@@ -107,6 +109,68 @@ const parseSVGPathToPolyline = (value: string): Polyline => {
   }
 }
 
+const parseSVGRect = (value: string): Rectangle => {
+  const doc = parseSVGXML(value);
+
+  const rect = doc.nodeName === 'rect' ? doc : Array.from(doc.querySelectorAll('rect'))[0];
+  if (!rect) throw new Error('Could not parse SVG rect');
+
+  const x = parseFloat(rect.getAttribute('x')!);
+  const y = parseFloat(rect.getAttribute('y')!);
+  const w = parseFloat(rect.getAttribute('width')!);
+  const h = parseFloat(rect.getAttribute('height')!);
+
+  const transform = rect.getAttribute('transform');
+  let rot = 0;
+
+  if (transform && transform.startsWith('rotate(')) {
+    const match = transform.match(/rotate\(([^)]+)\)/);
+    if (match) {
+      const params = match[1].split(/\s+/).map(parseFloat);
+      rot = (params[0] * Math.PI) / 180;
+    }
+  }
+
+  // Compute bounds
+  const cx = x + w / 2;
+  const cy = y + h / 2;
+
+  const corners = [
+    [x, y],
+    [x + w, y],
+    [x + w, y + h],
+    [x, y + h]
+  ];
+
+  // Rotate corners around center
+  const rotatedCorners = corners.map(([px, py]) => {
+    const dx = px - cx;
+    const dy = py - cy;
+
+    const cos = Math.cos(rot);
+    const sin = Math.sin(rot);
+
+    return [
+      cx + dx * cos - dy * sin,
+      cy + dx * sin + dy * cos
+    ];
+  });
+
+  const bounds = boundsFromPoints(rotatedCorners as [number, number][]);
+
+  return {
+    type: ShapeType.RECTANGLE,
+    geometry: {
+      x,
+      y,
+      w,
+      h,
+      rot,
+      bounds
+    }
+  };
+}
+
 const parseSVGPathToPolygon = (value: string): Polygon | MultiPolygon => {
   const doc = parseSVGXML(value);
 
@@ -151,6 +215,8 @@ export const parseSVGSelector = <T extends Shape>(valueOrSelector: SVGSelector |
     return parseSVGEllipse(value) as unknown as T;
   else if (value.includes("<line "))
     return parseSVGLine(value) as unknown as T;
+  else if (value.includes('<rect '))
+    return parseSVGRect(value) as unknown as T;
   else 
     throw 'Unsupported SVG shape: ' + value;
 }
@@ -166,6 +232,21 @@ export const serializeSVGSelector = (shape: Shape): SVGSelector => {
   let value: string | undefined;
 
   switch (shape.type) {
+    case ShapeType.RECTANGLE: {
+      const geom = shape.geometry as RectangleGeometry;
+      const { x, y, w, h, rot } = geom;
+
+      if (!rot) {
+        value = `<svg><rect x="${x}" y="${y}" width="${w}" height="${h}" /></svg>`;
+      } else {
+        const cx = x + w / 2;
+        const cy = y + h / 2;
+        const angle = ((rot ?? 0) * 180) / Math.PI;
+
+        value = `<svg><rect x="${x}" y="${y}" width="${w}" height="${h}" transform="rotate(${angle} ${cx} ${cy})" /></svg>`;
+      }
+      break;
+    }
     case ShapeType.POLYGON: {
       const geom = shape.geometry as PolygonGeometry;
       const { points } = geom;
