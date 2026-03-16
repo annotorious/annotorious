@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/core",
-  "version": "3.7.22",
+  "version": "3.8.0",
   "description": "Annotorious core types and functions",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -39,8 +39,8 @@
   "dependencies": {
     "dequal": "^2.0.3",
     "nanoevents": "^9.1.0",
-    "nanoid": "^5.1.6",
-    "nanostores": "^1.1.1",
+    "nanoid": "^5.1.7",
+    "nanostores": "^1.2.0",
     "uuid": "^13.0.0"
   }
 }
