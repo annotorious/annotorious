@@ -1,4 +1,4 @@
-import type { Bounds, RectangleGeometry } from '../../../model';
+import type { RectangleGeometry } from '../../../model';
 
 /**
  * Rotates a point around a center by the given angle (in rad).

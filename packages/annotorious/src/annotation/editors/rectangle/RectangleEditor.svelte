@@ -47,6 +47,10 @@
       // Snap to 10 degrees if SHIFT is held
       if (shiftPressed)
         rot = snapAngle(rot);
+
+      // Normalizes the angle to be strictly between 0 and 2π
+      const TWO_PI = 2 * Math.PI;
+      rot = ((rot % TWO_PI) + TWO_PI) % TWO_PI;
     } else if (handle === 'SHAPE') {
       // Moving the entire shape - translate it without rotation change
       x += dx;
@@ -172,7 +176,7 @@
   </defs>
 
   <!-- Rotation handle -->
-  <g>
+  <g class="a9s-rotation-handle-group">
     <line
       class="a9s-rotation-handle-line-bg"
       x1={rotatedCorners[0][0] + (rotatedCorners[1][0] - rotatedCorners[0][0]) / 2}
