@@ -420,13 +420,14 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
   }
 
   const setSelected = (selection: Selection) => {
-    const nexSelectedtIds = new Set(selection.selected.map(s => s.id));
+    const nextEditableSelectedtIds = 
+      new Set(selection.selected.filter(s => s.editable).map(s => s.id));
 
     const toSelect = selection.selected
       .filter(({ id }) => !selectedIds.has(id))
 
     const toDeselect = [...selectedIds]
-      .filter(id => !nexSelectedtIds.has(id));
+      .filter(id => !nextEditableSelectedtIds.has(id));
 
     toSelect.forEach(({ id, editable }) => {
       if (editable) {
@@ -447,7 +448,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
     toDeselect.forEach(id => redrawAnnotation(id, { hovered: id === hovered }));
     
-    selectedIds = nexSelectedtIds;
+    selectedIds = nextEditableSelectedtIds;
     renderer.render(graphics);
   }
 
