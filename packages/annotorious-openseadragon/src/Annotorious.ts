@@ -247,8 +247,9 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
   }
 
   const setDrawingMode = (mode: DrawingMode) => {
-    drawingMode = mode;
-    drawingLayer.$set({ preferredDrawingMode: mode });
+    // Just being a bit defensive on the outside API
+    drawingMode = mode || (isTouch ? 'drag' : 'click');
+    drawingLayer.$set({ preferredDrawingMode: drawingMode });
   }
 
   const setFilter = (filter: Filter<I> | undefined) => {

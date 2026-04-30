@@ -46,7 +46,7 @@
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tsconfig/svelte": "^5.0.8",
     "@types/rbush": "^4.0.0",
-    "jsdom": "^28.1.0",
+    "jsdom": "^29.1.0",
     "svelte": "^4.2.20",
     "svelte-preprocess": "^6.0.3",
     "typescript": "^5.9.3",
