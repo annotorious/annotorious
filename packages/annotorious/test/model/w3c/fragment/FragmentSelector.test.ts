@@ -68,5 +68,42 @@ describe('parseFragmentSelector', () => {
     } catch (error) {
       expect((error as Error).message.startsWith('Not a MediaFragment')).toBeTruthy();
     }
-  })
+  });
+
+  it('should reject malformed coordinate values rather than silently truncate them', () => {
+    expect(() => parseFragmentSelector('xywh=pixel:10abc,20def,30ghi,40jkl'))
+      .toThrow(/Not a MediaFragment/);
+  });
+
+  it('should parse adversarial input in bounded time', () => {
+    const payload = 'xywh='.repeat(16000) + '\nxywh=1,2,3,4';
+
+    const start = performance.now();
+    try {
+      parseFragmentSelector(payload);
+    } catch {
+      // Rejection is the correct outcome; what matters is the bounded time.
+    }
+    const elapsed = performance.now() - start;
+
+    expect(elapsed).toBeLessThan(50);
+  });
+
+  it('should parse decimal coordinates', () => {
+    const { geometry: { x, y, w, h } } = parseFragmentSelector('xywh=10.5,20.25,30,40');
+
+    expect(x).toBe(10.5);
+    expect(y).toBe(20.25);
+    expect(w).toBe(30);
+    expect(h).toBe(40);
+  });
+
+  it('should parse a URI fragment with #xywh=', () => {
+    const { geometry: { x, y, w, h } } = parseFragmentSelector('https://example.com/image.jpg#xywh=10,20,30,40');
+
+    expect(x).toBe(10);
+    expect(y).toBe(20);
+    expect(w).toBe(30);
+    expect(h).toBe(40);
+  });
 });

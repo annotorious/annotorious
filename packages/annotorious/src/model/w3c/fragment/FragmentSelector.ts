@@ -11,6 +11,23 @@ export interface FragmentSelector {
 
 }
 
+const NUMBER = '-?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?';
+
+// Anchored, numeric-only pattern. Avoids the broad lazy + nested quantifier
+// shapes that allowed pathological backtracking on adversarial input.
+const XYWH_RE = new RegExp(
+  `^xywh=(?:(pixel|percent):)?(${NUMBER}),(${NUMBER}),(${NUMBER}),(${NUMBER})$`,
+  'i'
+);
+
+// Strip everything up to and including the first '#xywh=' for URI-style inputs
+// like "https://example.org/image.jpg#xywh=...". Returns the bare fragment when
+// no hash is present.
+const stripHash = (s: string): string => {
+  const idx = s.indexOf('#xywh=');
+  return idx < 0 ? s : s.slice(idx + 1);
+}
+
 export const isFragmentSelector = (
   selector: any
 ): boolean => {
@@ -18,11 +35,8 @@ export const isFragmentSelector = (
     return true;
 
   if (typeof selector === 'string') {
-    const hashIndex = selector.indexOf('#');
-    if (hashIndex < 0) return false;
-
-    const xywh = /#xywh(?:=(?:pixel:|percent:)?)(.+?),(.+?),(.+?),(.+)$/i;
-    return xywh.test(selector);
+    if (selector.indexOf('#xywh=') < 0) return false;
+    return XYWH_RE.test(stripHash(selector));
   }
 
   return false;
@@ -32,21 +46,20 @@ export const parseFragmentSelector = (
   fragmentOrSelector: FragmentSelector | string,
   invertY = false
 ): Rectangle => {
-  const fragment =
+  const raw =
     typeof fragmentOrSelector === 'string' ? fragmentOrSelector : fragmentOrSelector.value;
 
-  const regex = /(xywh)=(?:(pixel|percent):)?:?(.+?),(.+?),(.+?),(.+)*/g;
-  const matches = [...fragment.matchAll(regex)][0];
+  const fragment = stripHash(raw);
 
-  if (!matches) throw new Error('Not a MediaFragment: ' + fragment);
+  const matches = XYWH_RE.exec(fragment);
 
-  const [_, prefix, unit, a, b, c, d] = matches;
+  if (!matches) throw new Error('Not a MediaFragment: ' + raw);
 
-  if (prefix !== 'xywh') throw new Error('Unsupported MediaFragment: ' + fragment);
+  const [, unit, a, b, c, d] = matches;
 
   if (unit && unit !== 'pixel') throw new Error(`Unsupported MediaFragment unit: ${unit}`);
 
-  const [x, y, w, h] = [a, b, c, d].map(parseFloat);
+  const [x, y, w, h] = [a, b, c, d].map(Number);
 
   return {
     type: ShapeType.RECTANGLE,
