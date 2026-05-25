@@ -63,6 +63,11 @@ export const createStore = <T extends Annotation>() => {
     });
   }
 
+  const insertOneAnnotation = (annotation: T) => {
+    annotationIndex.set(annotation.id, annotation);
+    annotation.bodies.forEach(b => bodyIndex.set(b.id, annotation.id));
+  }
+
   const addAnnotation = (annotation: Partial<T>, origin = Origin.LOCAL) => {
     const existing = annotation.id && annotationIndex.get(annotation.id);
 
@@ -71,8 +76,7 @@ export const createStore = <T extends Annotation>() => {
     } else {
       const sanitized = sanitize(annotation);
 
-      annotationIndex.set(sanitized.id, sanitized);
-      sanitized.bodies.forEach(b => bodyIndex.set(b.id, sanitized.id));
+      insertOneAnnotation(sanitized);
       emit(origin, { created: [sanitized] });
     }
   }
@@ -143,10 +147,7 @@ export const createStore = <T extends Annotation>() => {
 
     const updated = toUpdate.map(a => updateOneAnnotation(a, origin)!).filter(Boolean);
 
-    toAdd.forEach(annotation => {
-      annotationIndex.set(annotation.id, annotation);
-      annotation.bodies.forEach(b => bodyIndex.set(b.id, annotation.id));
-    });
+    toAdd.forEach(insertOneAnnotation);
 
     emit(origin, { created: toAdd, updated });
   }
@@ -193,10 +194,7 @@ export const createStore = <T extends Annotation>() => {
       annotationIndex.clear();
       bodyIndex.clear();
 
-      sanitized.forEach(annotation => {
-        annotationIndex.set(annotation.id, annotation);
-        annotation.bodies.forEach(b => bodyIndex.set(b.id, annotation.id));
-      });
+      sanitized.forEach(insertOneAnnotation);
 
       emit(origin, { created: sanitized, deleted });
     } else {
@@ -209,13 +207,36 @@ export const createStore = <T extends Annotation>() => {
       if (existing.length > 0)
         throw Error(`Bulk insert would overwrite the following annotations: ${existing.map(a => a.id).join(', ')}`);
 
-      sanitized.forEach(annotation => {
-        annotationIndex.set(annotation.id, annotation);
-        annotation.bodies.forEach(b => bodyIndex.set(b.id, annotation.id));
-      });
+      sanitized.forEach(insertOneAnnotation);
 
       emit(origin, { created: sanitized });
     }
+  }
+
+  const syncAnnotations = (annotations: Partial<T>[], origin = Origin.LOCAL) => {
+    const sanitized = annotations.map(sanitize);
+
+    const incomingIds = new Set(sanitized.map(a => a.id));
+
+    const { toAdd, toUpdate } = sanitized.reduce<{ toAdd: T[], toUpdate: T[] }>((agg, annotation) => {
+      const exists = Boolean(annotationIndex.get(annotation.id));
+      if (exists) {
+        return { ...agg, toUpdate: [...agg.toUpdate, annotation] };
+      } else {
+        return { ...agg, toAdd: [...agg.toAdd, annotation] };
+      }
+    }, { toAdd: [], toUpdate: [] });
+
+    const deleted = [...annotationIndex.keys()]
+      .filter(id => !incomingIds.has(id))
+      .map(id => deleteOneAnnotation(id)!)
+      .filter(Boolean);
+
+    const updated = toUpdate.map(a => updateOneAnnotation(a)!).filter(Boolean);
+
+    toAdd.forEach(insertOneAnnotation);
+
+    emit(origin, { created: toAdd, updated, deleted });
   }
 
   const deleteOneAnnotation = (annotationOrId: T | string) => {
@@ -410,6 +431,7 @@ export const createStore = <T extends Annotation>() => {
     getAnnotation,
     getBody,
     observe,
+    syncAnnotations,
     unobserve,
     updateAnnotation,
     updateBody,

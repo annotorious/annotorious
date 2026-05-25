@@ -169,9 +169,18 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       if (failed.length > 0)
         console.warn(`Discarded ${failed.length} invalid annotations`, failed);
 
-      store.bulkAddAnnotations(parsed, replace, Origin.REMOTE);
+      if (replace) {
+        store.syncAnnotations(parsed, Origin.REMOTE);
+      } else {
+        store.bulkAddAnnotations(parsed, false, Origin.REMOTE);
+      }
     } else {
-      store.bulkAddAnnotations(annotations.map(reviveDates<I>), replace, Origin.REMOTE);
+      const mapped = annotations.map(reviveDates<I>);
+      if (replace) {
+        store.syncAnnotations(mapped, Origin.REMOTE);
+      } else {
+        store.bulkAddAnnotations(mapped, false, Origin.REMOTE);
+      }
     }
   }
 
