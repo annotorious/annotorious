@@ -29,7 +29,11 @@ const isListEqual = (listA: any[], listB: any[]) =>
   listA.every(a => listA.includes(a)) && listB.every(b => listA.includes(b));
 
 // This client's presence key
-export const PRESENCE_KEY = nanoid();
+if (!globalThis.ANNOTORIOUS_PRESENCE_KEY) {
+  // only set once per globalThis
+  globalThis.ANNOTORIOUS_PRESENCE_KEY = nanoid();
+}
+export const PRESENCE_KEY = globalThis.ANNOTORIOUS_PRESENCE_KEY;
 
 export const createPresenceState = (
   appearanceProvider: AppearanceProvider = createDefaultAppearanceProvider()
