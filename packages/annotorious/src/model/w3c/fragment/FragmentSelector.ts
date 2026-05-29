@@ -11,6 +11,10 @@ export interface FragmentSelector {
 
 }
 
+const number = '-?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?';
+
+const MAX_FRAGMENT_LENGTH = 512; // ReDoS guard
+
 export const isFragmentSelector = (
   selector: any
 ): boolean => {
@@ -18,10 +22,15 @@ export const isFragmentSelector = (
     return true;
 
   if (typeof selector === 'string') {
+    if (selector.length > MAX_FRAGMENT_LENGTH) return false;
+
     const hashIndex = selector.indexOf('#');
     if (hashIndex < 0) return false;
 
-    const xywh = /#xywh(?:=(?:pixel:|percent:)?)(.+?),(.+?),(.+?),(.+)$/i;
+    const xywh = new RegExp(
+      `#xywh=((?:pixel|percent):)?(${number}),(${number}),(${number}),(${number})$`,
+      'i');
+
     return xywh.test(selector);
   }
 
@@ -35,8 +44,13 @@ export const parseFragmentSelector = (
   const fragment =
     typeof fragmentOrSelector === 'string' ? fragmentOrSelector : fragmentOrSelector.value;
 
-  const regex = /(xywh)=(?:(pixel|percent):)?:?(.+?),(.+?),(.+?),(.+)*/g;
-  const matches = [...fragment.matchAll(regex)][0];
+  if (fragment.length > MAX_FRAGMENT_LENGTH) throw new Error('Fragment too long: ' + fragment);
+
+  const regex = new RegExp(
+    `(xywh)=((?:pixel|percent))?:?(${number}),(${number}),(${number}),(${number})$`,
+  );
+  
+  const matches = regex.exec(fragment);
 
   if (!matches) throw new Error('Not a MediaFragment: ' + fragment);
 
