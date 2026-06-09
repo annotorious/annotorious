@@ -37,7 +37,13 @@ export const insertSVGNamespace = (originalDoc: Document): Element => {
 export const parseSVGXML = (value: string): Element => {
   const parser = new DOMParser();
 
-  const doc = parser.parseFromString(value, 'image/svg+xml');
+  // Parser assumes an <svg /> root element, but W3C spec also 
+  // allows just the shape element, without SVG doc.
+  const wrapped = value.trimStart().startsWith('<svg')
+    ? value
+    : `<svg xmlns="${SVG_NAMESPACE}">${value}</svg>`;
+
+  const doc = parser.parseFromString(wrapped, 'image/svg+xml');
 
   // SVG needs a namespace declaration - check if it's set or insert if not
   const isPrefixDeclared = doc.lookupPrefix(SVG_NAMESPACE); // SVG declared via prefix

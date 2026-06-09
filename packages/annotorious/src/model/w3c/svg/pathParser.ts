@@ -163,7 +163,6 @@ const parsePathCommands = (d: string) => {
   const commands: PathCommand[] = [];
   const cleanPath = d.replace(/,/g, ' ').trim();
   
-  // Updated regex to include H and V commands
   const commandRegex = /([MmLlHhVvCcZz])\s*([^MmLlHhVvCcZz]*)/g;
   let match;
   
@@ -171,12 +170,33 @@ const parsePathCommands = (d: string) => {
     const [, commandLetter, argsString] = match;
     const args = argsString.trim() === '' ? [] : 
       argsString.trim().split(/\s+/).map(Number).filter(n => !isNaN(n));
-    
-    commands.push({
-      type: commandLetter,
-      args
-    });
+
+    const step = argStep(commandLetter);
+
+    if (step === 0 || args.length <= step) {
+      // Z or single-instance command
+      commands.push({ type: commandLetter, args });
+    } else {
+      // Repeated commands
+      for (let i = 0; i < args.length; i += step) {
+        const impliedType = i === 0 ? commandLetter
+          : commandLetter === 'M' ? 'L'
+          : commandLetter === 'm' ? 'l'
+          : commandLetter;
+        commands.push({ type: impliedType, args: args.slice(i, i + step) });
+      }
+    }
   }
   
   return commands;
+}
+
+const argStep = (cmd: string): number => {
+  switch (cmd.toUpperCase()) {
+    case 'M': case 'L': return 2;
+    case 'H': case 'V': return 1;
+    case 'C': return 6;
+    case 'Z': return 0;
+    default:  return 2;
+  }
 }
