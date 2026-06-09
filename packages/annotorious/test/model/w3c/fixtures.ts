@@ -1,4 +1,4 @@
-export const annotations = [{
+export const ANNOTATIONS = [{
   '@context': 'http://www.w3.org/ns/anno.jsonld',
   id: 'http://www.example.com/annotation/95f9044c-73f5-4cef-82fb-2b3452bb75b9',
   type: 'Annotation',
@@ -147,3 +147,44 @@ export const annotations = [{
     }
   }
 }];
+
+// Slightly modified off an existing example from the KNAW Globalise project
+export const MULTI_FORMAT_ANNOTATION = {
+  type: 'Annotation',
+  id: 'https://data.globalise.huygens.knaw.nl/example/0001#word_01',
+  motivation: 'supplementing',
+  textGranularity: 'word',
+  body: [{
+    type: 'TextualBody',
+    value: 'example transcription'
+  }],
+  target: [{
+    id: 'https://data.globalise.huygens.knaw.nl/example/0002#line_08',
+    type: 'Annotation'
+  },{
+    type: 'SpecificResource',
+    source: {
+      id: 'https://data.globalise.huygens.knaw.nl/example/annotations:transcriptions:01#page-htr',
+      type: [
+        'DigitalObject',
+        'Annotation'
+      ]
+    },
+    selector: [{
+      type: 'TextQuoteSelector',
+      exact: 'example transcription',
+      suffix: ' in context'
+    },{
+      type: 'TextPositionSelector',
+      start: 0,
+      end: 21
+    }]
+  },{
+    type: 'SpecificResource',
+    source: 'https://data.globalise.huygens.knaw.nl/example/canvas:NL-HaNA_1.04.02_1053_0386',
+    selector: {
+      type: 'SvgSelector',
+      value: '\u003Cpath d=\"M2114,1211 2164,1207 2214,1203 2267,1203 2276,1203 2273,1248 2267,1248 2218,1248 2168,1252 2118,1256z\"/\u003E'
+    }
+  }]
+};

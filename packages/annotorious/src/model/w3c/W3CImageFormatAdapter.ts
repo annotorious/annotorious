@@ -33,6 +33,22 @@ export const W3CImageFormat = (
   return { parse, serialize }
 }
 
+const isSupportedSelector = (selector: any): boolean =>
+  selector?.type === 'SvgSelector' ||
+  selector?.type === 'FragmentSelector' ||
+  isFragmentSelector(selector);
+
+const isSupportedTarget = (target: any): boolean => {
+  if (typeof target === 'string')
+    return isFragmentSelector(target); // Plain string fragment selector
+
+  const selector = Array.isArray(target.selector)
+    ? target.selector.find(isSupportedSelector)
+    : target.selector;
+
+  return isSupportedSelector(selector);
+}
+
 export const parseW3CImageAnnotation = (
   annotation: W3CAnnotation, 
   opts: W3CImageFormatAdapterOpts = { strict: true, invertY: false }
@@ -49,8 +65,15 @@ export const parseW3CImageAnnotation = (
 
   const bodies = parseW3CBodies(body || [], annotationId);
 
-  const w3cTarget = Array.isArray(annotation.target) 
-    ? annotation.target[0] : annotation.target;
+  const w3cTarget = Array.isArray(annotation.target)
+    ? annotation.target.find(isSupportedTarget)
+    : annotation.target;
+
+  if (!w3cTarget) {
+    return {
+      error: Error(`Unsupported target(s): ${JSON.stringify(w3cTarget)}`)
+    };
+  }
 
   const w3cSelector = 
     typeof w3cTarget === 'string' ? w3cTarget :

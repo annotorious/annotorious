@@ -3,6 +3,7 @@ import { W3CAnnotation } from '@annotorious/core';
 import { 
   parseW3CImageAnnotation, 
   type Polyline, 
+  PolylineGeometry, 
   type RectangleGeometry, 
   serializeW3CImageAnnotation, 
   ShapeType, 
@@ -11,12 +12,11 @@ import {
   type W3CImageSelector 
 } from '../../../src/model';
 
-import { annotations } from './fixtures';
+import { ANNOTATIONS, MULTI_FORMAT_ANNOTATION } from './fixtures';
 
 describe('parseW3CImageAnnotation', () => {
   it('should parse the sample annotations correctly', () => {
-    const parsed = (annotations as W3CAnnotation[]).map(a => parseW3CImageAnnotation(a));
-
+    const parsed = (ANNOTATIONS as W3CAnnotation[]).map(a => parseW3CImageAnnotation(a));
     expect(parsed.some(r => r.error)).toBeFalsy();
     
     const [
@@ -77,7 +77,7 @@ describe('parseW3CImageAnnotation', () => {
 
 describe('serializeW3CImageAnnotation', () => {
   it('should serialize the sample annotations correctly', () => {
-    const parsed = (annotations as W3CAnnotation[]).map(a => parseW3CImageAnnotation(a));
+    const parsed = (ANNOTATIONS as W3CAnnotation[]).map(a => parseW3CImageAnnotation(a));
 
     const core = parsed.map(result => result.parsed!).filter(Boolean);
     expect(core.length).toBe(parsed.length);
@@ -85,7 +85,7 @@ describe('serializeW3CImageAnnotation', () => {
     const serialized = core.map(annotation => serializeW3CImageAnnotation(annotation, 'http://www.example.com/source/1'));
 
     serialized.forEach((a, idx) => {
-      const e = annotations[idx];
+      const e = ANNOTATIONS[idx];
       expect(a.id).toBe(e.id);
       expect('bodies' in a).toBeFalsy();
     })
@@ -143,6 +143,29 @@ describe('serializeW3CImageAnnotation', () => {
 
     expect(selector.type).toBe('SvgSelector');
     expect(selector.value).toContain('<rect x="10" y="20" width="100" height="50" transform="rotate(45 60 45)"');
+  });
+
+  it('should handle the multi-format annotation correctly', () => {
+    const result = ([MULTI_FORMAT_ANNOTATION] as unknown as W3CAnnotation[]).map(a => parseW3CImageAnnotation(a));
+
+    expect(result.length).toBe(1);
+    expect(result[0].error).toBeFalsy();
+    expect(result[0].parsed).toBeDefined();
+
+    const { parsed } = result[0];
+    const selector = parsed?.target.selector;
+    expect(selector).toBeDefined();
+
+    expect(selector?.type).toBe(ShapeType.POLYLINE);
+
+    const geom = selector!.geometry as PolylineGeometry;
+    expect(geom.closed).toBeTruthy();
+    expect(geom.points.length).toBe(10);
+
+    expect(geom.bounds.minX).toBe(2114);
+    expect(geom.bounds.minY).toBe(1203);
+    expect(geom.bounds.maxX).toBe(2276);
+    expect(geom.bounds.maxY).toBe(1256);
   });
 });
 
