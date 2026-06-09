@@ -52,7 +52,7 @@
     "typescript": "^5.9.3",
     "vite": "^5.4.21",
     "vite-plugin-dts": "^4.5.4",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.6"
   },
   "dependencies": {
     "@annotorious/core": "3.8.3",
