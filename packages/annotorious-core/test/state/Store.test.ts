@@ -96,27 +96,6 @@ describe('store', () => {
     expect(updatedAnnotation?.bodies.map(b => b.id)).toContain('body-2');
   });
 
-  it('should properly run bulkAddAnnotation', () => {
-    const store = createStore();
-
-    const newAnnotations = [
-      annotation,
-      {
-        id: 'annotation-2',
-        target: {
-          annotation: 'annotation-2',
-          selector: {},
-        },
-        bodies: [],
-      },
-    ];
-
-    store.bulkAddAnnotations(newAnnotations);
-
-    expect(store.getAnnotation('annotation-1')).toBeDefined();
-    expect(store.getAnnotation('annotation-2')).toBeDefined();
-  });
-
   it('should properly run deleteAnnotation', () => {
     const store = createStore();
     store.addAnnotation(annotation);
@@ -262,7 +241,7 @@ describe('store', () => {
 
     it('should emit updated for annotations present in both store and input', () => {
       const store = createStore();
-      store.bulkAddAnnotations([existing1, existing2]);
+      store.syncAnnotations([existing1, existing2]);
 
       const mockObserver = vi.fn();
       store.observe(mockObserver);
@@ -279,7 +258,7 @@ describe('store', () => {
 
     it('should emit deleted for annotations only in store', () => {
       const store = createStore();
-      store.bulkAddAnnotations([existing1, existing2]);
+      store.syncAnnotations([existing1, existing2]);
 
       const mockObserver = vi.fn();
       store.observe(mockObserver);
@@ -296,7 +275,7 @@ describe('store', () => {
 
     it('should emit a combined changeset for mixed create/update/delete', () => {
       const store = createStore();
-      store.bulkAddAnnotations([existing1, existing2]);
+      store.syncAnnotations([existing1, existing2]);
 
       const mockObserver = vi.fn();
       store.observe(mockObserver);

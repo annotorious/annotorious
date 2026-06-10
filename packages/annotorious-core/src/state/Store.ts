@@ -185,34 +185,6 @@ export const createStore = <T extends Annotation>() => {
     emit(origin, { deleted: all });
   }
 
-  const bulkAddAnnotations = (annotations: Partial<T>[], replace = true, origin = Origin.LOCAL) => {
-    const sanitized = annotations.map(sanitize);
-
-    if (replace) {
-      // Delete existing first
-      const deleted = [...annotationIndex.values()];
-      annotationIndex.clear();
-      bodyIndex.clear();
-
-      sanitized.forEach(insertOneAnnotation);
-
-      emit(origin, { created: sanitized, deleted });
-    } else {
-      // Don't allow overwriting of existing annotations
-      const existing = annotations.reduce((all, next) => {
-        const existing = next.id && annotationIndex.get(next.id);
-        return existing ? [...all, existing ] : all;
-      }, [] as T[]);
-
-      if (existing.length > 0)
-        throw Error(`Bulk insert would overwrite the following annotations: ${existing.map(a => a.id).join(', ')}`);
-
-      sanitized.forEach(insertOneAnnotation);
-
-      emit(origin, { created: sanitized });
-    }
-  }
-
   const syncAnnotations = (annotations: Partial<T>[], origin = Origin.LOCAL) => {
     const sanitized = annotations.map(sanitize);
 
@@ -418,7 +390,6 @@ export const createStore = <T extends Annotation>() => {
     addAnnotation,
     addBody,
     all,
-    bulkAddAnnotations,
     bulkDeleteAnnotations,
     bulkDeleteBodies,
     bulkUpdateAnnotations,

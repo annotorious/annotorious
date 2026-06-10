@@ -46,13 +46,13 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   getUser(): User;
 
-  loadAnnotations(url: string, replace?: boolean): Promise<E[]>;
+  loadAnnotations(url: string): Promise<E[]>;
 
   redo(): void;
 
   removeAnnotation(arg: Partial<E> | string): E | undefined;
 
-  setAnnotations(annotations: Partial<E>[], replace?: boolean): void;
+  setAnnotations(annotations: Partial<E>[]): void;
 
   setFilter(filter: Filter<I> | undefined): void;
 
@@ -136,11 +136,11 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       : selected as unknown as E[];
   }
 
-  const loadAnnotations = (url: string, replace = true) =>
+  const loadAnnotations = (url: string) =>
     fetch(url)
       .then((response) => response.json())
       .then((annotations) => {
-        setAnnotations(annotations, replace);
+        setAnnotations(annotations);
         return annotations;
       });
 
@@ -161,7 +161,7 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
-  const setAnnotations = (annotations: E[], replace = true) => {
+  const setAnnotations = (annotations: E[]) => {
     if (adapter) {
       const parseFn = adapter.parseAll || parseAll(adapter);
       const { parsed, failed } = parseFn(annotations);
@@ -169,18 +169,9 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       if (failed.length > 0)
         console.warn(`Discarded ${failed.length} invalid annotations`, failed);
 
-      if (replace) {
-        store.syncAnnotations(parsed, Origin.REMOTE);
-      } else {
-        store.bulkAddAnnotations(parsed, false, Origin.REMOTE);
-      }
+      store.syncAnnotations(parsed, Origin.REMOTE);
     } else {
-      const mapped = annotations.map(reviveDates<I>);
-      if (replace) {
-        store.syncAnnotations(mapped, Origin.REMOTE);
-      } else {
-        store.bulkAddAnnotations(mapped, false, Origin.REMOTE);
-      }
+      store.syncAnnotations(annotations.map(reviveDates<I>), Origin.REMOTE);
     }
   }
 
