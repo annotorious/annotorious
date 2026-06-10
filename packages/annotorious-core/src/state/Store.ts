@@ -133,20 +133,43 @@ export const createStore = <T extends Annotation>() => {
       emit(origin, { updated });
   }
 
-  const bulkUpsertAnnotations = (annotations: Partial<T>[], origin = Origin.LOCAL) => {
+  /**
+   * Sanitizes the input and splits it into "new to the store" vs. "already exists in the store".
+   * Shared by `bulkUpsertAnnotations` and `syncAnnotations`.
+   */
+  const partitionAddAndUpdate = (annotations: Partial<T>[]): { toAdd: T[], toUpdate: T[] } => {
     const sanitized = annotations.map(sanitize);
 
-    const { toAdd, toUpdate } = sanitized.reduce<{ toAdd: T[], toUpdate: T[] }>((agg, annotation) => {
+    return sanitized.reduce<{ toAdd: T[], toUpdate: T[] }>((agg, annotation) => {
       const exists = Boolean(annotationIndex.get(annotation.id));
       if (exists) {
-        return {...agg, toUpdate: [...agg.toUpdate, annotation]};
+        return { ...agg, toUpdate: [...agg.toUpdate, annotation] };
       } else {
-        return {...agg, toAdd: [...agg.toAdd, annotation]}
+        return { ...agg, toAdd: [...agg.toAdd, annotation] };
       }
     }, { toAdd: [], toUpdate: [] });
+  }
+
+  /**
+   * Merges the given annotations into the store without touching anything else.
+   *
+   * For each input annotation:
+   * - if an annotation with the same id already exists, it is updated in place;
+   * - otherwise, it is inserted as a new annotation.
+   *
+   * Annotations already in the store whose ids are absent from the input are
+   * left untouched. Use this when you have a partial delta to apply on top of
+   * the current state — for example, when redoing a creation or undoing a
+   * deletion in the undo stack.
+   *
+   * Emits a single change event with `created` and `updated` populated.
+   *
+   * @see syncAnnotations for the "mirror this exact list" variant that also deletes.
+   */
+  const bulkUpsertAnnotations = (annotations: Partial<T>[], origin = Origin.LOCAL) => {
+    const { toAdd, toUpdate } = partitionAddAndUpdate(annotations);
 
     const updated = toUpdate.map(a => updateOneAnnotation(a, origin)!).filter(Boolean);
-
     toAdd.forEach(insertOneAnnotation);
 
     emit(origin, { created: toAdd, updated });
@@ -185,27 +208,36 @@ export const createStore = <T extends Annotation>() => {
     emit(origin, { deleted: all });
   }
 
+  /**
+   * Replaces the store's contents with the given annotations, preserving the
+   * identity of any annotation that survives the sync.
+   *
+   * For each annotation currently in the store:
+   * - if its id is in the input, the existing entry is updated in place — so
+   *   observers (including the selection state) keep their reference;
+   * - if its id is absent from the input, the entry is deleted.
+   *
+   * Annotations in the input that don't yet exist in the store are inserted.
+   *
+   * Use this when you have an authoritative full list of annotations and need
+   * the store to mirror it. Unlike `clear()` followed by a bulk insert, this
+   * preserves selection and any other state keyed on annotation id for
+   * annotations that survive.
+   *
+   * Emits a single change event with `created`, `updated`, and `deleted` populated.
+   *
+   * @see bulkUpsertAnnotations for the "merge in" variant that never deletes.
+   */
   const syncAnnotations = (annotations: Partial<T>[], origin = Origin.LOCAL) => {
-    const sanitized = annotations.map(sanitize);
+    const { toAdd, toUpdate } = partitionAddAndUpdate(annotations);
 
-    const incomingIds = new Set(sanitized.map(a => a.id));
-
-    const { toAdd, toUpdate } = sanitized.reduce<{ toAdd: T[], toUpdate: T[] }>((agg, annotation) => {
-      const exists = Boolean(annotationIndex.get(annotation.id));
-      if (exists) {
-        return { ...agg, toUpdate: [...agg.toUpdate, annotation] };
-      } else {
-        return { ...agg, toAdd: [...agg.toAdd, annotation] };
-      }
-    }, { toAdd: [], toUpdate: [] });
-
+    const incomingIds = new Set([...toAdd, ...toUpdate].map(a => a.id));
     const deleted = [...annotationIndex.keys()]
       .filter(id => !incomingIds.has(id))
       .map(id => deleteOneAnnotation(id)!)
       .filter(Boolean);
 
     const updated = toUpdate.map(a => updateOneAnnotation(a)!).filter(Boolean);
-
     toAdd.forEach(insertOneAnnotation);
 
     emit(origin, { created: toAdd, updated, deleted });
