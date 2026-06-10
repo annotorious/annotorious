@@ -46,13 +46,13 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   getUser(): User;
 
-  loadAnnotations(url: string): Promise<E[]>;
+  loadAnnotations(url: string, replace?: boolean): Promise<E[]>;
 
   redo(): void;
 
   removeAnnotation(arg: Partial<E> | string): E | undefined;
 
-  setAnnotations(annotations: Partial<E>[]): void;
+  setAnnotations(annotations: Partial<E>[], replace?: boolean): void;
 
   setFilter(filter: Filter<I> | undefined): void;
 
@@ -136,11 +136,11 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       : selected as unknown as E[];
   }
 
-  const loadAnnotations = (url: string) =>
+  const loadAnnotations = (url: string, replace = true) =>
     fetch(url)
       .then((response) => response.json())
       .then((annotations) => {
-        setAnnotations(annotations);
+        setAnnotations(annotations, replace);
         return annotations;
       });
 
@@ -161,7 +161,9 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     }
   }
 
-  const setAnnotations = (annotations: E[]) => {
+  const setAnnotations = (annotations: E[], replace = true) => {
+    const apply = replace ? store.syncAnnotations : store.bulkUpsertAnnotations;
+
     if (adapter) {
       const parseFn = adapter.parseAll || parseAll(adapter);
       const { parsed, failed } = parseFn(annotations);
@@ -169,9 +171,9 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       if (failed.length > 0)
         console.warn(`Discarded ${failed.length} invalid annotations`, failed);
 
-      store.syncAnnotations(parsed, Origin.REMOTE);
+      apply(parsed, Origin.REMOTE);
     } else {
-      store.syncAnnotations(annotations.map(reviveDates<I>), Origin.REMOTE);
+      apply(annotations.map(reviveDates<I>), Origin.REMOTE);
     }
   }
 
