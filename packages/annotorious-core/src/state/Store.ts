@@ -243,6 +243,17 @@ export const createStore = <T extends Annotation>() => {
     emit(origin, { created: toAdd, updated, deleted });
   }
 
+  /**
+   * @deprecated will be removed in a future version - use .syncAnnotations to replace, bulkUpsert to 
+   * bulk-add without replacing.
+   */
+  const bulkAddAnnotations = (annotations: Partial<T>[], replace = true, origin = Origin.LOCAL) => {
+    if (replace)
+      syncAnnotations(annotations, origin);
+    else
+      bulkUpsertAnnotations(annotations, origin);
+  }
+
   const deleteOneAnnotation = (annotationOrId: T | string) => {
     const id = typeof annotationOrId === 'string' ? annotationOrId : annotationOrId.id;
 
@@ -422,6 +433,7 @@ export const createStore = <T extends Annotation>() => {
     addAnnotation,
     addBody,
     all,
+    bulkAddAnnotations,
     bulkDeleteAnnotations,
     bulkDeleteBodies,
     bulkUpdateAnnotations,
