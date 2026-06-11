@@ -16,6 +16,7 @@
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined;
   export let viewer: OpenSeadragon.Viewer;
   export let visible = true;
+  export let polygonSimplificationTolerance = 1;
 
   const { store, hover, selection, viewport } = state;
 
@@ -156,7 +157,7 @@
       const { selector }  = a.target;
 
       if (selector.type === ShapeType.POLYGON) {
-        const shape = simplifyPolygon(selector as Polygon);
+        const shape = simplifyPolygon(selector as Polygon, polygonSimplificationTolerance);
         return {
           ...a,
           target: {
@@ -167,7 +168,7 @@
           }
         }
       } else if (selector.type === ShapeType.MULTIPOLYGON) {
-        const shape = simplifyMultiPolygon(selector as MultiPolygon);
+        const shape = simplifyMultiPolygon(selector as MultiPolygon, polygonSimplificationTolerance);
         return {
           ...a,
           target: {
