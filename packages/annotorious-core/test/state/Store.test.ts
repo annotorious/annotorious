@@ -96,27 +96,6 @@ describe('store', () => {
     expect(updatedAnnotation?.bodies.map(b => b.id)).toContain('body-2');
   });
 
-  it('should properly run bulkAddAnnotation', () => {
-    const store = createStore();
-
-    const newAnnotations = [
-      annotation,
-      {
-        id: 'annotation-2',
-        target: {
-          annotation: 'annotation-2',
-          selector: {},
-        },
-        bodies: [],
-      },
-    ];
-
-    store.bulkAddAnnotations(newAnnotations);
-
-    expect(store.getAnnotation('annotation-1')).toBeDefined();
-    expect(store.getAnnotation('annotation-2')).toBeDefined();
-  });
-
   it('should properly run deleteAnnotation', () => {
     const store = createStore();
     store.addAnnotation(annotation);
@@ -232,6 +211,85 @@ describe('store', () => {
     expect(inserted?.bodies).toBeDefined();
     expect(inserted?.bodies.length).toBe(0);
     expect(inserted?.target.annotation).toBe(autoId);
+  });
+
+  describe('syncAnnotations', () => {
+    const existing1 = {
+      id: 'sync-1',
+      target: { annotation: 'sync-1', selector: {} },
+      bodies: [],
+    };
+
+    const existing2 = {
+      id: 'sync-2',
+      target: { annotation: 'sync-2', selector: {} },
+      bodies: [],
+    };
+
+    it('should emit created for new annotations', () => {
+      const store = createStore();
+      const mockObserver = vi.fn();
+      store.observe(mockObserver);
+
+      store.syncAnnotations([existing1]);
+
+      expect(store.getAnnotation('sync-1')).toBeDefined();
+      expect(mockObserver.mock.calls[0][0].changes.created).toHaveLength(1);
+      expect(mockObserver.mock.calls[0][0].changes.updated).toHaveLength(0);
+      expect(mockObserver.mock.calls[0][0].changes.deleted).toHaveLength(0);
+    });
+
+    it('should emit updated for annotations present in both store and input', () => {
+      const store = createStore();
+      store.syncAnnotations([existing1, existing2]);
+
+      const mockObserver = vi.fn();
+      store.observe(mockObserver);
+
+      const updated1 = { ...existing1, bodies: [{ id: 'body-new', annotation: 'sync-1', value: 'hello' }] };
+      store.syncAnnotations([updated1, existing2]);
+
+      const changes = mockObserver.mock.calls[0][0].changes;
+      expect(changes.created).toHaveLength(0);
+      expect(changes.updated).toHaveLength(2);
+      expect(changes.updated.map((u: { newValue: Annotation }) => u.newValue.id)).toContain('sync-1');
+      expect(changes.deleted).toHaveLength(0);
+    });
+
+    it('should emit deleted for annotations only in store', () => {
+      const store = createStore();
+      store.syncAnnotations([existing1, existing2]);
+
+      const mockObserver = vi.fn();
+      store.observe(mockObserver);
+
+      store.syncAnnotations([existing1]);
+
+      const changes = mockObserver.mock.calls[0][0].changes;
+      expect(changes.created).toHaveLength(0);
+      expect(changes.updated).toHaveLength(1);
+      expect(changes.deleted).toHaveLength(1);
+      expect(changes.deleted[0].id).toBe('sync-2');
+      expect(store.getAnnotation('sync-2')).toBeUndefined();
+    });
+
+    it('should emit a combined changeset for mixed create/update/delete', () => {
+      const store = createStore();
+      store.syncAnnotations([existing1, existing2]);
+
+      const mockObserver = vi.fn();
+      store.observe(mockObserver);
+
+      const newAnnotation = { id: 'sync-3', target: { annotation: 'sync-3', selector: {} }, bodies: [] };
+      const updatedExisting1 = { ...existing1, bodies: [{ id: 'b1', annotation: 'sync-1', value: 'x' }] };
+
+      store.syncAnnotations([updatedExisting1, newAnnotation]);
+
+      const changes = mockObserver.mock.calls[0][0].changes;
+      expect(changes.created.map((a: Annotation) => a.id)).toContain('sync-3');
+      expect(changes.updated.map((u: { newValue: Annotation }) => u.newValue.id)).toContain('sync-1');
+      expect(changes.deleted.map((a: Annotation) => a.id)).toContain('sync-2');
+    });
   });
 
 });

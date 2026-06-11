@@ -86,7 +86,7 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>, history?:
     created && created.length > 0 && store.bulkDeleteAnnotations(created);
 
   const redoCreated = (created?: T[]) =>
-    created && created.length > 0 && store.bulkAddAnnotations(created, false);
+    created && created.length > 0 && store.bulkUpsertAnnotations(created);
 
   const undoUpdated = (updated?: Update<T>[]) =>
     updated && updated.length > 0 && store.bulkUpdateAnnotations(updated.map(({ oldValue }) => oldValue));
@@ -94,8 +94,8 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>, history?:
   const redoUpdated = (updated?: Update<T>[]) =>
     updated && updated.length > 0 && store.bulkUpdateAnnotations(updated.map(({ newValue }) => newValue));
 
-  const undoDeleted = (deleted?: T[]) => 
-    deleted && deleted.length > 0 && store.bulkAddAnnotations(deleted, false);
+  const undoDeleted = (deleted?: T[]) =>
+    deleted && deleted.length > 0 && store.bulkUpsertAnnotations(deleted);
 
   const redoDeleted = (deleted?: T[]) =>
     deleted && deleted.length > 0 && store.bulkDeleteAnnotations(deleted);

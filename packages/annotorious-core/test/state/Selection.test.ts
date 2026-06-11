@@ -30,7 +30,7 @@ describe('createSelectionState', () => {
 
   beforeEach(() => {
     store = createStore<Annotation>();
-    store.bulkAddAnnotations([testAnnotation1, testAnnotation2, testAnnotation3]);
+    store.syncAnnotations([testAnnotation1, testAnnotation2, testAnnotation3]);
     selectionState = createSelectionState(store);
   });
 
@@ -54,7 +54,29 @@ describe('createSelectionState', () => {
       expect(selectionState.isSelected(testAnnotation2)).toBe(true);
       expect(selectionState.isSelected(testAnnotation3)).toBe(false);
     });
-    
+
+  });
+
+  describe('syncAnnotations selection preservation', () => {
+
+    it('should preserve selection when the selected annotation survives a sync', () => {
+      selectionState.setSelected(testAnnotation1.id);
+      expect(selectionState.isSelected(testAnnotation1)).toBe(true);
+
+      store.syncAnnotations([testAnnotation1, testAnnotation2, testAnnotation3]);
+
+      expect(selectionState.isSelected(testAnnotation1)).toBe(true);
+    });
+
+    it('should clear selection when the selected annotation is removed by a sync', () => {
+      selectionState.setSelected(testAnnotation1.id);
+      expect(selectionState.isSelected(testAnnotation1)).toBe(true);
+
+      store.syncAnnotations([testAnnotation2, testAnnotation3]);
+
+      expect(selectionState.isEmpty()).toBe(true);
+    });
+
   });
 
 });

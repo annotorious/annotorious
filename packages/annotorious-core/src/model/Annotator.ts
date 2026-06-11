@@ -162,6 +162,8 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
   }
 
   const setAnnotations = (annotations: E[], replace = true) => {
+    const apply = replace ? store.syncAnnotations : store.bulkUpsertAnnotations;
+
     if (adapter) {
       const parseFn = adapter.parseAll || parseAll(adapter);
       const { parsed, failed } = parseFn(annotations);
@@ -169,9 +171,9 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
       if (failed.length > 0)
         console.warn(`Discarded ${failed.length} invalid annotations`, failed);
 
-      store.bulkAddAnnotations(parsed, replace, Origin.REMOTE);
+      apply(parsed, Origin.REMOTE);
     } else {
-      store.bulkAddAnnotations(annotations.map(reviveDates<I>), replace, Origin.REMOTE);
+      apply(annotations.map(reviveDates<I>), Origin.REMOTE);
     }
   }
 
