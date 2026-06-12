@@ -115,7 +115,8 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
       state, 
       viewer, 
       style: opts.style,
-      filter: undefined
+      filter: undefined,
+      polygonSimplificationTolerance: opts.polygonSimplificationTolerance
     }
   });
 
