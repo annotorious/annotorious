@@ -13,15 +13,17 @@ export type W3CImageFormatAdapter = FormatAdapter<ImageAnnotation, W3CImageAnnot
 
 export interface W3CImageFormatAdapterOpts {
 
-  strict: boolean;
+  strict?: boolean;
 
-  invertY: boolean;
+  invertY?: boolean;
+
+  miradorSafeSerialization?: boolean;
 
 }
 
 export const W3CImageFormat = (
   source: string,
-  opts: W3CImageFormatAdapterOpts = { strict: true, invertY: false }
+  opts: W3CImageFormatAdapterOpts = { strict: true }
 ): W3CImageFormatAdapter => {
 
   const parse = (serialized: W3CAnnotation) =>
@@ -51,7 +53,7 @@ const isSupportedTarget = (target: any): boolean => {
 
 export const parseW3CImageAnnotation = (
   annotation: W3CAnnotation, 
-  opts: W3CImageFormatAdapterOpts = { strict: true, invertY: false }
+  opts: W3CImageFormatAdapterOpts = { strict: true }
 ): ParseResult<ImageAnnotation> => {
   const annotationId = annotation.id || uuidv4();
 
@@ -112,7 +114,7 @@ export const parseW3CImageAnnotation = (
 export const serializeW3CImageAnnotation = (
   annotation: ImageAnnotation, 
   source: string,
-  opts: W3CImageFormatAdapterOpts = { strict: true, invertY: false }
+  opts: W3CImageFormatAdapterOpts = { strict: true }
 ): W3CImageAnnotation => {
   const { 
     selector, 
@@ -129,7 +131,7 @@ export const serializeW3CImageAnnotation = (
     if (selector.type === ShapeType.RECTANGLE && !(selector.geometry as RectangleGeometry).rot) {
       w3cSelector = serializeFragmentSelector(selector.geometry as RectangleGeometry);
     } else {
-      w3cSelector = serializeSVGSelector(selector);
+      w3cSelector = serializeSVGSelector(selector, opts.miradorSafeSerialization);
     }
   } catch (error) {
     if (opts.strict)

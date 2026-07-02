@@ -1,6 +1,12 @@
-import { boundsFromPoints, computeSVGPath, multipolygonElementToPath, ShapeType } from '../../core';
 import { parseSVGXML } from './SVG';
 import { svgPathToMultiPolygonElement, svgPathToPolyline } from './pathParser';
+import { 
+  boundsFromPoints, 
+  computeSVGPath, 
+  multipolygonElementToPath, 
+  pointsToPath, 
+  ShapeType 
+} from '../../core';
 import type { 
   Ellipse, 
   EllipseGeometry, 
@@ -228,7 +234,7 @@ const serializeMultiPolygon = (geom: MultiPolygonGeometry) => {
   return `<g>${paths.join('')}</g>`
 } 
 
-export const serializeSVGSelector = (shape: Shape): SVGSelector => {
+export const serializeSVGSelector = (shape: Shape, miradorSafeSerialization: boolean = false): SVGSelector => {
   let value: string | undefined;
 
   switch (shape.type) {
@@ -250,7 +256,11 @@ export const serializeSVGSelector = (shape: Shape): SVGSelector => {
     case ShapeType.POLYGON: {
       const geom = shape.geometry as PolygonGeometry;
       const { points } = geom;
-      value = `<svg><polygon points="${points.map((xy) => xy.join(',')).join(' ')}" /></svg>`;
+
+      // Mirador only supports <path>, not <polygon>
+      value = miradorSafeSerialization
+        ? `<svg><path d="${pointsToPath(points as [number, number][])}" /></svg>`
+        : `<svg><polygon points="${points.map((xy) => xy.join(',')).join(' ')}" /></svg>`;
       break;
     }
     case ShapeType.ELLIPSE: {
