@@ -213,7 +213,7 @@ export const parseSVGSelector = <T extends Shape>(valueOrSelector: SVGSelector |
 
   if (value.includes('<polygon points='))
     return parseSVGPolygon(value) as unknown as T;
-  else if (value.includes('<path ') && (value.includes(' C ') || !value.includes('Z')))
+  else if (value.includes('<path ') && (value.includes(' C ') || value.includes(' A ') || !value.includes('Z')))
     return parseSVGPathToPolyline(value) as unknown as T;
   else if (value.includes('<path '))
     return parseSVGPathToPolygon(value) as unknown as T;
