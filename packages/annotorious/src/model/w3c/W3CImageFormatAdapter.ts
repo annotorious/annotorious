@@ -17,8 +17,6 @@ export interface W3CImageFormatAdapterOpts {
 
   invertY?: boolean;
 
-  miradorSafeSerialization?: boolean;
-
 }
 
 export const W3CImageFormat = (
@@ -131,7 +129,7 @@ export const serializeW3CImageAnnotation = (
     if (selector.type === ShapeType.RECTANGLE && !(selector.geometry as RectangleGeometry).rot) {
       w3cSelector = serializeFragmentSelector(selector.geometry as RectangleGeometry);
     } else {
-      w3cSelector = serializeSVGSelector(selector, opts.miradorSafeSerialization);
+      w3cSelector = serializeSVGSelector(selector);
     }
   } catch (error) {
     if (opts.strict)
