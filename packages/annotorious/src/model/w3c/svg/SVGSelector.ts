@@ -227,6 +227,11 @@ export const parseSVGSelector = <T extends Shape>(valueOrSelector: SVGSelector |
     throw 'Unsupported SVG shape: ' + value;
 }
 
+// Mirador-specific workaround: serialize an ellipse to two semicircular arcs,
+// as reported here. https://github.com/ProjectMirador/mirador/issues/3875
+const ellipseToPath = (cx: number, cy: number, rx: number, ry: number): string =>
+  `M ${cx + rx},${cy} A ${rx},${ry} 0 1,1 ${cx - rx},${cy} A ${rx},${ry} 0 1,1 ${cx + rx},${cy} Z`;
+
 const serializeMultiPolygon = (geom: MultiPolygonGeometry) => {
   const paths = geom.polygons.map(elem =>
     `<path fill-rule="evenodd" d="${multipolygonElementToPath(elem)}" />`);
@@ -265,7 +270,12 @@ export const serializeSVGSelector = (shape: Shape, miradorSafeSerialization: boo
     }
     case ShapeType.ELLIPSE: {
       const geom = shape.geometry as EllipseGeometry;
-      value = `<svg><ellipse cx="${geom.cx}" cy="${geom.cy}" rx="${geom.rx}" ry="${geom.ry}" /></svg>`;
+      const { cx, cy, rx, ry } = geom;
+
+      // Mirador doesn't render <ellipse> outlines
+      value = miradorSafeSerialization
+        ? `<svg><path d="${ellipseToPath(cx, cy, rx, ry)}" /></svg>`
+        : `<svg><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" /></svg>`;
       break;
     }
     case ShapeType.MULTIPOLYGON: {
@@ -276,7 +286,11 @@ export const serializeSVGSelector = (shape: Shape, miradorSafeSerialization: boo
     case ShapeType.LINE: {
       const geom = shape.geometry as LineGeometry;
       const [[x1, y1], [x2, y2]] = geom.points;
-      value = `<svg><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" /></svg>`;
+
+      // To be safe: Mirador's <line> support is unconfirmed, but <path> is known to work
+      value = miradorSafeSerialization
+        ? `<svg><path d="M ${x1},${y1} L ${x2},${y2}" /></svg>`
+        : `<svg><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" /></svg>`;
       break;
     }
     case ShapeType.POLYLINE: {
