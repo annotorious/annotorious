@@ -25,9 +25,12 @@
     // new PolygonEditor. Old versions of Annotorious, however, 
     // won't yet forward the svgEl prop!
     if (svgEl) {
-      const { left, top } = svgEl.getBoundingClientRect();
-      const offsetX = evt.clientX - left;
-      const offsetY = evt.clientY - top;
+      // Convert screen px to element-local px so the input space matches
+      // elementToImage's offsetX-style contract when an ancestor CSS transform
+      // makes the bounding box differ from the layout box.
+      const { left, top, width, height } = svgEl.getBoundingClientRect();
+      const offsetX = (evt.clientX - left) * (svgEl.clientWidth / width);
+      const offsetY = (evt.clientY - top) * (svgEl.clientHeight / height);
 
       origin = transform.elementToImage(offsetX, offsetY);
     } else {
