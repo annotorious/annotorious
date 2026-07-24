@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import type { Shape } from '../../model';
   import type { Transform } from '../Transform';
+  import { getElementPoint } from '../utils';
 
   const dispatch = createEventDispatcher<{ grab: PointerEvent, release: PointerEvent, change: Shape }>();
 
@@ -25,13 +26,7 @@
     // new PolygonEditor. Old versions of Annotorious, however, 
     // won't yet forward the svgEl prop!
     if (svgEl) {
-      // Convert screen px to element-local px so the input space matches
-      // elementToImage's offsetX-style contract when an ancestor CSS transform
-      // makes the bounding box differ from the layout box.
-      const { left, top, width, height } = svgEl.getBoundingClientRect();
-      const offsetX = (evt.clientX - left) * (svgEl.clientWidth / width);
-      const offsetY = (evt.clientY - top) * (svgEl.clientHeight / height);
-
+      const [offsetX, offsetY] = getElementPoint(svgEl, evt);
       origin = transform.elementToImage(offsetX, offsetY);
     } else {
       const { offsetX, offsetY } = evt;

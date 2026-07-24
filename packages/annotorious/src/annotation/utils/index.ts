@@ -1,3 +1,4 @@
+export * from './pointer';
 export * from './responsive';
 export * from './styling';
 export * from './svg';
