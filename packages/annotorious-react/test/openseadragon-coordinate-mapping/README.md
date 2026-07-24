@@ -1,8 +1,8 @@
 # OpenSeadragon coordinate-mapping playground
 
 Run `npm run playground:osd` from the repository root. The page starts with a
-translated and scaled ancestor around the viewer, which is the condition that
-previously sent pointer coordinates to the wrong image position.
+translated and scaled ancestor around the viewer — the setup that previously
+sent pointer coordinates to the wrong image position.
 
 Verify these interactions with the transform both enabled and disabled:
 

@@ -42,11 +42,8 @@ export const addEventListeners = <T extends Annotation>(svg: SVGSVGElement, stor
 }
 
 export const getSVGPoint = (evt: PointerEvent, svg: SVGSVGElement) => {
-  // Maps the pointer position to image space proportionally via the bounding box
-  // and viewBox, which always equals the image's natural size. Deliberately avoids
-  // getScreenCTM: browsers disagree on whether CSS transforms on HTML ancestors are
-  // reflected in the CTM (e.g. WebKit bug 209220), which sends hit-tests to the
-  // wrong coordinates when the annotator is embedded in a CSS-transformed container.
+  // Same viewBox-based mapping as createSVGTransform in Transform.ts — see
+  // there for why getScreenCTM is avoided.
   const bbox = svg.getBoundingClientRect();
   const { width, height } = svg.viewBox.baseVal;
 
