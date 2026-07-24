@@ -97,10 +97,27 @@
     }
   }
 
-  // Coordinate transform, element offset to OSD image coordinates
+  // Convert a screen pointer position into the viewer's untransformed local
+  // coordinate system. This keeps OSD viewport mapping correct when the viewer
+  // sits inside a CSS-transformed ancestor.
+  const getViewerPoint = (evt: PointerEvent): OpenSeadragon.Point => {
+    const { left, top, width, height } = viewer.element.getBoundingClientRect();
+
+    return new OpenSeadragon.Point(
+      (evt.clientX - left) * (viewer.element.clientWidth / width),
+      (evt.clientY - top) * (viewer.element.clientHeight / height)
+    );
+  }
+
+  // Coordinate transform, viewer-local pixels to OSD image coordinates
   const toolTransform = (offsetX: number, offsetY: number): [number, number] => {
     const {x, y} = viewer.viewport.viewerElementToImageCoordinates(new OpenSeadragon.Point(offsetX, offsetY));
     return [x, y];
+  }
+
+  const eventToImage = (evt: PointerEvent): [number, number] => {
+    const { x, y } = getViewerPoint(evt);
+    return toolTransform(x, y);
   }
 
   const getCurrentScale = () => {
@@ -125,8 +142,7 @@
     const timeDifference = performance.now() - (grabbedAt || 0);
     if (timeDifference < 300) {
       // Click - check if another shape needs selecting
-      const { offsetX, offsetY } = evt.detail;
-      const [x, y] = toolTransform(offsetX, offsetY);
+      const [x, y] = eventToImage(evt.detail);
       const buffer = getHitTolerance();
 
       const hit = store.getAt(x, y, undefined, buffer);
@@ -142,8 +158,7 @@
   }
 
   const onPointerMove = (evt: PointerEvent) => {
-    const offsetXY = new OpenSeadragon.Point(evt.offsetX, evt.offsetY);
-    const pt = viewer.viewport.pointFromPixel(offsetXY);
+    const pt = viewer.viewport.pointFromPixel(getViewerPoint(evt));
     const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
 
     const buffer = getHitTolerance();
@@ -207,8 +222,7 @@
     const onPointerMove = (evt: PointerEvent) => {
       if (($selection as Selection).selected.length === 0) return;
 
-      const { offsetX, offsetY } = evt;
-      const pt = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(offsetX, offsetY));
+      const pt = viewer.viewport.pointFromPixel(getViewerPoint(evt));
       const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
       const buffer = getHitTolerance();
 

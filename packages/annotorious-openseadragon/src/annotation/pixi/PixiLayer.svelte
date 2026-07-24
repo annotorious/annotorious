@@ -36,22 +36,32 @@
 
   $: stage?.setVisible(visible);
 
-  // Helper
+  // Convert screen coordinates to the viewer's untransformed local coordinate
+  // system. OSD's viewport APIs expect these layout pixels, while PointerEvent
+  // offsets are inconsistent when an HTML ancestor is CSS-transformed.
+  const getViewerPoint = (evt: PointerEvent): OpenSeadragon.Point => {
+    const { left, top, width, height } = viewer.element.getBoundingClientRect();
+
+    return new OpenSeadragon.Point(
+      (evt.clientX - left) * (viewer.element.clientWidth / width),
+      (evt.clientY - top) * (viewer.element.clientHeight / height)
+    );
+  }
+
   const getImageXY = (xy: OpenSeadragon.Point): OpenSeadragon.Point => {
-    const offsetXY = new OpenSeadragon.Point(xy.x, xy.y);
-    const {x, y} = viewer.viewport.pointFromPixel(offsetXY);
+    const {x, y} = viewer.viewport.pointFromPixel(xy);
     return viewer.viewport.viewportToImageCoordinates(x, y);
   }
 
   const getHitTolerance= () => HIT_TOLERANCE_BASE / stage.getScale();
 
   const onCanvasPress = (evt: OpenSeadragon.CanvasPressEvent) => {
-    const { x, y } = evt.position;
+    const { x, y } = getViewerPoint(evt.originalEvent as PointerEvent);
     lastPress = { x, y };
   }
 
   const onPointerMove = (canvas: HTMLCanvasElement) => (evt: PointerEvent) => {
-    const {x, y} = getImageXY(new OpenSeadragon.Point(evt.offsetX, evt.offsetY));
+    const {x, y} = getImageXY(getViewerPoint(evt));
     const buffer = getHitTolerance();
     const hit = store.getAt(x, y, filter, buffer);
     if (hit) {
@@ -76,14 +86,14 @@
 
     const originalEvent = evt.originalEvent as PointerEvent;
 
-    const { x, y } = evt.position;
+    const { x, y } = getViewerPoint(originalEvent);
     const dx = x - lastPress.x;
     const dy = y - lastPress.y;
 
     const dist = Math.sqrt(dx * dx + dy * dy);
 
     if (dist < 5) {
-      const {x, y} = getImageXY(evt.position);
+      const {x, y} = getImageXY(getViewerPoint(originalEvent));
       const buffer = getHitTolerance();
       const annotation = store.getAt(x, y, filter, buffer);
 
