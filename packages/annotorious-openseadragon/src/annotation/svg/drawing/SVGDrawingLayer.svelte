@@ -6,7 +6,7 @@
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
   import { getEditor as _getEditor, getTool, isImageAnnotation, isTouch, listDrawingTools } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
-  import { updateSelection } from '../../../utils';
+  import { getViewerPoint, updateSelection } from '../../../utils';
   import OSDLayer from '../OSDLayer.svelte';
   import OSDToolMount from './OSDToolMount.svelte';
 
@@ -97,18 +97,6 @@
     }
   }
 
-  // Convert a screen pointer position into the viewer's untransformed local
-  // coordinate system. This keeps OSD viewport mapping correct when the viewer
-  // sits inside a CSS-transformed ancestor.
-  const getViewerPoint = (evt: PointerEvent): OpenSeadragon.Point => {
-    const { left, top, width, height } = viewer.element.getBoundingClientRect();
-
-    return new OpenSeadragon.Point(
-      (evt.clientX - left) * (viewer.element.clientWidth / width),
-      (evt.clientY - top) * (viewer.element.clientHeight / height)
-    );
-  }
-
   // Coordinate transform, viewer-local pixels to OSD image coordinates
   const toolTransform = (offsetX: number, offsetY: number): [number, number] => {
     const {x, y} = viewer.viewport.viewerElementToImageCoordinates(new OpenSeadragon.Point(offsetX, offsetY));
@@ -116,7 +104,7 @@
   }
 
   const eventToImage = (evt: PointerEvent): [number, number] => {
-    const { x, y } = getViewerPoint(evt);
+    const { x, y } = getViewerPoint(viewer, evt);
     return toolTransform(x, y);
   }
 
@@ -158,7 +146,7 @@
   }
 
   const onPointerMove = (evt: PointerEvent) => {
-    const pt = viewer.viewport.pointFromPixel(getViewerPoint(evt));
+    const pt = viewer.viewport.pointFromPixel(getViewerPoint(viewer, evt));
     const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
 
     const buffer = getHitTolerance();
@@ -222,7 +210,7 @@
     const onPointerMove = (evt: PointerEvent) => {
       if (($selection as Selection).selected.length === 0) return;
 
-      const pt = viewer.viewport.pointFromPixel(getViewerPoint(evt));
+      const pt = viewer.viewport.pointFromPixel(getViewerPoint(viewer, evt));
       const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
       const buffer = getHitTolerance();
 
