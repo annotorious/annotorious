@@ -10,7 +10,6 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "build": "npm run build --workspaces",
-    "playground:osd": "npm run start --workspace @annotorious/react -- --open /test/openseadragon-coordinate-mapping/index.html",
     "test": "npm run test --workspaces"
   },
   "workspaces": [
