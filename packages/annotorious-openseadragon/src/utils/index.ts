@@ -1,2 +1,2 @@
-export * from './getViewerPoint';
+export * from './getViewerOffsetPoint';
 export * from './updateSelection';
