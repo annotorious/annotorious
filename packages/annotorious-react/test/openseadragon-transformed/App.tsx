@@ -5,6 +5,8 @@ import {
   ImageAnnotation,
   OpenSeadragonAnnotator,
   OpenSeadragonViewer,
+  RectangleGeometry,
+  ShapeType,
   useAnnotations,
   useAnnotator,
   useSelection
@@ -16,15 +18,14 @@ const INITIAL_ANNOTATION: ImageAnnotation = {
   target: {
     annotation: 'test-rectangle',
     selector: {
-      type: 'RECTANGLE',
+      type: ShapeType.RECTANGLE,
       geometry: {
         bounds: { minX: 180, minY: 85, maxX: 370, maxY: 230 },
         x: 180,
         y: 85,
         w: 190,
-        h: 145,
-        rot: 0
-      }
+        h: 145
+      } as RectangleGeometry
     }
   }
 };
@@ -37,8 +38,6 @@ const VIEWER_OPTIONS: OpenSeadragon.Options = {
     url: '/test/image/640px-Hallstatt.jpg'
   },
   gestureSettingsMouse: { clickToZoom: false },
-  // Let the playground exercise hit testing and editing at magnifications well
-  // beyond the image's native resolution.
   maxZoomPixelRatio: 8,
   zoomPerClick: 2,
   zoomPerScroll: 1.5
@@ -54,8 +53,9 @@ const Diagnostics = () => {
       <div><strong>Annotations:</strong> {annotations.length}</div>
       <pre>{JSON.stringify(annotations.map(({ id, target }) => ({ id, geometry: target.selector.geometry })), null, 2)}</pre>
     </output>
-  );
-};
+  )
+
+}
 
 export const App = () => {
   const anno = useAnnotator<AnnotoriousOpenSeadragonAnnotator>();
@@ -99,5 +99,6 @@ export const App = () => {
 
       <Diagnostics />
     </main>
-  );
-};
+  )
+
+}

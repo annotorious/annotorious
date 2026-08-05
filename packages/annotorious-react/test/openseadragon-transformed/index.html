@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Annotorious OSD coordinate mapping playground</title>
+    <style>
+      :root { 
+        color: #172033; 
+        font-family: system-ui, sans-serif; 
+        background: #f3f5f8; 
+      }
+
+      body { 
+        margin: 0; 
+      }
+
+      main { 
+        margin: 0 auto; 
+        max-width: 960px; 
+        padding: 32px 24px 64px; 
+      }
+
+      header { 
+        align-items: start; 
+        display: flex; 
+        gap: 24px; 
+        justify-content: space-between; 
+        margin-bottom: 28px; 
+      }
+
+      h1 { 
+        font-size: 1.5rem; 
+        margin: 0 0 8px; 
+      }
+
+      p { 
+        line-height: 1.5; 
+        margin: 0; 
+        max-width: 630px; 
+      }
+
+      .controls { 
+        display: flex; 
+        flex: none; 
+        flex-direction: column; 
+        gap: 8px; 
+      }
+
+      button { 
+        background: #fff; 
+        border: 1px solid #aab4c5; 
+        border-radius: 6px; 
+        color: inherit; 
+        cursor: pointer; 
+        padding: 8px 12px; 
+      }
+
+      button:hover {
+        background: #edf2fa; 
+      }
+
+      section { 
+        background: #152235; 
+        box-shadow: 0 10px 30px rgba(23, 32, 51, .2); 
+        height: 430px; 
+        transform-origin: top center; 
+        transition: transform 160ms ease; 
+      }
+
+      section.transformed { 
+        transform: translate(36px, 20px) scale(0.88); 
+      }
+
+      .viewer { 
+        height: 100%; 
+        width: 100%; 
+      }
+
+      .diagnostics { 
+        background: #fff; 
+        border: 1px solid #d3dae5; 
+        display: block; 
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace; 
+        font-size: .8rem; 
+        line-height: 1.45; 
+        margin-top: 52px; 
+        overflow: auto; 
+        padding: 16px; 
+      }
+
+      .diagnostics pre { 
+        margin: 12px 0 0; 
+      }
+
+      @media (max-width: 720px) { 
+
+        header { 
+          flex-direction: column; 
+        } 
+        
+        .controls { 
+          flex-direction: row; 
+        } 
+        
+        section.transformed { 
+          transform: translate(16px, 12px) scale(.92); 
+        } 
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+  </body>
+</html>
