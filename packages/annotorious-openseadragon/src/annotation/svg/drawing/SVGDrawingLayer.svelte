@@ -6,7 +6,7 @@
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
   import { getEditor as _getEditor, getTool, isImageAnnotation, isTouch, listDrawingTools } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
-  import { getViewerPoint, updateSelection } from '../../../utils';
+  import { getViewerOffsetPoint, updateSelection } from '../../../utils';
   import OSDLayer from '../OSDLayer.svelte';
   import OSDToolMount from './OSDToolMount.svelte';
 
@@ -104,7 +104,7 @@
   }
 
   const eventToImage = (evt: PointerEvent): [number, number] => {
-    const { x, y } = getViewerPoint(viewer, evt);
+    const { x, y } = getViewerOffsetPoint(viewer, evt);
     return toolTransform(x, y);
   }
 
@@ -146,7 +146,7 @@
   }
 
   const onPointerMove = (evt: PointerEvent) => {
-    const pt = viewer.viewport.pointFromPixel(getViewerPoint(viewer, evt));
+    const pt = viewer.viewport.pointFromPixel(getViewerOffsetPoint(viewer, evt));
     const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
 
     const buffer = getHitTolerance();
@@ -210,7 +210,7 @@
     const onPointerMove = (evt: PointerEvent) => {
       if (($selection as Selection).selected.length === 0) return;
 
-      const pt = viewer.viewport.pointFromPixel(getViewerPoint(viewer, evt));
+      const pt = viewer.viewport.pointFromPixel(getViewerOffsetPoint(viewer, evt));
       const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
       const buffer = getHitTolerance();
 

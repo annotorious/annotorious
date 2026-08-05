@@ -7,7 +7,7 @@
   import type { Filter, ImageAnnotation, ImageAnnotatorState, MultiPolygon, Polygon } from '@annotorious/annotorious';
   import type { PixiLayerClickEvent } from './PixiLayerClickEvent';
   import { createStage } from './stageRenderer';
-  import { getViewerPoint } from '../../utils';
+  import { getViewerOffsetPoint } from '../../utils';
 
   import './PixiLayer.css';
 
@@ -45,12 +45,12 @@
   const getHitTolerance= () => HIT_TOLERANCE_BASE / stage.getScale();
 
   const onCanvasPress = (evt: OpenSeadragon.CanvasPressEvent) => {
-    const { x, y } = getViewerPoint(viewer, evt.originalEvent as PointerEvent);
+    const { x, y } = getViewerOffsetPoint(viewer, evt.originalEvent as PointerEvent);
     lastPress = { x, y };
   }
 
   const onPointerMove = (canvas: HTMLCanvasElement) => (evt: PointerEvent) => {
-    const {x, y} = getImageXY(getViewerPoint(viewer, evt));
+    const {x, y} = getImageXY(getViewerOffsetPoint(viewer, evt));
     const buffer = getHitTolerance();
     const hit = store.getAt(x, y, filter, buffer);
     if (hit) {
@@ -75,14 +75,14 @@
 
     const originalEvent = evt.originalEvent as PointerEvent;
 
-    const { x, y } = getViewerPoint(viewer, originalEvent);
+    const { x, y } = getViewerOffsetPoint(viewer, originalEvent);
     const dx = x - lastPress.x;
     const dy = y - lastPress.y;
 
     const dist = Math.sqrt(dx * dx + dy * dy);
 
     if (dist < 5) {
-      const {x, y} = getImageXY(getViewerPoint(viewer, originalEvent));
+      const {x, y} = getImageXY(getViewerOffsetPoint(viewer, originalEvent));
       const buffer = getHitTolerance();
       const annotation = store.getAt(x, y, filter, buffer);
 
