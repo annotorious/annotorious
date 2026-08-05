@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import type { Shape } from '../../model';
   import type { Transform } from '../Transform';
+  import { getOffsetPoint } from '../utils';
 
   const dispatch = createEventDispatcher<{ grab: PointerEvent, release: PointerEvent, change: Shape }>();
 
@@ -25,10 +26,7 @@
     // new PolygonEditor. Old versions of Annotorious, however, 
     // won't yet forward the svgEl prop!
     if (svgEl) {
-      const { left, top } = svgEl.getBoundingClientRect();
-      const offsetX = evt.clientX - left;
-      const offsetY = evt.clientY - top;
-
+      const [offsetX, offsetY] = getOffsetPoint(svgEl, evt);
       origin = transform.elementToImage(offsetX, offsetY);
     } else {
       const { offsetX, offsetY } = evt;
