@@ -42,11 +42,9 @@ export const addEventListeners = <T extends Annotation>(svg: SVGSVGElement, stor
 }
 
 export const getSVGPoint = (evt: PointerEvent, svg: SVGSVGElement) => {
-  // Same viewBox-based mapping as createSVGTransform in Transform.ts — see
-  // there for why getScreenCTM is avoided.
+  // Same viewBox-based mapping as createSVGTransform in Transform.ts
   const bbox = svg.getBoundingClientRect();
   const { width, height } = svg.viewBox.baseVal;
-
   return {
     x: (evt.clientX - bbox.x) / bbox.width * width,
     y: (evt.clientY - bbox.y) / bbox.height * height
