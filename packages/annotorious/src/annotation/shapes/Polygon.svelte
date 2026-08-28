@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { DrawingStyleExpression } from '@annotorious/core';
+  import type { AnnotationState, DrawingStyleExpression } from '@annotorious/core';
   import type { Geometry, ImageAnnotation, PolygonGeometry } from '../../model';
   import { computeStyle } from '../utils/styling';
   
@@ -7,8 +7,9 @@
   export let annotation: ImageAnnotation;
   export let geom: Geometry;
   export let style: DrawingStyleExpression<ImageAnnotation> | undefined;
+  export let state: AnnotationState | undefined = undefined;
 
-  $: computedStyle = computeStyle(annotation, style);
+  $: computedStyle = computeStyle(annotation, style, state);
 
   const { points } = geom as PolygonGeometry;
 </script>
