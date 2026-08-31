@@ -1,7 +1,7 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
   import { onMount } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-  import type { Annotation, DrawingStyleExpression, Selection, StoreChangeEvent, User } from '@annotorious/core';
+  import type { AnnotationState, Annotation, DrawingStyleExpression, Selection, StoreChangeEvent, User } from '@annotorious/core';
   import { isImageAnnotation, ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
   import { getEditor, EditorMount } from './editors';
@@ -57,6 +57,19 @@
   let editableAnnotations: ImageAnnotation[] | undefined;
 
   $: trackSelection(($selection as Selection).selected);
+
+  // State passed to the (optional) style function, so it can react to
+  // selected/hovered - mirrors the behaviour of the OpenSeadragon renderer.
+  $: selectedIds = new Set(($selection as Selection).selected.map(({ id }) => id));
+
+  const getAnnotationState = (
+    annotation: ImageAnnotation,
+    selected: Set<string>,
+    hovered: unknown
+  ): AnnotationState => ({
+    selected: selected.has(annotation.id),
+    hovered: hovered === annotation.id
+  });
 
   const trackSelection = (selected: { id: string, editable?: boolean }[]) => {
     if (storeObserver)
@@ -162,36 +175,43 @@
     {#each $store.filter(a => isImageAnnotation(a)) as annotation}
       {#if isImageAnnotation(annotation) && !isEditable(annotation)}
         {@const selector = annotation.target.selector}
+        {@const annotationState = getAnnotationState(annotation, selectedIds, $hover)}
         {#key annotation}
           {#if (selector?.type === ShapeType.ELLIPSE)}
-            <Ellipse 
-              annotation={annotation} 
-              geom={selector?.geometry} 
+            <Ellipse
+              annotation={annotation}
+              geom={selector?.geometry}
+              state={annotationState}
               style={style} />
           {:else if (selector?.type === ShapeType.RECTANGLE)}
-            <Rectangle 
-              annotation={annotation} 
-              geom={selector.geometry} 
+            <Rectangle
+              annotation={annotation}
+              geom={selector.geometry}
+              state={annotationState}
               style={style} />
           {:else if (selector?.type === ShapeType.POLYGON)}
-            <Polygon 
-              annotation={annotation} 
-              geom={selector.geometry} 
+            <Polygon
+              annotation={annotation}
+              geom={selector.geometry}
+              state={annotationState}
               style={style} />
           {:else if (selector?.type === ShapeType.MULTIPOLYGON)}
             <MultiPolygon
               annotation={annotation}
               geom={selector.geometry}
+              state={annotationState}
               style={style} />
           {:else if (selector?.type === ShapeType.POLYLINE)}
-            <Polyline 
-              annotation={annotation} 
+            <Polyline
+              annotation={annotation}
               geom={selector.geometry}
+              state={annotationState}
               style={style} />
           {:else if (selector?.type === ShapeType.LINE)}
             <Line
               annotation={annotation}
               geom={selector.geometry}
+              state={annotationState}
               style={style} />
           {/if}
         {/key}
