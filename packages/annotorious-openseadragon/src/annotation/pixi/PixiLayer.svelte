@@ -53,14 +53,16 @@
     const {x, y} = getImageXY(getViewerOffsetPoint(viewer, evt));
     const buffer = getHitTolerance();
 
-    const hit = store.getAt(x, y, filter, buffer);
+    const hits = store.getAt(x, y, filter, buffer, true);
 
-    if (hit && selection.evalSelectAction(hit) !== UserSelectAction.NONE) {
+    // Remove all hits where UserSelectAction is NONE
+    const topHit = hits.filter(h => selection.evalSelectAction(h) !== UserSelectAction.NONE)[0];
+    if (topHit) {
       canvas.classList.add('hover');
 
-      if ($hover !== hit.id) {
-        hover.set(hit.id);
-        stage.setHovered(hit.id);
+      if ($hover !== topHit.id) {
+        hover.set(topHit.id);
+        stage.setHovered(topHit.id);
       }
     } else {
       canvas.classList.remove('hover');
@@ -86,7 +88,8 @@
     if (dist < 5) {
       const {x, y} = getImageXY(getViewerOffsetPoint(viewer, originalEvent));
       const buffer = getHitTolerance();
-      const annotation = store.getAt(x, y, filter, buffer);
+      const hits = store.getAt(x, y, filter, buffer, true);
+      const annotation = hits.filter(h => selection.evalSelectAction(h) !== UserSelectAction.NONE)[0];
 
       if (annotation) {
         dispatch('click', { originalEvent, annotation });

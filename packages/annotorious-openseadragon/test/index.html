@@ -82,10 +82,7 @@
           multiSelect: true,
           style: BASE_STYLE,
           userSelectAction: a => {
-            if (a.target.selector.type === 'RECTANGLE')
-              return 'NONE';
-            else
-              return 'EDIT'
+            return a.id === 'ca3beec3-d73e-4893-9871-acd4e30ef6f8' ? 'NONE' : 'EDIT';
           }
         });
 

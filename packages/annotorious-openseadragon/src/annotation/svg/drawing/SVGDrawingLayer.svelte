@@ -4,7 +4,7 @@
   import OpenSeadragon from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, Filter, Selection, StoreChangeEvent, User } from '@annotorious/core';
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
-  import { getEditor as _getEditor, getTool, isImageAnnotation, isTouch, listDrawingTools } from '@annotorious/annotorious';
+  import { getEditor as _getEditor, getTool, isImageAnnotation, isTouch, listDrawingTools, UserSelectAction } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
   import { getViewerOffsetPoint, updateSelection } from '../../../utils';
   import OSDLayer from '../OSDLayer.svelte';
@@ -133,13 +133,14 @@
       const [x, y] = eventToImage(evt.detail);
       const buffer = getHitTolerance();
 
-      const hit = store.getAt(x, y, undefined, buffer);
-      const isVisibleHit = hit && (!filter || filter(hit));
+      const hits = store.getAt(x, y, undefined, buffer, true);
+      const topHit = hits.filter(h => selection.evalSelectAction(h) !== UserSelectAction.NONE)[0];
+      const isVisibleHit = topHit && (!filter || filter(topHit));
 
-      if (isVisibleHit && !editableAnnotations!.find(e => e.id === hit.id)) {
-        hover.set(hit.id);
+      if (isVisibleHit && !editableAnnotations!.find(e => e.id === topHit.id)) {
+        hover.set(topHit.id);
 
-        const next = updateSelection(hit.id, evt.detail, selection, multiSelect);
+        const next = updateSelection(topHit.id, evt.detail, selection, multiSelect);
         selection.userSelect(next);
       }
     }
