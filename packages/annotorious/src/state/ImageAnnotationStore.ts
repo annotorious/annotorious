@@ -3,7 +3,8 @@ import type { SvelteAnnotatorState, SvelteStore } from './SvelteStore';
 
 export type ImageAnnotationStore<I extends Annotation> = Store<I> & {
 
-  getAt(x: number, y: number, filter?: Filter<I>, buffer?: number): I | undefined;
+  getAt(x: number, y: number, filter?: Filter<I>, buffer?: number, all?: false): I | undefined;
+  getAt(x: number, y: number, filter: Filter<I> | undefined, buffer: number | undefined, all: true): I[];
 
   getIntersecting(x: number, y: number, width: number, height: number): I[];
 
