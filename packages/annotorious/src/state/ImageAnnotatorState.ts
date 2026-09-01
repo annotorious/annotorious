@@ -54,7 +54,9 @@ export const createImageAnnotatorState = <I extends Annotation, E extends unknow
       tree.update(oldValue.target, newValue.target));
   });
 
-  const getAt = (x: number, y: number, filter?: Filter<I>, buffer?: number): I | undefined => {
+  function getAt(x: number, y: number, filter?: Filter<I>, buffer?: number, all?: false): I | undefined;
+  function getAt(x: number, y: number, filter: Filter<I> | undefined, buffer: number | undefined, all: true): I[];
+  function getAt(x: number, y: number, filter?: Filter<I>, buffer?: number, all = false): I | undefined | I[] {
     const targets = tree.getAt(x, y, buffer);
 
     if (filter) {
@@ -63,10 +65,16 @@ export const createImageAnnotatorState = <I extends Annotation, E extends unknow
         .filter(Boolean)
         .filter(filter);
         
-      return annotations[0];
+      return all ? annotations: annotations[0];
     } else {
-      const top = targets[0];
-      return top ? store.getAnnotation(top.annotation) : undefined;
+      if (all) {
+        return targets
+          .map(t => store.getAnnotation(t.annotation)!)
+          .filter(Boolean);
+      } else {
+        const top = targets[0];
+        return top ? store.getAnnotation(top.annotation) : undefined;
+      }
     }
   }
 
