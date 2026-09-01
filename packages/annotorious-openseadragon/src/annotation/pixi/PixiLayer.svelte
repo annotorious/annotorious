@@ -3,7 +3,7 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import OpenSeadragon from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, Selection, StoreChangeEvent, Update } from '@annotorious/core';
-  import { isImageAnnotation, isTouch, ShapeType } from '@annotorious/annotorious';
+  import { isImageAnnotation, isTouch, ShapeType, UserSelectAction } from '@annotorious/annotorious';
   import type { Filter, ImageAnnotation, ImageAnnotatorState, MultiPolygon, Polygon } from '@annotorious/annotorious';
   import type { PixiLayerClickEvent } from './PixiLayerClickEvent';
   import { createStage } from './stageRenderer';
@@ -52,8 +52,10 @@
   const onPointerMove = (canvas: HTMLCanvasElement) => (evt: PointerEvent) => {
     const {x, y} = getImageXY(getViewerOffsetPoint(viewer, evt));
     const buffer = getHitTolerance();
+
     const hit = store.getAt(x, y, filter, buffer);
-    if (hit) {
+
+    if (hit && selection.evalSelectAction(hit) !== UserSelectAction.NONE) {
       canvas.classList.add('hover');
 
       if ($hover !== hit.id) {
