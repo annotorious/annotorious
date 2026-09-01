@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import type { AnnotationState, Annotation, DrawingStyleExpression, Selection, StoreChangeEvent, User } from '@annotorious/core';
+  import { UserSelectAction } from '@annotorious/core';
   import { isImageAnnotation, ShapeType } from '../model';
   import type { ImageAnnotation, Shape} from '../model';
   import { getEditor, EditorMount } from './editors';
@@ -70,6 +71,17 @@
     selected: selected.has(annotation.id),
     hovered: hovered === annotation.id
   });
+
+  // Only apply the `hover` class (which sets `cursor: pointer`) when the
+  // hovered annotation can actually be selected - an annotation with
+  // UserSelectAction.NONE is inert, so the pointer cursor is misleading (#485).
+  $: hoveredIsSelectable = (() => {
+    if (!$hover) return false;
+    const annotation = store.getAnnotation($hover as string);
+    return annotation
+      ? selection.evalSelectAction(annotation) !== UserSelectAction.NONE
+      : false;
+  })();
 
   const trackSelection = (selected: { id: string, editable?: boolean }[]) => {
     if (storeObserver)
@@ -167,7 +179,7 @@
   class:drawing={tool}
   class:editing={editableAnnotations}
   class:hidden={!visible}
-  class:hover={$hover}
+  class:hover={hoveredIsSelectable}
   on:pointerup={onPointerUp}
   on:pointerdown={onPointerDown}
   on:pointermove={onPointerMove}>
