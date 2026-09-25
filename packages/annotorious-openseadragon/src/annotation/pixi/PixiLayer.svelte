@@ -38,8 +38,16 @@
   $: stage?.setVisible(visible);
 
   const getImageXY = (xy: OpenSeadragon.Point): OpenSeadragon.Point => {
-    const {x, y} = viewer.viewport.pointFromPixel(xy);
-    return viewer.viewport.viewportToImageCoordinates(x, y);
+    const viewportPt = viewer.viewport.pointFromPixel(xy, true);
+
+    if (viewer.viewport.getFlip()) {
+      const bounds = viewer.viewport.getBoundsNoRotate(true);
+      const centerX = bounds.x + bounds.width / 2;
+      const flipped = new OpenSeadragon.Point(2 * centerX - viewportPt.x, viewportPt.y);
+      return viewer.viewport.viewportToImageCoordinates(flipped);
+    } else {
+      return viewer.viewport.viewportToImageCoordinates(viewportPt);
+    }
   }
 
   const getHitTolerance= () => HIT_TOLERANCE_BASE / stage.getScale();
@@ -51,6 +59,7 @@
 
   const onPointerMove = (canvas: HTMLCanvasElement) => (evt: PointerEvent) => {
     const {x, y} = getImageXY(getViewerOffsetPoint(viewer, evt));
+
     const buffer = getHitTolerance();
 
     const hits = store.getAt(x, y, filter, buffer, true);
