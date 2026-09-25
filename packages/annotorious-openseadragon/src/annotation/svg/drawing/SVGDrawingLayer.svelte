@@ -1,12 +1,12 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
   import { onMount, type SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-  import OpenSeadragon from 'openseadragon';
+  import OpenSeadragon, { type FlipEvent } from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, Filter, Selection, StoreChangeEvent, User } from '@annotorious/core';
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
   import { getEditor as _getEditor, getTool, isImageAnnotation, isTouch, listDrawingTools, UserSelectAction } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
-  import { getViewerOffsetPoint, updateSelection } from '../../../utils';
+  import { getViewerOffsetPoint, updateSelection, viewerOffsetPointToImageXY } from '../../../utils';
   import OSDLayer from '../OSDLayer.svelte';
   import OSDToolMount from './OSDToolMount.svelte';
 
@@ -22,6 +22,9 @@
   export let viewer: OpenSeadragon.Viewer;
 
   const HIT_TOLERANCE_BASE = isTouch ? 10 : 2;
+
+  // Viewer flip
+  let isFlipped = viewer.viewport.getFlip();
 
   // SVG element
   let isHovered = false;
@@ -99,7 +102,7 @@
 
   // Coordinate transform, viewer-local pixels to OSD image coordinates
   const toolTransform = (offsetX: number, offsetY: number): [number, number] => {
-    const {x, y} = viewer.viewport.viewerElementToImageCoordinates(new OpenSeadragon.Point(offsetX, offsetY));
+    const { x, y } = viewerOffsetPointToImageXY(viewer, new OpenSeadragon.Point(offsetX, offsetY));
     return [x, y];
   }
 
@@ -147,8 +150,7 @@
   }
 
   const onPointerMove = (evt: PointerEvent) => {
-    const pt = viewer.viewport.pointFromPixel(getViewerOffsetPoint(viewer, evt));
-    const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
+    const { x, y } = viewerOffsetPointToImageXY(viewer, getViewerOffsetPoint(viewer, evt));
 
     const buffer = getHitTolerance();
     const hit = store.getAt(x, y, filter, buffer);
@@ -211,16 +213,21 @@
     const onPointerMove = (evt: PointerEvent) => {
       if (($selection as Selection).selected.length === 0) return;
 
-      const pt = viewer.viewport.pointFromPixel(getViewerOffsetPoint(viewer, evt));
-      const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
+      const { x, y } = viewerOffsetPointToImageXY(viewer, getViewerOffsetPoint(viewer, evt));
       const buffer = getHitTolerance();
 
       isHovered = Boolean(store.getAt(x, y, filter, buffer));    
     }
 
+    const onFlip = (evt: FlipEvent) => {
+      isFlipped = evt.flipped;
+    }
+
+    viewer.addHandler('flip', onFlip);
     (viewer.element as HTMLElement).addEventListener('pointermove', onPointerMove);
 
     return () => {
+      viewer.removeHandler('flip', onFlip);
       (viewer.element as HTMLElement)?.removeEventListener('pointermove', onPointerMove);
     }
   });
@@ -234,6 +241,7 @@
     class:drawing={drawingEnabled}
     class:editing={editableAnnotations}
     class:hover={isHovered}
+    data-flipped={isFlipped}
     on:pointermove={onPointerMove}>
     <g 
       bind:this={drawingEl}
