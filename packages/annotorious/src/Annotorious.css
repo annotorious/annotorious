@@ -128,14 +128,30 @@
   cursor: nw-resize;
 }
 
+[data-flipped="true"] .a9s-handle.a9s-corner-handle-topleft {
+  cursor: ne-resize;
+}
+
 .a9s-handle.a9s-corner-handle-topright {
   cursor: ne-resize;
+}
+
+[data-flipped="true"] .a9s-handle.a9s-corner-handle-topright {
+  cursor: nw-resize;
 }
 
 .a9s-handle.a9s-corner-handle-bottomright {
   cursor: se-resize; 
 }
 
+[data-flipped="true"] .a9s-handle.a9s-corner-handle-bottomright {
+  cursor: sw-resize;
+}
+
 .a9s-handle.a9s-corner-handle-bottomleft {
   cursor: sw-resize;
+}
+
+[data-flipped="true"] .a9s-handle.a9s-corner-handle-bottomleft {
+  cursor: se-resize;
 }

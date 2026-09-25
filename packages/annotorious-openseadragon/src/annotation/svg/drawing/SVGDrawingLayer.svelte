@@ -1,7 +1,7 @@
 <script lang="ts" generics="I extends Annotation, E extends unknown">
   import { onMount, type SvelteComponent } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
-  import OpenSeadragon from 'openseadragon';
+  import OpenSeadragon, { type FlipEvent } from 'openseadragon';
   import type { Annotation, DrawingStyleExpression, Filter, Selection, StoreChangeEvent, User } from '@annotorious/core';
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
   import { getEditor as _getEditor, getTool, isImageAnnotation, isTouch, listDrawingTools, UserSelectAction } from '@annotorious/annotorious';
@@ -22,6 +22,9 @@
   export let viewer: OpenSeadragon.Viewer;
 
   const HIT_TOLERANCE_BASE = isTouch ? 10 : 2;
+
+  // Viewer flip
+  let isFlipped = viewer.viewport.getFlip();
 
   // SVG element
   let isHovered = false;
@@ -216,9 +219,15 @@
       isHovered = Boolean(store.getAt(x, y, filter, buffer));    
     }
 
+    const onFlip = (evt: FlipEvent) => {
+      isFlipped = evt.flipped;
+    }
+
+    viewer.addHandler('flip', onFlip);
     (viewer.element as HTMLElement).addEventListener('pointermove', onPointerMove);
 
     return () => {
+      viewer.removeHandler('flip', onFlip);
       (viewer.element as HTMLElement)?.removeEventListener('pointermove', onPointerMove);
     }
   });
@@ -232,6 +241,7 @@
     class:drawing={drawingEnabled}
     class:editing={editableAnnotations}
     class:hover={isHovered}
+    data-flipped={isFlipped}
     on:pointermove={onPointerMove}>
     <g 
       bind:this={drawingEl}
