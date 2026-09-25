@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import type OpenSeadragon from 'openseadragon';
+import { Point } from 'openseadragon';
 import { getEditor, ShapeType } from '@annotorious/annotorious';
 import type { 
   AnnotationState, 
@@ -200,7 +200,6 @@ const redrawStage = (
   shapes: Map<String, AnnotationShape>,
   renderer: PIXI.IRenderer<PIXI.ICanvas>
 ) => () => {
-  const viewportBounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds(true));
   const scale = getCurrentScale(viewer);
 
   if (scale !== lastScale || !fastRedraw) {
@@ -235,42 +234,27 @@ const redrawStage = (
 
   const flipped = viewer.viewport.getFlip();
 
-  // @ts-ignore note: getRotation(true <- realtime value) only since OSD 4!
-  let rotation = Math.PI * viewer.viewport.getRotation(true) / 180;
+  let rotation = (Math.PI * viewer.viewport.getRotation(true)) / 180;
+  rotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 
-  if (rotation < 0)
-    rotation += 2 * Math.PI;
-  
-  if (rotation > 2 * Math.PI)
-    rotation -= 2 * Math.PI;
+  const containerSize = viewer.viewport.getContainerSize();
 
-  const dx = flipped ? 
-    // @ts-ignore
-    viewer.viewport._containerInnerSize.x + viewportBounds.x * scale :
-    - viewportBounds.x * scale;
+  // Image top-left corner in viewport pixel coordinates
+  const imageOriginInViewport = viewer.viewport.pixelFromPoint(new Point(0, 0), true);
 
-  const dy = - viewportBounds.y * scale;
+  if (flipped) {
+    graphics.scale.set(-scale, scale);
+    graphics.rotation = -rotation;
 
-  let offsetX: number, offsetY: number;
-
-  if (rotation > 0 && rotation <= Math.PI / 2) {
-    offsetX = viewportBounds.height * scale;
-    offsetY = 0;
-  } else if (rotation > Math.PI / 2 && rotation <= Math.PI) {
-    offsetX = viewportBounds.width * scale;
-    offsetY = viewportBounds.height * scale;
-  } else if (rotation > Math.PI && rotation <= Math.PI * 1.5) {
-    offsetX = 0;
-    offsetY = viewportBounds.width * scale;
+    graphics.position.x = containerSize.x - imageOriginInViewport.x;
+    graphics.position.y = imageOriginInViewport.y;
   } else {
-    offsetX = 0;
-    offsetY = 0;
-  }
+    graphics.scale.set(scale, scale);
+    graphics.rotation = rotation;
 
-  graphics.position.x = offsetX + dx * Math.cos(rotation) - dy * Math.sin(rotation);
-  graphics.position.y = offsetY + dx * Math.sin(rotation) + dy * Math.cos(rotation);
-  graphics.scale.set(flipped ? - scale : scale, scale);
-  graphics.rotation = rotation;
+    graphics.position.x = imageOriginInViewport.x;
+    graphics.position.y = imageOriginInViewport.y;
+  }
   
   renderer.render(graphics);
 }
