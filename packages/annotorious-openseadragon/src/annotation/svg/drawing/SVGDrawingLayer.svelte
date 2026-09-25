@@ -6,7 +6,7 @@
   import { EditorMount } from '@annotorious/annotorious/src'; // Import Svelte components from source
   import { getEditor as _getEditor, getTool, isImageAnnotation, isTouch, listDrawingTools, UserSelectAction } from '@annotorious/annotorious';
   import type { ImageAnnotation, Shape, ImageAnnotatorState, DrawingMode } from '@annotorious/annotorious';
-  import { getViewerOffsetPoint, updateSelection } from '../../../utils';
+  import { getViewerOffsetPoint, updateSelection, viewerOffsetPointToImageXY } from '../../../utils';
   import OSDLayer from '../OSDLayer.svelte';
   import OSDToolMount from './OSDToolMount.svelte';
 
@@ -99,7 +99,7 @@
 
   // Coordinate transform, viewer-local pixels to OSD image coordinates
   const toolTransform = (offsetX: number, offsetY: number): [number, number] => {
-    const {x, y} = viewer.viewport.viewerElementToImageCoordinates(new OpenSeadragon.Point(offsetX, offsetY));
+    const { x, y } = viewerOffsetPointToImageXY(viewer, new OpenSeadragon.Point(offsetX, offsetY));
     return [x, y];
   }
 
@@ -147,8 +147,7 @@
   }
 
   const onPointerMove = (evt: PointerEvent) => {
-    const pt = viewer.viewport.pointFromPixel(getViewerOffsetPoint(viewer, evt));
-    const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
+    const { x, y } = viewerOffsetPointToImageXY(viewer, getViewerOffsetPoint(viewer, evt));
 
     const buffer = getHitTolerance();
     const hit = store.getAt(x, y, filter, buffer);
@@ -211,8 +210,7 @@
     const onPointerMove = (evt: PointerEvent) => {
       if (($selection as Selection).selected.length === 0) return;
 
-      const pt = viewer.viewport.pointFromPixel(getViewerOffsetPoint(viewer, evt));
-      const { x, y } = viewer.viewport.viewportToImageCoordinates(pt.x, pt.y);
+      const { x, y } = viewerOffsetPointToImageXY(viewer, getViewerOffsetPoint(viewer, evt));
       const buffer = getHitTolerance();
 
       isHovered = Boolean(store.getAt(x, y, filter, buffer));    
