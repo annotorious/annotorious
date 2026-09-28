@@ -49,10 +49,7 @@
 
     const buffer = getHitTolerance();
 
-    const hits = store.getAt(x, y, filter, buffer, true);
-
-    // Remove all hits where UserSelectAction is NONE
-    const topHit = hits.filter(h => selection.evalSelectAction(h) !== UserSelectAction.NONE)[0];
+    const topHit = store.getAt(x, y, filter, buffer);
     if (topHit) {
       canvas.classList.add('hover');
 
@@ -84,11 +81,11 @@
     if (dist < 5) {
       const {x, y} = viewerOffsetPointToImageXY(viewer, getViewerOffsetPoint(viewer, originalEvent));
       const buffer = getHitTolerance();
-      const hits = store.getAt(x, y, filter, buffer, true);
-      const annotation = hits.filter(h => selection.evalSelectAction(h) !== UserSelectAction.NONE)[0];
 
-      if (annotation) {
-        dispatch('click', { originalEvent, annotation });
+      const hits = store.getAt(x, y, filter, buffer, true);
+      const topSelectable = hits.filter(h => selection.evalSelectAction(h) !== UserSelectAction.NONE)[0];
+      if (topSelectable) {
+        dispatch('click', { originalEvent, annotation: topSelectable });
       } else {
         dispatch('click', { originalEvent });
       }

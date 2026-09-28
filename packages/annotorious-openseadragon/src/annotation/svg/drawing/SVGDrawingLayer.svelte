@@ -137,13 +137,14 @@
       const buffer = getHitTolerance();
 
       const hits = store.getAt(x, y, undefined, buffer, true);
-      const topHit = hits.filter(h => selection.evalSelectAction(h) !== UserSelectAction.NONE)[0];
-      const isVisibleHit = topHit && (!filter || filter(topHit));
+      const topSelectable = hits.filter(hit => 
+        selection.evalSelectAction(hit) !== UserSelectAction.NONE && // Hit is selectable...
+        (!filter || filter(hit)))[0]; // ...and not filtered
 
-      if (isVisibleHit && !editableAnnotations!.find(e => e.id === topHit.id)) {
-        hover.set(topHit.id);
+      if (topSelectable && !editableAnnotations!.find(e => e.id === topSelectable.id)) {
+        hover.set(topSelectable.id);
 
-        const next = updateSelection(topHit.id, evt.detail, selection, multiSelect);
+        const next = updateSelection(topSelectable.id, evt.detail, selection, multiSelect);
         selection.userSelect(next);
       }
     }
