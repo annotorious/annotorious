@@ -18,16 +18,16 @@ export interface OpenSeadragonViewerProps {
  * tileSources is probably the main use case by far.)
  */
 const onlyTileSourcesChanged = (prev: OpenSeadragon.Options | undefined, next: OpenSeadragon.Options): boolean => {
-    if (!prev) return false;
+  if (!prev) return false;
 
-    const { tileSources: prevTiles, ...prevRest } = prev;
-    const { tileSources: nextTiles, ...nextRest } = next;
+  const { tileSources: prevTiles, ...prevRest } = prev;
+  const { tileSources: nextTiles, ...nextRest } = next;
 
-    const tileSourcesChanged = !dequal(prevTiles, nextTiles);
-    const otherOptionsChanged = !dequal(prevRest, nextRest);
+  const tileSourcesChanged = !dequal(prevTiles, nextTiles);
+  const otherOptionsChanged = !dequal(prevRest, nextRest);
 
-    return tileSourcesChanged && !otherOptionsChanged;
-  };
+  return tileSourcesChanged && !otherOptionsChanged;
+}
 
 export const OpenSeadragonViewer = forwardRef<OpenSeadragon.Viewer, OpenSeadragonViewerProps>((props: OpenSeadragonViewerProps, ref) => {
 
