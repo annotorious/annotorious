@@ -2,10 +2,12 @@ import type { Annotation } from './Annotation';
 import type { User } from './User';
 import type { PresenceProvider } from '../presence';
 import type {
+  ChangeSet,
   History,
   HoverState,
   SelectionState,
   Store,
+  UndoRedoOptions,
   UndoStack,
   UserSelectActionExpression,
   ViewportState
@@ -48,7 +50,11 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   loadAnnotations(url: string, replace?: boolean): Promise<E[]>;
 
-  redo(): void;
+  peekRedo(): ChangeSet<I> | undefined;
+
+  peekUndo(): ChangeSet<I> | undefined;
+
+  redo(opts?: UndoRedoOptions): void;
 
   removeAnnotation(arg: Partial<E> | string): E | undefined;
 
@@ -68,7 +74,7 @@ export interface Annotator<I extends Annotation = Annotation, E extends unknown 
 
   setVisible(visible: boolean): void;
 
-  undo(): void;
+  undo(opts?: UndoRedoOptions): void;
 
   updateAnnotation(annotation: Partial<E>): E;
   
@@ -216,6 +222,8 @@ export const createBaseAnnotator = <I extends Annotation, E extends unknown>(
     getHistory: undoStack.getHistory,
     getSelected,
     loadAnnotations,
+    peekRedo: undoStack.peekRedo,
+    peekUndo: undoStack.peekUndo,
     redo: undoStack.redo,
     removeAnnotation,
     setAnnotations,

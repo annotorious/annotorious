@@ -21,9 +21,20 @@ export interface UndoStack <T extends Annotation> {
 
   on<E extends keyof UndoStackEvents<T>>(event: E, callback: UndoStackEvents<T>[E]): Unsubscribe;
 
-  undo(): void;
+  undo(opts?: UndoRedoOptions): void;
 
-  redo(): void;
+  redo(opts?: UndoRedoOptions): void;
+
+  peekRedo(): ChangeSet<T> | undefined;
+
+  peekUndo(): ChangeSet<T> | undefined;
+
+}
+
+export interface UndoRedoOptions {
+
+  // Suppresses local lifecycle events (create/update/delete) on the store
+  silent?: boolean;
 
 }
 
@@ -82,33 +93,37 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>, history?:
 
   store.observe(onChange, { origin: Origin.LOCAL });
 
-  const undoCreated = (created?: T[]) =>
-    created && created.length > 0 && store.bulkDeleteAnnotations(created);
+  const undoCreated = (created?: T[], origin = Origin.LOCAL) =>
+    created && created.length > 0 && store.bulkDeleteAnnotations(created, origin);
 
-  const redoCreated = (created?: T[]) =>
-    created && created.length > 0 && store.bulkUpsertAnnotations(created);
+  const redoCreated = (created?: T[], origin = Origin.LOCAL) =>
+    created && created.length > 0 && store.bulkUpsertAnnotations(created, origin);
 
-  const undoUpdated = (updated?: Update<T>[]) =>
-    updated && updated.length > 0 && store.bulkUpdateAnnotations(updated.map(({ oldValue }) => oldValue));
+  const undoUpdated = (updated?: Update<T>[], origin = Origin.LOCAL) =>
+    updated && updated.length > 0 && store.bulkUpdateAnnotations(updated.map(({ oldValue }) => oldValue), origin);
       
-  const redoUpdated = (updated?: Update<T>[]) =>
-    updated && updated.length > 0 && store.bulkUpdateAnnotations(updated.map(({ newValue }) => newValue));
+  const redoUpdated = (updated?: Update<T>[], origin = Origin.LOCAL) =>
+    updated && updated.length > 0 && store.bulkUpdateAnnotations(updated.map(({ newValue }) => newValue), origin);
 
-  const undoDeleted = (deleted?: T[]) =>
-    deleted && deleted.length > 0 && store.bulkUpsertAnnotations(deleted);
+  const undoDeleted = (deleted?: T[], origin = Origin.LOCAL) =>
+    deleted && deleted.length > 0 && store.bulkUpsertAnnotations(deleted, origin);
 
-  const redoDeleted = (deleted?: T[]) =>
-    deleted && deleted.length > 0 && store.bulkDeleteAnnotations(deleted);
+  const redoDeleted = (deleted?: T[], origin = Origin.LOCAL) =>
+    deleted && deleted.length > 0 && store.bulkDeleteAnnotations(deleted, origin);
 
-  const undo = () => {
+  const undo = (opts?: UndoRedoOptions) => {
     if (pointer > -1) {
-      muteEvents = true;
+      // Silent execution won't trigger the store listener
+      if (!opts?.silent) muteEvents = true;
 
       const { created, updated, deleted } = changeStack[pointer];
 
-      undoCreated(created);
-      undoUpdated(updated);
-      undoDeleted(deleted);
+      // Origin.REMOTE will trigger the renderer, but not lifecycle events
+      const origin = opts?.silent ? Origin.REMOTE : undefined;
+
+      undoCreated(created, origin);
+      undoUpdated(updated, origin);
+      undoDeleted(deleted, origin);
 
       emitter.emit('undo', changeStack[pointer]);
 
@@ -118,15 +133,17 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>, history?:
 
   const canUndo = () => pointer > -1;
 
-  const redo = () => {
+  const redo = (opts?: UndoRedoOptions) => {
     if (changeStack.length - 1 > pointer) {
-      muteEvents = true;
+      if (!opts?.silent) muteEvents = true;
 
       const { created, updated, deleted } = changeStack[pointer + 1];
 
-      redoCreated(created);
-      redoUpdated(updated);
-      redoDeleted(deleted);
+      const origin = opts?.silent ? Origin.REMOTE : undefined;
+
+      redoCreated(created, origin);
+      redoUpdated(updated, origin);
+      redoDeleted(deleted, origin);
 
       emitter.emit('redo', changeStack[pointer + 1]);
 
@@ -138,7 +155,14 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>, history?:
 
   const destroy = () => store.unobserve(onChange);
 
-  const getHistory = () => ({ changes: [...changeStack], pointer });
+  const getHistory = () => ({ changes: structuredClone(changeStack), pointer });
+
+  const peekUndo = () =>
+    // structuredClone so consumers can't mutate the history
+    canUndo() ? structuredClone(changeStack[pointer]) : undefined;
+
+  const peekRedo = () =>
+    canRedo() ? structuredClone(changeStack[pointer + 1]) : undefined;
 
   const on = <E extends keyof UndoStackEvents<T>>(event: E, callback: UndoStackEvents<T>[E]) => 
     emitter.on(event, callback);
@@ -150,7 +174,9 @@ export const createUndoStack = <T extends Annotation>(store: Store<T>, history?:
     getHistory,
     on,
     redo,
-    undo
+    undo,
+    peekRedo,
+    peekUndo
   }
 
 }
