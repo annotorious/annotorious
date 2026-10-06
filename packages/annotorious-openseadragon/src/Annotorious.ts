@@ -107,7 +107,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
 
   let modalSelect = opts.modalSelect;
 
-  const keyboardCommands = initKeyboardCommands(undoStack, viewer.element);
+  const keyboardCommands = opts.disableUndoRedoKeys ? undefined : initKeyboardCommands(undoStack, viewer.element);
 
   const displayLayer = new PixiLayer({
     target: viewer.element,
@@ -210,7 +210,7 @@ export const createOSDAnnotator = <I extends Annotation = ImageAnnotation, E ext
     selectionLayer?.$destroy();
 
     // Other cleanup actions
-    keyboardCommands.destroy();
+    keyboardCommands?.destroy();
     undoStack.destroy();
   }
 

@@ -7,6 +7,8 @@ export interface AnnotoriousOpts<I extends Annotation = ImageAnnotation, E exten
 
   autoSave?: boolean;
 
+  disableUndoRedoKeys?: boolean;
+
   drawingEnabled?: boolean;
 
   // 'click': starts on single click, user cannot select unless drawingEnabled = false
