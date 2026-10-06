@@ -83,7 +83,7 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
   img.parentNode!.insertBefore(container, img);
   container.appendChild(img);
 
-  const keyboardCommands = initKeyboardCommands(undoStack);
+  const keyboardCommands = opts.disableUndoRedoKeys ? undefined : initKeyboardCommands(undoStack);
 
   let currentUser: User = createAnonymousGuest();
 
@@ -128,7 +128,7 @@ export const createImageAnnotator = <I extends Annotation = ImageAnnotation, E e
     container.parentNode!.removeChild(container);
 
     // Other cleanup actions
-    keyboardCommands.destroy();
+    keyboardCommands?.destroy();
     undoStack.destroy();
   }
 
