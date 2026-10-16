@@ -121,7 +121,7 @@ const drawLine = drawShape((line: Line, g: PIXI.Graphics) => {
 });
 
 const drawPolygon = drawShape((polygon: Polygon, g: PIXI.Graphics) => {
-  const flattened = polygon.geometry.points.reduce<number[]>((flat, xy) => ([...flat, ...xy]), []);   
+  const flattened = polygon.geometry.points.flat();
   g.drawPolygon(flattened);
 });
 
@@ -173,8 +173,7 @@ const drawPolyline = drawShape<Polyline>((polyline, g) => {
 });
 
 const drawMultiPolygon = drawShape((multiPolygon: MultiPolygon, g: PIXI.Graphics) => {
-  const flattenRing = (ring: MultiPolygonRing) => 
-    ring.points.reduce<number[]>((flat, xy) => ([...flat, ...xy]), []);
+  const flattenRing = (ring: MultiPolygonRing) => ring.points.flat();
 
   multiPolygon.geometry.polygons.forEach(element => {
     const [outer, ...holes] = element.rings;
