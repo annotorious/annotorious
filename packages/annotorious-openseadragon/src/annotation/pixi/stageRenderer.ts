@@ -33,13 +33,54 @@ let fastRedraw = false;
 // Likewise, if scale has not changed, counter-scaling is also skipped
 let lastScale: number;
 
+// PIXI batches small shapes into shared GPU buffers. That only pays off if every
+// shape on the stage batches: a shape drawn directly (native 1px stroke, or a
+// stroke too large to batch) ends the batch before it, so each batched shape
+// becomes its own flush. Those differently sized uploads partially overwrite
+// buffers still in use, which stalls the GPU on ANGLE/Metal (150-300 ms frames
+// while zooming). So a stage batches either all of its shapes, or none.
+interface Batching {
+
+  enabled: boolean;
+
+}
+
+class StageGeometry extends PIXI.GraphicsGeometry {
+
+  constructor(private readonly batching: Batching) {
+    super();
+  }
+
+  isBatchable() {
+    return this.batching.enabled && super.isBatchable();
+  }
+
+  // Whether the last build could be batched, regardless of the stage
+  canBatch() {
+    return super.isBatchable();
+  }
+
+  rebuild() {
+    this.invalidate();
+  }
+
+}
+
+type StageGraphics = PIXI.Graphics & { readonly geometry: StageGeometry };
+
+const createStageGraphics = (batching: Batching): StageGraphics =>
+  new PIXI.Graphics(new StageGeometry(batching)) as StageGraphics;
+
+// Batching state per stage, keyed by the stage's root graphics
+const stageBatching = new WeakMap<PIXI.Graphics, Batching>();
+
 interface AnnotationShape {
 
   annotation: ImageAnnotation;
 
-  fill: PIXI.Graphics;
+  fill: StageGraphics;
 
-  stroke: PIXI.Graphics;
+  stroke: StageGraphics;
 
   strokeWidth: number;
 
@@ -73,7 +114,9 @@ const drawShape = <T extends Shape>(
 ) => (container: PIXI.Graphics, shape: T, style?: DrawingStyle, options: { strokeOnly?: boolean } = {}) => {
   const { fillStyle, strokeStyle } = getGraphicsStyle(style);
 
-  const fillGraphics = new PIXI.Graphics();
+  const batching = stageBatching.get(container)!;
+
+  const fillGraphics = createStageGraphics(batching);
   
   if (!options.strokeOnly) {
     fillGraphics.beginFill(0xffffff);
@@ -85,7 +128,7 @@ const drawShape = <T extends Shape>(
   
   container.addChild(fillGraphics);
 
-  const strokeGraphics = new PIXI.Graphics();
+  const strokeGraphics = createStageGraphics(batching);
   const lineWidth = strokeStyle.lineWidth === 1 ? 1 : strokeStyle.lineWidth / lastScale;
   strokeGraphics.lineStyle(lineWidth, 0xffffff, 1, 0.5, strokeStyle.lineWidth === 1);
   fn(shape, strokeGraphics); 
@@ -204,8 +247,14 @@ const redrawStage = (
   if (scale !== lastScale || !fastRedraw) {
     fastRedraw = true;
 
+    let allBatchable = true;
+
     shapes.forEach(({ stroke, strokeWidth }) => {
       const { lineStyle } = stroke.geometry.graphicsData[0];
+
+      // Read before the stroke is invalidated below. Counter-scaling keeps
+      // its vertex count, so the last build still tells.
+      const canBatch = stroke.geometry.canBatch();
 
       if (strokeWidth > 1) {
         // Disable fast redraws if at least one shape
@@ -226,7 +275,20 @@ const redrawStage = (
         // @ts-ignore
         stroke.geometry.invalidate();
       }
+
+      if (lineStyle.native || !canBatch)
+        allBatchable = false;
     });
+
+    const batching = stageBatching.get(graphics)!;
+    if (batching.enabled !== allBatchable) {
+      batching.enabled = allBatchable;
+
+      shapes.forEach(({ fill, stroke }) => {
+        fill.geometry.rebuild();
+        stroke.geometry.rebuild();
+      });
+    }
   }
 
   lastScale = scale;
@@ -261,6 +323,8 @@ const redrawStage = (
 export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElement) => {
 
   const graphics = new PIXI.Graphics();
+
+  stageBatching.set(graphics, { enabled: true });
 
   const renderer = PIXI.autoDetectRenderer({ 
     width: canvas.width, 
@@ -309,7 +373,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
     const s = typeof style == 'function' ? style(annotation, state) : style;
 
-    let rendered: { fill: PIXI.Graphics, stroke: PIXI.Graphics, strokeWidth: number } | undefined;
+    let rendered: { fill: StageGraphics, stroke: StageGraphics, strokeWidth: number } | undefined;
 
     if (selector.type === ShapeType.RECTANGLE) {
       rendered = drawRectangle(graphics, selector as Rectangle, s);
