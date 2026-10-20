@@ -66,6 +66,11 @@ class StageGeometry extends PIXI.GraphicsGeometry {
 
 }
 
+type StageGraphics = PIXI.Graphics & { readonly geometry: StageGeometry };
+
+const createStageGraphics = (batching: Batching): StageGraphics =>
+  new PIXI.Graphics(new StageGeometry(batching)) as StageGraphics;
+
 // Batching state per stage, keyed by the stage's root graphics
 const stageBatching = new WeakMap<PIXI.Graphics, Batching>();
 
@@ -73,9 +78,9 @@ interface AnnotationShape {
 
   annotation: ImageAnnotation;
 
-  fill: PIXI.Graphics;
+  fill: StageGraphics;
 
-  stroke: PIXI.Graphics;
+  stroke: StageGraphics;
 
   strokeWidth: number;
 
@@ -111,7 +116,7 @@ const drawShape = <T extends Shape>(
 
   const batching = stageBatching.get(container)!;
 
-  const fillGraphics = new PIXI.Graphics(new StageGeometry(batching));
+  const fillGraphics = createStageGraphics(batching);
   
   if (!options.strokeOnly) {
     fillGraphics.beginFill(0xffffff);
@@ -123,7 +128,7 @@ const drawShape = <T extends Shape>(
   
   container.addChild(fillGraphics);
 
-  const strokeGraphics = new PIXI.Graphics(new StageGeometry(batching));
+  const strokeGraphics = createStageGraphics(batching);
   const lineWidth = strokeStyle.lineWidth === 1 ? 1 : strokeStyle.lineWidth / lastScale;
   strokeGraphics.lineStyle(lineWidth, 0xffffff, 1, 0.5, strokeStyle.lineWidth === 1);
   fn(shape, strokeGraphics); 
@@ -249,7 +254,7 @@ const redrawStage = (
 
       // Read before the stroke is invalidated below. Counter-scaling keeps
       // its vertex count, so the last build still tells.
-      const canBatch = (stroke.geometry as StageGeometry).canBatch();
+      const canBatch = stroke.geometry.canBatch();
 
       if (strokeWidth > 1) {
         // Disable fast redraws if at least one shape
@@ -280,8 +285,8 @@ const redrawStage = (
       batching.enabled = allBatchable;
 
       shapes.forEach(({ fill, stroke }) => {
-        (fill.geometry as StageGeometry).rebuild();
-        (stroke.geometry as StageGeometry).rebuild();
+        fill.geometry.rebuild();
+        stroke.geometry.rebuild();
       });
     }
   }
@@ -368,7 +373,7 @@ export const createStage = (viewer: OpenSeadragon.Viewer, canvas: HTMLCanvasElem
 
     const s = typeof style == 'function' ? style(annotation, state) : style;
 
-    let rendered: { fill: PIXI.Graphics, stroke: PIXI.Graphics, strokeWidth: number } | undefined;
+    let rendered: { fill: StageGraphics, stroke: StageGraphics, strokeWidth: number } | undefined;
 
     if (selector.type === ShapeType.RECTANGLE) {
       rendered = drawRectangle(graphics, selector as Rectangle, s);
