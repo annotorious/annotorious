@@ -1,6 +1,6 @@
 {
   "name": "@annotorious/svelte",
-  "version": "3.9.5",
+  "version": "3.10.0",
   "description": "Annotorious Svelte bindings",
   "author": "Rainer Simon",
   "license": "BSD-3-Clause",
@@ -35,9 +35,9 @@
     }
   },
   "dependencies": {
-    "@annotorious/core": "3.9.5",
-    "@annotorious/annotorious": "3.9.5",
-    "@annotorious/openseadragon": "3.9.5",
+    "@annotorious/core": "3.10.0",
+    "@annotorious/annotorious": "3.10.0",
+    "@annotorious/openseadragon": "3.10.0",
     "@neodrag/svelte": "^2.3.3"
   },
   "sideEffects": false
