@@ -6,7 +6,7 @@ import dts from 'vite-plugin-dts';
 export default defineConfig({
   plugins: [
     svelte({ preprocess: sveltePreprocess() }),
-    dts({ insertTypesEntry: true, include: ['./src/'], entryRoot: './src' })
+    dts({ insertTypesEntry: true, include: ['./src/'], entryRoot: './src', rollupTypes: true })
   ],
   server: {
     open: '/test/index.html'

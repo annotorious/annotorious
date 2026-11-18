@@ -11,7 +11,8 @@ export default defineConfig({
     tsConfigPaths(),
     dts({
       include: ['./src/'],
-      entryRoot: './src'
+      entryRoot: './src',
+      rollupTypes: true
     })
   ],
   server: {
