@@ -10,7 +10,8 @@ export default defineConfig({
     dts({
       insertTypesEntry: true,
       include: ['./src/'],
-      entryRoot: './src'
+      entryRoot: './src',
+      rollupTypes: true
     })
   ],
   server: {

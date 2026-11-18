@@ -2,8 +2,9 @@ import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import OpenSeadragon from 'openseadragon';
 import { v4 as uuidv4 } from 'uuid';
-import { useAnnotator, useSelection, useViewer} from '@annotorious/react';
-import type { PopupProps } from '@annotorious/react';
+import { useAnnotator, useSelection } from '../Annotorious';
+import { useViewer } from './OpenSeadragonAnnotator';
+import type { PopupProps } from '../PopupProps';
 import type { Annotation, AnnotationBody, Annotator, Geometry, ImageAnnotation } from '@annotorious/annotorious';
 import { toClientRects } from '../utils/toClientRects';
 import {

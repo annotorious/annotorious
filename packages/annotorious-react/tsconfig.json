@@ -2,7 +2,6 @@
   "compilerOptions": {
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
     "declaration": true,
     "declarationDir": "types",
     "declarationMap": true,
@@ -15,9 +14,6 @@
     "moduleResolution": "node",
     "noEmit": true,
     "outDir": "dist",
-    "paths": {
-      "@annotorious/react": ["src/index.ts"]
-    },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
